@@ -67,7 +67,8 @@ macro delegate(f_list...)
     for f in f_list
         block = quote
             function $(esc(f))(args...; kwargs...)
-                arviz.$(f)(args...; kwargs...)
+                data = convert_to_arviz_data(first(args))
+                arviz.$(f)(data, tail(args)...; kwargs...)
             end
         end
         push!(blocks.args, block)
