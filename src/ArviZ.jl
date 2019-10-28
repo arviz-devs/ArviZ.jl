@@ -27,6 +27,7 @@ export plot_autocorr,
     plot_violin,
     InferenceData,
     convert_to_inference_data,
+    concat
 
 
 const arviz = PyNULL()
@@ -60,6 +61,11 @@ function convert_to_inference_data(args...; kwargs...)
 end
 
 convert_to_inference_data(data::InferenceData) = data
+
+function concat(args...; kwargs...)
+    data = arviz.concat(convert_to_arviz_data.(args)...; kwargs...)
+    return InferenceData(data)
+end
 
 # Adapted from https://github.com/JuliaPy/Seaborn.jl
 macro delegate(f_list...)
