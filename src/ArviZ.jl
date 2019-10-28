@@ -1,11 +1,11 @@
 __precompile__()
 module ArviZ
 
-using Base: display, summary
 using Reexport
 using PyCall
 @reexport using PyPlot
 using Pandas: DataFrame
+import Base: display, summary
 
 export plot_autocorr,
     plot_density,
