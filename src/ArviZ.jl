@@ -5,7 +5,7 @@ using Base: display, summary
 using Reexport
 using PyCall
 @reexport using PyPlot
-using Pandas
+using Pandas: DataFrame
 
 export InferenceData,
     plot_autocorr,
