@@ -1,0 +1,15 @@
+name = "ArviZ"
+uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
+authors = ["Seth Axen <seth.axen@gmail.com>"]
+version = "0.1.1"
+
+[deps]
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
+
+[compat]
+julia = "^1"

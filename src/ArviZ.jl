@@ -1,0 +1,3 @@
+module ArviZ
+
+end # module
