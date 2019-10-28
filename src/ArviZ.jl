@@ -5,7 +5,8 @@ using Reexport
 using PyCall
 @reexport using PyPlot
 using Pandas: DataFrame
-import Base: display, summary
+
+import Base: getproperty, display, summary, +
 
 export plot_autocorr,
     plot_density,

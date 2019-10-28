@@ -9,6 +9,14 @@ end
 
 InferenceData(data::InferenceData) = data
 
+function Base.getproperty(data::InferenceData, name::Symbol)
+    if name === :o
+        return getfield(data, name)
+    else
+        return getproperty(data.o, name)
+    end
+end
+
 Base.display(data::InferenceData) = Base.display(data.o)
 
 convert_to_arviz_data(data) = data
@@ -27,3 +35,6 @@ function concat(args...; kwargs...)
     return InferenceData(data)
 end
 
+function Base.:+(data1::InferenceData, data2::InferenceData)
+    return InferenceData(data1.o + data2.o)
+end
