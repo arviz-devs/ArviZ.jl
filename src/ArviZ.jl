@@ -52,6 +52,7 @@ Base.summary(data::InferenceData) = Pandas.DataFrame(arviz.summary(data.o))
 
 convert_to_arviz_data(data) = data
 convert_to_arviz_data(data::InferenceData) = data.o
+convert_to_arviz_data(data...) = convert_to_arviz_data.(data)
 
 function convert_to_inference_data(args...; kwargs...)
     data = arviz.convert_to_inference_data(args...; kwargs...)
