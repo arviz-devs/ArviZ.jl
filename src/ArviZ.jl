@@ -7,8 +7,7 @@ using PyCall
 @reexport using PyPlot
 using Pandas: DataFrame
 
-export InferenceData,
-    plot_autocorr,
+export plot_autocorr,
     plot_density,
     plot_dist,
     plot_energy,
@@ -26,7 +25,8 @@ export InferenceData,
     plot_rank,
     plot_trace,
     plot_violin,
-    convert_to_inference_data
+    InferenceData,
+    convert_to_inference_data,
 
 
 const arviz = PyNULL()
