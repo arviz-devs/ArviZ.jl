@@ -1,6 +1,10 @@
 __precompile__()
 module ArviZ
 
+using Reexport
+using PyCall
+@reexport using PyPlot
+
 export plot_autocorr,
     plot_compare,
     plot_density,
@@ -24,9 +28,6 @@ export plot_autocorr,
     plot_violin,
     convert_to_inference_data
 
-using Reexport
-using PyCall
-@reexport using PyPlot
 
 const arviz = PyNULL()
 
