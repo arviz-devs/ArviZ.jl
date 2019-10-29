@@ -30,7 +30,7 @@ This example uses a centered parameterization of
 
 ```julia
 using ArviZ
-ArviZ.use_style("arviz-darkgrid")
+ArviZ.use_style(["default", "arviz-darkgrid"])
 
 using Turing
 @model school8(J, y, sigma) = begin
