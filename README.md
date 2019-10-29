@@ -53,12 +53,3 @@ summary(data) # summary statistics
 plot_posterior(data) # posterior KDEs
 plot_pair(data; divergences=true) # pairwise scatter plot
 ```
-
-![Lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)<!--
-![Lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)
-![Lifecycle](https://img.shields.io/badge/lifecycle-stable-green.svg)
-![Lifecycle](https://img.shields.io/badge/lifecycle-retired-orange.svg)
-![Lifecycle](https://img.shields.io/badge/lifecycle-archived-red.svg)
-![Lifecycle](https://img.shields.io/badge/lifecycle-dormant-blue.svg) -->
-[![Build Status](https://travis-ci.com/sdaxen/ArviZ.jl.svg?branch=master)](https://travis-ci.com/sdaxen/ArviZ.jl)
-[![codecov.io](http://codecov.io/github/sdaxen/ArviZ.jl/coverage.svg?branch=master)](http://codecov.io/github/sdaxen/ArviZ.jl?branch=master)
