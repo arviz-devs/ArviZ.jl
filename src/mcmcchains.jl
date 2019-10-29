@@ -1,5 +1,4 @@
 const stats_key_map = Dict(
-    "log_density" => "lp",
     "acceptance_rate" => "accept_stat",
     "step_size" => "stepsize",
     "tree_depth" => "treedepth",
@@ -10,6 +9,16 @@ const stats_key_map = Dict(
 
 reshape_values(x) = permutedims(x, [2, 1])
 reshape_values(x::NTuple) = permutedims(cat(x...; dims = 3), [2, 1, 3])
+
+function rekey(d, keymap)
+    dnew = empty(d)
+    for (k, v) in d
+        knew = get(keymap, k, k)
+        haskey(dnew, knew) && throw(ArgumentError("$knew in `keymap` is already in `d`."))
+        dnew[knew] = d[k]
+    end
+    return dnew
+end
 
 function section_dict(chn, section)
     params = get(chn, section = section; flatten = false)
@@ -24,7 +33,7 @@ function sample_stats_dict(chn)
     section = :internals
     in(section, keys(chn.name_map)) || return nothing
     stats = section_dict(chn, section)
-    return Dict(get(stats_key_map, k, k) => v for (k, v) in stats)
+    return rekey(stats, stats_key_map)
 end
 
 sample_stats_dict(::Nothing) = nothing
