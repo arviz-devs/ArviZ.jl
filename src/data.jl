@@ -17,7 +17,11 @@ function Base.getproperty(data::InferenceData, name::Symbol)
     end
 end
 
-Base.display(data::InferenceData) = Base.display(data.o)
+function Base.show(io::IO, data::InferenceData)
+    out = pycall(pybuiltin("str"), String, data.o)
+    out = replace(out, r"Inference data" => "InferenceData")
+    print(io, out)
+end
 
 convert_to_arviz_data(data) = data
 convert_to_arviz_data(data::InferenceData) = data.o
