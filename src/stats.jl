@@ -1,1 +1,1 @@
-Base.summary(data::InferenceData) = Pandas.DataFrame(arviz.summary(data.o))
+Base.summary(data::InferenceData) = DataFrame(arviz.summary(data.o))
