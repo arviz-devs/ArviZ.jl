@@ -5,6 +5,7 @@ using Reexport
 using PyCall
 @reexport using PyPlot
 using Pandas: DataFrame
+using MCMCChains: AbstractChains
 
 import Base: getproperty, display, summary, +
 
@@ -29,6 +30,7 @@ export plot_autocorr,
     InferenceData,
     convert_to_inference_data,
     from_dict,
+    from_mcmcchains,
     concat
 
 const arviz = PyNULL()
@@ -41,5 +43,6 @@ include("utils.jl")
 include("data.jl")
 include("stats.jl")
 include("plots.jl")
+include("mcmcchains.jl")
 
 end # module

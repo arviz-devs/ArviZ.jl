@@ -4,6 +4,7 @@ authors = ["Seth Axen <seth.axen@gmail.com>"]
 version = "0.1.1"
 
 [deps]
+MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 Pandas = "eadc2687-ae89-51f9-a5d9-86b5a6373a9c"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
