@@ -27,12 +27,21 @@ convert_to_arviz_data(data) = data
 convert_to_arviz_data(data::InferenceData) = data.o
 convert_to_arviz_data(data...) = convert_to_arviz_data.(data)
 
-function convert_to_inference_data(args...; kwargs...)
-    data = arviz.convert_to_inference_data(args...; kwargs...)
+"""
+    convert_to_inference_data(obj; kwargs...)
+
+Convert a supported object to an `InferenceData`.
+
+This function sends `obj` to the right conversion function. It is idempotent,
+in that it will return `InferenceData` objects unchanged.
+"""
+function convert_to_inference_data(obj; kwargs...)
+    obj = convert_to_arviz_data(obj)
+    data = arviz.convert_to_inference_data(obj; kwargs...)
     return InferenceData(data)
 end
 
-convert_to_inference_data(data::InferenceData) = data
+convert_to_inference_data(obj::InferenceData) = obj
 
 function concat(args...; kwargs...)
     data = arviz.concat(convert_to_arviz_data.(args)...; kwargs...)

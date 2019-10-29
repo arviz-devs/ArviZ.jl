@@ -38,22 +38,35 @@ end
 
 sample_stats_dict(::Nothing) = nothing
 
-# Just support basic interface for now.
-function from_mcmcchains(posterior = nothing, args...; prior = nothing, kwargs...)
-    data_post = section_dict(posterior, :parameters)
+"""
+    from_mcmcchains(
+        posterior::Union{AbstractChains,Nothing} = nothing;
+        prior::Union{AbstractChains,Nothing} = nothing,
+        kwargs...,
+    )
+
+Convert the chains in `posterior` and/or `prior` to `InferenceData`. The
+chains are assigned to the corresponding groups. Remaining `kwargs` are
+forwarded to `from_dict`.
+"""
+function from_mcmcchains(
+    posterior::Union{AbstractChains,Nothing} = nothing;
+    prior::Union{AbstractChains,Nothing} = nothing,
+    kwargs...,
+)
+    post_dict = section_dict(posterior, :parameters)
     sample_stats = sample_stats_dict(posterior)
-    data_prior = section_dict(prior, :parameters)
+    prior_dict = section_dict(prior, :parameters)
     sample_stats_prior = sample_stats_dict(prior)
     return from_dict(
-        posterior = data_post,
-        args...;
-        prior = data_prior,
+        posterior = post_dict;
         sample_stats = sample_stats,
+        prior = prior_dict,
         sample_stats_prior = sample_stats_prior,
         kwargs...,
     )
 end
 
-function convert_to_inference_data(chn::AbstractChains; kwargs...)
-    return from_mcmcchains(chn; kwargs...)
+function convert_to_inference_data(obj::AbstractChains; kwargs...)
+    return from_mcmcchains(obj; kwargs...)
 end
