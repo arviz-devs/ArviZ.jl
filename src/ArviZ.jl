@@ -1,6 +1,7 @@
 __precompile__()
 module ArviZ
 
+using Base: @__doc__
 using Reexport
 using PyCall
 @reexport using PyPlot

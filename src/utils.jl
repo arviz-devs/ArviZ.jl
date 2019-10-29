@@ -1,16 +1,17 @@
-# Adapted from https://github.com/JuliaPy/Seaborn.jl
-macro delegate(f_list...)
-    blocks = Expr(:block)
-    for f in f_list
-        block = quote
-            function $(esc(f))(args...; kwargs...)
-                data = convert_to_arviz_data(first(args))
-                arviz.$(f)(data, Base.tail(args)...; kwargs...)
-            end
+"""
+    @datafun f
+    @datafun(f)
+
+Forward a function whose first argument only may be an instance of
+`InferenceData` to arviz.
+"""
+macro datafun(f)
+    quote
+        @__doc__ function $(f)(args...; kwargs...)
+            data = convert_to_arviz_data(first(args))
+            arviz.$(f)(data, Base.tail(args)...; kwargs...)
         end
-        push!(blocks.args, block)
-    end
-    blocks
+    end |> esc
 end
 
 """
