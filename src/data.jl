@@ -38,3 +38,8 @@ end
 function Base.:+(data1::InferenceData, data2::InferenceData)
     return InferenceData(data1.o + data2.o)
 end
+
+function from_dict(args...; kwargs...)
+    data = arviz.from_dict(args...; kwargs...)
+    return InferenceData(data)
+end

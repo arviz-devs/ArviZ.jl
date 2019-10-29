@@ -28,6 +28,7 @@ export plot_autocorr,
     plot_violin,
     InferenceData,
     convert_to_inference_data,
+    from_dict,
     concat
 
 const arviz = PyNULL()
