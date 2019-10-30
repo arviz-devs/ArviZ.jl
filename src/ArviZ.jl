@@ -8,7 +8,7 @@ using PyCall
 using Pandas: DataFrame
 using MCMCChains: AbstractChains
 
-import Base: getproperty, show, summary, +
+import Base: propertynames, getproperty, show, summary, +
 
 export plot_autocorr,
        plot_density,
