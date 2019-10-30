@@ -69,7 +69,7 @@ function convert_to_inference_data(obj; kwargs...)
     return InferenceData(data)
 end
 
-convert_to_inference_data(obj::InferenceData) = obj
+@inline convert_to_inference_data(obj::InferenceData) = obj
 
 function concat(args...; kwargs...)
     data = arviz.concat(convert_to_arviz_data.(args)...; kwargs...)
