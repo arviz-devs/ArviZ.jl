@@ -37,7 +37,7 @@ end
 Base.delete!(data::InferenceData, name) = data.o.__delattr__(string(name))
 
 @inline function (data1::InferenceData + data2::InferenceData)
-    return InferenceData(unwrap(data1), unwrap(data2))
+    return InferenceData(unwrap(data1) + unwrap(data2))
 end
 
 function Base.show(io::IO, data::InferenceData)
