@@ -1,13 +1,29 @@
+"""
+    InferenceData
+
+Loose wrapper around `arviz.InferenceData`, which is a container for inference
+data storage using xarray.
+
+# Constructor
+
+    InferenceData(o::PyObject)
+
+wraps an `arviz.InferenceData`. To create an `InferenceData`, use the exported
+`from_xyz` functions.
+"""
 struct InferenceData
     o::PyObject
+
+    function InferenceData(o::PyObject)
+        pyisinstance(
+            o,
+            arviz.InferenceData,
+        ) || raise(ArgumentError("$o is not an `arviz.InferenceData`."))
+        return new(o)
 end
 
-function InferenceData(args...; kwargs...)
-    data = arviz.InferenceData(args...; kwargs...)
-    return InferenceData(data)
-end
+@inline InferenceData(data::InferenceData) = data
 
-InferenceData(data::InferenceData) = data
 @inline unwrap(data::InferenceData) = data.o
 
 @inline Base.propertynames(data::InferenceData) = [:o; Symbol.(data.o._groups)]
