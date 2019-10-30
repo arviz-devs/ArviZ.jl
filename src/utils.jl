@@ -36,3 +36,5 @@ and "arviz-white". To see all available style specifications, use
 If a `Vector` of styles is provided, they are applied from first to last.
 """
 use_style(style) = arviz.style.use(style)
+
+@inline unwrap(obj) = obj

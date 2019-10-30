@@ -8,6 +8,8 @@ function InferenceData(args...; kwargs...)
 end
 
 InferenceData(data::InferenceData) = data
+@inline unwrap(data::InferenceData) = data.o
+
 
 function Base.getproperty(data::InferenceData, name::Symbol)
     if name === :o
@@ -15,17 +17,19 @@ function Base.getproperty(data::InferenceData, name::Symbol)
     else
         return getproperty(data.o, name)
     end
+
+@inline function (data1::InferenceData + data2::InferenceData)
+    return InferenceData(unwrap(data1), unwrap(data2))
 end
 
 function Base.show(io::IO, data::InferenceData)
-    out = pycall(pybuiltin("str"), String, data.o)
+    out = pycall(pybuiltin("str"), String, unwrap(data))
     out = replace(out, r"Inference data" => "InferenceData")
     print(io, out)
 end
 
-convert_to_arviz_data(data) = data
-convert_to_arviz_data(data::InferenceData) = data.o
-convert_to_arviz_data(data...) = convert_to_arviz_data.(data)
+@inline convert_to_arviz_data(obj) = obj
+@inline convert_to_arviz_data(obj::InferenceData) = unwrap(obj)
 
 """
     convert_to_inference_data(obj; kwargs...)
