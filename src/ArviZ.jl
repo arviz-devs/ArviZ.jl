@@ -30,6 +30,7 @@ export plot_autocorr,
        plot_violin,
        InferenceData,
        convert_to_inference_data,
+       load_arviz_data,
        from_dict,
        from_mcmcchains,
        concat
@@ -42,6 +43,7 @@ end
 
 include("utils.jl")
 include("data.jl")
+include("datasets.jl")
 include("stats.jl")
 include("plots.jl")
 include("mcmcchains.jl")
