@@ -10,13 +10,14 @@ end
 InferenceData(data::InferenceData) = data
 @inline unwrap(data::InferenceData) = data.o
 
+@inline Base.propertynames(data::InferenceData) = [:o; Symbol.(data.o._groups)]
 
 function Base.getproperty(data::InferenceData, name::Symbol)
-    if name === :o
-        return getfield(data, name)
-    else
-        return getproperty(data.o, name)
-    end
+    name === :o && return getfield(data, name)
+    return getproperty(data.o, name)
+end
+
+Base.delete!(data::InferenceData, name) = data.o.__delattr__(string(name))
 
 @inline function (data1::InferenceData + data2::InferenceData)
     return InferenceData(unwrap(data1), unwrap(data2))
