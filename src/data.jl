@@ -46,6 +46,12 @@ function Base.show(io::IO, data::InferenceData)
     print(io, out)
 end
 
+"""
+    convert_to_arviz_data(obj)
+
+Convert `obj` to a type expected by ArviZ. This is primarily used to strip away
+wrappers.
+"""
 @inline convert_to_arviz_data(obj) = obj
 @inline convert_to_arviz_data(obj::InferenceData) = unwrap(obj)
 
