@@ -91,7 +91,7 @@ The `variables` in the `data` -group are merged if `dim` are not found.
 - inplace::Bool If `true`, merge `args` to first object.
 - reset_dim::Bool Valid only if `dim` is not `nothing`.
 """
-function concat(args::InferenceData...; kwargs...)
+function concat(args...; kwargs...)
     kwargs = merge((inplace = false,), kwargs)
     objs = convert_to_arviz_data.(args)
     data = arviz.concat(objs...; kwargs...)
