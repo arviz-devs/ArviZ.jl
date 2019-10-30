@@ -71,11 +71,33 @@ end
 
 @inline convert_to_inference_data(obj::InferenceData) = obj
 
-function concat(args...; kwargs...)
-    data = arviz.concat(convert_to_arviz_data.(args)...; kwargs...)
+"""
+    concat(args::InferenceData...; copy = true, reset_dim = true)
+
+Concatenate `InferenceData` objects.
+
+Concatenates over `group`, `chain` or `draw`. By default concatenates over
+unique groups. To concatenate over `chain` or `draw` function needs identical
+groups and variables.
+
+The `variables` in the `data` -group are merged if `dim` are not found.
+
+# Keyword Arguments
+- dim::String If defined, concatenated over the defined dimension.
+              Dimension which is concatenated. If `nothing`, concatenates over
+              unique groups.
+- copy::Bool If `true`, groups are copied to the new `InferenceData` object.
+             Used only if `dim` is `nothing`.
+- inplace::Bool If `true`, merge `args` to first object.
+- reset_dim::Bool Valid only if `dim` is not `nothing`.
+"""
+function concat(args::InferenceData...; kwargs...)
+    kwargs = merge((inplace = false,), kwargs)
+    objs = convert_to_arviz_data.(args)
+    data = arviz.concat(objs...; kwargs...)
+    kwargs.inplace && return args[1]
     return InferenceData(data)
 end
-
 
 function from_dict(args...; kwargs...)
     data = arviz.from_dict(args...; kwargs...)
