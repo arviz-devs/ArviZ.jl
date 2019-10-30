@@ -1,8 +1,8 @@
 """
     load_arviz_data(dataset = nothing; data_home = nothing)
 
-Load a local or remote pre-made `dataset`, saving remote datasets to
-`data_home`.
+Load a local or remote pre-made `dataset` as an `InferenceData`, saving remote
+datasets to `data_home`.
 
 The directory to save to can also be set with the environement variable
 `ARVIZ_HOME`. The checksum of the dataset is checked against a hardcoded value
