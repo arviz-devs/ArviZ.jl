@@ -7,6 +7,8 @@ const stats_key_map = Dict(
     "hamiltonian_energy" => "energy",
 )
 
+missingtonan(x) = replace(x, missing => NaN)
+
 reshape_values(x) = permutedims(x, [2, 1])
 reshape_values(x::NTuple) = permutedims(cat(x...; dims = 3), [2, 1, 3])
 
@@ -23,7 +25,7 @@ end
 function section_dict(chn, section)
     params = get(chn, section = section; flatten = false)
     names = string.(keys(params))
-    vals = reshape_values.(values(params))
+    vals = missingtonan.(reshape_values.(values(params)))
     return Dict(zip(names, vals))
 end
 
