@@ -20,6 +20,7 @@ struct InferenceData
             arviz.InferenceData,
         ) || raise(ArgumentError("$o is not an `arviz.InferenceData`."))
         return new(o)
+    end
 end
 
 @inline InferenceData(data::InferenceData) = data
