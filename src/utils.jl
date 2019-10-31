@@ -71,3 +71,30 @@ function rc_context(f, args...; kwargs...)
 end
 
 rc_params() = arviz.rcParams()
+
+"""
+    interactive_backend(f, backend::Union{Symbol,Nothing} = nothing)
+
+Execute the thunk `f` in a temporary interactive context of choice, or provide
+no arguments to use a default.
+
+# Example
+
+```julia
+idata = load_arviz_data("centered_eight")
+plot_posterior(idata) # inline
+interactive_backend() do
+    plot_density(idata) # interactive
+end
+plot_trace(idata) # inline
+```
+"""
+function interactive_backend(f, backend = nothing)
+    oldisint = PyPlot.isinteractive()
+    oldgui = pygui()
+    backend === nothing || pygui(Symbol(backend))
+    pygui(true)
+    f()
+    pygui(oldisint)
+    pygui(oldgui)
+end

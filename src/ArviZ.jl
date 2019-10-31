@@ -55,6 +55,9 @@ export InferenceData,
        from_mcmcchains,
        concat
 
+## Utils
+export interactive_backend
+
 ## rcParams
 export rc_context
 
