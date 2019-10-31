@@ -39,6 +39,9 @@ export plot_autocorr,
 ## Stats
 export compare, hpd, loo, loo_pit, psislw, r2_score, waic
 
+## Diagnostics
+export bfmi, geweke, ess, rhat, mcse
+
 ## Data
 export InferenceData,
        convert_to_inference_data,
@@ -59,8 +62,9 @@ end
 
 include("utils.jl")
 include("data.jl")
-include("stats.jl")
+include("diagnostics.jl")
 include("plots.jl")
+include("stats.jl")
 include("mcmcchains.jl")
 
 end # module
