@@ -18,7 +18,7 @@ struct InferenceData
         pyisinstance(
             o,
             arviz.InferenceData,
-        ) || raise(ArgumentError("$o is not an `arviz.InferenceData`."))
+        ) || throw(ArgumentError("$o is not an `arviz.InferenceData`."))
         return new(o)
     end
 end
