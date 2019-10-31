@@ -59,7 +59,6 @@ end
 
 include("utils.jl")
 include("data.jl")
-include("datasets.jl")
 include("stats.jl")
 include("plots.jl")
 include("mcmcchains.jl")
