@@ -69,4 +69,23 @@ end
 @forwardfun from_pystan
 @forwardfun from_tfp
 
-@forwardfun concat
+function concat(args...; kwargs...)
+    ret = arviz.concat(args...; kwargs...)
+    ret === nothing && return args[1]
+    return ret
+end
+
+Base.Docs.getdoc(::typeof(concat)) = Base.Docs.getdoc(arviz.concat)
+
+"""
+    concat!(data::InferenceData, args::InferenceData...; kwargs...)
+
+In-place version of `concat`, where `data` is modified to contain the
+concatenation of `data` and `args`. See `concat` for a description of
+`kwargs`.
+"""
+function concat!(data, args...; kwargs...)
+    kwargs = merge((; kwargs...), (; inplace = true))
+    concat(data, args...; kwargs...)
+    return data
+end

@@ -54,7 +54,8 @@ export InferenceData,
        from_netcdf,
        from_dict,
        from_mcmcchains,
-       concat
+       concat,
+       concat!
 
 ## Utils
 export interactive_backend
