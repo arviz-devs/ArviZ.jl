@@ -23,6 +23,8 @@ struct InferenceData
     end
 end
 
+InferenceData(; kwargs...) = arviz.InferenceData(; kwargs...)
+
 @inline InferenceData(data::InferenceData) = data
 
 @inline PyObject(data::InferenceData) = getfield(data, :o)
