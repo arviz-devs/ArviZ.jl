@@ -1,10 +1,9 @@
 const stats_key_map = Dict(
-    "acceptance_rate" => "accept_stat",
-    "step_size" => "stepsize",
-    "tree_depth" => "treedepth",
-    "n_steps" => "n_leapfrog",
-    "numerical_error" => "diverging",
+    "acceptance_rate" => "mean_tree_accept",
     "hamiltonian_energy" => "energy",
+    "n_steps" => "tree_size",
+    "numerical_error" => "diverging",
+    "tree_depth" => "depth",
 )
 
 missingtonan(x) = replace(x, missing => NaN)
