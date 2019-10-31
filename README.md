@@ -16,6 +16,11 @@ The package is meant to be used with
 
 ## Differences from ArviZ
 
+In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html)
+are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
+In ArviZ.jl, the same functions are called without the prefix
+(e.g. `plot_posterior`).
+
 ArviZ.jl transparently interconverts between `arviz.InferenceData` and
 our own `InferenceData`, used for dispatch. `InferenceData` has identical usage
 to its Python counterpart.
