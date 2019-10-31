@@ -80,3 +80,12 @@ ArviZ.jl includes functions that can be used with a nearly identical syntax.
 
 In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides
 `ArviZ.use_style` and `ArviZ.styles`.
+
+## Known Issues
+
+ArviZ.jl uses [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) to wrap ArviZ.
+At the moment, Julia segfaults if Numba is imported, which ArviZ does if it is
+available. For the moment, the workaround is to
+[specify a Python version](https://github.com/JuliaPy/PyCall.jl#specifying-the-python-version)
+that doesn't have Numba installed. See
+[this issue](https://github.com/JuliaPy/PyCall.jl/issues/220) for more details.
