@@ -2,9 +2,9 @@
 
 ArviZ.jl is a Julia interface to the
 [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis
-of Bayesian models. Most of ArviZ's plotting
-[API](https://arviz-devs.github.io/arviz/api.html) is supported, with
-diagnostics and more to come.
+of Bayesian models. Most of ArviZ's
+[API](https://arviz-devs.github.io/arviz/api.html) is supported, with more to
+come.
 
 This package also augments `ArviZ` to enable conversion from
 [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s
@@ -16,12 +16,16 @@ The package is meant to be used with
 
 ## Differences from ArviZ
 
-In place of `arviz.style.use`, ArviZ.jl provides `ArviZ.use_style`.
+ArviZ.jl transparently interconverts between `arviz.InferenceData` and
+our own `InferenceData`, used for dispatch. `InferenceData` has identical usage
+to its Python counterpart.
 
-ArviZ.jl thinly wraps `arviz.InferenceData` in `InferenceData` for dispatch.
+Functions that in ArviZ return Pandas types here return their
+[Pandas.jl](https://github.com/JuliaPy/Pandas.jl) analogs, which are used the
+same way.
 
-Functions in ArviZ that return Pandas types here return their
-[Pandas.jl](https://github.com/JuliaPy/Pandas.jl) analogs.
+In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides
+`ArviZ.use_style` and `ArviZ.styles`.
 
 ## Basic usage
 
