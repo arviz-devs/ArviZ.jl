@@ -34,13 +34,14 @@ Base.hash(data::InferenceData) = hash(PyObject(data))
 Base.propertynames(data::InferenceData) = propertynames(PyObject(data))
 
 function Base.getproperty(data::InferenceData, name::Symbol)
-    name === :o && return getfield(data, name)
-    return getproperty(data.o, name)
+    o = PyObject(data)
+    name === :o && return o
+    return getproperty(o, name)
 end
 
 Base.delete!(data::InferenceData, name) = PyObject(data).__delattr__(string(name))
 
-(data1::InferenceData + data2::InferenceData) = data1.o + data2.o
+(data1::InferenceData + data2::InferenceData) = PyObject(data1) + PyObject(data2)
 
 function Base.show(io::IO, data::InferenceData)
     out = pycall(pybuiltin("str"), String, data)
