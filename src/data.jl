@@ -43,7 +43,9 @@ end
 
 Base.delete!(data::InferenceData, name) = PyObject(data).__delattr__(string(name))
 
-(data1::InferenceData + data2::InferenceData) = PyObject(data1) + PyObject(data2)
+function (data1::InferenceData + data2::InferenceData)
+    return InferenceData(PyObject(data1) + PyObject(data2))
+end
 
 function Base.show(io::IO, data::InferenceData)
     out = pycall(pybuiltin("str"), String, data)
