@@ -1,9 +1,18 @@
 const stats_key_map = Dict(
+    # Turing.jl style
     "acceptance_rate" => "mean_tree_accept",
     "hamiltonian_energy" => "energy",
     "n_steps" => "tree_size",
     "numerical_error" => "diverging",
     "tree_depth" => "depth",
+    # CmdStan.jl style, consistent with from_cmdstan in ArviZ
+    "accept_stat__" => "accept_stat",
+    "divergent__" => "diverging",
+    "energy__" => "energy",
+    "lp__" => "lp",
+    "n_leapfrog__" => "n_leapfrog",
+    "stepsize__" => "stepsize",
+    "treedepth__" => "treedepth",
 )
 
 missingtonan(x) = replace(x, missing => NaN)
@@ -71,3 +80,5 @@ end
 function convert_to_inference_data(obj::AbstractChains; kwargs...)
     return from_mcmcchains(obj; kwargs...)
 end
+
+from_cmdstan(data::AbstractChains; kwargs...) = from_mcmcchains(data; kwargs...)
