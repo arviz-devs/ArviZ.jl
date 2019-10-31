@@ -2,9 +2,9 @@
 
 ArviZ.jl is a Julia interface to the
 [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis
-of Bayesian models. Most of ArviZ's
-[API](https://arviz-devs.github.io/arviz/api.html) is supported, with more to
-come.
+of Bayesian models. It supports all of ArviZ's
+[API](https://arviz-devs.github.io/arviz/api.html), except for its `Numba`
+functionality.
 
 This package also augments `ArviZ` to enable conversion from
 [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s
@@ -12,25 +12,16 @@ This package also augments `ArviZ` to enable conversion from
 `arviz.InferenceData` and is used the same way.
 
 The package is meant to be used with
-[PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl), whose api is exported.
+[PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl), whose API is exported.
 
-## Differences from ArviZ
+## Installation
 
-In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html)
-are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
-In ArviZ.jl, the same functions are called without the prefix
-(e.g. `plot_posterior`).
+First [install ArviZ](https://github.com/arviz-devs/arviz#installation). Then,
+within Julia, enter
 
-ArviZ.jl transparently interconverts between `arviz.InferenceData` and
-our own `InferenceData`, used for dispatch. `InferenceData` has identical usage
-to its Python counterpart.
-
-Functions that in ArviZ return Pandas types here return their
-[Pandas.jl](https://github.com/JuliaPy/Pandas.jl) analogs, which are used the
-same way.
-
-In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides
-`ArviZ.use_style` and `ArviZ.styles`.
+```julia
+] add https://github.com/sdaxen/ArviZ.jl
+```
 
 ## Basic usage
 
@@ -67,3 +58,25 @@ display(gcf())
 plot_pair(data; divergences=true) # plot pairwise scatter plot
 display(gcf())
 ```
+
+## Differences from ArviZ
+
+In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html)
+are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
+In ArviZ.jl, the same functions are called without the prefix
+(e.g. `plot_posterior`).
+
+ArviZ.jl transparently interconverts between `arviz.InferenceData` and
+our own `InferenceData`, used for dispatch. `InferenceData` has identical usage
+to its Python counterpart.
+
+Functions that in ArviZ return Pandas types here return their
+[Pandas.jl](https://github.com/JuliaPy/Pandas.jl) analogs, which are used the
+same way.
+
+ArviZ includes the context managers `rc_context` and `interactive_backend`.
+ArviZ.jl includes functions that can be used with a nearly identical syntax.
+`interactive_backend` here is not limited to an IPython context.
+
+In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides
+`ArviZ.use_style` and `ArviZ.styles`.
