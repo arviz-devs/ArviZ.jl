@@ -1,15 +1,13 @@
 """
-    @datafun f
-    @datafun(f)
+    @forwardfun f
+    @forwardfun(f)
 
-Forward a function whose first argument only may be an instance of
-`InferenceData` to arviz.
+Wrap a function `arviz.f` in `f`
 """
-macro datafun(f)
+macro forwardfun(f)
     quote
         @__doc__ function $(f)(args...; kwargs...)
-            data = convert_to_arviz_data(first(args))
-            arviz.$(f)(data, Base.tail(args)...; kwargs...)
+            arviz.$(f)(args...; kwargs...)
         end
     end |> esc
 end
@@ -36,5 +34,3 @@ and "arviz-white". To see all available style specifications, use
 If a `Vector` of styles is provided, they are applied from first to last.
 """
 use_style(style) = arviz.style.use(style)
-
-@inline unwrap(obj) = obj

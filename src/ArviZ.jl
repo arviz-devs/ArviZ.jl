@@ -8,7 +8,8 @@ using PyCall
 using Pandas: DataFrame
 using MCMCChains: AbstractChains
 
-import Base: propertynames, getproperty, show, summary, +
+import Base: convert, propertynames, getproperty, hash, show, summary, +
+import PyCall: PyObject
 
 export plot_autocorr,
        plot_density,
@@ -39,6 +40,8 @@ const arviz = PyNULL()
 
 function __init__()
     copy!(arviz, pyimport_conda("arviz", "arviz"))
+
+    pytype_mapping(arviz.InferenceData, InferenceData)
 end
 
 include("utils.jl")

@@ -25,35 +25,28 @@ end
 
 @inline InferenceData(data::InferenceData) = data
 
-@inline unwrap(data::InferenceData) = data.o
+@inline PyObject(data::InferenceData) = getfield(data, :o)
 
-@inline Base.propertynames(data::InferenceData) = [:o; Symbol.(data.o._groups)]
+Base.convert(::Type{InferenceData}, o::PyObject) = InferenceData(o)
+
+Base.hash(data::InferenceData) = hash(PyObject(data))
+
+Base.propertynames(data::InferenceData) = propertynames(PyObject(data))
 
 function Base.getproperty(data::InferenceData, name::Symbol)
     name === :o && return getfield(data, name)
     return getproperty(data.o, name)
 end
 
-Base.delete!(data::InferenceData, name) = data.o.__delattr__(string(name))
+Base.delete!(data::InferenceData, name) = PyObject(data).__delattr__(string(name))
 
-@inline function (data1::InferenceData + data2::InferenceData)
-    return InferenceData(unwrap(data1) + unwrap(data2))
-end
+(data1::InferenceData + data2::InferenceData) = data1.o + data2.o
 
 function Base.show(io::IO, data::InferenceData)
-    out = pycall(pybuiltin("str"), String, unwrap(data))
+    out = pycall(pybuiltin("str"), String, data)
     out = replace(out, r"Inference data" => "InferenceData")
     print(io, out)
 end
-
-"""
-    convert_to_arviz_data(obj)
-
-Convert `obj` to a type expected by ArviZ. This is primarily used to strip away
-wrappers.
-"""
-@inline convert_to_arviz_data(obj) = obj
-@inline convert_to_arviz_data(obj::InferenceData) = unwrap(obj)
 
 """
     convert_to_inference_data(obj; kwargs...)
@@ -63,11 +56,7 @@ Convert a supported object to an `InferenceData`.
 This function sends `obj` to the right conversion function. It is idempotent,
 in that it will return `InferenceData` objects unchanged.
 """
-function convert_to_inference_data(obj; kwargs...)
-    obj = convert_to_arviz_data(obj)
-    data = arviz.convert_to_inference_data(obj; kwargs...)
-    return InferenceData(data)
-end
+@forwardfun convert_to_inference_data
 
 @inline convert_to_inference_data(obj::InferenceData) = obj
 
@@ -91,15 +80,6 @@ The `variables` in the `data` -group are merged if `dim` are not found.
 - inplace::Bool If `true`, merge `args` to first object.
 - reset_dim::Bool Valid only if `dim` is not `nothing`.
 """
-function concat(args...; kwargs...)
-    kwargs = merge((inplace = false,), kwargs)
-    objs = convert_to_arviz_data.(args)
-    data = arviz.concat(objs...; kwargs...)
-    kwargs.inplace && return args[1]
-    return InferenceData(data)
-end
+@forwardfun concat
 
-function from_dict(args...; kwargs...)
-    data = arviz.from_dict(args...; kwargs...)
-    return InferenceData(data)
-end
+@forwardfun from_dict
