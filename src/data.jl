@@ -9,7 +9,7 @@ data storage using xarray.
     InferenceData(o::PyObject)
 
 wraps an `arviz.InferenceData`. To create an `InferenceData`, use the exported
-`from_xyz` functions.
+`from_xyz` functions or `convert_to_inference_data`.
 """
 struct InferenceData
     o::PyObject
@@ -51,32 +51,10 @@ function Base.show(io::IO, data::InferenceData)
     print(io, out)
 end
 
-"""
-    convert_to_inference_data(obj; kwargs...)
-
-Convert a supported object to an `InferenceData`.
-
-This function sends `obj` to the right conversion function. It is idempotent,
-in that it will return `InferenceData` objects unchanged.
-"""
 @forwardfun convert_to_inference_data
 
 @inline convert_to_inference_data(obj::InferenceData) = obj
 
-"""
-    load_arviz_data(dataset; data_home = nothing)
-
-Load a local or remote pre-made `dataset` as an `InferenceData`, saving remote
-datasets to `data_home`.
-
-The directory to save to can also be set with the environement variable
-`ARVIZ_HOME`. The checksum of the dataset is checked against a hardcoded value
-to watch for data corruption.
-
-    load_arviz_data()
-
-Get a list of all available local or remote pre-made datasets.
-"""
 @forwardfun load_arviz_data
 
 @forwardfun to_netcdf
@@ -91,24 +69,4 @@ Get a list of all available local or remote pre-made datasets.
 @forwardfun from_pystan
 @forwardfun from_tfp
 
-"""
-    concat(args::InferenceData...; copy = true, reset_dim = true)
-
-Concatenate `InferenceData` objects.
-
-Concatenates over `group`, `chain` or `draw`. By default concatenates over
-unique groups. To concatenate over `chain` or `draw` function needs identical
-groups and variables.
-
-The `variables` in the `data` -group are merged if `dim` are not found.
-
-# Keyword Arguments
-- dim::String If defined, concatenated over the defined dimension.
-              Dimension which is concatenated. If `nothing`, concatenates over
-              unique groups.
-- copy::Bool If `true`, groups are copied to the new `InferenceData` object.
-             Used only if `dim` is `nothing`.
-- inplace::Bool If `true`, merge `args` to first object.
-- reset_dim::Bool Valid only if `dim` is not `nothing`.
-"""
 @forwardfun concat

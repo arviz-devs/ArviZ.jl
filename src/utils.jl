@@ -9,6 +9,8 @@ macro forwardfun(f)
         @__doc__ function $(f)(args...; kwargs...)
             arviz.$(f)(args...; kwargs...)
         end
+
+        Base.Docs.getdoc(::typeof($(f))) = Base.Docs.getdoc(arviz.$(f))
     end |> esc
 end
 

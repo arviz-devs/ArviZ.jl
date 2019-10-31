@@ -9,6 +9,7 @@ using Pandas: DataFrame, Series
 using MCMCChains: AbstractChains
 
 import Base: convert, propertynames, getproperty, hash, show, summary, +
+import Base.Docs: getdoc
 import PyCall: PyObject
 
 # Exports
