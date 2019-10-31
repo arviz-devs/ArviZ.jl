@@ -34,3 +34,40 @@ and "arviz-white". To see all available style specifications, use
 If a `Vector` of styles is provided, they are applied from first to last.
 """
 use_style(style) = arviz.style.use(style)
+
+"""
+    rc_context(f, rc = nothing, fname = nothing)
+
+Execute the thunk `f` within a context controlled by rc params. To see
+supported params, execute `rc_params()`.
+
+This allows one to do:
+
+```julia
+rc_context(fname = "pystan.rc") do
+    idata = load_arviz_data("radon")
+    plot_posterior(idata; var_names=["gamma"])
+end
+```
+
+The plot would have settings from `pystan.rc`.
+
+A dictionary can also be passed to the context manager:
+
+```julia
+rc_context(rc=Dict("plot.max_subplots" => 1), fname="pystan.rc") do
+    idata = load_arviz_data("radon")
+    plot_posterior(idata, var_names=["gamma"])
+end
+```
+
+The `rc` dictionary takes precedence over the settings loaded from `fname`.
+Passing a dictionary only is also valid.
+"""
+function rc_context(f, args...; kwargs...)
+    @pywith arviz.rc_context(args...; kwargs...) as _ begin
+        f()
+    end
+end
+
+rc_params() = arviz.rcParams()

@@ -55,6 +55,9 @@ export InferenceData,
        from_mcmcchains,
        concat
 
+## rcParams
+export rc_context
+
 const arviz = PyNULL()
 
 function __init__()
