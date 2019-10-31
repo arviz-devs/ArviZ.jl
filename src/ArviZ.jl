@@ -43,7 +43,7 @@ export compare, hpd, loo, loo_pit, psislw, r2_score, waic
 export bfmi, geweke, ess, rhat, mcse
 
 ## Stats utils
-export autocov, autocorr
+export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
 
 ## Data
 export InferenceData,
