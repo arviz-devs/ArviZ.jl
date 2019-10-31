@@ -32,6 +32,8 @@ export plot_autocorr,
        InferenceData,
        convert_to_inference_data,
        load_arviz_data,
+       to_netcdf,
+       from_netcdf,
        from_dict,
        from_mcmcchains,
        concat

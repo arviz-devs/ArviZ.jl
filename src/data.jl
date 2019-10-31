@@ -60,6 +60,18 @@ in that it will return `InferenceData` objects unchanged.
 
 @inline convert_to_inference_data(obj::InferenceData) = obj
 
+@forwardfun to_netcdf
+@forwardfun from_netcdf
+@forwardfun from_dict
+@forwardfun from_cmdstan
+@forwardfun from_cmdstanpy
+@forwardfun from_emcee
+@forwardfun from_pymc3
+@forwardfun from_pyro
+@forwardfun from_numpyro
+@forwardfun from_pystan
+@forwardfun from_tfp
+
 """
     concat(args::InferenceData...; copy = true, reset_dim = true)
 
@@ -81,5 +93,3 @@ The `variables` in the `data` -group are merged if `dim` are not found.
 - reset_dim::Bool Valid only if `dim` is not `nothing`.
 """
 @forwardfun concat
-
-@forwardfun from_dict
