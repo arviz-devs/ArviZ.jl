@@ -55,7 +55,7 @@ The plot would have settings from `pystan.rc`.
 A dictionary can also be passed to the context manager:
 
 ```julia
-rc_context(rc=Dict("plot.max_subplots" => 1), fname="pystan.rc") do
+rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
     idata = load_arviz_data("radon")
     plot_posterior(idata, var_names=["gamma"])
 end
