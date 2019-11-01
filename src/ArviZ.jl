@@ -53,6 +53,7 @@ export InferenceData,
        to_netcdf,
        from_netcdf,
        from_dict,
+       from_cmdstan,
        concat,
        concat!
 
