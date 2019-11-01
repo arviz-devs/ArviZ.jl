@@ -66,7 +66,7 @@ export rc_context
 const arviz = PyNULL()
 
 function __init__()
-    copy!(arviz, pyimport_conda("arviz", "arviz"))
+    copy!(arviz, pyimport_conda("arviz", "arviz", "conda-forge"))
 
     pytype_mapping(arviz.InferenceData, InferenceData)
 end
