@@ -1,3 +1,7 @@
+using .MCMCChains: AbstractChains
+
+export from_mcmcchains
+
 const stats_key_map = Dict(
     # Turing.jl style
     "acceptance_rate" => "mean_tree_accept",

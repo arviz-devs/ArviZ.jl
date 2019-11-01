@@ -3,10 +3,10 @@ module ArviZ
 
 using Base: @__doc__
 using Reexport
+using Requires
 using PyCall
 @reexport using PyPlot
 using Pandas: DataFrame, Series
-using MCMCChains: AbstractChains
 
 import Base: convert, propertynames, getproperty, hash, show, summary, +
 import Base.Docs: getdoc
@@ -53,7 +53,6 @@ export InferenceData,
        to_netcdf,
        from_netcdf,
        from_dict,
-       from_mcmcchains,
        concat,
        concat!
 
@@ -71,6 +70,8 @@ function __init__()
     pyimport_conda("dask", "dask", "conda-forge")
 
     pytype_mapping(arviz.InferenceData, InferenceData)
+
+    @require MCMCChains="c7f686f2-ff18-58e9-bc7b-31028e88f75d" include("mcmcchains.jl")
 end
 
 include("utils.jl")
@@ -79,6 +80,5 @@ include("diagnostics.jl")
 include("plots.jl")
 include("stats.jl")
 include("stats_utils.jl")
-include("mcmcchains.jl")
 
 end # module
