@@ -67,8 +67,10 @@ display(gcf())
 
 In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html)
 are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
-In ArviZ.jl, the same functions are called without the prefix
-(e.g. `plot_posterior`).
+In ArviZ.jl, most of the same functions are exported and therefore called
+without the prefix (e.g. `plot_posterior`). The exception are `from_xyz`
+converters for packages that have no (known) Julia wrappers. These functions are
+not exported to reduce namespace clutter.
 
 ArviZ.jl transparently interconverts between `arviz.InferenceData` and
 our own `InferenceData`, used for dispatch. `InferenceData` has identical usage
