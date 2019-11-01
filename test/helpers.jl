@@ -54,10 +54,10 @@ models() = (model_1 = create_model(10), model_2 = create_model(11))
 function check_multiple_attrs(test_dict, parent)
     failed_attrs = []
     for (dataset_name, attributes) in test_dict
-        if hasproperty(parent, Symbol(dataset_name))
+        if Symbol(dataset_name) ∈ propertynames(parent)
             dataset = getproperty(parent, Symbol(dataset_name))
             for attribute in attributes
-                if !hasproperty(dataset, attribute)
+                if Symbol(attribute) ∉ propertynames(dataset)
                     push!(failed_attrs, (dataset_name, attribute))
                 end
             end

@@ -8,16 +8,16 @@
         @test InferenceData(data) === data
         data2 = InferenceData(; posterior = data.posterior)
         @test data2 isa InferenceData
-        @test hasproperty(data2, :posterior)
+        @test :posterior in propertynames(data2)
     end
 
     @testset "properties" begin
-        @test hasproperty(data, :posterior)
+        @test :posterior in propertynames(data)
         @test length(propertynames(data)) > 1
         data3 = InferenceData(; posterior = data.posterior, prior = data.prior)
-        @test hasproperty(data3, :prior)
+        @test :prior in propertynames(data3)
         delete!(data3, :prior)
-        @test !hasproperty(data3, :prior)
+        @test :prior ∉ propertynames(data3)
     end
 
     @testset "conversion" begin
