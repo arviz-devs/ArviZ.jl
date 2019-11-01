@@ -17,11 +17,9 @@ env:
   global:
     - PYTHON='' # Install dependencies in conda env
 
-## uncomment the following lines to allow failures on nightly julia
-## (tests will run but not make your overall status red)
-#matrix:
-#  allow_failures:
-#  - julia: nightly
+matrix:
+ allow_failures:
+ - julia: nightly
 
 ## uncomment following lines to deploy documentation
 # jobs:
