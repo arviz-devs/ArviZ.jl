@@ -71,7 +71,7 @@ function __init__()
 
     pytype_mapping(arviz.InferenceData, InferenceData)
 
-    @require MCMCChains="c7f686f2-ff18-58e9-bc7b-31028e88f75d" include("mcmcchains.jl")
+    @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" include("mcmcchains.jl")
 end
 
 include("utils.jl")
