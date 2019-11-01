@@ -67,6 +67,8 @@ const arviz = PyNULL()
 
 function __init__()
     copy!(arviz, pyimport_conda("arviz", "arviz", "conda-forge"))
+    pyimport_conda("xarray", "xarray", "conda-forge")
+    pyimport_conda("dask", "dask", "conda-forge")
 
     pytype_mapping(arviz.InferenceData, InferenceData)
 end
