@@ -24,7 +24,7 @@ First [install ArviZ](https://github.com/arviz-devs/arviz#installation). Then,
 within Julia, enter
 
 ```julia
-] add https://github.com/sdaxen/ArviZ.jl
+] add https://github.com/sethaxen/ArviZ.jl
 ```
 
 ## Basic usage
