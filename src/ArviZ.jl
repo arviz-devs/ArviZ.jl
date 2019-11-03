@@ -76,6 +76,7 @@ function __init__()
 end
 
 include("utils.jl")
+include("dataset.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
