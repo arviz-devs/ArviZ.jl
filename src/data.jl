@@ -55,8 +55,6 @@ end
 
 @forwardfun convert_to_inference_data
 
-@inline convert_to_inference_data(obj::InferenceData) = obj
-
 @forwardfun load_arviz_data
 
 @forwardfun to_netcdf
