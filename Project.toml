@@ -4,6 +4,7 @@ authors = ["Seth Axen <seth.axen@gmail.com>"]
 version = "0.1.1"
 
 [deps]
+NamedTupleTools = "d9ec5142-1e00-5aa0-9d6a-321866360f50"
 Pandas = "eadc2687-ae89-51f9-a5d9-86b5a6373a9c"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"

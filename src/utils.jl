@@ -100,3 +100,12 @@ function interactive_backend(f, backend = nothing)
     pygui(oldisint)
     pygui(oldgui)
 end
+
+"""
+    replacemissing(x)
+
+Replace `missing` values with `NaN` and do type inference on the result.
+"""
+replacemissing(x) = map(identity, replace(x, missing => NaN))
+replacemissing(x::AbstractArray{<:Real}) = x
+replacemissing(x::Missing) = NaN
