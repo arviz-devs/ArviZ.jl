@@ -6,7 +6,7 @@ using Reexport
 using Requires
 using PyCall
 @reexport using PyPlot
-using Pandas: DataFrame, Series
+using Pandas
 
 import Base: convert, propertynames, getproperty, hash, show, summary, +
 import Base.Docs: getdoc
