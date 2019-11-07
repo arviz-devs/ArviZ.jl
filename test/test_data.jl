@@ -76,12 +76,6 @@ end
 @testset "convert_to_inference_data" begin
     rng = MersenneTwister(42)
 
-    @testset "convert_to_inference_data(::InferenceData)" begin
-        data = load_arviz_data("centered_eight")
-        data2 = convert_to_inference_data(data)
-        @test data === data2
-    end
-
     @testset "convert_to_inference_data(::Dict)" begin
         dataset = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
         idata1 = convert_to_inference_data(dataset)
