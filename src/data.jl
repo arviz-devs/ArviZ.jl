@@ -69,6 +69,27 @@ end
 @forwardfun from_pystan
 @forwardfun from_tfp
 
+# A more flexible form of `from_dict`
+# Internally calls `dict_to_dataset`
+function _from_dict(
+    posterior = nothing;
+    attrs = Dict(),
+    coords = nothing,
+    dims = nothing,
+    dicts...,
+)
+    dicts = (posterior = posterior, dicts...)
+
+    datasets = Dict()
+    for (name, dict) in pairs(dicts)
+        (isnothing(dict) || isempty(dict)) && continue
+        dataset = dict_to_dataset(dict; attrs = attrs, coords = coords, dims = dims)
+        datasets[name] = dataset
+    end
+
+    return InferenceData(; datasets...)
+end
+
 function concat(args...; kwargs...)
     ret = arviz.concat(args...; kwargs...)
     ret === nothing && return args[1]
