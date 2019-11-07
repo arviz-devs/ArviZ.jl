@@ -143,4 +143,4 @@ end
 
 popsubdict!(dict, key::String) = popsubdict!(dict, [key])
 
-snakecase(s) = replace(lowercase(s), " "=>"_")
+snakecase(s) = replace(lowercase(s), " " => "_")
