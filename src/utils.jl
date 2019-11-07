@@ -109,3 +109,38 @@ Replace `missing` values with `NaN` and do type inference on the result.
 replacemissing(x) = map(identity, replace(x, missing => NaN))
 replacemissing(x::AbstractArray{<:Real}) = x
 replacemissing(x::Missing) = NaN
+
+function rekey(d, keymap)
+    dnew = empty(d)
+    for (k, v) in d
+        knew = get(keymap, k, k)
+        haskey(dnew, knew) && throw(ArgumentError("$knew in `keymap` is already in `d`."))
+        dnew[knew] = d[k]
+    end
+    return dnew
+end
+
+removekeys!(dict, keys) = map(k -> delete!(dict, k), keys)
+
+function subdict(dict, keys)
+    d = empty(dict)
+    for k in unique(keys)
+        if k in keys(dict)
+            d[k] = dict[v]
+        end
+    end
+    return d
+end
+
+function popsubdict!(dict, names)
+    (isnothing(dict) || isnothing(names)) && return nothing
+    subdict = empty(dict)
+    for k in names
+        subdict[k] = pop!(dict, k)
+    end
+    return subdict
+end
+
+popsubdict!(dict, key::String) = popsubdict!(dict, [key])
+
+snakecase(s) = replace(lowercase(s), " "=>"_")

@@ -47,14 +47,6 @@ ArviZ's  expected `(nchain, ndraw, nparam)`.
 """
 reshape_values(x::NTuple) = cat(reshape_values.(x)...; dims = 3)
 
-function rekey(d, keymap)
-    dnew = empty(d)
-    for (k, v) in d
-        knew = get(keymap, k, k)
-        haskey(dnew, knew) && throw(ArgumentError("$knew in `keymap` is already in `d`."))
-        dnew[knew] = d[k]
-    end
-    return dnew
 end
 
 function section_dict(chn, section)
@@ -74,7 +66,6 @@ function info_namedtuple(chn)
     return info
 end
 
-removekeys!(dict, keys) = map(k -> delete!(dict, k), keys)
 
 function chains_to_dataset(
     chn::AbstractChains;
