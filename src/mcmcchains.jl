@@ -74,14 +74,18 @@ function info_namedtuple(chn)
     return info
 end
 
+removekeys!(dict, keys) = map(k -> delete!(dict, k), keys)
+
 function chains_to_dataset(
     chn::AbstractChains;
+    ignore = String[],
     section = :parameters,
     library = MCMCChains,
     rekey_fun = identity,
     kwargs...,
 )
     chn_dict = section_dict(chn, section)
+    removekeys!(chn_dict, ignore)
     chn_dict = rekey_fun(chn_dict)
     attrs = merge(info_namedtuple(chn), (inference_library = string(library),))
     attrs = convert(Dict, attrs)
@@ -106,17 +110,17 @@ end
 
 Convert `group` directly to dataset if possible. If not, assume `group`
 contains identifiers from `sample` and extract. `kwargs` are passed to
-`convert_to_dataset`. Returns dataset and potentially modified `sample`.
+`convert_to_dataset`. Returns dataset and group variable names in `sample`.
 """
 function group_to_dataset(group, sample; kwargs...)
-    return convert_to_dataset(group; kwargs...), sample
+    return convert_to_dataset(group; kwargs...), String[]
 end
 
 group_to_dataset(group::String, sample; kwargs...) =
     group_to_dataset([group], sample; kwargs...)
 group_to_dataset(group::Vector{String}, sample; kwargs...) =
-    convert_to_dataset(sample[group]; kwargs...), sample
-group_to_dataset(::Nothing, sample; kwargs...) = nothing, sample
+    convert_to_dataset(sample[group]; kwargs...), group
+group_to_dataset(::Nothing, sample; kwargs...) = nothing, String[]
 
 function from_mcmcchains(
     posterior = nothing;
@@ -125,24 +129,37 @@ function from_mcmcchains(
     prior_predictive = nothing,
     observed_data = nothing,
     constant_data = nothing,
-    log_likelihood = nothing,
+    log_likelihood::Union{String,Nothing} = nothing,
     kwargs...,
 )
-    postpred_data, posterior = group_to_dataset(posterior_predictive, posterior)
-    obs_data, posterior = group_to_dataset(observed_data, posterior)
-    const_data, posterior = group_to_dataset(constant_data, posterior)
-    # log_like = group_to_dataset(log_likelihood, posterior)
-    priorpred_data, prior = group_to_dataset(prior_predictive, prior)
+    post_ignore = String[]
+
+    postpred_data, ign = group_to_dataset(posterior_predictive, posterior)
+    append!(post_ignore, ign)
+
+    obs_data, ign = group_to_dataset(observed_data, posterior)
+    append!(post_ignore, ign)
+
+    const_data, ign = group_to_dataset(constant_data, posterior)
+    append!(post_ignore, ign)
+
+    log_like_data, ign = group_to_dataset(log_likelihood, posterior)
+    append!(post_ignore, ign)
+
+    priorpred_data, prior_ignore = group_to_dataset(prior_predictive, prior)
 
     if !isnothing(posterior)
-        post_data = chains_to_dataset(posterior; kwargs...)
+        post_data = chains_to_dataset(posterior; ignore = post_ignore, kwargs...)
         stats_data = chains_to_stats_dataset(posterior; kwargs...)
+        if !isnothing(log_like_data) && !isnothing(stats_data)
+            stats_data.__setitem__("log_likelihood", log_like_data[log_likelihood])
+        end
     else
         post_data, stats_data = nothing, nothing
     end
 
     if !isnothing(prior)
-        prior_data = chains_to_dataset(prior; section = :parameters, kwargs...)
+        prior_data = chains_to_dataset(prior; ignore = prior_ignore, kwargs...)
         prior_stats_data = chains_to_stats_dataset(posterior; kwargs...)
     else
         prior_data, prior_stats_data = nothing, nothing
