@@ -47,25 +47,35 @@ ArviZ's  expected `(nchain, ndraw, nparam)`.
 """
 reshape_values(x::NTuple) = cat(reshape_values.(x)...; dims = 3)
 
+function attributes_dict(chn::AbstractChains)
+    info = chn.info
+    :hashedsummary in propertynames(info) || return info
+    chndfs = info.hashedsummary.x[2]
+    names = tuple(snakecase.(getproperty.(chndfs, :name))...)
+    dfs = tuple(topandas.(getproperty.(chndfs, :df))...)
+    info = delete(info, :hashedsummary)
+    attrs = merge(info, namedtuple(names, dfs))
+    attrs_dict = convert(Dict, attrs)
+    return Dict{String,Any}((string(k), v) for (k, v) in attrs_dict)
 end
 
-function section_dict(chn, section)
+attributes_dict(::Nothing) = Dict()
+
+function section_dict(chn::AbstractChains, section)
     params = get(chn, section = section; flatten = false)
     names = string.(keys(params))
     vals = replacemissing.(reshape_values.(values(params)))
     return Dict(zip(names, vals))
 end
 
-function info_namedtuple(chn)
-    info = chn.info
-    :hashedsummary in propertynames(info) || return info
-    chndfs = info.hashedsummary.x[2]
-    names = tuple(getproperty.(chndfs, :name)...)
-    dfs = tuple(topandas.(getproperty.(chndfs, :df))...)
-    info = merge(delete(info, :hashedsummary), namedtuple(names, dfs))
-    return info
+function chains_to_dict(chn::AbstractChains; ignore = String[], section = :parameters, rekey_fun = identity)
+    section in sections(chn) || return Dict()
+    chn_dict = section_dict(chn, section)
+    removekeys!(chn_dict, ignore)
+    return rekey_fun(chn_dict)
 end
 
+chains_to_dict(::Nothing; kwargs...) = nothing
 
 function chains_to_dataset(
     chn::AbstractChains;
@@ -75,43 +85,19 @@ function chains_to_dataset(
     rekey_fun = identity,
     kwargs...,
 )
-    chn_dict = section_dict(chn, section)
-    removekeys!(chn_dict, ignore)
-    chn_dict = rekey_fun(chn_dict)
-    attrs = merge(info_namedtuple(chn), (inference_library = string(library),))
-    attrs = convert(Dict, attrs)
+    chn_dict = chains_to_dict(
+        chn;
+        ignore = ignore,
+        section = section,
+        rekey_fun = rekey_fun,
+    )
+    attrs = attributes_dict(chn; library = library)
     return dict_to_dataset(chn_dict; attrs = attrs, kwargs...)
-end
-
-function chains_to_stats_dataset(
-    chn::AbstractChains;
-    rekey_fun = d -> rekey(d, stats_key_map),
-    kwargs...,
-)
-    :internals in sections(chn) || return nothing
-    return chains_to_dataset(chn; section = :internals, rekey_fun = rekey_fun, kwargs...)
 end
 
 function convert_to_dataset(chn::AbstractChains; kwargs...)
     return chains_to_dataset(chn; kwargs...)
 end
-
-"""
-    group_to_dataset(group, sample; kwargs...)
-
-Convert `group` directly to dataset if possible. If not, assume `group`
-contains identifiers from `sample` and extract. `kwargs` are passed to
-`convert_to_dataset`. Returns dataset and group variable names in `sample`.
-"""
-function group_to_dataset(group, sample; kwargs...)
-    return convert_to_dataset(group; kwargs...), String[]
-end
-
-group_to_dataset(group::String, sample; kwargs...) =
-    group_to_dataset([group], sample; kwargs...)
-group_to_dataset(group::Vector{String}, sample; kwargs...) =
-    convert_to_dataset(sample[group]; kwargs...), group
-group_to_dataset(::Nothing, sample; kwargs...) = nothing, String[]
 
 function from_mcmcchains(
     posterior = nothing;
@@ -121,55 +107,53 @@ function from_mcmcchains(
     observed_data = nothing,
     constant_data = nothing,
     log_likelihood::Union{String,Nothing} = nothing,
+    library = MCMCChains,
     kwargs...,
 )
-    post_ignore = String[]
+    post_dict = chains_to_dict(posterior)
+    stats_dict = chains_to_dict(
+        posterior;
+        section = :internals,
+        rekey_fun = d -> rekey(d, stats_key_map),
+    )
 
-    postpred_data, ign = group_to_dataset(posterior_predictive, posterior)
-    append!(post_ignore, ign)
+    prior_dict = chains_to_dict(prior)
+    prior_stats_dict = chains_to_dict(
+        prior;
+        section = :internals,
+        rekey_fun = d -> rekey(d, stats_key_map),
+    )
 
-    obs_data, ign = group_to_dataset(observed_data, posterior)
-    append!(post_ignore, ign)
+    postpred_dict = popsubdict!(post_dict, posterior_predictive)
+    obs_data_dict = popsubdict!(post_dict, observed_data)
+    const_data_dict = popsubdict!(post_dict, constant_data)
+    log_like_dict = popsubdict!(post_dict, log_likelihood)
+    priorpred_dict = popsubdict!(prior_dict, prior_predictive)
 
-    const_data, ign = group_to_dataset(constant_data, posterior)
-    append!(post_ignore, ign)
-
-    log_like_data, ign = group_to_dataset(log_likelihood, posterior)
-    append!(post_ignore, ign)
-
-    priorpred_data, prior_ignore = group_to_dataset(prior_predictive, prior)
-
-    if !isnothing(posterior)
-        post_data = chains_to_dataset(posterior; ignore = post_ignore, kwargs...)
-        stats_data = chains_to_stats_dataset(posterior; kwargs...)
-        if !isnothing(log_like_data) && !isnothing(stats_data)
-            stats_data.__setitem__("log_likelihood", log_like_data[log_likelihood])
-        end
-    else
-        post_data, stats_data = nothing, nothing
+    if !isnothing(log_like_dict) && !isnothing(stats_dict)
+        stats_dict["log_likelihood"] = log_like_dict[log_likelihood]
     end
 
-    if !isnothing(prior)
-        prior_data = chains_to_dataset(prior; ignore = prior_ignore, kwargs...)
-        prior_stats_data = chains_to_stats_dataset(posterior; kwargs...)
-    else
-        prior_data, prior_stats_data = nothing, nothing
-    end
+    attrs = attributes_dict(posterior)
+    attrs["inference_library"] = string(library)
 
-    return InferenceData(
+    return _from_dict(
+        post_dict,
         ;
-        posterior = post_data,
-        sample_stats = stats_data,
-        posterior_predictive = postpred_data,
-        prior = prior_data,
-        sample_stats_prior = prior_stats_data,
-        prior_predictive = priorpred_data,
-        observed_data = obs_data,
-        constant_data = const_data,
+        sample_stats = stats_dict,
+        posterior_predictive = postpred_dict,
+        prior = prior_dict,
+        sample_stats_prior = prior_stats_dict,
+        prior_predictive = priorpred_dict,
+        observed_data = obs_data_dict,
+        constant_data = const_data_dict,
+        attrs = attrs,
+        kwargs...,
     )
 end
 
-from_cmdstan(data::AbstractChains; kwargs...) = from_mcmcchains(data; kwargs...)
+from_cmdstan(data::AbstractChains; kwargs...) =
+    from_mcmcchains(data; library = "CmdStan", kwargs...)
 
 function convert_to_inference_data(obj::AbstractChains; kwargs...)
     return from_mcmcchains(obj; kwargs...)
