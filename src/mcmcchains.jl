@@ -58,9 +58,8 @@ function attributes_dict(chn::AbstractChains)
     names = tuple(snakecase.(getproperty.(chndfs, :name))...)
     dfs = tuple(topandas.(getproperty.(chndfs, :df))...)
     info = delete(info, :hashedsummary)
-    attrs = merge(info, namedtuple(names, dfs))
-    attrs_dict = convert(Dict, attrs)
-    return Dict{String,Any}((string(k), v) for (k, v) in attrs_dict)
+    attrs = merge(info, (mcmcchains_summary=Dict(zip(names, dfs)),))
+    return Dict{String,Any}((string(k), v) for (k, v) in pairs(attrs))
 end
 
 attributes_dict(::Nothing) = Dict()
