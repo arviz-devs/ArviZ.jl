@@ -143,11 +143,11 @@ function from_mcmcchains(
     priorpred_dict = popsubdict!(prior_dict, prior_predictive)
 
     if !isnothing(log_like_dict) && !isnothing(stats_dict)
-        stats_dict["log_likelihood"] = log_like_dict[log_likelihood]
+        stats_dict = merge(stats_dict, Dict("log_likelihood" => log_like_dict[log_likelihood]))
     end
 
     attrs = attributes_dict(posterior)
-    attrs["inference_library"] = string(library)
+    attrs = merge(attrs, Dict("inference_library" => string(library)))
 
     return _from_dict(
         post_dict,
