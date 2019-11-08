@@ -28,7 +28,8 @@ function topandas(df::DataFrames.DataFrame)
     cols = replacemissing.(eachcol(df))
     colnames = names(df)
     df = DataFrames.DataFrame(cols, colnames)
-    return Pandas.DataFrame(df)
+    pdf = Pandas.DataFrame(df)
+    return pdf[colnames]
 end
 
 topandas(df::ChainDataFrame) = topandas(df.df)
