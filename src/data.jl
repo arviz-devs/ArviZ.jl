@@ -80,14 +80,14 @@ function _from_dict(
 )
     dicts = (posterior = posterior, dicts...)
 
-    datasets = Dict()
+    idata = InferenceData()
     for (name, dict) in pairs(dicts)
         (isnothing(dict) || isempty(dict)) && continue
         dataset = dict_to_dataset(dict; attrs = attrs, coords = coords, dims = dims)
-        datasets[name] = dataset
+        concat!(idata, InferenceData(; (name => dataset,)...))
     end
 
-    return InferenceData(; datasets...)
+    return idata
 end
 
 function concat(args...; kwargs...)
