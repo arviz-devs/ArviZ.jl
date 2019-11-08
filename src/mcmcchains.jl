@@ -120,6 +120,7 @@ function from_mcmcchains(
     constant_data = nothing,
     log_likelihood::Union{String,Nothing} = nothing,
     library = MCMCChains,
+    dims = nothing,
     kwargs...,
 )
     post_dict = chains_to_dict(indexify_chains(posterior))
@@ -144,6 +145,9 @@ function from_mcmcchains(
 
     if !isnothing(log_like_dict) && !isnothing(stats_dict)
         stats_dict = merge(stats_dict, Dict("log_likelihood" => log_like_dict[log_likelihood]))
+        if !isnothing(dims) && log_likelihood in keys(dims)
+            dims = merge(dims, Dict("log_likelihood" => dims[log_likelihood]))
+        end
     end
 
     attrs = attributes_dict(posterior)
@@ -160,6 +164,7 @@ function from_mcmcchains(
         observed_data = obs_data_dict,
         constant_data = const_data_dict,
         attrs = attrs,
+        dims = dims,
         kwargs...,
     )
 end
