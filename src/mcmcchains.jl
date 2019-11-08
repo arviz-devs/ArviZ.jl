@@ -129,6 +129,7 @@ function from_mcmcchains(
         section = :internals,
         rekey_fun = d -> rekey(d, stats_key_map),
     )
+    stats_dict = enforce_stat_types(stats_dict)
 
     prior_dict = chains_to_dict(indexify_chains(prior))
     prior_stats_dict = chains_to_dict(
@@ -136,6 +137,7 @@ function from_mcmcchains(
         section = :internals,
         rekey_fun = d -> rekey(d, stats_key_map),
     )
+    prior_stats_dict = enforce_stat_types(prior_stats_dict)
 
     postpred_dict = popsubdict!(post_dict, posterior_predictive)
     obs_data_dict = popsubdict!(post_dict, observed_data)

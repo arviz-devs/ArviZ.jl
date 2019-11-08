@@ -154,3 +154,5 @@ function indexify(params::Vector{String})
     end
     return d
 end
+
+enforce_stat_types(dict) = Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
