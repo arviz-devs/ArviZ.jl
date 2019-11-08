@@ -58,7 +58,7 @@ function attributes_dict(chn::AbstractChains)
     names = tuple(snakecase.(getproperty.(chndfs, :name))...)
     dfs = tuple(topandas.(getproperty.(chndfs, :df))...)
     info = delete(info, :hashedsummary)
-    attrs = merge(info, (mcmcchains_summary=Dict(zip(names, dfs)),))
+    attrs = merge(info, (mcmcchains_summary = Dict(zip(names, dfs)),))
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(attrs))
 end
 
@@ -71,7 +71,12 @@ function section_dict(chn::AbstractChains, section)
     return Dict(zip(names, vals))
 end
 
-function chains_to_dict(chn::AbstractChains; ignore = String[], section = :parameters, rekey_fun = identity)
+function chains_to_dict(
+    chn::AbstractChains;
+    ignore = String[],
+    section = :parameters,
+    rekey_fun = identity,
+)
     section in sections(chn) || return Dict()
     chn_dict = section_dict(chn, section)
     removekeys!(chn_dict, ignore)
@@ -146,7 +151,10 @@ function from_mcmcchains(
     priorpred_dict = popsubdict!(prior_dict, prior_predictive)
 
     if !isnothing(log_like_dict) && !isnothing(stats_dict)
-        stats_dict = merge(stats_dict, Dict("log_likelihood" => log_like_dict[log_likelihood]))
+        stats_dict = merge(
+            stats_dict,
+            Dict("log_likelihood" => log_like_dict[log_likelihood]),
+        )
         if !isnothing(dims) && log_likelihood in keys(dims)
             dims = merge(dims, Dict("log_likelihood" => dims[log_likelihood]))
         end
