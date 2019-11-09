@@ -217,6 +217,4 @@ end
 from_cmdstan(data::AbstractChains; kwargs...) =
     from_mcmcchains(data; library = "CmdStan", kwargs...)
 
-function convert_to_inference_data(obj::AbstractChains; kwargs...)
-    return from_mcmcchains(obj; kwargs...)
-end
+convert_to_inference_data(obj::AbstractChains; kwargs...) = from_mcmcchains(obj; kwargs...)
