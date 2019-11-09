@@ -52,6 +52,30 @@ ArviZ's  expected `(nchain, ndraw, nparam)`.
 """
 reshape_values(x::NTuple) = cat(reshape_values.(x)...; dims = 3)
 
+headtail(x) = x[1], x[2:end]
+
+function split_locname(name)
+    name, loc = headtail(split(replace(replace(name, '[' => '.'), ']' => ""), '.'))
+    length(loc) == 0 && return name, ()
+    loc = tryparse.(Int, loc)
+    Nothing <: eltype(loc) && return name, ()
+    return name, tuple(loc...)
+end
+
+function varnames_locs_dict(loc_names)
+    vars_to_locs = Dict()
+    for loc_name in loc_names
+        var_name, loc = split_locname(loc_name)
+        if var_name ∉ keys(vars_to_locs)
+            vars_to_locs[var_name] = ([loc_name], [loc])
+        else
+            push!(vars_to_locs[var_name][1], loc_name)
+            push!(vars_to_locs[var_name][2], loc)
+        end
+    end
+    return vars_to_locs
+end
+
 function attributes_dict(chns::AbstractChains)
     info = chns.info
     :hashedsummary in propertynames(info) || return info
@@ -66,10 +90,29 @@ end
 attributes_dict(::Nothing) = Dict()
 
 function section_dict(chns::AbstractChains, section)
-    params = get(chns, section = section; flatten = false)
-    names = string.(keys(params))
-    vals = replacemissing.(reshape_values.(values(params)))
-    return Dict(zip(names, vals))
+    ndraws, _, nchains = size(chns)
+    loc_names = string.(getfield(chns.name_map, section))
+    vars_to_locs = varnames_locs_dict(loc_names)
+    vars_to_arrays = Dict{String,Array}()
+    for (var_name, names_locs) in vars_to_locs
+        loc_names, locs = names_locs
+        max_loc = maximum(hcat([[loc...] for loc in locs]...); dims = 2)
+        ndim = length(max_loc)
+        sizes = tuple(max_loc...)
+
+        oldarr = reshape_values(replacemissing(Array(chns.value[:, loc_names, :])))
+        if ndim == 0
+            arr = dropdims(oldarr; dims = 3)
+        else
+            arr = Array{Union{typeof(NaN),eltype(oldarr)}}(undef, nchains, ndraws, sizes...)
+            fill!(arr, NaN)
+            for i in eachindex(locs)
+                arr[:, :, locs[i]...] = oldarr[:, :, i]
+            end
+        end
+        vars_to_arrays[var_name] = arr
+    end
+    return vars_to_arrays
 end
 
 function chains_to_dict(
