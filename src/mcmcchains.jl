@@ -187,12 +187,12 @@ function from_mcmcchains(
     log_like_dict = popsubdict!(post_dict, log_likelihood)
     priorpred_dict = popsubdict!(prior_dict, prior_predictive)
 
-    if !isnothing(log_like_dict) && !isnothing(stats_dict)
+    if log_like_dict !== nothing && stats_dict !== nothing
         stats_dict = merge(
             stats_dict,
             Dict("log_likelihood" => log_like_dict[log_likelihood]),
         )
-        if !isnothing(dims) && log_likelihood in keys(dims)
+        if dims !== nothing && log_likelihood in keys(dims)
             dims = merge(dims, Dict("log_likelihood" => dims[log_likelihood]))
         end
     end

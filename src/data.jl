@@ -82,7 +82,7 @@ function _from_dict(
 
     idata = InferenceData()
     for (name, dict) in pairs(dicts)
-        (isnothing(dict) || isempty(dict)) && continue
+        (dict === nothing || isempty(dict)) && continue
         dataset = dict_to_dataset(dict; attrs = attrs, coords = coords, dims = dims)
         concat!(idata, InferenceData(; (name => dataset,)...))
     end

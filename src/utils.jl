@@ -133,7 +133,7 @@ function subdict(dict, keys)
 end
 
 function popsubdict!(dict, names)
-    (isnothing(dict) || isnothing(names)) && return nothing
+    (dict === nothing || names === nothing) && return nothing
     subdict = empty(dict)
     for k in names
         subdict[k] = pop!(dict, k)
