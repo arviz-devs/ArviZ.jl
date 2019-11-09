@@ -52,8 +52,8 @@ ArviZ's  expected `(nchain, ndraw, nparam)`.
 """
 reshape_values(x::NTuple) = cat(reshape_values.(x)...; dims = 3)
 
-function attributes_dict(chn::AbstractChains)
-    info = chn.info
+function attributes_dict(chns::AbstractChains)
+    info = chns.info
     :hashedsummary in propertynames(info) || return info
     chndfs = info.hashedsummary.x[2]
     names = tuple(snakecase.(getproperty.(chndfs, :name))...)
@@ -65,47 +65,47 @@ end
 
 attributes_dict(::Nothing) = Dict()
 
-function section_dict(chn::AbstractChains, section)
-    params = get(chn, section = section; flatten = false)
+function section_dict(chns::AbstractChains, section)
+    params = get(chns, section = section; flatten = false)
     names = string.(keys(params))
     vals = replacemissing.(reshape_values.(values(params)))
     return Dict(zip(names, vals))
 end
 
 function chains_to_dict(
-    chn::AbstractChains;
+    chns::AbstractChains;
     ignore = String[],
     section = :parameters,
     rekey_fun = identity,
 )
-    section in sections(chn) || return Dict()
-    chn_dict = section_dict(chn, section)
-    removekeys!(chn_dict, ignore)
-    return rekey_fun(chn_dict)
+    section in sections(chns) || return Dict()
+    chns_dict = section_dict(chns, section)
+    removekeys!(chns_dict, ignore)
+    return rekey_fun(chns_dict)
 end
 
 chains_to_dict(::Nothing; kwargs...) = nothing
 
 function chains_to_dataset(
-    chn::AbstractChains;
+    chns::AbstractChains;
     ignore = String[],
     section = :parameters,
     library = MCMCChains,
     rekey_fun = identity,
     kwargs...,
 )
-    chn_dict = chains_to_dict(
-        chn;
+    chns_dict = chains_to_dict(
+        chns;
         ignore = ignore,
         section = section,
         rekey_fun = rekey_fun,
     )
-    attrs = attributes_dict(chn; library = library)
-    return dict_to_dataset(chn_dict; attrs = attrs, kwargs...)
+    attrs = attributes_dict(chns; library = library)
+    return dict_to_dataset(chns_dict; attrs = attrs, kwargs...)
 end
 
-function convert_to_dataset(chn::AbstractChains; kwargs...)
-    return chains_to_dataset(chn; kwargs...)
+function convert_to_dataset(chns::AbstractChains; kwargs...)
+    return chains_to_dataset(chns; kwargs...)
 end
 
 function indexify_chains(chns)
