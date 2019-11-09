@@ -157,3 +157,4 @@ end
 
 enforce_stat_types(dict) =
     Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
+enforce_stat_types(::Nothing) = nothing
