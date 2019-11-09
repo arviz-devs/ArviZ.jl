@@ -41,6 +41,7 @@ Convert from MCMCChains' parameter values with dimensions `(ndraw, nchain)` to
 ArviZ's expected `(nchain, ndraw)`.
 """
 reshape_values(x::AbstractMatrix) = permutedims(x, [2, 1])
+reshape_values(x::AbstractArray{T,3}) where {T} = permutedims(x, [3, 1, 2])
 
 """
     reshape_values(x::NTuple)
