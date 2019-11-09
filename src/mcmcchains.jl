@@ -151,15 +151,6 @@ function convert_to_dataset(chns::AbstractChains; kwargs...)
     return chains_to_dataset(chns; kwargs...)
 end
 
-function indexify_chains(chns)
-    params = MCMCChains.names(chns)
-    d = indexify(params)
-    length(d) == 0 && return chns
-    return MCMCChains.set_names(chns, d)
-end
-
-indexify_chains(::Nothing) = nothing
-
 function from_mcmcchains(
     posterior = nothing;
     posterior_predictive = nothing,
@@ -172,7 +163,7 @@ function from_mcmcchains(
     dims = nothing,
     kwargs...,
 )
-    post_dict = chains_to_dict(indexify_chains(posterior))
+    post_dict = chains_to_dict(posterior)
     stats_dict = chains_to_dict(
         posterior;
         section = :internals,
@@ -180,7 +171,7 @@ function from_mcmcchains(
     )
     stats_dict = enforce_stat_types(stats_dict)
 
-    prior_dict = chains_to_dict(indexify_chains(prior))
+    prior_dict = chains_to_dict(prior)
     prior_stats_dict = chains_to_dict(
         prior;
         section = :internals,

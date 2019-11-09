@@ -145,16 +145,6 @@ popsubdict!(dict, key::String) = popsubdict!(dict, [key])
 
 snakecase(s) = replace(lowercase(s), " " => "_")
 
-function indexify(params::Vector{String})
-    d = Dict{String,String}()
-    for name in params
-        indexed_name = replace(name, r"\.(\w+)" => s"[\1]")
-        indexed_name == name && continue
-        d[name] = indexed_name
-    end
-    return d
-end
-
 enforce_stat_types(dict) =
     Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
 enforce_stat_types(::Nothing) = nothing
