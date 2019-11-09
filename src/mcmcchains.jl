@@ -55,7 +55,9 @@ reshape_values(x::NTuple) = cat(reshape_values.(x)...; dims = 3)
 headtail(x) = x[1], x[2:end]
 
 function split_locname(name)
-    name, loc = headtail(split(replace(replace(name, '[' => '.'), ']' => ""), '.'))
+    name = replace(name, r"[\[,]" => '.')
+    name = replace(name, ']' => "")
+    name, loc = headtail(split(name, '.'))
     length(loc) == 0 && return name, ()
     loc = tryparse.(Int, loc)
     Nothing <: eltype(loc) && return name, ()
