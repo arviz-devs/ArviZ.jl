@@ -1,4 +1,38 @@
 using MCMCChains
+using CmdStan
+
+const noncentered_schools_stan_model = """
+    data {
+        int<lower=0> J;
+        real y[J];
+        real<lower=0> sigma[J];
+    }
+    parameters {
+        real mu;
+        real<lower=0> tau;
+        real eta[J];
+    }
+    transformed parameters {
+        real theta[J];
+        for (j in 1:J)
+            theta[j] = mu + tau * eta[j];
+    }
+    model {
+        mu ~ normal(0, 5);
+        tau ~ cauchy(0, 5);
+        eta ~ normal(0, 1);
+        y ~ normal(theta, sigma);
+    }
+    generated quantities {
+        vector[J] log_lik;
+        vector[J] y_hat;
+        for (j in 1:J) {
+            log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+            y_hat[j] = normal_rng(theta[j], sigma[j]);
+        }
+    }
+"""
+
 
 function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
     rng = MersenneTwister(seed)
@@ -19,6 +53,23 @@ convertindex(o::PyObject) = o.array.values
 vardict(ds) = Dict(k => convertindex(v._data) for (k, v) in ds._variables)
 dimdict(ds) = Dict(k => v._dims for (k, v) in ds._variables)
 attributes(ds) = ds.attrs
+
+function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
+    model_name = "school8"
+    stan_model = Stanmodel(
+        name = model_name,
+        model = noncentered_schools_stan_model,
+        nchains = chains,
+        num_warmup = draws,
+        num_samples = draws,
+    )
+    rc, chns, cnames = stan(stan_model, data, proj_dir)
+    outfiles = []
+    for i = 1:chains
+        push!(outfiles, "$(proj_dir)/tmp/$(model_name)_samples_$(i).csv")
+    end
+    return (model = stan_model, files = outfiles, chains = chns)
+end
 
 function test_chains_data(chns, idata, group, names; coords = Dict(), dims = Dict())
     ndraws, nvars, nchains = size(chns)
@@ -192,4 +243,49 @@ end
     idata = convert_to_inference_data(chns; group = :prior)
     @test idata isa InferenceData
     @test :prior in propertynames(idata)
+end
+
+@testset "from_cmdstan" begin
+    data = noncentered_schools_data()
+    output = cmdstan_noncentered_schools(data, 500, 4)
+    posterior_predictive = prior_predictive = ["y_hat"]
+    log_likelihood = "log_lik"
+    coords = Dict("school" => 1:8)
+    dims = Dict(
+        "theta" => ["school"],
+        "y" => ["school"],
+        "log_lik" => ["school"],
+        "y_hat" => ["school"],
+        "eta" => ["school"],
+    )
+    idata1 = from_cmdstan(
+        output.chains;
+        posterior_predictive = posterior_predictive,
+        log_likelihood = log_likelihood,
+        prior = output.chains,
+        prior_predictive = prior_predictive,
+        coords = coords,
+        dims = dims
+    )
+    idata2 = from_cmdstan(
+        output.files;
+        posterior_predictive = posterior_predictive,
+        log_likelihood = log_likelihood,
+        prior = output.files,
+        prior_predictive = prior_predictive,
+        coords = coords,
+        dims = dims
+    )
+    @testset "idata.$(group)" for group in Symbol.(idata2._groups)
+        ds1 = getproperty(idata1, group)
+        ds2 = getproperty(idata2, group)
+        for f in (vardict, dimsizes)
+            d1 = f(ds1)
+            d2 = f(ds2)
+            for k in keys(d1)
+                @test k in keys(d2)
+                @test d1[k] ≈ d2[k]
+            end
+        end
+    end
 end
