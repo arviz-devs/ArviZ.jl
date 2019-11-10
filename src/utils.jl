@@ -122,16 +122,6 @@ end
 
 removekeys!(dict, keys) = map(k -> delete!(dict, k), keys)
 
-function subdict(dict, keys)
-    d = empty(dict)
-    for k in unique(keys)
-        if k in keys(dict)
-            d[k] = dict[v]
-        end
-    end
-    return d
-end
-
 function popsubdict!(dict, names)
     (dict === nothing || names === nothing) && return nothing
     subdict = empty(dict)
