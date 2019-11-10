@@ -20,17 +20,19 @@ vardict(ds) = Dict(k => convertindex(v._data) for (k, v) in ds._variables)
 dimdict(ds) = Dict(k => v._dims for (k, v) in ds._variables)
 attributes(ds) = ds.attrs
 
-function test_chains_data(chns, idata, group, names; dims = Dict())
+function test_chains_data(chns, idata, group, names; coords = Dict(), dims = Dict())
     ndraws, nvars, nchains = size(chns)
     @test idata isa InferenceData
     @test group in propertynames(idata)
     ds = getproperty(idata, group)
     sizes = dimsizes(ds)
-    @test length(sizes) == 2 + length(dims)
+    @test length(sizes) == 2 + length(coords)
     vars = vardict(ds)
     for name in names
         @test name in keys(vars)
-        @test size(vars[name]) == (nchains, ndraws, get(dims, name, [])...)
+        dim = get(dims, name, [])
+        s = (x -> length(get(coords, x, []))).(dim)
+        @test size(vars[name]) == (nchains, ndraws, s...)
     end
     @test attributes(ds)["inference_library"] == "MCMCChains"
 end
@@ -65,7 +67,7 @@ end
         nchains, ndraws = 4, 20
         chns = makechains(names, ndraws, nchains)
         idata = from_mcmcchains(chns; coords = coords, dims = dims)
-        test_chains_data(chns, idata, :posterior, ["a", "b"]; dims = Dict("a" => (2,), "b" => (2,)))
+        test_chains_data(chns, idata, :posterior, ["a", "b"]; coords = coords, dims = dims)
         vardims = dimdict(idata.posterior)
         @test vardims["a"] == ("chain", "draw", "ai")
         @test vardims["b"] == ("chain", "draw", "bi")
