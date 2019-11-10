@@ -72,4 +72,19 @@ end
         @test vardims["a"] == ("chain", "draw", "ai")
         @test vardims["b"] == ("chain", "draw", "bi")
     end
+
+    @testset "multivariate" begin
+        names = ["a[1][1]", "a.2.2", "a[2,1]", "a[1, 2]"]
+        coords = Dict("ai" => 1:2, "aj" => ["aj1", "aj2"])
+        dims = Dict("a" => ["ai", "aj"])
+        nchains, ndraws = 4, 20
+        chns = makechains(names, ndraws, nchains)
+        idata = from_mcmcchains(chns; coords = coords, dims = dims)
+        test_chains_data(chns, idata, :posterior, ["a"]; coords = coords, dims = dims)
+        arr = vardict(idata.posterior)["a"]
+        @test arr[:, :, 1, 1] == permutedims(chns.value[:, names[1], :], [2, 1])
+        @test arr[:, :, 2, 2] == permutedims(chns.value[:, names[2], :], [2, 1])
+        @test arr[:, :, 2, 1] == permutedims(chns.value[:, names[3], :], [2, 1])
+        @test arr[:, :, 1, 2] == permutedims(chns.value[:, names[4], :], [2, 1])
+    end
 end
