@@ -35,22 +35,12 @@ end
 topandas(df::ChainDataFrame) = topandas(df.df)
 
 """
-    reshape_values(x::AbstractMatrix)
+    reshape_values(x::AbstractArray)
 
-Convert from MCMCChains' parameter values with dimensions `(ndraw, nchain)` to
-ArviZ's expected `(nchain, ndraw)`.
+Convert from `MCMCChains` parameter values with dimensions
+`(ndraw, size..., nchain)` to ArviZ's expected `(nchain, ndraw, size...)`.
 """
-reshape_values(x::AbstractMatrix) = permutedims(x, [2, 1])
-reshape_values(x::AbstractArray{T,3}) where {T} = permutedims(x, [3, 1, 2])
-
-"""
-    reshape_values(x::NTuple)
-
-Given `nparam` parameter vectors, each for an index of a multivariate
-parameter, each with dimensions `(ndraw, nchain)`, convert to an array with
-ArviZ's  expected `(nchain, ndraw, nparam)`.
-"""
-reshape_values(x::NTuple) = cat(reshape_values.(x)...; dims = 3)
+reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (N, 1, 2:(N-1)...))
 
 headtail(x) = x[1], x[2:end]
 
