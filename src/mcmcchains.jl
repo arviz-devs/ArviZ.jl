@@ -131,26 +131,16 @@ end
 
 chains_to_dict(::Nothing; kwargs...) = nothing
 
-function chains_to_dataset(
-    chns::AbstractChains;
-    ignore = String[],
-    section = :parameters,
-    library = MCMCChains,
-    rekey_fun = identity,
-    kwargs...,
-)
-    chns_dict = chains_to_dict(
-        chns;
-        ignore = ignore,
-        section = section,
-        rekey_fun = rekey_fun,
-    )
-    attrs = attributes_dict(chns; library = library)
+function convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...)
+    chns_dict = chains_to_dict(chns)
+    attrs = attributes_dict(chns)
+    attrs = merge(attrs, Dict("inference_library" => string(library)))
     return dict_to_dataset(chns_dict; attrs = attrs, kwargs...)
 end
 
-function convert_to_dataset(chns::AbstractChains; kwargs...)
-    return chains_to_dataset(chns; kwargs...)
+function convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...)
+    ds = convert_to_dataset(obj; kwargs...)
+    return InferenceData(; Symbol(group) => ds)
 end
 
 function from_mcmcchains(
@@ -218,5 +208,3 @@ end
 
 from_cmdstan(data::AbstractChains; kwargs...) =
     from_mcmcchains(data; library = "CmdStan", kwargs...)
-
-convert_to_inference_data(obj::AbstractChains; kwargs...) = from_mcmcchains(obj; kwargs...)
