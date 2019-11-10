@@ -161,6 +161,18 @@ end
         @test eltype(vdict["var1"]) <: Real
         @test isnan(vdict["var1"][1, 1, 1])
     end
+
+    @testset "info -> attributes" begin
+        nvars, nchains, ndraws = 2, 4, 20
+        chns = makechains(nvars, ndraws, nchains)
+        idata = from_mcmcchains(chns; library = "MyLib")
+        attrs = idata.posterior.attrs
+        @test attrs isa Dict
+        @test attrs["inference_library"] == "MyLib"
+        @test attrs["mcmcchains_summary"] isa Dict
+        mcmcchains_summary = idata.posterior.attrs["mcmcchains_summary"]
+        @test first(values(mcmcchains_summary)).__class__.__name__ == "DataFrame"
+    end
 end
 
 @testset "convert_to_dataset(::Chains)" begin
