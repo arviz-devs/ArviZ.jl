@@ -147,3 +147,22 @@ end
         @test "x" ∈ keys(dimdict(idata.constant_data))
     end
 end
+
+@testset "convert_to_dataset(::Chains)" begin
+    nvars, nchains, ndraws = 2, 4, 20
+    chns = makechains(nvars, ndraws, nchains)
+    ds = ArviZ.convert_to_dataset(chns)
+    @test ds isa PyObject
+    @test ds.__class__.__name__ == "Dataset"
+end
+
+@testset "convert_to_inference_data(::Chains)" begin
+    nvars, nchains, ndraws = 2, 4, 20
+    chns = makechains(nvars, ndraws, nchains)
+    idata = convert_to_inference_data(chns; group = :posterior)
+    @test idata isa InferenceData
+    @test :posterior in propertynames(idata)
+    idata = convert_to_inference_data(chns; group = :prior)
+    @test idata isa InferenceData
+    @test :prior in propertynames(idata)
+end
