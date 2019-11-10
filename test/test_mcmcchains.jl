@@ -245,46 +245,48 @@ end
     @test :prior in propertynames(idata)
 end
 
-@testset "from_cmdstan" begin
-    data = noncentered_schools_data()
-    output = cmdstan_noncentered_schools(data, 500, 4)
-    posterior_predictive = prior_predictive = ["y_hat"]
-    log_likelihood = "log_lik"
-    coords = Dict("school" => 1:8)
-    dims = Dict(
-        "theta" => ["school"],
-        "y" => ["school"],
-        "log_lik" => ["school"],
-        "y_hat" => ["school"],
-        "eta" => ["school"],
-    )
-    idata1 = from_cmdstan(
-        output.chains;
-        posterior_predictive = posterior_predictive,
-        log_likelihood = log_likelihood,
-        prior = output.chains,
-        prior_predictive = prior_predictive,
-        coords = coords,
-        dims = dims
-    )
-    idata2 = from_cmdstan(
-        output.files;
-        posterior_predictive = posterior_predictive,
-        log_likelihood = log_likelihood,
-        prior = output.files,
-        prior_predictive = prior_predictive,
-        coords = coords,
-        dims = dims
-    )
-    @testset "idata.$(group)" for group in Symbol.(idata2._groups)
-        ds1 = getproperty(idata1, group)
-        ds2 = getproperty(idata2, group)
-        for f in (vardict, dimsizes)
-            d1 = f(ds1)
-            d2 = f(ds2)
-            for k in keys(d1)
-                @test k in keys(d2)
-                @test d1[k] ≈ d2[k]
+if VERSION.minor > 0
+    @testset "from_cmdstan" begin
+        data = noncentered_schools_data()
+        output = cmdstan_noncentered_schools(data, 500, 4)
+        posterior_predictive = prior_predictive = ["y_hat"]
+        log_likelihood = "log_lik"
+        coords = Dict("school" => 1:8)
+        dims = Dict(
+            "theta" => ["school"],
+            "y" => ["school"],
+            "log_lik" => ["school"],
+            "y_hat" => ["school"],
+            "eta" => ["school"],
+        )
+        idata1 = from_cmdstan(
+            output.chains;
+            posterior_predictive = posterior_predictive,
+            log_likelihood = log_likelihood,
+            prior = output.chains,
+            prior_predictive = prior_predictive,
+            coords = coords,
+            dims = dims
+        )
+        idata2 = from_cmdstan(
+            output.files;
+            posterior_predictive = posterior_predictive,
+            log_likelihood = log_likelihood,
+            prior = output.files,
+            prior_predictive = prior_predictive,
+            coords = coords,
+            dims = dims
+        )
+        @testset "idata.$(group)" for group in Symbol.(idata2._groups)
+            ds1 = getproperty(idata1, group)
+            ds2 = getproperty(idata2, group)
+            for f in (vardict, dimsizes)
+                d1 = f(ds1)
+                d2 = f(ds2)
+                for k in keys(d1)
+                    @test k in keys(d2)
+                    @test d1[k] ≈ d2[k]
+                end
             end
         end
     end
