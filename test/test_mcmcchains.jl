@@ -1,15 +1,15 @@
 using MCMCChains
 
-function makechains(names, ndraws, nchains; seed = 42)
+function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
     rng = MersenneTwister(seed)
     nvars = length(names)
     vals = randn(rng, ndraws, nvars, nchains)
-    chns = Chains(vals, names)
+    chns = Chains(vals, names, Dict(:internals => internal_names))
     return chns
 end
 
 function makechains(nvars::Int, args...; kwargs...)
-    names = ["var$(i)" for i in 1:nvars]
+    names = ["var$(i)" for i = 1:nvars]
     return makechains(names, args...; kwargs...)
 end
 
