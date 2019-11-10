@@ -146,6 +146,21 @@ end
         @test length(dimdict(idata.constant_data)) == 4
         @test "x" ∈ keys(dimdict(idata.constant_data))
     end
+
+    @testset "missing -> NaN" begin
+        rng = MersenneTwister(42)
+        nvars, nchains, ndraws = 2, 4, 20
+        vals = randn(rng, ndraws, nvars, nchains)
+        vals = Array{Union{Float64,Missing},3}(vals)
+        vals[1,1,1] = missing
+        names = ["var$(i)" for i = 1:nvars]
+        chns = Chains(vals, names)
+        @test Missing <: eltype(chns.value)
+        idata = from_mcmcchains(chns)
+        vdict = vardict(idata.posterior)
+        @test eltype(vdict["var1"]) <: Real
+        @test isnan(vdict["var1"][1, 1, 1])
+    end
 end
 
 @testset "convert_to_dataset(::Chains)" begin
