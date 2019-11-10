@@ -37,7 +37,7 @@ topandas(df::ChainDataFrame) = topandas(df.df)
 """
     reshape_values(x::AbstractArray)
 
-Convert from `MCMCChains` parameter values with dimensions
+Convert from `MCMCChains` variable values with dimensions
 `(ndraw, size..., nchain)` to ArviZ's expected `(nchain, ndraw, size...)`.
 """
 reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (N, 1, 2:(N-1)...))
@@ -133,6 +133,43 @@ function convert_to_inference_data(obj::AbstractChains; group = :posterior, kwar
     return InferenceData(; Symbol(group) => ds)
 end
 
+"""
+    function from_mcmcchains(
+        posterior = nothing;
+        posterior_predictive = nothing,
+        prior = nothing,
+        prior_predictive = nothing,
+        observed_data = nothing,
+        constant_data = nothing,
+        log_likelihood = nothing,
+        library = MCMCChains,
+        dims = nothing,
+        coords = nothing,
+    )
+
+Convert data in an `MCMCChains.AbstractChains` format into an `InferenceData`
+object. The arguments and keyword arguments are described below.
+
+`posterior` and `prior` must be `AbstractChains`.
+
+`posterior_predictive`, `observed_data`, and `constant_data` may be strings or
+vectors of strings corresponding to variable names that will be removed from
+`posterior` and stored in the corresponding groups.
+
+`prior_predictive` does the same for `prior`.
+
+`log_likelihood` similarly is a single variable name that extracts from the
+posterior the log likelihood and stores it in `sample_stats`.
+
+`coords` is a dictionary containing the values that are used as index. The key
+is the name of the dimension, the values are the index values.
+
+`dims` is dictionary mapping from variables to a list of coordinate names for
+the variable.
+
+`library` is a string with the name of the library that generated the chains,
+defaulting to `MCMCChains`.
+"""
 function from_mcmcchains(
     posterior = nothing;
     posterior_predictive = nothing,
