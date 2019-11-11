@@ -1,4 +1,4 @@
-using Arviz
+using ArviZ
 using Test
 
 include("helpers.jl")

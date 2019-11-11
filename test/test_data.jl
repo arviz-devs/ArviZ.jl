@@ -21,7 +21,7 @@
     end
 
     @testset "conversion" begin
-        @test pyisinstance(PyObject(data), Arviz.arviz.InferenceData)
+        @test pyisinstance(PyObject(data), ArviZ.arviz.InferenceData)
         data4 = convert(InferenceData, PyObject(data))
         @test data4 isa InferenceData
         @test PyObject(data4) === PyObject(data)

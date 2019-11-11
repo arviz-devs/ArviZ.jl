@@ -1,4 +1,4 @@
-The Arviz.jl package is licensed under the MIT "Expat" License:
+The ArviZ.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2019: Seth Axen.
 >

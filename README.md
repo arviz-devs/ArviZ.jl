@@ -1,16 +1,16 @@
-# Arviz.jl
+# ArviZ.jl
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Build Status](https://travis-ci.com/sethaxen/Arviz.jl.svg?branch=master)](https://travis-ci.com/sethaxen/Arviz.jl)
-[![codecov.io](http://codecov.io/github/sethaxen/Arviz.jl/coverage.svg?branch=master)](http://codecov.io/github/sethaxen/Arviz.jl?branch=master)
+[![Build Status](https://travis-ci.com/sethaxen/ArviZ.jl.svg?branch=master)](https://travis-ci.com/sethaxen/ArviZ.jl)
+[![codecov.io](http://codecov.io/github/sethaxen/ArviZ.jl/coverage.svg?branch=master)](http://codecov.io/github/sethaxen/ArviZ.jl?branch=master)
 
-Arviz.jl is a Julia interface to the
+ArviZ.jl is a Julia interface to the
 [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis
 of Bayesian models. It supports all of ArviZ's
 [API](https://arviz-devs.github.io/arviz/api.html), except for its `Numba`
 functionality. See ArviZ's API documentation for details.
 
-This package also augments ArviZ to enable conversion from
+This package also augments `ArviZ` to enable conversion from
 [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s
 `AbstractChains` type to `InferenceData`, which thinly wraps
 `arviz.InferenceData` and is used the same way.
@@ -23,7 +23,7 @@ First [install ArviZ](https://github.com/arviz-devs/arviz#installation). Then,
 within Julia, enter
 
 ```julia
-] add https://github.com/sethaxen/Arviz.jl
+] add https://github.com/sethaxen/ArviZ.jl
 ```
 
 ## Basic usage
@@ -32,8 +32,8 @@ This example uses a centered parameterization of
 [ArviZ's version of the eight schools model](https://arviz-devs.github.io/arviz/notebooks/Introduction.html), which causes divergences, in [Turing.jl](https://turing.ml).
 
 ```julia
-using Arviz, PyPlot, Turing
-Arviz.use_style(["default", "arviz-darkgrid"])
+using ArviZ, PyPlot, Turing
+ArviZ.use_style(["default", "arviz-darkgrid"])
 
 # Turing model
 @model school8(J, y, sigma) = begin
@@ -66,12 +66,12 @@ display(gcf())
 
 In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html)
 are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
-In Arviz.jl, most of the same functions are exported and therefore called
+In ArviZ.jl, most of the same functions are exported and therefore called
 without the prefix (e.g. `plot_posterior`). The exception are `from_xyz`
 converters for packages that have no (known) Julia wrappers. These functions are
 not exported to reduce namespace clutter.
 
-Arviz.jl transparently interconverts between `arviz.InferenceData` and
+ArviZ.jl transparently interconverts between `arviz.InferenceData` and
 our own `InferenceData`, used for dispatch. `InferenceData` has identical usage
 to its Python counterpart.
 
@@ -80,15 +80,15 @@ Functions that in ArviZ return Pandas types here return their
 same way.
 
 ArviZ includes the context managers `rc_context` and `interactive_backend`.
-Arviz.jl includes functions that can be used with a nearly identical syntax.
+ArviZ.jl includes functions that can be used with a nearly identical syntax.
 `interactive_backend` here is not limited to an IPython context.
 
-In place of `arviz.style.use` and `arviz.style.styles`, Arviz.jl provides
-`Arviz.use_style` and `Arviz.styles`.
+In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides
+`ArviZ.use_style` and `ArviZ.styles`.
 
 ## Known Issues
 
-Arviz.jl uses [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) to wrap ArviZ.
+ArviZ.jl uses [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) to wrap ArviZ.
 At the moment, Julia segfaults if Numba is imported, which ArviZ does if it is
 available. For the moment, the workaround is to
 [specify a Python version](https://github.com/JuliaPy/PyCall.jl#specifying-the-python-version)
