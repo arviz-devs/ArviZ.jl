@@ -12,8 +12,8 @@
     dims = Dict("b" => ["bi", "bj"])
     attrs = Dict("mykey" => 5)
 
-    ds = ArviZ.dict_to_dataset(vars; coords = coords, dims = dims, attrs = attrs)
-    vars2, kwargs = ArviZ.dataset_to_dict(ds)
+    ds = Arviz.dict_to_dataset(vars; coords = coords, dims = dims, attrs = attrs)
+    vars2, kwargs = Arviz.dataset_to_dict(ds)
     for (k, v) in vars
         @test k ∈ keys(vars2)
         @test vars2[k] ≈ v
