@@ -24,6 +24,12 @@ const stan_key_map = Dict(
 )
 const stats_key_map = merge(turing_key_map, stan_key_map)
 
+"""
+    topandas(df::DataFrames.DataFrame)
+
+Convert `df` into a `Pandas.DataFrame`, maintaining column order and replacing
+`missing` with `NaN`.
+"""
 function topandas(df::DataFrames.DataFrame)
     cols = replacemissing.(eachcol(df))
     colnames = names(df)
@@ -121,6 +127,13 @@ end
 
 chains_to_dict(::Nothing; kwargs...) = nothing
 
+"""
+    convert_to_dataset(obj::AbstractChains; library = MCMCChains, kwargs...)
+
+Convert the chains `obj` to an `xarray.Dataset` with the specified `group`.
+`library` is the library that created the chains. Remaining `kwargs` are
+forwarded to `dict_to_dataset`.
+"""
 function convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...)
     chns_dict = chains_to_dict(chns)
     attrs = attributes_dict(chns)
