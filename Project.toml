@@ -1,4 +1,4 @@
-name = "ArviZ"
+name = "Arviz"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
 version = "0.1.0"

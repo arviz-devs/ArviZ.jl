@@ -229,7 +229,7 @@ end
 @testset "convert_to_dataset(::Chains)" begin
     nvars, nchains, ndraws = 2, 4, 20
     chns = makechains(nvars, ndraws, nchains)
-    ds = ArviZ.convert_to_dataset(chns)
+    ds = Arviz.convert_to_dataset(chns)
     @test ds isa PyObject
     @test ds.__class__.__name__ == "Dataset"
 end
