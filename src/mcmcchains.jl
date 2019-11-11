@@ -128,9 +128,16 @@ function convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs..
     return dict_to_dataset(chns_dict; attrs = attrs, kwargs...)
 end
 
+"""
+    convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...)
+
+Convert the chains `obj` to an `InferenceData` with the specified `group`.
+Remaining `kwargs` are forwarded to `from_mcmcchains`.
+"""
 function convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...)
-    ds = convert_to_dataset(obj; kwargs...)
-    return InferenceData(; Symbol(group) => ds)
+    group = Symbol(group)
+    group == :posterior && return from_mcmcchains(obj; kwargs...)
+    return from_mcmcchains(; group => obj)
 end
 
 """
