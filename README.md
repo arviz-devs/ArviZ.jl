@@ -8,7 +8,7 @@ ArviZ.jl is a Julia interface to the
 [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis
 of Bayesian models. It supports all of ArviZ's
 [API](https://arviz-devs.github.io/arviz/api.html), except for its `Numba`
-functionality.
+functionality. See ArviZ's API documentation for details.
 
 This package also augments `ArviZ` to enable conversion from
 [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s
