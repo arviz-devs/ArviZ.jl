@@ -15,8 +15,7 @@ This package also augments `ArviZ` to enable conversion from
 `AbstractChains` type to `InferenceData`, which thinly wraps
 `arviz.InferenceData` and is used the same way.
 
-The package is meant to be used with
-[PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl), whose API is exported.
+The package is best used with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl).
 
 ## Installation
 
@@ -33,7 +32,7 @@ This example uses a centered parameterization of
 [ArviZ's version of the eight schools model](https://arviz-devs.github.io/arviz/notebooks/Introduction.html), which causes divergences, in [Turing.jl](https://turing.ml).
 
 ```julia
-using ArviZ, Turing
+using ArviZ, PyPlot, Turing
 ArviZ.use_style(["default", "arviz-darkgrid"])
 
 # Turing model
