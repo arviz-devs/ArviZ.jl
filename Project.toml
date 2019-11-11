@@ -1,7 +1,7 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.1.1"
+version = "0.1.0"
 
 [deps]
 NamedTupleTools = "d9ec5142-1e00-5aa0-9d6a-321866360f50"
