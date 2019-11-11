@@ -2,10 +2,9 @@ __precompile__()
 module ArviZ
 
 using Base: @__doc__
-using Reexport
 using Requires
 using PyCall
-@reexport using PyPlot
+using PyPlot
 using Pandas
 using NamedTupleTools
 

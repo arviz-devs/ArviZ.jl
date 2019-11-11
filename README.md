@@ -1,6 +1,6 @@
 # ArviZ.jl
 
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Build Status](https://travis-ci.com/sethaxen/ArviZ.jl.svg?branch=master)](https://travis-ci.com/sethaxen/ArviZ.jl)
 [![codecov.io](http://codecov.io/github/sethaxen/ArviZ.jl/coverage.svg?branch=master)](http://codecov.io/github/sethaxen/ArviZ.jl?branch=master)
 
@@ -8,15 +8,14 @@ ArviZ.jl is a Julia interface to the
 [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis
 of Bayesian models. It supports all of ArviZ's
 [API](https://arviz-devs.github.io/arviz/api.html), except for its `Numba`
-functionality.
+functionality. See ArviZ's API documentation for details.
 
 This package also augments `ArviZ` to enable conversion from
 [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s
 `AbstractChains` type to `InferenceData`, which thinly wraps
 `arviz.InferenceData` and is used the same way.
 
-The package is meant to be used with
-[PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl), whose API is exported.
+The package is best used with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl).
 
 ## Installation
 
@@ -33,7 +32,7 @@ This example uses a centered parameterization of
 [ArviZ's version of the eight schools model](https://arviz-devs.github.io/arviz/notebooks/Introduction.html), which causes divergences, in [Turing.jl](https://turing.ml).
 
 ```julia
-using ArviZ, Turing
+using ArviZ, PyPlot, Turing
 ArviZ.use_style(["default", "arviz-darkgrid"])
 
 # Turing model
