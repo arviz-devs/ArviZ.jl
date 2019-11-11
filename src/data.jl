@@ -55,8 +55,6 @@ end
 
 @forwardfun convert_to_inference_data
 
-@inline convert_to_inference_data(obj::InferenceData) = obj
-
 @forwardfun load_arviz_data
 
 @forwardfun to_netcdf
@@ -70,6 +68,27 @@ end
 @forwardfun from_numpyro
 @forwardfun from_pystan
 @forwardfun from_tfp
+
+# A more flexible form of `from_dict`
+# Internally calls `dict_to_dataset`
+function _from_dict(
+    posterior = nothing;
+    attrs = Dict(),
+    coords = nothing,
+    dims = nothing,
+    dicts...,
+)
+    dicts = (posterior = posterior, dicts...)
+
+    idata = InferenceData()
+    for (name, dict) in pairs(dicts)
+        (dict === nothing || isempty(dict)) && continue
+        dataset = dict_to_dataset(dict; attrs = attrs, coords = coords, dims = dims)
+        concat!(idata, InferenceData(; (name => dataset,)...))
+    end
+
+    return idata
+end
 
 function concat(args...; kwargs...)
     ret = arviz.concat(args...; kwargs...)

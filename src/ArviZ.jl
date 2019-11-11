@@ -6,7 +6,8 @@ using Reexport
 using Requires
 using PyCall
 @reexport using PyPlot
-using Pandas: DataFrame, Series
+using Pandas
+using NamedTupleTools
 
 import Base: convert, propertynames, getproperty, hash, show, summary, +
 import Base.Docs: getdoc
@@ -53,6 +54,7 @@ export InferenceData,
        to_netcdf,
        from_netcdf,
        from_dict,
+       from_cmdstan,
        concat,
        concat!
 
@@ -71,10 +73,13 @@ function __init__()
 
     pytype_mapping(arviz.InferenceData, InferenceData)
 
-    @require MCMCChains="c7f686f2-ff18-58e9-bc7b-31028e88f75d" include("mcmcchains.jl")
+    @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin
+        @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" include("mcmcchains.jl")
+    end
 end
 
 include("utils.jl")
+include("dataset.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")

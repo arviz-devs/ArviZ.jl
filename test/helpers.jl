@@ -51,6 +51,14 @@ end
 
 models() = (model_1 = create_model(10), model_2 = create_model(11))
 
+function noncentered_schools_data()
+    return Dict(
+        "J" => 8,
+        "y" => [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0],
+        "sigma" => [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0],
+    )
+end
+
 function check_multiple_attrs(test_dict, parent)
     failed_attrs = []
     for (dataset_name, attributes) in test_dict
