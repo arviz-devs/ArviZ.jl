@@ -143,8 +143,8 @@ end
         constant_data = nothing,
         log_likelihood = nothing,
         library = MCMCChains,
-        dims = nothing,
         coords = nothing,
+        dims = nothing,
     )
 
 Convert data in an `MCMCChains.AbstractChains` format into an `InferenceData`
@@ -152,85 +152,99 @@ object. The arguments and keyword arguments are described below.
 
 `posterior` and `prior` must be `AbstractChains`.
 
-`posterior_predictive`, `observed_data`, and `constant_data` may be strings or
-vectors of strings corresponding to variable names that will be removed from
-`posterior` and stored in the corresponding groups.
+If `posterior_predictive`, `observed_data`, and `constant_data` are strings or
+vectors of strings, they are assumed to be variable names in the posterior and
+are removed from `posterior` and stored in the corresponding groups. They may
+also be any type that can be passed to `convert_to_dataset`.
 
 `prior_predictive` does the same for `prior`.
 
-`log_likelihood` similarly is a single variable name that extracts from the
-posterior the log likelihood and stores it in `sample_stats`.
+`log_likelihood` may only be a single variable name for the log likelihood that
+is removed from the posterior and stored in `sample_stats`.
+
+`library` is a string with the name of the library that generated the chains,
+defaulting to `MCMCChains`.
 
 `coords` is a dictionary containing the values that are used as index. The key
 is the name of the dimension, the values are the index values.
 
 `dims` is dictionary mapping from variables to a list of coordinate names for
 the variable.
-
-`library` is a string with the name of the library that generated the chains,
-defaulting to `MCMCChains`.
 """
 function from_mcmcchains(
     posterior = nothing;
-    posterior_predictive = nothing,
     prior = nothing,
+    posterior_predictive = nothing,
     prior_predictive = nothing,
     observed_data = nothing,
     constant_data = nothing,
-    log_likelihood::Union{String,Nothing} = nothing,
+    log_likelihood = nothing,
     library = MCMCChains,
-    dims = nothing,
     kwargs...,
 )
-    post_dict = chains_to_dict(posterior)
-    stats_dict = chains_to_dict(
-        posterior;
-        section = :internals,
-        rekey_fun = d -> rekey(d, stats_key_map),
+    attrs = attributes_dict(posterior)
+    attrs = merge(attrs, Dict("inference_library" => string(library)))
+    kwargs = convert(Dict, merge((; attrs = attrs, dims = nothing), kwargs))
+    post_groups = (
+        posterior_predictive = posterior_predictive,
+        observed_data = observed_data,
+        constant_data = constant_data,
     )
+
+    group_dicts = Dict{Symbol,Dict}()
+    group_datasets = Dict{Symbol,PyObject}()
+    rekey_fun = d -> rekey(d, stats_key_map)
+
+    # Convert chains to dicts
+    post_dict = chains_to_dict(posterior)
+    stats_dict = chains_to_dict(posterior; section = :internals, rekey_fun = rekey_fun)
     stats_dict = enforce_stat_types(stats_dict)
 
     prior_dict = chains_to_dict(prior)
-    prior_stats_dict = chains_to_dict(
-        prior;
-        section = :internals,
-        rekey_fun = d -> rekey(d, stats_key_map),
-    )
+    prior_stats_dict = chains_to_dict(prior; section = :internals, rekey_fun = rekey_fun)
     prior_stats_dict = enforce_stat_types(prior_stats_dict)
 
-    postpred_dict = popsubdict!(post_dict, posterior_predictive)
-    obs_data_dict = popsubdict!(post_dict, observed_data)
-    const_data_dict = popsubdict!(post_dict, constant_data)
-    log_like_dict = popsubdict!(post_dict, log_likelihood)
-    priorpred_dict = popsubdict!(prior_dict, prior_predictive)
+    # Remove variables from posterior/prior or convert to dataset
+    for (group, data) in pairs(post_groups)
+        if typeof(data) <: Union{String,Vector{String}}
+            group_dicts[group] = popsubdict!(post_dict, data)
+        elseif data !== nothing
+            group_datasets[group] = convert_to_dataset(data; kwargs...)
+        end
+    end
+    if typeof(prior_predictive) <: Union{String,Vector{String}}
+        group_dicts[:prior_predictive] = popsubdict!(prior_dict, prior_predictive)
+    elseif prior_predictive !== nothing
+        group_datasets[:prior_predictive] = convert_to_dataset(prior_predictive; kwargs...)
+    end
 
-    if log_like_dict !== nothing && stats_dict !== nothing
-        stats_dict = merge(
-            stats_dict,
-            Dict("log_likelihood" => log_like_dict[log_likelihood]),
-        )
+    # Handle log likelihood as a special case
+    if log_likelihood !== nothing
+        log_like_dict = popsubdict!(post_dict, log_likelihood)
+        log_like_dict = Dict("log_likelihood" => log_like_dict[log_likelihood])
+        if stats_dict === nothing
+            stats_dict = log_like_dict
+        else
+            stats_dict = merge(stats_dict, log_like_dict)
+        end
+        dims = kwargs[:dims]
         if dims !== nothing && log_likelihood in keys(dims)
-            dims = merge(dims, Dict("log_likelihood" => dims[log_likelihood]))
+            dims["log_likelihood"] = dims[log_likelihood]
         end
     end
 
-    attrs = attributes_dict(posterior)
-    attrs = merge(attrs, Dict("inference_library" => string(library)))
-
-    return _from_dict(
-        post_dict,
-        ;
+    idata1 = _from_dict(
+        post_dict;
         sample_stats = stats_dict,
-        posterior_predictive = postpred_dict,
         prior = prior_dict,
         sample_stats_prior = prior_stats_dict,
-        prior_predictive = priorpred_dict,
-        observed_data = obs_data_dict,
-        constant_data = const_data_dict,
-        attrs = attrs,
-        dims = dims,
+        group_dicts...,
         kwargs...,
     )
+    idata2 = InferenceData(; group_datasets...)
+    isempty(idata1._groups) && return idata2
+    isempty(idata2._groups) || concat!(idata1, idata2)
+    return idata1
 end
 
 from_cmdstan(data::AbstractChains; kwargs...) =
