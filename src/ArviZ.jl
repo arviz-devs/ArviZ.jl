@@ -1,5 +1,5 @@
 __precompile__()
-module Arviz
+module ArviZ
 
 using Base: @__doc__
 using Requires
