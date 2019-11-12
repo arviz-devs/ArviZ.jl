@@ -2,10 +2,16 @@ using Documenter, ArviZ
 
 makedocs(
     modules = [ArviZ],
-    format = Documenter.HTML(sidebar_sitename = false),
-    checkdocs = :exports,
     sitename = "ArviZ.jl",
-    pages = Any["index.md"],
+    pages = [
+        "Home" => "index.md",
+        "Quickstart" => "quickstart.md",
+    ],
+    checkdocs = :exports,
+    format = Documenter.HTML(
+        prettyurls = haskey(ENV, "CI"),
+        sidebar_sitename = false,
+    ),
 )
 
 deploydocs(repo = "github.com/sethaxen/ArviZ.jl.git",)
