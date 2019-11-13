@@ -10,6 +10,7 @@ makedocs(
     checkdocs = :exports,
     format = Documenter.HTML(
         prettyurls = haskey(ENV, "CI"),
+        analytics = "UA-152384573-1",
     ),
 )
 
