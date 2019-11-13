@@ -10,7 +10,6 @@ makedocs(
     checkdocs = :exports,
     format = Documenter.HTML(
         prettyurls = haskey(ENV, "CI"),
-        sidebar_sitename = false,
     ),
 )
 
