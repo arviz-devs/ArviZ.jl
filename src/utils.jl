@@ -1,5 +1,6 @@
 """
-    use_style(style::Union{String,Vector{String}})
+    use_style(style::String)
+    use_style(style::Vector{String})
 
 Use matplotlib style settings from a style specification `style`.
 
@@ -63,7 +64,7 @@ Get the list of customizable `rc` params using [`with_rc_context`](@ref).
 rc_params() = Dict(k => v for (k,v) in ArviZ.arviz.rcParams)
 
 """
-    with_interactive_backend(f; backend::Union{Symbol,Nothing} = nothing)
+    with_interactive_backend(f; backend::Symbol = nothing)
 
 Execute the thunk `f` in a temporary interactive context with the chosen
 `backend`, or provide no arguments to use a default.
