@@ -13,6 +13,8 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Quickstart" => "quickstart.md",
+        "API" => "api.md",
+        "Reference" => "reference.md",
     ],
     checkdocs = :exports,
     format = Documenter.HTML(
