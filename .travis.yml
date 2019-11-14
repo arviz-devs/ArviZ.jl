@@ -32,7 +32,7 @@ cache:
 before_install:
   - if [ ! -d $JULIA_CMDSTAN_HOME ]; then
     wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$CMDSTAN_VERSION/cmdstan-$CMDSTAN_VERSION.tar.gz;
-    tar -xzpf cmdstan-$CMDSTAN_VERSION.tar.gz -C $CMDSTAN_CACHE;
+    tar -xzpf $CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION.tar.gz -C $CMDSTAN_CACHE;
     make -C $JULIA_CMDSTAN_HOME build;
     fi
 
