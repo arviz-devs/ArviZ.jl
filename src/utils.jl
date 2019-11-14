@@ -1,52 +1,36 @@
 """
-    @forwardfun f
-    @forwardfun(f)
-
-Wrap a function `arviz.f` in `f`
-"""
-macro forwardfun(f)
-    quote
-        @__doc__ function $(f)(args...; kwargs...)
-            arviz.$(f)(args...; kwargs...)
-        end
-
-        Base.Docs.getdoc(::typeof($(f))) = Base.Docs.getdoc(arviz.$(f))
-    end |> esc
-end
-
-"""
-    styles()
-
-Get all available matplotlib styles.
-"""
-styles() = arviz.style.available
-
-"""
-    use_style(style::Union{String,Vector{String}})
+    use_style(style::String)
+    use_style(style::Vector{String})
 
 Use matplotlib style settings from a style specification `style`.
 
 The style name of "default" is reserved for reverting back to the default style
 settings.
 
-ArviZ-specific styles are "arviz-whitegrid", "arviz-darkgrid", "arviz-colors",
-and "arviz-white". To see all available style specifications, use
-[`styles`](@ref).
+ArviZ-specific styles are `["arviz-whitegrid", "arviz-darkgrid", "arviz-colors", "arviz-white"]`.
+To see all available style specifications, use [`styles()`](@ref).
 
 If a `Vector` of styles is provided, they are applied from first to last.
 """
 use_style(style) = arviz.style.use(style)
 
 """
-    rc_context(f, rc = nothing, fname = nothing)
+    styles() -> Vector{String}
+
+Get all available matplotlib styles for use with [`use_style`](@ref)
+"""
+styles() = arviz.style.available
+
+"""
+    with_rc_context(f; rc = nothing, fname = nothing)
 
 Execute the thunk `f` within a context controlled by rc params. To see
-supported params, execute `rc_params()`.
+supported params, execute [`rc_params()`](@ref).
 
 This allows one to do:
 
 ```julia
-rc_context(fname = "pystan.rc") do
+with_rc_context(fname = "pystan.rc") do
     idata = load_arviz_data("radon")
     plot_posterior(idata; var_names=["gamma"])
 end
@@ -57,7 +41,7 @@ The plot would have settings from `pystan.rc`.
 A dictionary can also be passed to the context manager:
 
 ```julia
-rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
+with_rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
     idata = load_arviz_data("radon")
     plot_posterior(idata, var_names=["gamma"])
 end
@@ -66,32 +50,37 @@ end
 The `rc` dictionary takes precedence over the settings loaded from `fname`.
 Passing a dictionary only is also valid.
 """
-function rc_context(f, args...; kwargs...)
-    @pywith arviz.rc_context(args...; kwargs...) as _ begin
+function with_rc_context(f; kwargs...)
+    @pywith arviz.rc_context(; kwargs...) as _ begin
         f()
     end
 end
 
-rc_params() = arviz.rcParams()
+"""
+    rc_params() > Dict{String,Any}
+
+Get the list of customizable `rc` params using [`with_rc_context`](@ref).
+"""
+rc_params() = Dict(k => v for (k,v) in ArviZ.arviz.rcParams)
 
 """
-    interactive_backend(f, backend::Union{Symbol,Nothing} = nothing)
+    with_interactive_backend(f; backend::Symbol = nothing)
 
-Execute the thunk `f` in a temporary interactive context of choice, or provide
-no arguments to use a default.
+Execute the thunk `f` in a temporary interactive context with the chosen
+`backend`, or provide no arguments to use a default.
 
 # Example
 
 ```julia
 idata = load_arviz_data("centered_eight")
 plot_posterior(idata) # inline
-interactive_backend() do
+with_interactive_backend() do
     plot_density(idata) # interactive
 end
 plot_trace(idata) # inline
 ```
 """
-function interactive_backend(f, backend = nothing)
+function with_interactive_backend(f; backend = nothing)
     oldisint = PyPlot.isinteractive()
     oldgui = pygui()
     backend === nothing || pygui(Symbol(backend))
@@ -99,6 +88,26 @@ function interactive_backend(f, backend = nothing)
     f()
     pygui(oldisint)
     pygui(oldgui)
+end
+
+forwarddoc(f::Symbol) = "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
+
+forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
+
+"""
+    @forwardfun f
+    @forwardfun(f)
+
+Wrap a function `arviz.f` in `f`, forwarding its docstrings.
+"""
+macro forwardfun(f)
+    fdoc = forwarddoc(f)
+    quote
+        @doc $fdoc
+        $(f)(args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+
+        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+    end |> esc
 end
 
 """

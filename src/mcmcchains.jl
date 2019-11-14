@@ -25,9 +25,10 @@ const stan_key_map = Dict(
 const stats_key_map = merge(turing_key_map, stan_key_map)
 
 """
-    topandas(df::DataFrames.DataFrame)
+    topandas(df::DataFrames.DataFrame) -> Pandas.DataFrame
+    topandas(df::MCMCChains.ChainDataFrame) -> Pandas.DataFrame
 
-Convert `df` into a `Pandas.DataFrame`, maintaining column order and replacing
+Convert `df` into a Pandas format, maintaining column order and replacing
 `missing` with `NaN`.
 """
 function topandas(df::DataFrames.DataFrame)
@@ -41,7 +42,7 @@ end
 topandas(df::ChainDataFrame) = topandas(df.df)
 
 """
-    reshape_values(x::AbstractArray)
+    reshape_values(x::AbstractArray) -> AbstractArray
 
 Convert from `MCMCChains` variable values with dimensions
 `(ndraw, size..., nchain)` to ArviZ's expected `(nchain, ndraw, size...)`.
@@ -128,11 +129,11 @@ end
 chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
-    convert_to_dataset(obj::AbstractChains; library = MCMCChains, kwargs...)
+    convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...) -> PyObject
 
-Convert the chains `obj` to an `xarray.Dataset` with the specified `group`.
-`library` is the library that created the chains. Remaining `kwargs` are
-forwarded to `dict_to_dataset`.
+Convert the chains `obj` to an `xarray.Dataset`. `library` is the library that
+created the chains. Remaining `kwargs` are forwarded to
+[`dict_to_dataset`](@ref).
 """
 function convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...)
     chns_dict = chains_to_dict(chns)
@@ -142,54 +143,49 @@ function convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs..
 end
 
 """
-    convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...)
+    convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...) -> InferenceData
 
-Convert the chains `obj` to an `InferenceData` with the specified `group`.
-Remaining `kwargs` are forwarded to `from_mcmcchains`.
+Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group`.
+Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
 """
-function convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...)
+function convert_to_inference_data(chns::AbstractChains; group = :posterior, kwargs...)
     group = Symbol(group)
-    group == :posterior && return from_mcmcchains(obj; kwargs...)
-    return from_mcmcchains(; group => obj)
+    group == :posterior && return from_mcmcchains(chns; kwargs...)
+    return from_mcmcchains(; group => chns)
 end
 
 """
-    function from_mcmcchains(
-        posterior = nothing;
-        posterior_predictive = nothing,
-        prior = nothing,
-        prior_predictive = nothing,
-        observed_data = nothing,
-        constant_data = nothing,
-        log_likelihood = nothing,
-        library = MCMCChains,
-        coords = nothing,
-        dims = nothing,
-    )
+    from_mcmcchains(posterior::AbstractChains; kwargs...) -> InferenceData
+    from_mcmcchains(; kwargs...) -> InferenceData
 
-Convert data in an `MCMCChains.AbstractChains` format into an `InferenceData`
-object. The arguments and keyword arguments are described below.
+Convert data in an `MCMCChains.AbstractChains` format into an
+[`InferenceData`](@ref).
 
-`posterior` and `prior` must be `AbstractChains`.
+Any keyword argument below without an an explicitly annotated type above is
+allowed, so long as it can be passed to [`convert_to_dataset`](@ref).
 
-If `posterior_predictive`, `observed_data`, and `constant_data` are strings or
-vectors of strings, they are assumed to be variable names in the posterior and
-are removed from `posterior` and stored in the corresponding groups. They may
-also be any type that can be passed to `convert_to_dataset`.
+# Arguments
+- `posterior::AbstractChains`: Draws from the posterior
 
-`prior_predictive` does the same for `prior`.
+# Keywords
+- `posterior_predictive=nothing`: Draws from the posterior predictive distribution
+     or name(s) of predictive variables in `posterior`
+- `prior::AbstractChains=nothing`: Draws from the prior
+- `prior_predictive=nothing`: Draws from the prior predictive distribution
+     or name(s) of predictive variables in `prior`
+- `observed_data=nothing`: Data actually observed or name(s) of observed data
+     variables in `posterior`
+- `constant_data=nothing`: Data that are constant, not observed (e.g. metadata),
+     or name(s) of variables in posterior
+- `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
+- `library=MCMCChains`: Name of library that generated the chains
+- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named
+    indices
+- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names
+    of its dimensions
 
-`log_likelihood` may only be a single variable name for the log likelihood that
-is removed from the posterior and stored in `sample_stats`.
-
-`library` is a string with the name of the library that generated the chains,
-defaulting to `MCMCChains`.
-
-`coords` is a dictionary containing the values that are used as index. The key
-is the name of the dimension, the values are the index values.
-
-`dims` is dictionary mapping from variables to a list of coordinate names for
-the variable.
+# Returns
+- `InferenceData`: The data with groups corresponding to the provided data
 """
 function from_mcmcchains(
     posterior = nothing;
@@ -267,5 +263,10 @@ function from_mcmcchains(
     return idata1
 end
 
+"""
+    from_cmdstan(posterior::AbstractChains; kwargs...) -> InferenceData
+
+Call [`from_mcmcchains`](@ref) on output of `CmdStan`.
+"""
 from_cmdstan(data::AbstractChains; kwargs...) =
     from_mcmcchains(data; library = "CmdStan", kwargs...)

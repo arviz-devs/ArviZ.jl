@@ -11,28 +11,31 @@ const sample_stats_types = Dict(
     "diverging" => Bool,
 )
 
+@doc forwarddoc(:compare)
 compare(args...; kwargs...) = arviz.compare(args...; kwargs...) |> Pandas.DataFrame
 
-Base.Docs.getdoc(::typeof(compare)) = Base.Docs.getdoc(arviz.compare)
+Docs.getdoc(::typeof(compare)) = forwardgetdoc(:compare)
 
 @forwardfun hpd
 
+@doc forwarddoc(:loo)
 loo(args...; kwargs...) = arviz.loo(args...; kwargs...) |> Pandas.Series
 
-Base.Docs.getdoc(::typeof(loo)) = Base.Docs.getdoc(arviz.loo)
+Docs.getdoc(::typeof(loo)) = forwardgetdoc(:loo)
 
 @forwardfun loo_pit
 
 @forwardfun psislw
 
+@doc forwarddoc(:r2_score)
 r2_score(args...; kwargs...) = arviz.r2_score(args...; kwargs...) |> Pandas.Series
 
-Base.Docs.getdoc(::typeof(r2_score)) = Base.Docs.getdoc(arviz.r2_score)
+Docs.getdoc(::typeof(r2_score)) = forwardgetdoc(:r2_score)
 
+@doc forwarddoc(:waic)
 waic(args...; kwargs...) = arviz.waic(args...; kwargs...) |> Pandas.Series
 
-Base.Docs.getdoc(::typeof(waic)) = Base.Docs.getdoc(arviz.waic)
+Docs.getdoc(::typeof(waic)) = forwardgetdoc(:waic)
 
+@doc forwarddoc(:summary)
 Base.summary(data::InferenceData) = arviz.summary(data) |> Pandas.DataFrame
-
-Base.Docs.getdoc(::typeof(summary)) = Base.Docs.getdoc(arviz.summary)

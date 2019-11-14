@@ -5,6 +5,7 @@ Pkg.activate(); Pkg.instantiate()
 pushfirst!(LOAD_PATH, joinpath(@__DIR__, ".."))
 
 using Documenter, ArviZ
+import MCMCChains
 
 makedocs(
     modules = [ArviZ],
@@ -12,12 +13,13 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Quickstart" => "quickstart.md",
+        "API" => "api.md",
+        "Reference" => "reference.md",
     ],
     checkdocs = :exports,
     format = Documenter.HTML(
         prettyurls = haskey(ENV, "CI"),
         sidebar_sitename = false,
-        analytics = "UA-152384573-1",
     ),
 )
 
