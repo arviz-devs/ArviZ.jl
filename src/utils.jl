@@ -1,20 +1,4 @@
 """
-    @forwardfun f
-    @forwardfun(f)
-
-Wrap a function `arviz.f` in `f`
-"""
-macro forwardfun(f)
-    quote
-        @__doc__ function $(f)(args...; kwargs...)
-            arviz.$(f)(args...; kwargs...)
-        end
-
-        Base.Docs.getdoc(::typeof($(f))) = Base.Docs.getdoc(arviz.$(f))
-    end |> esc
-end
-
-"""
     styles()
 
 Get all available matplotlib styles.
@@ -99,6 +83,26 @@ function interactive_backend(f, backend = nothing)
     f()
     pygui(oldisint)
     pygui(oldgui)
+end
+
+forwarddoc(f::Symbol) = "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
+
+forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
+
+"""
+    @forwardfun f
+    @forwardfun(f)
+
+Wrap a function `arviz.f` in `f`, forwarding its docstrings.
+"""
+macro forwardfun(f)
+    fdoc = forwarddoc(f)
+    quote
+        @doc $fdoc
+        $(f)(args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+
+        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+    end |> esc
 end
 
 """
