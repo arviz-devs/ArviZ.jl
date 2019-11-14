@@ -63,10 +63,13 @@ export interactive_backend
 ## rcParams
 export rc_context
 
-const arviz = PyNULL()
+# Load ArviZ once at precompilation time for docstrings
+import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
+
+const arviz = import_arviz()
 
 function __init__()
-    copy!(arviz, pyimport_conda("arviz", "arviz", "conda-forge"))
+    copy!(arviz, import_arviz())
     pyimport_conda("xarray", "xarray", "conda-forge")
     pyimport_conda("dask", "dask", "conda-forge")
 
