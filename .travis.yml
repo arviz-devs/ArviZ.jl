@@ -10,6 +10,9 @@ julia:
   - nightly
 notifications:
   email: false
+branches:
+  only:
+    - master
 git:
   depth: 99999999
 env:
