@@ -13,13 +13,13 @@ Besides removing the need to explicitly import ArviZ with [PyCall.jl](https://gi
 To install ArviZ.jl with its Python dependencies in Julia's private conda environment, in the console run
 
 ```console
-PYTHON="" julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/sethaxen/ArviZ.jl"))'
+PYTHON="" julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/arviz-devs/ArviZ.jl"))'
 ```
 
 To use with the default Python environment, first [install ArviZ](https://github.com/arviz-devs/arviz#installation). Then in Julia's REPL run
 
 ```julia
-] add https://github.com/sethaxen/ArviZ.jl
+] add https://github.com/arviz-devs/ArviZ.jl
 ```
 
 ## [Design](@id design)
@@ -30,7 +30,7 @@ ArviZ.jl wraps ArviZ's API functions and closely follows ArviZ's design. It also
 
 The package is intended to be used with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl).
 
-ArviZ.jl development occurs on [GitHub](https://github.com/sethaxen/ArviZ.jl). Issues and pull requests are welcome.
+ArviZ.jl development occurs on [GitHub](https://github.com/arviz-devs/ArviZ.jl). Issues and pull requests are welcome.
 
 ## [Differences from ArviZ](@id differences)
 

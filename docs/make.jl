@@ -21,4 +21,4 @@ makedocs(
     ),
 )
 
-deploydocs(repo = "github.com/sethaxen/ArviZ.jl.git",)
+deploydocs(repo = "github.com/arviz-devs/ArviZ.jl.git",)

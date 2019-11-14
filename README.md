@@ -1,15 +1,15 @@
-<img src="https://sethaxen.github.io/ArviZ.jl/dev/assets/logo.png" height=100></img>
+<img src="https://arviz-devs.github.io/ArviZ.jl/dev/assets/logo.png" height=100></img>
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Build Status](https://travis-ci.com/sethaxen/ArviZ.jl.svg?branch=master)](https://travis-ci.com/sethaxen/ArviZ.jl)
-[![codecov.io](http://codecov.io/github/sethaxen/ArviZ.jl/coverage.svg?branch=master)](http://codecov.io/github/sethaxen/ArviZ.jl?branch=master)
-[![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://sethaxen.github.io/ArviZ.jl/dev)
+[![Build Status](https://travis-ci.com/arviz-devs/ArviZ.jl.svg?branch=master)](https://travis-ci.com/arviz-devs/ArviZ.jl)
+[![codecov.io](http://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](http://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
+[![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://arviz-devs.github.io/ArviZ.jl/dev)
 
 # ArviZ.jl
 
 ArviZ.jl is a Julia interface to the [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis of Bayesian models.
 
-See the [documentation](https://sethaxen.github.io/ArviZ.jl/dev) for details.
+See the [documentation](https://arviz-devs.github.io/ArviZ.jl/dev) for details.
 
 ## Basic usage
 
