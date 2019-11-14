@@ -90,13 +90,14 @@ function _from_dict(
     return idata
 end
 
-function concat(args...; kwargs...)
+@doc forwarddoc(:concat)
+function concat(args::InferenceData...; kwargs...)
     ret = arviz.concat(args...; kwargs...)
     ret === nothing && return args[1]
     return ret
 end
 
-Base.Docs.getdoc(::typeof(concat)) = Base.Docs.getdoc(arviz.concat)
+Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
 """
     concat!(data::InferenceData, args::InferenceData...; kwargs...)
