@@ -30,7 +30,7 @@ supported params, execute `rc_params()`.
 This allows one to do:
 
 ```julia
-rc_context(fname = "pystan.rc") do
+with_rc_context(fname = "pystan.rc") do
     idata = load_arviz_data("radon")
     plot_posterior(idata; var_names=["gamma"])
 end
@@ -41,7 +41,7 @@ The plot would have settings from `pystan.rc`.
 A dictionary can also be passed to the context manager:
 
 ```julia
-rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
+with_rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
     idata = load_arviz_data("radon")
     plot_posterior(idata, var_names=["gamma"])
 end
@@ -50,8 +50,8 @@ end
 The `rc` dictionary takes precedence over the settings loaded from `fname`.
 Passing a dictionary only is also valid.
 """
-function rc_context(f, args...; kwargs...)
-    @pywith arviz.rc_context(args...; kwargs...) as _ begin
+function with_rc_context(f; kwargs...)
+    @pywith arviz.rc_context(; kwargs...) as _ begin
         f()
     end
 end
@@ -59,23 +59,23 @@ end
 rc_params() = arviz.rcParams()
 
 """
-    interactive_backend(f, backend::Union{Symbol,Nothing} = nothing)
+    with_interactive_backend(f; backend::Union{Symbol,Nothing} = nothing)
 
-Execute the thunk `f` in a temporary interactive context of choice, or provide
-no arguments to use a default.
+Execute the thunk `f` in a temporary interactive context with the chosen
+`backend`, or provide no arguments to use a default.
 
 # Example
 
 ```julia
 idata = load_arviz_data("centered_eight")
 plot_posterior(idata) # inline
-interactive_backend() do
+with_interactive_backend() do
     plot_density(idata) # interactive
 end
 plot_trace(idata) # inline
 ```
 """
-function interactive_backend(f, backend = nothing)
+function with_interactive_backend(f; backend = nothing)
     oldisint = PyPlot.isinteractive()
     oldgui = pygui()
     backend === nothing || pygui(Symbol(backend))

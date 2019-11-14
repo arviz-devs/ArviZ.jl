@@ -58,10 +58,10 @@ export InferenceData,
        concat!
 
 ## Utils
-export interactive_backend
+export with_interactive_backend
 
 ## rcParams
-export rc_context
+export with_rc_context
 
 # Load ArviZ once at precompilation time for docstrings
 import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
