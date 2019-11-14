@@ -1,6 +1,6 @@
-# API Overview
+# [API Overview](@id api)
 
-## Plots
+## [Plots](@id plots-api)
 
 | Name                     | Description                                                                              |
 |:------------------------ |:---------------------------------------------------------------------------------------- |
@@ -26,7 +26,7 @@
 | [`plot_trace`](@ref)     | Plot distribution (histogram or kernel density estimates) and sampled values.            |
 | [`plot_violin`](@ref)    | Plot posterior of traces as violin plot.                                                 |
 
-## Stats
+## [Stats](@id stats-api)
 
 | Name               | Description                                                                     |
 |:-------------------|:------------------------------------------------------------------------------- |
@@ -39,7 +39,7 @@
 | [`waic`](@ref)     | Calculate the widely available information criterion (WAIC).                    |
 | [`compare`](@ref)  | Compare models based on WAIC or LOO cross-validation.                           |
 
-## Diagnostics
+## [Diagnostics](@id diagnostics-api)
 
 | Name             | Description                                                              |
 |:---------------- |:------------------------------------------------------------------------ |
@@ -49,7 +49,7 @@
 | [`rhat`](@ref)   | Compute estimate of rank normalized split-$\hat{R}$ for a set of traces. |
 | [`mcse`](@ref)   | Calculate Markov Chain Standard Error statistic (MCSE).                  |
 
-## Stats utils
+## [Stats utils](@id statsutils-api)
 
 | Name                        | Description                                                          |
 |:--------------------------- |:-------------------------------------------------------------------- |
@@ -58,7 +58,7 @@
 | [`make_ufunc`](@ref)        | Make ufunc from a function taking 1D array input.                    |
 | [`wrap_xarray_ufunc`](@ref) | Wrap `make_ufunc` with `xarray.apply_ufunc`.                         |
 
-## Data
+## [Data](@id data-api)
 
 | Name                                | Description                                        |
 |:----------------------------------- |:-------------------------------------------------- |
@@ -73,13 +73,13 @@
 | [`concat`](@ref)                    | Concatenate `InferenceData` objects.               |
 | [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.      |
 
-## Utils
+## [Utils](@id utils-api)
 
 | Name                               | Description                          |
 |:---------------------------------- |:------------------------------------ |
 | [`with_interactive_backend`](@ref) | Change plotting backend temporarily. |
 
-## rcParams
+## [rcParams](@id rcparams-api)
 
 | Name                      | Description                                              |
 |:------------------------- |:-------------------------------------------------------- |
