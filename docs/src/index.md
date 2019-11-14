@@ -40,7 +40,7 @@ ArviZ.jl transparently interconverts between `arviz.InferenceData` and our own `
 
 Functions that in ArviZ return Pandas types here return their [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) wrappers, which are used the same way.
 
-ArviZ includes the context managers `rc_context` and `interactive_backend`. ArviZ.jl includes functions that can be used with a nearly identical syntax. `interactive_backend` here is not limited to an IPython/IJulia context.
+ArviZ includes the context managers `with_rc_context` and `with_interactive_backend`. ArviZ.jl includes functions that can be used with a nearly identical syntax. `with_interactive_backend` here is not limited to an IPython/IJulia context.
 
 In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides `ArviZ.use_style` and `ArviZ.styles`.
 
