@@ -85,7 +85,7 @@ when in doubt, add a docstring.
 4. Package dependencies are in ``Project.toml``. To set up a development
    environment, in the Julia REPL run:
 
-   ```julia-repl
+   ```julia
    ] dev .
    ```
 
@@ -131,7 +131,7 @@ We recommend that your contribution complies with the following guidelines befor
 
 * Your code has been formatted with [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) with default settings. From the REPL:
 
-  ```julia-repl
+  ```julia
   julia> using JuliaFormatter
   julia> format("src/")
   ```
