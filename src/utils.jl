@@ -1,11 +1,4 @@
 """
-    styles()
-
-Get all available matplotlib styles.
-"""
-styles() = arviz.style.available
-
-"""
     use_style(style::Union{String,Vector{String}})
 
 Use matplotlib style settings from a style specification `style`.
@@ -13,19 +6,25 @@ Use matplotlib style settings from a style specification `style`.
 The style name of "default" is reserved for reverting back to the default style
 settings.
 
-ArviZ-specific styles are "arviz-whitegrid", "arviz-darkgrid", "arviz-colors",
-and "arviz-white". To see all available style specifications, use
-[`styles`](@ref).
+ArviZ-specific styles are `["arviz-whitegrid", "arviz-darkgrid", "arviz-colors", "arviz-white"]`.
+To see all available style specifications, use [`styles()`](@ref).
 
 If a `Vector` of styles is provided, they are applied from first to last.
 """
 use_style(style) = arviz.style.use(style)
 
 """
-    rc_context(f, rc = nothing, fname = nothing)
+    styles() -> Vector{String}
+
+Get all available matplotlib styles for use with [`use_style`](@ref)
+"""
+styles() = arviz.style.available
+
+"""
+    with_rc_context(f; rc = nothing, fname = nothing)
 
 Execute the thunk `f` within a context controlled by rc params. To see
-supported params, execute `rc_params()`.
+supported params, execute [`rc_params()`](@ref).
 
 This allows one to do:
 
@@ -56,7 +55,12 @@ function with_rc_context(f; kwargs...)
     end
 end
 
-rc_params() = arviz.rcParams()
+"""
+    rc_params() > Dict{String,Any}
+
+Get the list of customizable `rc` params using [`with_rc_context`](@ref).
+"""
+rc_params() = Dict(k => v for (k,v) in ArviZ.arviz.rcParams)
 
 """
     with_interactive_backend(f; backend::Union{Symbol,Nothing} = nothing)

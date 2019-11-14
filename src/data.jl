@@ -1,15 +1,15 @@
 """
-    InferenceData
+    InferenceData(::PyObject)
+    InferenceData(; kwargs...)
 
 Loose wrapper around `arviz.InferenceData`, which is a container for inference
 data storage using xarray.
 
-# Constructor
+`InferenceData` can be constructed either from an `arviz.InferenceData`
+or from multiple `xarray.Dataset`s assigned to groups specified as `kwargs`.
 
-    InferenceData(o::PyObject)
-
-wraps an `arviz.InferenceData`. To create an `InferenceData`, use the exported
-`from_xyz` functions or `convert_to_inference_data`.
+Instead of directly creating an `InferenceData`, use the exported `from_xyz`
+functions or [`convert_to_inference_data`](@ref).
 """
 struct InferenceData
     o::PyObject
@@ -100,13 +100,13 @@ end
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
 """
-    concat!(data::InferenceData, args::InferenceData...; kwargs...)
+    concat!(data::InferenceData, args::InferenceData...; kwargs...) -> InferenceData
 
 In-place version of `concat`, where `data` is modified to contain the
-concatenation of `data` and `args`. See `concat` for a description of
+concatenation of `data` and `args`. See [`concat`](@ref) for a description of
 `kwargs`.
 """
-function concat!(data, args...; kwargs...)
+function concat!(data::InferenceData, args::InferenceData...; kwargs...)
     kwargs = merge((; kwargs...), (; inplace = true))
     concat(data, args...; kwargs...)
     return data

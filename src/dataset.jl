@@ -2,11 +2,10 @@
 @forwardfun dict_to_dataset
 
 """
-    dataset_to_dict(ds::PyObject)
+    dataset_to_dict(ds::PyObject) -> Tuple{Dict{String,Array},NamedTuple}
 
-Convert an `xarray.Dataset` to a dictionary of `Array`s. The function is the
-returns a `Dict{String,Array}` and a `NamedTuple` with keyword arguments to
-`dict_to_dataset`.
+Convert an `xarray.Dataset` to a dictionary of `Array`s. The function also
+returns keyword arguments to [`dict_to_dataset`](@ref).
 """
 function dataset_to_dict(ds::PyObject)
     ds_dict = ds.to_dict()
