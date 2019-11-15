@@ -1,4 +1,7 @@
-# [ArviZ.jl](@id arvizjl)
+# [ArviZ.jl: Exploratory analysis of Bayesian models in Julia](@id arvizjl)
+
+[![Build Status](https://travis-ci.com/arviz-devs/ArviZ.jl.svg?branch=master)](https://travis-ci.com/arviz-devs/ArviZ.jl)
+[![codecov.io](http://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](http://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
 
 ArviZ.jl is a Julia interface to the [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis of Bayesian models.
 
@@ -32,7 +35,7 @@ See ArviZ's API documentation for details.
 
 ArviZ.jl wraps ArviZ's API functions and closely follows ArviZ's design.
 It also supports conversion of [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s `Chains` as returned by [Turing.jl](https://turing.ml), [CmdStan.jl](https://github.com/StanJulia/CmdStan.jl), [StanSample.jl](https://github.com/StanJulia/StanSample.jl), and others into ArviZ's `InferenceData` format.
-See [Quickstart](@ref) for examples.
+See [Quickstart](@ref quickstart) for examples.
 
 The package is intended to be used with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl).
 
