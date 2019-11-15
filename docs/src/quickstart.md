@@ -137,6 +137,21 @@ savefig("quick_turingtrace.png"); nothing # hide
 
 ![](quick_turingtrace.png)
 
+We can also generate summary stats
+
+```@example quickstart
+summary(data)
+```
+
+and examine the energy distribution of the Hamiltonian sampler
+
+```@example quickstart
+plot_energy(data);
+savefig("quick_turingenergy.svg"); nothing # hide
+```
+
+![](quick_turingenergy.svg)
+
 ## Plotting with CmdStan.jl outputs
 
 CmdStan.jl and StanSample.jl also default to producing `Chains` outputs, and we can easily plot these chains.
