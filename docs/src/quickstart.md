@@ -3,7 +3,7 @@
 _This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html)._
 
 ```@setup quickstart
-using PyPlot, ArviZ, Distributions, Turing, CmdStan, Pkg, InteractiveUtils
+using PyPlot, ArviZ, Distributions, CmdStan, Pkg, InteractiveUtils
 
 using PyCall
 np = pyimport_conda("numpy", "numpy")
@@ -11,6 +11,8 @@ np.seterr(divide="ignore", invalid="ignore")
 
 using Random
 Random.seed!(42)
+
+turing_chns = read("../src/assets/turing_centered_eight_chains.jls", MCMCChains.Chains)
 ```
 
 ```@example quickstart
@@ -57,11 +59,11 @@ Consider the [eight schools model](http://andrewgelman.com/2014/01/21/everything
 To show off ArviZ's labelling, I give the schools the names of [a different eight schools](https://en.wikipedia.org/wiki/Eight_Schools_Association).
 
 This model is small enough to write down, is hierarchical, and uses labelling.
-Additionally, a centered parameterization causes [divergences](http://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html) (which are interesting for illustration):
+Additionally, a centered parameterization causes [divergences](http://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html) (which are interesting for illustration).
+
+First we create our data.
 
 ```@example quickstart
-using Turing
-
 J = 8
 y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
 sigma = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
@@ -74,7 +76,14 @@ schools = [
     "Lawrenceville",
     "St. Paul's",
     "Mt. Hermon"
-]
+];
+nothing # hide
+```
+
+Now we write and run the model using Turing:
+
+```julia
+using Turing
 
 @model centered_eight(J, y, sigma) = begin
     mu ~ Normal(0, 5)
@@ -86,11 +95,10 @@ end
 
 nchains = 4
 model = centered_eight(J, y, sigma)
-sampler = NUTS(0.8)
+sampler = NUTS(1000, 0.8)
 turing_chns = mapreduce(chainscat, 1:nchains) do _
-    return sample(model, sampler, 1000; progress = false)
+    return sample(model, sampler, 2000; progress = false)
 end;
-nothing # hide
 ```
 
 Most ArviZ functions work fine with `Chains` objects from Turing:
@@ -116,6 +124,7 @@ data = from_mcmcchains(
     turing_chns,
 #     prior = prior, # hide
 #     posterior_predictive = posterior_predictive, # hide
+    library = "Turing",
     coords = Dict("school" => schools),
     dims = Dict("theta" => ["school"], "obs" => ["school"])
 )
@@ -214,13 +223,3 @@ savefig("quick_cmdstanpair.png"); nothing # hide
 ```
 
 ![](quick_cmdstanpair.png)
-
-## Environment
-
-```@example quickstart
-versioninfo()
-```
-
-```@example quickstart
-using Pkg; Pkg.status()
-```
