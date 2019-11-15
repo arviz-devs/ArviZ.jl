@@ -10,6 +10,7 @@ using NamedTupleTools
 
 import Base: convert, propertynames, getproperty, hash, show, summary, +
 import Base.Docs: getdoc
+import Markdown: @doc_str
 import PyCall: PyObject
 
 # Exports
