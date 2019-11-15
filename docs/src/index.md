@@ -54,6 +54,9 @@ ArviZ.jl transparently interconverts between `arviz.InferenceData` and our own [
 
 Functions that in ArviZ return Pandas types here return their [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) wrappers, which are used the same way.
 
+`arviz.summary` is here named [`summarize`](@ref) to avoid conflicting with `Base.summary`.
+For `InferenceData` inputs, [`Base.summary`](@ref) can be used like `arviz.summary`.
+
 ArviZ includes the context managers [`with_rc_context`](@ref) and [`with_interactive_backend`](@ref).
 ArviZ.jl includes functions that can be used with a nearly identical syntax.
 `with_interactive_backend` here is not limited to an IPython/IJulia context.

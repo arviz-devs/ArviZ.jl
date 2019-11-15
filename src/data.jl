@@ -47,6 +47,8 @@ function (data1::InferenceData + data2::InferenceData)
     return InferenceData(PyObject(data1) + PyObject(data2))
 end
 
+Base.summary(data::InferenceData; kwargs...) = summarize(data; kwargs...)
+
 function Base.show(io::IO, data::InferenceData)
     out = pycall(pybuiltin("str"), String, data)
     out = replace(out, r"Inference data" => "InferenceData")
