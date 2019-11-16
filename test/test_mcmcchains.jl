@@ -1,4 +1,4 @@
-using MCMCChains
+import MCMCChains
 using CmdStan
 
 const noncentered_schools_stan_model = """
@@ -38,7 +38,7 @@ function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
     rng = MersenneTwister(seed)
     nvars = length(names)
     vals = randn(rng, ndraws, nvars, nchains)
-    chns = Chains(vals, names, Dict(:internals => internal_names))
+    chns = MCMCChains.Chains(vals, names, Dict(:internals => internal_names))
     return chns
 end
 
@@ -205,7 +205,7 @@ end
         vals = Array{Union{Float64,Missing},3}(vals)
         vals[1,1,1] = missing
         names = ["var$(i)" for i = 1:nvars]
-        chns = Chains(vals, names)
+        chns = MCMCChains.Chains(vals, names)
         @test Missing <: eltype(chns.value)
         idata = from_mcmcchains(chns)
         vdict = vardict(idata.posterior)
@@ -226,7 +226,7 @@ end
     end
 end
 
-@testset "convert_to_dataset(::Chains)" begin
+@testset "convert_to_dataset(::MCMCChains.Chains)" begin
     nvars, nchains, ndraws = 2, 4, 20
     chns = makechains(nvars, ndraws, nchains)
     ds = ArviZ.convert_to_dataset(chns)
@@ -234,7 +234,7 @@ end
     @test ds.__class__.__name__ == "Dataset"
 end
 
-@testset "convert_to_inference_data(::Chains)" begin
+@testset "convert_to_inference_data(::MCMCChains.Chains)" begin
     nvars, nchains, ndraws = 2, 4, 20
     chns = makechains(nvars, ndraws, nchains)
     idata = convert_to_inference_data(chns; group = :posterior)

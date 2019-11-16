@@ -1,4 +1,4 @@
-using .MCMCChains: AbstractChains, ChainDataFrame, sections
+import .MCMCChains: AbstractChains, ChainDataFrame, sections
 using .DataFrames
 
 export from_mcmcchains
