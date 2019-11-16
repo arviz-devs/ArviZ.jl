@@ -11,15 +11,15 @@ const sample_stats_types = Dict(
     "diverging" => Bool,
 )
 
-@doc forwarddoc(:compare)
-compare(args...; kwargs...) = arviz.compare(args...; kwargs...) |> Pandas.DataFrame
+@doc forwarddoc(:compare) compare(args...; kwargs...) =
+    arviz.compare(args...; kwargs...) |> Pandas.DataFrame
 
 Docs.getdoc(::typeof(compare)) = forwardgetdoc(:compare)
 
 @forwardfun hpd
 
-@doc forwarddoc(:loo)
-loo(args...; kwargs...) = arviz.loo(args...; kwargs...) |> Pandas.Series
+@doc forwarddoc(:loo) loo(args...; kwargs...) =
+    arviz.loo(args...; kwargs...) |> Pandas.Series
 
 Docs.getdoc(::typeof(loo)) = forwardgetdoc(:loo)
 
@@ -27,13 +27,13 @@ Docs.getdoc(::typeof(loo)) = forwardgetdoc(:loo)
 
 @forwardfun psislw
 
-@doc forwarddoc(:r2_score)
-r2_score(args...; kwargs...) = arviz.r2_score(args...; kwargs...) |> Pandas.Series
+@doc forwarddoc(:r2_score) r2_score(args...; kwargs...) =
+    arviz.r2_score(args...; kwargs...) |> Pandas.Series
 
 Docs.getdoc(::typeof(r2_score)) = forwardgetdoc(:r2_score)
 
-@doc forwarddoc(:waic)
-waic(args...; kwargs...) = arviz.waic(args...; kwargs...) |> Pandas.Series
+@doc forwarddoc(:waic) waic(args...; kwargs...) =
+    arviz.waic(args...; kwargs...) |> Pandas.Series
 
 Docs.getdoc(::typeof(waic)) = forwardgetdoc(:waic)
 
@@ -118,8 +118,7 @@ func_dict = Dict(
 
 summarize(data; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
-"""
-function summarize(data; index_origin = 1, coords = nothing, dims = nothing, kwargs...)
+""" function summarize(data; index_origin = 1, coords = nothing, dims = nothing, kwargs...)
     posterior = convert_to_dataset(data; group = "posterior", coords = coords, dims = dims)
     s = arviz.summary(posterior; index_origin = index_origin, kwargs...)
     pyisinstance(s, Pandas.pandas_raw.DataFrame) && return Pandas.DataFrame(s)

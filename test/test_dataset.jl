@@ -6,7 +6,7 @@
     ndraws = 500
     vars = Dict(
         "a" => randn(rng, nchains, ndraws),
-        "b" => randn(rng, nchains, ndraws, J, K)
+        "b" => randn(rng, nchains, ndraws, J, K),
     )
     coords = Dict("bi" => 1:J, "bj" => 1:K)
     dims = Dict("b" => ["bi", "bj"])

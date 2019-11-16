@@ -61,7 +61,7 @@ end
 
 Get the list of customizable `rc` params using [`with_rc_context`](@ref).
 """
-rc_params() = Dict(k => v for (k,v) in ArviZ.arviz.rcParams)
+rc_params() = Dict(k => v for (k, v) in ArviZ.arviz.rcParams)
 
 """
     with_interactive_backend(f; backend::Symbol = nothing)
@@ -90,7 +90,8 @@ function with_interactive_backend(f; backend = nothing)
     pygui(oldgui)
 end
 
-forwarddoc(f::Symbol) = "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
+forwarddoc(f::Symbol) =
+    "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
 
 forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
 

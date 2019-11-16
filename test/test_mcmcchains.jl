@@ -203,7 +203,7 @@ end
         nvars, nchains, ndraws = 2, 4, 20
         vals = randn(rng, ndraws, nvars, nchains)
         vals = Array{Union{Float64,Missing},3}(vals)
-        vals[1,1,1] = missing
+        vals[1, 1, 1] = missing
         names = ["var$(i)" for i = 1:nvars]
         chns = MCMCChains.Chains(vals, names)
         @test Missing <: eltype(chns.value)
@@ -266,7 +266,7 @@ if VERSION.minor > 0
             prior = output.chains,
             prior_predictive = prior_predictive,
             coords = coords,
-            dims = dims
+            dims = dims,
         )
         idata2 = from_cmdstan(
             output.files;
@@ -275,7 +275,7 @@ if VERSION.minor > 0
             prior = output.files,
             prior_predictive = prior_predictive,
             coords = coords,
-            dims = dims
+            dims = dims,
         )
         @testset "idata.$(group)" for group in Symbol.(idata2._groups)
             ds1 = getproperty(idata1, group)
