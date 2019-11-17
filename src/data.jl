@@ -57,7 +57,7 @@ Base.summary(data::InferenceData; kwargs...) = summarize(data; kwargs...)
 
 function Base.show(io::IO, data::InferenceData)
     out = pycall(pybuiltin("str"), String, data)
-    out = replace(out, r"Inference data" => "InferenceData")
+    out = replace(out, "Inference data" => "InferenceData")
     print(io, out)
 end
 
