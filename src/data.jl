@@ -47,14 +47,6 @@ function (data1::InferenceData + data2::InferenceData)
     return InferenceData(PyObject(data1) + PyObject(data2))
 end
 
-"""
-    summary(data::InferenceData; kwargs...)
-
-Compute summary statistics. See [`summarize`](@ref) for a description of the
-`kwargs`.
-"""
-Base.summary(data::InferenceData; kwargs...) = summarize(data; kwargs...)
-
 function Base.show(io::IO, data::InferenceData)
     out = pycall(pybuiltin("str"), String, data)
     out = replace(out, "Inference data" => "InferenceData")

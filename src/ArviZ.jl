@@ -8,8 +8,10 @@ using PyPlot
 using Pandas
 using NamedTupleTools
 
-import Base: convert, propertynames, getproperty, hash, show, summary, +
+import Base: convert, propertynames, getproperty, hash, show, +
 import Base.Docs: getdoc
+import StatsBase
+import StatsBase: summarystats
 import Markdown: @doc_str
 import PyCall: PyObject
 
@@ -39,7 +41,7 @@ export plot_autocorr,
        plot_violin
 
 ## Stats
-export summarize, summary, compare, hpd, loo, loo_pit, psislw, r2_score, waic
+export summarystats, compare, hpd, loo, loo_pit, psislw, r2_score, waic
 
 ## Diagnostics
 export bfmi, geweke, ess, rhat, mcse
