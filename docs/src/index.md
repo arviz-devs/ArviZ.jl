@@ -15,18 +15,20 @@ It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot
 
 ## [Installation](@id installation)
 
-To install ArviZ.jl with its Python dependencies in Julia's private conda environment, in the console run
-
-```console
-PYTHON="" julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/arviz-devs/ArviZ.jl"))'
-```
-
 To use with the default Python environment, first [install ArviZ](https://github.com/arviz-devs/arviz#installation).
 Then in Julia's REPL run
 
 ```julia
-] add https://github.com/arviz-devs/ArviZ.jl
+] add ArviZ
 ```
+
+To install ArviZ.jl with its Python dependencies in Julia's private conda environment, in the console run
+
+```console
+PYTHON="" julia -e 'using Pkg; Pkg.add("PyCall"); Pkg.build("PyCall"); Pkg.add("ArviZ")'
+```
+
+For specifying other Python versions, see the [PyCall documentation](https://github.com/JuliaPy/PyCall.jl).
 
 ## [Design](@id design)
 
