@@ -1,3 +1,27 @@
+@testset "ArviZ.Dataset" begin
+    data = load_arviz_data("centered_eight")
+    dataset = data.posterior
+    @test dataset isa ArviZ.Dataset
+
+    @testset "construction" begin
+        pydataset = PyObject(dataset)
+        @test ArviZ.Dataset(pydataset) isa ArviZ.Dataset
+        @test PyObject(ArviZ.Dataset(pydataset)) === pydataset
+        @test ArviZ.Dataset(dataset) === dataset
+    end
+
+    @testset "properties" begin
+        @test length(propertynames(dataset)) > 1
+    end
+
+    @testset "conversion" begin
+        @test pyisinstance(PyObject(dataset), ArviZ.xarray.Dataset)
+        dataset4 = convert(ArviZ.Dataset, PyObject(dataset))
+        @test dataset4 isa ArviZ.Dataset
+        @test PyObject(dataset4) === PyObject(dataset)
+    end
+end
+
 @testset "dict to dataset roundtrip" begin
     rng = MersenneTwister(42)
     J = 8
@@ -13,6 +37,7 @@
     attrs = Dict("mykey" => 5)
 
     ds = ArviZ.dict_to_dataset(vars; coords = coords, dims = dims, attrs = attrs)
+    @test ds isa ArviZ.Dataset
     vars2, kwargs = ArviZ.dataset_to_dict(ds)
     for (k, v) in vars
         @test k ∈ keys(vars2)

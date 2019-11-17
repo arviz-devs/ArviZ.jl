@@ -230,8 +230,7 @@ end
     nvars, nchains, ndraws = 2, 4, 20
     chns = makechains(nvars, ndraws, nchains)
     ds = ArviZ.convert_to_dataset(chns)
-    @test ds isa PyObject
-    @test ds.__class__.__name__ == "Dataset"
+    @test ds isa ArviZ.Dataset
 end
 
 @testset "convert_to_inference_data(::MCMCChains.Chains)" begin

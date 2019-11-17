@@ -129,9 +129,9 @@ end
 chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
-    convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...) -> PyObject
+    convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...) -> Dataset
 
-Convert the chains `obj` to an `xarray.Dataset`. `library` is the library that
+Convert the chains `obj` to a [`Dataset`](@ref). `library` is the library that
 created the chains. Remaining `kwargs` are forwarded to
 [`dict_to_dataset`](@ref).
 """
@@ -208,7 +208,7 @@ function from_mcmcchains(
     )
 
     group_dicts = Dict{Symbol,Dict}()
-    group_datasets = Dict{Symbol,PyObject}()
+    group_datasets = Dict{Symbol,Dataset}()
     rekey_fun = d -> rekey(d, stats_key_map)
 
     # Convert chains to dicts

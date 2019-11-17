@@ -19,8 +19,7 @@ import Pandas
     @test "b[0,0]" ∈ Pandas.index(summarize(idata; index_origin = 0))
 
     s2 = summarize(idata; fmt = "xarray")
-    @test s2 isa PyObject
-    @test s2.__class__.__name__ == "Dataset"
+    @test s2 isa ArviZ.Dataset
 end
 
 @testset "summary" begin
