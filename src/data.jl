@@ -63,6 +63,12 @@ end
 
 @forwardfun convert_to_inference_data
 
+function convert_to_dataset(data::InferenceData; group = :posterior, kwargs...)
+    group = Symbol(group)
+    dataset = getproperty(data, group)
+    return dataset
+end
+
 @forwardfun load_arviz_data
 
 @forwardfun to_netcdf
