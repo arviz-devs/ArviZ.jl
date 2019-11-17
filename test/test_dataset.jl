@@ -22,6 +22,13 @@
     end
 end
 
+@testset "ArviZ.convert_to_dataset(data::ArviZ.Dataset; kwargs...)" begin
+    data = load_arviz_data("centered_eight")
+    dataset = data.posterior
+    @test ArviZ.convert_to_dataset(dataset) isa ArviZ.Dataset
+    @test ArviZ.convert_to_dataset(dataset) === dataset
+end
+
 @testset "dict to dataset roundtrip" begin
     rng = MersenneTwister(42)
     J = 8
