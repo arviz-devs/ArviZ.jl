@@ -140,7 +140,7 @@ savefig("quick_turingtrace.png"); nothing # hide
 We can also generate summary stats
 
 ```@example quickstart
-ArviZ.summarize(data)
+summarystats(data)
 ```
 
 and examine the energy distribution of the Hamiltonian sampler
