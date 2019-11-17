@@ -94,7 +94,7 @@ Compute summary statistics.
 ```@example summarize
 using ArviZ
 data = load_arviz_data("centered_eight")
-summarize(data; var_names=["mu", "tau"])
+ArviZ.summarize(data; var_names=["mu", "tau"])
 ```
 
 Other statistics can be calculated by passing a list of functions or a
@@ -116,7 +116,7 @@ func_dict = Dict(
     "95%" => x -> percentile(x, 95),
 )
 
-summarize(data; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
+ArviZ.summarize(data; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
 """ function summarize(data; index_origin = 1, coords = nothing, dims = nothing, kwargs...)
     posterior = convert_to_dataset(data; group = "posterior", coords = coords, dims = dims)
