@@ -63,7 +63,7 @@ function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
         num_warmup = draws,
         num_samples = draws,
     )
-    rc, chns, cnames = stan(stan_model, data, proj_dir)
+    rc, chns, cnames = stan(stan_model, data, proj_dir, summary = false)
     outfiles = []
     for i = 1:chains
         push!(outfiles, "$(proj_dir)/tmp/$(model_name)_samples_$(i).csv")
