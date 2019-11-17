@@ -8,8 +8,11 @@ using PyPlot
 using Pandas
 using NamedTupleTools
 
-import Base: convert, propertynames, getproperty, hash, show, summary, +
+import Base: convert, propertynames, getproperty, hash, show, +
 import Base.Docs: getdoc
+import StatsBase
+import StatsBase: summarystats
+import Markdown: @doc_str
 import PyCall: PyObject
 
 # Exports
@@ -38,7 +41,7 @@ export plot_autocorr,
        plot_violin
 
 ## Stats
-export summary, compare, hpd, loo, loo_pit, psislw, r2_score, waic
+export summarystats, compare, hpd, loo, loo_pit, psislw, r2_score, waic
 
 ## Diagnostics
 export bfmi, geweke, ess, rhat, mcse
@@ -67,12 +70,14 @@ export with_rc_context
 import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
 const arviz = import_arviz()
+const xarray = PyNULL()
 
 function __init__()
     copy!(arviz, import_arviz())
-    pyimport_conda("xarray", "xarray", "conda-forge")
+    copy!(xarray, pyimport_conda("xarray", "xarray", "conda-forge"))
     pyimport_conda("dask", "dask", "conda-forge")
 
+    pytype_mapping(xarray.Dataset, Dataset)
     pytype_mapping(arviz.InferenceData, InferenceData)
 
     @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin

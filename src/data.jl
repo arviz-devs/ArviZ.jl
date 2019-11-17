@@ -6,7 +6,7 @@ Loose wrapper around `arviz.InferenceData`, which is a container for inference
 data storage using xarray.
 
 `InferenceData` can be constructed either from an `arviz.InferenceData`
-or from multiple `xarray.Dataset`s assigned to groups specified as `kwargs`.
+or from multiple [`Dataset`](@ref)s assigned to groups specified as `kwargs`.
 
 Instead of directly creating an `InferenceData`, use the exported `from_xyz`
 functions or [`convert_to_inference_data`](@ref).
@@ -49,11 +49,17 @@ end
 
 function Base.show(io::IO, data::InferenceData)
     out = pycall(pybuiltin("str"), String, data)
-    out = replace(out, r"Inference data" => "InferenceData")
+    out = replace(out, "Inference data" => "InferenceData")
     print(io, out)
 end
 
 @forwardfun convert_to_inference_data
+
+function convert_to_dataset(data::InferenceData; group = :posterior, kwargs...)
+    group = Symbol(group)
+    dataset = getproperty(data, group)
+    return dataset
+end
 
 @forwardfun load_arviz_data
 
@@ -90,8 +96,7 @@ function _from_dict(
     return idata
 end
 
-@doc forwarddoc(:concat)
-function concat(args::InferenceData...; kwargs...)
+@doc forwarddoc(:concat) function concat(args::InferenceData...; kwargs...)
     ret = arviz.concat(args...; kwargs...)
     ret === nothing && return args[1]
     return ret

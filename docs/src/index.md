@@ -49,6 +49,9 @@ In ArviZ.jl, most of the [same functions](@ref api) are exported and therefore c
 The exception are `from_xyz` converters for packages that have no (known) Julia wrappers.
 These functions are not exported to reduce namespace clutter.
 
+For `InferenceData` inputs, [`summarystats`](@ref) replaces `arviz.summary` to avoid confusion with `Base.summary`.
+For arbitrary inputs and the full functionality of `arviz.summary`, use [`ArviZ.summary`](@ref), which is not exported.
+
 ArviZ.jl transparently interconverts between `arviz.InferenceData` and our own [`InferenceData`](@ref), used for dispatch.
 `InferenceData` has identical usage to its Python counterpart.
 

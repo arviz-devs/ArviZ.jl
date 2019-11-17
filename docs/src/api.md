@@ -28,16 +28,16 @@
 
 ## [Stats](@id stats-api)
 
-| Name               | Description                                                                     |
-|:-------------------|:------------------------------------------------------------------------------- |
-| [`summary`](@ref)  | Create a data frame with summary statistics of an `InferenceData`.              |
-| [`hpd`](@ref)      | Calculate highest posterior density (HPD) of array for given credible_interval. |
-| [`loo`](@ref)      | Pareto-smoothed importance sampling leave-one-out (LOO) cross-validation.       |
-| [`loo_pit`](@ref)  | Compute leave-one-out probability integral transform (PIT) values.              |
-| [`psislw`](@ref)   | Pareto smoothed importance sampling (PSIS).                                     |
-| [`r2_score`](@ref) | $R^2$ for Bayesian regression models.                                           |
-| [`waic`](@ref)     | Calculate the widely available information criterion (WAIC).                    |
-| [`compare`](@ref)  | Compare models based on WAIC or LOO cross-validation.                           |
+| Name                     | Description                                                                     |
+|:------------------------ |:------------------------------------------------------------------------------- |
+| [`summarystats`](@ref)   | Compute summary statistics on an `InferenceData`                                |
+| [`hpd`](@ref)            | Calculate highest posterior density (HPD) of array for given credible_interval. |
+| [`loo`](@ref)            | Pareto-smoothed importance sampling leave-one-out (LOO) cross-validation.       |
+| [`loo_pit`](@ref)        | Compute leave-one-out probability integral transform (PIT) values.              |
+| [`psislw`](@ref)         | Pareto smoothed importance sampling (PSIS).                                     |
+| [`r2_score`](@ref)       | $R^2$ for Bayesian regression models.                                           |
+| [`waic`](@ref)           | Calculate the widely available information criterion (WAIC).                    |
+| [`compare`](@ref)        | Compare models based on WAIC or LOO cross-validation.                           |
 
 ## [Diagnostics](@id diagnostics-api)
 
