@@ -114,7 +114,7 @@ func_dict = Dict(
     "95%" => x -> percentile(x, 95),
 )
 
-summarystats(data; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
+summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
 """
 function StatsBase.summarystats(data::Dataset; index_origin = 1, kwargs...)
