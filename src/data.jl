@@ -6,7 +6,7 @@ Loose wrapper around `arviz.InferenceData`, which is a container for inference
 data storage using xarray.
 
 `InferenceData` can be constructed either from an `arviz.InferenceData`
-or from multiple `Dataset`s assigned to groups specified as `kwargs`.
+or from multiple [`Dataset`](@ref)s assigned to groups specified as `kwargs`.
 
 Instead of directly creating an `InferenceData`, use the exported `from_xyz`
 functions or [`convert_to_inference_data`](@ref).
