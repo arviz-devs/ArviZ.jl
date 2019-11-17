@@ -68,10 +68,11 @@ export with_rc_context
 import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
 const arviz = import_arviz()
+const xarray = PyNULL()
 
 function __init__()
     copy!(arviz, import_arviz())
-    pyimport_conda("xarray", "xarray", "conda-forge")
+    copy!(xarray, pyimport_conda("xarray", "xarray", "conda-forge"))
     pyimport_conda("dask", "dask", "conda-forge")
 
     pytype_mapping(arviz.InferenceData, InferenceData)
