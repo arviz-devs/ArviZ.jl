@@ -22,6 +22,9 @@ env:
     - CMDSTAN_VERSION="2.21.0"
     - CMDSTAN_CACHE="$HOME/.cmdstan/"
     - JULIA_CMDSTAN_HOME="$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
+  jobs:
+    - ARVIZ_MASTER=true
+    - ARVIZ_MASTER=false
 
 matrix:
  allow_failures:
@@ -38,6 +41,9 @@ before_install:
     wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$CMDSTAN_VERSION/cmdstan-$CMDSTAN_VERSION.tar.gz;
     tar -xzpf $CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION.tar.gz -C $CMDSTAN_CACHE;
     make -C $JULIA_CMDSTAN_HOME build;
+    fi
+  - if [ $ARVIZ_MASTER ]; then
+    julia -e 'using Pkg; Pkg.add("PyCall"); using PyCall; run(PyCall.python_cmd(`-m pip install git+https://github.com/arviz-devs/arviz`))';
     fi
 
 jobs:
