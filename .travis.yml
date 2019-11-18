@@ -22,8 +22,6 @@ env:
     - CMDSTAN_VERSION="2.21.0"
     - CMDSTAN_CACHE="$HOME/.cmdstan/"
     - JULIA_CMDSTAN_HOME="$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
-  jobs:
-    - ARVIZ_MASTER=true
     - ARVIZ_MASTER=false
 
 matrix:
@@ -35,7 +33,6 @@ cache:
   directories:
   - $CMDSTAN_CACHE
 
-# Adapted from CmdStan.jl
 before_install:
   - if [ ! -d $JULIA_CMDSTAN_HOME ]; then
     wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$CMDSTAN_VERSION/cmdstan-$CMDSTAN_VERSION.tar.gz;
@@ -45,16 +42,21 @@ before_install:
   - if [ $ARVIZ_MASTER ]; then
     julia -e 'using Pkg; Pkg.add("PyCall"); using PyCall; run(PyCall.python_cmd(`-m pip install git+https://github.com/arviz-devs/arviz`))';
     fi
+after_success:
+  - julia --project=test/coverage -e 'using Pkg; Pkg.instantiate()'
+  - julia --project=test/coverage test/coverage/coverage.jl
 
 jobs:
   include:
+    - stage: arviz#master
+      julia: 1.2
+      os: linux
+      env:
+        - ARVIZ_MASTER=true
+      after_success: skip
     - stage: Documentation
       julia: 1.2
       os: linux
       script:
         - julia --color=yes --project=docs/ docs/make.jl
       after_success: skip
-
-after_success:
-  - julia --project=test/coverage -e 'using Pkg; Pkg.instantiate()'
-  - julia --project=test/coverage test/coverage/coverage.jl
