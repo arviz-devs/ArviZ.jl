@@ -1,7 +1,7 @@
 # [ArviZ.jl: Exploratory analysis of Bayesian models in Julia](@id arvizjl)
 
 [![Build Status](https://travis-ci.com/arviz-devs/ArviZ.jl.svg?branch=master)](https://travis-ci.com/arviz-devs/ArviZ.jl)
-[![codecov.io](http://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](http://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
+[![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
 
 ArviZ.jl is a Julia interface to the [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis of Bayesian models.
 
@@ -64,6 +64,10 @@ ArviZ.jl includes functions that can be used with a nearly identical syntax.
 `with_interactive_backend` here is not limited to an IPython/IJulia context.
 
 In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
+
+## [Extending ArviZ.jl](@id extendingarviz)
+
+To use a custom data type with ArviZ.jl, simply overload [`convert_to_inference_data`](@ref) to convert your input(s) to an [`InferenceData`](@ref).
 
 ## [Known Issues](@id knownissues)
 

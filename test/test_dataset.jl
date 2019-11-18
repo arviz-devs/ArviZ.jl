@@ -22,11 +22,39 @@
     end
 end
 
-@testset "ArviZ.convert_to_dataset(data::ArviZ.Dataset; kwargs...)" begin
-    data = load_arviz_data("centered_eight")
-    dataset = data.posterior
-    @test ArviZ.convert_to_dataset(dataset) isa ArviZ.Dataset
-    @test ArviZ.convert_to_dataset(dataset) === dataset
+@testset "ArviZ.convert_to_dataset" begin
+    rng = MersenneTwister(42)
+
+    @testset "ArviZ.convert_to_dataset(::ArviZ.Dataset; kwargs...)" begin
+        data = load_arviz_data("centered_eight")
+        dataset = data.posterior
+        @test ArviZ.convert_to_dataset(dataset) isa ArviZ.Dataset
+        @test ArviZ.convert_to_dataset(dataset) === dataset
+    end
+
+    @testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
+        A = Dict("A" => randn(rng, 2, 10, 2))
+        B = Dict("B" => randn(rng, 2, 10, 2))
+        dataA = ArviZ.convert_to_dataset(A)
+        dataB = ArviZ.convert_to_dataset(B)
+        idata = InferenceData(posterior = dataA, prior = dataB)
+
+        ds1 = ArviZ.convert_to_dataset(idata)
+        @test ds1 isa ArviZ.Dataset
+        @test "A" ∈ [ds1.keys()...]
+
+        ds2 = ArviZ.convert_to_dataset(idata; group = :prior)
+        @test ds2 isa ArviZ.Dataset
+        @test "B" ∈ [ds2.keys()...]
+    end
+
+    @testset "ArviZ.convert_to_dataset(::Dict; kwargs...)" begin
+        data = Dict("x" => randn(rng, 4, 100), "y" => randn(rng, 4, 100))
+        dataset = ArviZ.dict_to_dataset(data)
+        @test dataset isa ArviZ.Dataset
+        @test "x" ∈ [dataset.keys()...]
+        @test "y" ∈ [dataset.keys()...]
+    end
 end
 
 @testset "dict to dataset roundtrip" begin
@@ -43,7 +71,7 @@ end
     dims = Dict("b" => ["bi", "bj"])
     attrs = Dict("mykey" => 5)
 
-    ds = ArviZ.dict_to_dataset(vars; coords = coords, dims = dims, attrs = attrs)
+    ds = ArviZ.dict_to_dataset(vars; library = :MyLib, coords = coords, dims = dims, attrs = attrs)
     @test ds isa ArviZ.Dataset
     vars2, kwargs = ArviZ.dataset_to_dict(ds)
     for (k, v) in vars
@@ -56,4 +84,6 @@ end
         @test k ∈ keys(kwargs.attrs)
         @test kwargs.attrs[k] == v
     end
+    @test "inference_library" ∈ keys(kwargs.attrs)
+    @test kwargs.attrs["inference_library"] == "MyLib"
 end

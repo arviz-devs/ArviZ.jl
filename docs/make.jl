@@ -19,8 +19,14 @@ makedocs(
     checkdocs = :exports,
     format = Documenter.HTML(
         prettyurls = haskey(ENV, "CI"),
+        assets = ["assets/favicon.ico"],
         sidebar_sitename = false,
+        canonical = "stable",
     ),
+    linkcheck = true,
 )
 
-deploydocs(repo = "github.com/arviz-devs/ArviZ.jl.git",)
+deploydocs(
+    repo = "github.com/arviz-devs/ArviZ.jl.git",
+    push_preview = true,
+)

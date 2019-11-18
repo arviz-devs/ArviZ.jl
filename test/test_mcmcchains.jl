@@ -229,8 +229,11 @@ end
 @testset "convert_to_dataset(::MCMCChains.Chains)" begin
     nvars, nchains, ndraws = 2, 4, 20
     chns = makechains(nvars, ndraws, nchains)
-    ds = ArviZ.convert_to_dataset(chns)
+    ds = ArviZ.convert_to_dataset(chns; library = "MyLib")
     @test ds isa ArviZ.Dataset
+    attrs = ds.attrs
+    @test "inference_library" ∈ keys(attrs)
+    @test attrs["inference_library"] == "MyLib"
 end
 
 @testset "convert_to_inference_data(::MCMCChains.Chains)" begin
