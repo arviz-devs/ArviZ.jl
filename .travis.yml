@@ -13,7 +13,7 @@ git:
   depth: 99999999
 env:
   global:
-    - PYTHON="conda" # Install dependencies in conda env
+    - PYTHON=Conda # Install dependencies in Julia's conda env
     - CMDSTAN_VERSION="2.21.0"
     - CMDSTAN_CACHE="$HOME/.cmdstan/"
     - JULIA_CMDSTAN_HOME="$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
