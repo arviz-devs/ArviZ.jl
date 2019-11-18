@@ -22,6 +22,7 @@ makedocs(
         sidebar_sitename = false,
         canonical = "stable",
     ),
+    linkcheck = true,
 )
 
 deploydocs(repo = "github.com/arviz-devs/ArviZ.jl.git",)
