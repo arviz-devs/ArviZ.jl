@@ -84,6 +84,6 @@ end
         @test k ∈ keys(kwargs.attrs)
         @test kwargs.attrs[k] == v
     end
-    @test "library" ∈ keys(kwargs.attrs)
-    @test kwargs.attrs["library"] == "MyLib"
+    @test "inference_library" ∈ keys(kwargs.attrs)
+    @test kwargs.attrs["inference_library"] == "MyLib"
 end

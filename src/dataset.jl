@@ -77,7 +77,7 @@ ArviZ.dict_to_dataset(Dict("x" => randn(4, 100), "y" => randn(4, 100)))
 """
 function dict_to_dataset(data; library = nothing, attrs = nothing, kwargs...)
     if library !== nothing
-        ldict = Dict("library" => string(library))
+        ldict = Dict("inference_library" => string(library))
         attrs = (attrs === nothing ? ldict : merge(attrs, ldict))
     end
     return arviz.dict_to_dataset(data; attrs = attrs, kwargs...)
