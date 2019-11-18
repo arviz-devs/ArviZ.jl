@@ -25,4 +25,7 @@ makedocs(
     linkcheck = true,
 )
 
-deploydocs(repo = "github.com/arviz-devs/ArviZ.jl.git",)
+deploydocs(
+    repo = "github.com/arviz-devs/ArviZ.jl.git",
+    push_preview = true,
+)
