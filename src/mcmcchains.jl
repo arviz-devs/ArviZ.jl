@@ -137,9 +137,7 @@ created the chains. Remaining `kwargs` are forwarded to
 """
 function convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...)
     chns_dict = chains_to_dict(chns)
-    attrs = attributes_dict(chns)
-    attrs = merge(attrs, Dict("inference_library" => string(library)))
-    return dict_to_dataset(chns_dict; attrs = attrs, kwargs...)
+    return dict_to_dataset(chns_dict; library = library, kwargs...)
 end
 
 """
