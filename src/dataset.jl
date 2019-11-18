@@ -39,11 +39,49 @@ function Base.show(io::IO, data::Dataset)
     print(io, out)
 end
 
-@forwardfun convert_to_dataset
+"""
+    convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
+
+Convert a supported object to a `Dataset`. In most cases, this function calls
+[`convert_to_inference_data`](@ref) and returns the corresponding `group`.
+"""
+function convert_to_dataset(obj; group = :posterior, kwargs...)
+    group = Symbol(group)
+    idata = convert_to_inference_data(obj; group = group, kwargs...)
+    dataset = getproperty(idata, group)
+    return dataset
+end
 
 convert_to_dataset(data::Dataset; kwargs...) = data
 
-@forwardfun dict_to_dataset
+"""
+    dict_to_dataset(data::Dict{String,Array}; kwargs...) -> Dataset
+
+Convert a dictionary with data and keys as variable names to a [`Dataset`](@ref).
+
+# Keywords
+- `attrs::Dict{String,Any}`: Json serializable metadata to attach to the
+    dataset, in addition to defaults.
+- `library::String`: Name of library used for performing inference. Will be
+    attached to the attrs metadata.
+- `coords::Dict{String,Array}`: Coordinates for the dataset
+- `dims::Dict{String,Vector{String}}`: Dimensions of each variable. The keys
+    are variable names, values are vectors of coordinates.
+
+# Examples
+
+```@example
+using ArviZ
+ArviZ.dict_to_dataset(Dict("x" => randn(4, 100), "y" => randn(4, 100)))
+```
+"""
+function dict_to_dataset(data; library = nothing, attrs = nothing, kwargs...)
+    if library !== nothing
+        ldict = Dict("library" => string(library))
+        attrs = (attrs === nothing ? ldict : merge(attrs, ldict))
+    end
+    return arviz.dict_to_dataset(data; attrs = attrs, kwargs...)
+end
 
 """
     dataset_to_dict(ds::Dataset) -> Tuple{Dict{String,Array},NamedTuple}
