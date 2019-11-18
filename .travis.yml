@@ -3,11 +3,6 @@ language: julia
 dist: xenial
 os:
   - linux
-julia:
-  - 1.1
-  - 1.2
-  - 1.3
-  - nightly
 notifications:
   email: false
 branches:
@@ -22,17 +17,31 @@ env:
     - CMDSTAN_VERSION="2.21.0"
     - CMDSTAN_CACHE="$HOME/.cmdstan/"
     - JULIA_CMDSTAN_HOME="$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
-    - ARVIZ_MASTER=false
-
-matrix:
-  allow_failures:
-    - julia: 1.3
-    - julia: nightly
-  fast_finish: true
 
 cache:
   directories:
   - $CMDSTAN_CACHE
+
+jobs:
+  include:
+    - julia: 1.1
+      env: ARVIZ_MASTER=false
+    - julia: 1.2
+      env: ARVIZ_MASTER=false
+    - julia: 1.3
+      env: ARVIZ_MASTER=false
+    - julia: nightly
+      env: ARVIZ_MASTER=false
+    - julia: 1.2
+      env: ARVIZ_MASTER=true
+  allow_failures:
+    - julia: 1.3
+      env: ARVIZ_MASTER=false
+    - julia: nightly
+      env: ARVIZ_MASTER=false
+    - julia: 1.2
+      env: ARVIZ_MASTER=true
+  fast_finish: true
 
 before_install:
   - if [ ! -d $JULIA_CMDSTAN_HOME ]; then
@@ -49,15 +58,8 @@ after_success:
 
 jobs:
   include:
-    - stage: arviz#master
-      julia: 1.2
-      os: linux
-      env:
-        - ARVIZ_MASTER=true
-      after_success: skip
     - stage: Documentation
       julia: 1.2
-      os: linux
       script:
         - julia --color=yes --project=docs/ docs/make.jl
       after_success: skip
