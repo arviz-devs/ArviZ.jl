@@ -55,11 +55,11 @@ savefig("quick_forestdists.svg"); nothing # hide
 ## Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl
 
 ArviZ is designed to work well with high dimensional, labelled data.
-Consider the [eight schools model](http://andrewgelman.com/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/), which roughly tries to measure the effectiveness of SAT classes at eight different schools.
+Consider the [eight schools model](http://statmodeling.stat.columbia.edu/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/), which roughly tries to measure the effectiveness of SAT classes at eight different schools.
 To show off ArviZ's labelling, I give the schools the names of [a different eight schools](https://en.wikipedia.org/wiki/Eight_Schools_Association).
 
 This model is small enough to write down, is hierarchical, and uses labelling.
-Additionally, a centered parameterization causes [divergences](http://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html) (which are interesting for illustration).
+Additionally, a centered parameterization causes [divergences](https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html) (which are interesting for illustration).
 
 First we create our data.
 
