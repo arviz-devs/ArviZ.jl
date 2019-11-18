@@ -13,6 +13,7 @@ notifications:
 branches:
   only:
     - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/ # build tagged releases
 git:
   depth: 99999999
 env:
