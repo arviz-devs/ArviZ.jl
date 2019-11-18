@@ -129,18 +129,6 @@ end
 chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
-    convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...) -> Dataset
-
-Convert the chains `obj` to a [`Dataset`](@ref). `library` is the library that
-created the chains. Remaining `kwargs` are forwarded to
-[`dict_to_dataset`](@ref).
-"""
-function convert_to_dataset(chns::AbstractChains; library = MCMCChains, kwargs...)
-    chns_dict = chains_to_dict(chns)
-    return dict_to_dataset(chns_dict; library = library, kwargs...)
-end
-
-"""
     convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...) -> InferenceData
 
 Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group`.
