@@ -20,6 +20,7 @@ makedocs(
     format = Documenter.HTML(
         prettyurls = haskey(ENV, "CI"),
         sidebar_sitename = false,
+        canonical = "stable",
     ),
 )
 
