@@ -65,6 +65,10 @@ ArviZ.jl includes functions that can be used with a nearly identical syntax.
 
 In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
 
+## [Extending ArviZ.jl](@id extendingarviz)
+
+To use a custom data type with ArviZ.jl, simply overload [`convert_to_inference_data`](@ref) to convert your input(s) to an [`InferenceData`](@ref).
+
 ## [Known Issues](@id knownissues)
 
 ArviZ.jl uses [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) to wrap ArviZ.

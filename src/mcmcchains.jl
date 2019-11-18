@@ -160,7 +160,7 @@ Convert data in an `MCMCChains.AbstractChains` format into an
 [`InferenceData`](@ref).
 
 Any keyword argument below without an an explicitly annotated type above is
-allowed, so long as it can be passed to [`convert_to_dataset`](@ref).
+allowed, so long as it can be passed to [`convert_to_inference_data`](@ref).
 
 # Arguments
 - `posterior::AbstractChains`: Draws from the posterior
