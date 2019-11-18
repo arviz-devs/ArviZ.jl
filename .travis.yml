@@ -40,7 +40,7 @@ before_install:
     tar -xzpf $CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION.tar.gz -C $CMDSTAN_CACHE;
     make -C $JULIA_CMDSTAN_HOME build;
     fi
-  - if [ $ARVIZ_MASTER ]; then
+  - if [ "$ARVIZ_MASTER" = true ]; then
     julia -e 'using Pkg; Pkg.add("PyCall"); using PyCall; run(PyCall.python_cmd(`-m pip install git+https://github.com/arviz-devs/arviz`))';
     fi
 after_success:
