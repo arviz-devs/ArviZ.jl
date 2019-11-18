@@ -19,6 +19,7 @@ makedocs(
     checkdocs = :exports,
     format = Documenter.HTML(
         prettyurls = haskey(ENV, "CI"),
+        assets = ["assets/favicon.ico"],
         sidebar_sitename = false,
         canonical = "stable",
     ),
