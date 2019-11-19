@@ -35,7 +35,7 @@ end
 
 function Base.show(io::IO, data::Dataset)
     out = pycall(pybuiltin("str"), String, data)
-    out = replace(out, "<xarray.Dataset>" => "Dataset")
+    out = replace(out, "<xarray.Dataset>" => "Dataset (xarray.Dataset)")
     print(io, out)
 end
 
