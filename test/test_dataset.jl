@@ -20,6 +20,14 @@
         @test dataset4 isa ArviZ.Dataset
         @test PyObject(dataset4) === PyObject(dataset)
     end
+
+    @testset "show(::ArviZ.Dataset)" begin
+        @testset "$mimetype" for mimetype in ("plain", "html")
+            text = repr(MIME("text/$(mimetype)"), dataset)
+            @test text isa String
+            @test occursin("Dataset (xarray.Dataset)", text)
+        end
+    end
 end
 
 @testset "ArviZ.convert_to_dataset" begin

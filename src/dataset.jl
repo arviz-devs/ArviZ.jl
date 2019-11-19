@@ -35,7 +35,15 @@ end
 
 function Base.show(io::IO, data::Dataset)
     out = pycall(pybuiltin("str"), String, data)
-    out = replace(out, "<xarray.Dataset>" => "Dataset")
+    out = replace(out, "<xarray.Dataset>" => "Dataset (xarray.Dataset)")
+    print(io, out)
+end
+
+function Base.show(io::IO, ::MIME"text/html", data::Dataset)
+    obj = data.o
+    (:_repr_html_ in propertynames(obj)) || return show(io, data)
+    out = obj._repr_html_()
+    out = replace(out, r"<?xarray.Dataset>?" => "Dataset (xarray.Dataset)")
     print(io, out)
 end
 
