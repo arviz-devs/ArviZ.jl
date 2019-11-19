@@ -13,6 +13,13 @@ using Random
 Random.seed!(42)
 
 turing_chns = read("../src/assets/turing_centered_eight_chains.jls", MCMCChains.Chains)
+
+# use fancy HTML for xarray.Dataset if available
+try
+    ArviZ.xarray.set_options(display_style = "html")
+catch
+    nothing
+end
 ```
 
 ```@example quickstart
@@ -116,8 +123,6 @@ For much more powerful querying, analysis and plotting, we can use built-in Arvi
 Note we are also giving some information about labelling.
 
 ArviZ is built to work with [`InferenceData`](@ref) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
-Here is a plot of the trace, which is common in Turing workflows.
-Note the intelligent labels.
 
 ```@example quickstart
 data = from_mcmcchains(
@@ -129,6 +134,15 @@ data = from_mcmcchains(
     dims = Dict("theta" => ["school"], "obs" => ["school"])
 )
 ```
+
+Each group is an [`ArviZ.Dataset`](@ref) (a thinly wrapped `xarray.Dataset`).
+We can view a summary of the dataset.
+
+```@example quickstart
+data.posterior
+```
+
+Here is a plot of the trace. Note the intelligent labels.
 
 ```@example quickstart
 plot_trace(data);
