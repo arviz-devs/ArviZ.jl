@@ -76,14 +76,8 @@ function varnames_locs_dict(loc_names)
 end
 
 function attributes_dict(chns::AbstractChains)
-    info = chns.info
-    :hashedsummary in propertynames(info) || return info
-    chndfs = info.hashedsummary.x[2]
-    names = tuple(snakecase.(getproperty.(chndfs, :name))...)
-    dfs = tuple(topandas.(chndfs)...)
-    info = delete(info, :hashedsummary)
-    attrs = merge(info, (mcmcchains_summary = Dict(zip(names, dfs)),))
-    return Dict{String,Any}((string(k), v) for (k, v) in pairs(attrs))
+    info = delete(chns.info, :hashedsummary)
+    return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
 
 attributes_dict(::Nothing) = Dict()

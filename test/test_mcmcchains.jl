@@ -220,9 +220,6 @@ end
         attrs = idata.posterior.attrs
         @test attrs isa Dict
         @test attrs["inference_library"] == "MyLib"
-        @test attrs["mcmcchains_summary"] isa Dict
-        mcmcchains_summary = idata.posterior.attrs["mcmcchains_summary"]
-        @test first(values(mcmcchains_summary)).__class__.__name__ == "DataFrame"
     end
 end
 
