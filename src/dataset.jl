@@ -1,9 +1,22 @@
 """
     Dataset(::PyObject)
+    Dataset(; data_vars = nothing, coords = nothing, attrs = nothing)
 
 Loose wrapper around `xarray.Dataset`, mostly used for dispatch.
 
-To create a `Dataset`, use [`convert_to_dataset`](@ref).
+# Keywords
+- `data_vars::Dict{String,Any}`: Dict mapping variable names to
+    + `Vector`: Data vector. Single dimension is named after variable.
+    + `Tuple{String,Vector}`: Dimension name and data vector.
+    + `Tuple{NTuple{N,String},Array{T,N}} where {N,T}`: Dimension names and
+        data array.
+- `coords::Dict{String,Any}`: Dict mapping dimension names to index names.
+    Possible arguments has same form as `data_vars`.
+- `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
+
+In most cases, use [`convert_to_dataset`](@ref) or
+[`convert_to_constant_dataset`](@ref) or  to create a `Dataset` instead of
+directly using a constructor.
 """
 struct Dataset
     o::PyObject
