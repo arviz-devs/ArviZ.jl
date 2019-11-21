@@ -154,21 +154,24 @@ allowed, so long as it can be passed to [`convert_to_inference_data`](@ref).
 - `posterior::AbstractChains`: Draws from the posterior
 
 # Keywords
-- `posterior_predictive=nothing`: Draws from the posterior predictive distribution
-     or name(s) of predictive variables in `posterior`
-- `prior::AbstractChains=nothing`: Draws from the prior
-- `prior_predictive=nothing`: Draws from the prior predictive distribution
+- `posterior_predictive::Any=nothing`: Draws from the posterior predictive
+     distribution or name(s) of predictive variables in `posterior`
+- `prior::Any=nothing`: Draws from the prior
+- `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
      or name(s) of predictive variables in `prior`
-- `observed_data=nothing`: Data actually observed or name(s) of observed data
-     variables in `posterior`
-- `constant_data=nothing`: Data that are constant, not observed (e.g. metadata),
-     or name(s) of variables in posterior
-- `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
+- `observed_data::Dict{String,Array}=nothing`: Observed data on which the
+     `posterior` is conditional. It should only contain data which is modeled as
+     a random variable. Keys are parameter names and values.
+- `constant_data::Dict{String,Array}=nothing`: Model constants, data included
+     in the model which is not modeled as a random variable. Keys are parameter
+     names and values.
+- `log_likelihood::String=nothing`: Name of variable in `posterior` with log
+     likelihoods
 - `library=MCMCChains`: Name of library that generated the chains
 - `coords::Dict{String,Vector}=nothing`: Map from named dimension to named
-    indices
+     indices
 - `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names
-    of its dimensions
+     of its dimensions
 
 # Returns
 - `InferenceData`: The data with groups corresponding to the provided data
@@ -303,5 +306,5 @@ end
 
 Call [`from_mcmcchains`](@ref) on output of `CmdStan`.
 """
-from_cmdstan(data::AbstractChains; kwargs...) =
-    from_mcmcchains(data; library = "CmdStan", kwargs...)
+from_cmdstan(posterior::AbstractChains; kwargs...) =
+    from_mcmcchains(posterior; library = "CmdStan", kwargs...)
