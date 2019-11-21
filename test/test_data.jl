@@ -20,6 +20,20 @@
         @test :prior ∉ propertynames(data3)
     end
 
+    @testset "groups" begin
+        data4 = InferenceData(posterior = data.posterior)
+        @test ArviZ.groupnames(data4) == [:posterior]
+        g = ArviZ.groups(data4)
+        @test g isa Dict
+        @test :posterior in keys(g)
+        @test hash(data4.posterior) === hash(g[:posterior])
+    end
+
+    @testset "isempty" begin
+        @test !isempty(data)
+        @test isempty(InferenceData())
+    end
+
     @testset "conversion" begin
         @test pyisinstance(PyObject(data), ArviZ.arviz.InferenceData)
         data4 = convert(InferenceData, PyObject(data))
@@ -71,6 +85,10 @@ end
         Dict(:posterior => ["A", "B"], :prior => ["C", "D"]),
         idata1,
     ) == []
+
+    idata3 = concat!()
+    @test idata3 isa InferenceData
+    @test isempty(idata3)
 end
 
 @testset "convert_to_inference_data" begin
@@ -87,6 +105,12 @@ end
         arr = randn(rng, 2, 10, 2)
         idata2 = convert_to_inference_data(arr)
         @test check_multiple_attrs(Dict(:posterior => ["x"]), idata2) == []
+    end
+
+    @testset "convert_to_inference_data(::Nothing)" begin
+        idata3 = convert_to_inference_data(nothing)
+        @test idata3 isa InferenceData
+        @test isempty(idata3)
     end
 end
 
