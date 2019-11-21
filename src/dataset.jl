@@ -17,6 +17,8 @@ struct Dataset
     end
 end
 
+Dataset(; kwargs...) = xarray.Dataset(; kwargs...)
+
 @inline Dataset(data::Dataset) = data
 
 @inline PyObject(data::Dataset) = getfield(data, :o)
