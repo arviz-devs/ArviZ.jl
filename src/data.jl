@@ -96,23 +96,22 @@ function _from_dict(
     return idata
 end
 
-@doc forwarddoc(:concat) function concat(args::InferenceData...; kwargs...)
-    ret = arviz.concat(args...; kwargs...)
-    ret === nothing && return args[1]
-    return ret
+@doc forwarddoc(:concat) function concat(data::InferenceData...; kwargs...)
+    data = Iterators.filter(x -> !isempty(x), data)
+    return arviz.concat(data...; inplace = false, kwargs...)
 end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
 """
-    concat!(data::InferenceData, args::InferenceData...; kwargs...) -> InferenceData
+    concat!(data1::InferenceData, data::InferenceData...; kwargs...) -> InferenceData
 
-In-place version of `concat`, where `data` is modified to contain the
+In-place version of `concat`, where `data1` is modified to contain the
 concatenation of `data` and `args`. See [`concat`](@ref) for a description of
 `kwargs`.
 """
-function concat!(data::InferenceData, args::InferenceData...; kwargs...)
-    kwargs = merge((; kwargs...), (; inplace = true))
-    concat(data, args...; kwargs...)
-    return data
+function concat!(data1::InferenceData, data::InferenceData...; kwargs...)
+    data = Iterators.filter(x -> !isempty(x), data)
+    arviz.concat(data1, data...; inplace = true, kwargs...)
+    return data1
 end
