@@ -145,6 +145,9 @@ popsubdict!(dict, key::String) = popsubdict!(dict, [key])
 
 snakecase(s) = replace(lowercase(s), " " => "_")
 
+@inline _asarray(x) = [x]
+@inline _asarray(x::AbstractArray) = x
+
 enforce_stat_types(dict) =
     Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
 enforce_stat_types(::Nothing) = nothing

@@ -23,7 +23,7 @@ struct InferenceData
     end
 end
 
-InferenceData(; kwargs...) = arviz.InferenceData(; kwargs...)
+InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
 
 @inline InferenceData(data::InferenceData) = data
 
@@ -53,7 +53,26 @@ function Base.show(io::IO, data::InferenceData)
     print(io, out)
 end
 
+"""
+    groupnames(data::InferenceData) -> Vector{Symbol}
+
+Get the names of the groups (datasets) in `data`.
+"""
+groupnames(data::InferenceData) = Symbol.(PyObject(data)._groups)
+
+"""
+    groups(data::InferenceData) -> Dict{Symbol,Dataset}
+
+Get the groups in `data` as a dictionary mapping names to datasets.
+"""
+groups(data::InferenceData) =
+    Dict((name => getproperty(data, name) for name in groupnames(data)))
+
+Base.isempty(data::InferenceData) = isempty(groupnames(data))
+
 @forwardfun convert_to_inference_data
+
+convert_to_inference_data(::Nothing; kwargs...) = InferenceData()
 
 function convert_to_dataset(data::InferenceData; group = :posterior, kwargs...)
     group = Symbol(group)
@@ -86,33 +105,65 @@ function _from_dict(
 )
     dicts = (posterior = posterior, dicts...)
 
-    idata = InferenceData()
+    datasets = []
     for (name, dict) in pairs(dicts)
         (dict === nothing || isempty(dict)) && continue
         dataset = dict_to_dataset(dict; attrs = attrs, coords = coords, dims = dims)
-        concat!(idata, InferenceData(; (name => dataset,)...))
+        push!(datasets, name => dataset)
     end
 
+    idata = InferenceData(; datasets...)
     return idata
 end
 
-@doc forwarddoc(:concat) function concat(args::InferenceData...; kwargs...)
-    ret = arviz.concat(args...; kwargs...)
-    ret === nothing && return args[1]
-    return ret
+@doc forwarddoc(:concat) function concat(data::InferenceData...; kwargs...)
+    data = Iterators.filter(x -> !isempty(x), data)
+    return arviz.concat(data...; inplace = false, kwargs...)
 end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
 """
-    concat!(data::InferenceData, args::InferenceData...; kwargs...) -> InferenceData
+    concat!(data1::InferenceData, data::InferenceData...; kwargs...) -> InferenceData
 
-In-place version of `concat`, where `data` is modified to contain the
+In-place version of `concat`, where `data1` is modified to contain the
 concatenation of `data` and `args`. See [`concat`](@ref) for a description of
 `kwargs`.
 """
-function concat!(data::InferenceData, args::InferenceData...; kwargs...)
-    kwargs = merge((; kwargs...), (; inplace = true))
-    concat(data, args...; kwargs...)
+function concat!(data1::InferenceData, data::InferenceData...; kwargs...)
+    data = Iterators.filter(x -> !isempty(x), data)
+    arviz.concat(data1, data...; inplace = true, kwargs...)
+    return data1
+end
+
+concat!(; kwargs...) = InferenceData()
+
+function rekey(data::InferenceData, keymap)
+    keymap = Dict([Symbol(k) => Symbol(v) for (k, v) in keymap])
+    dnames = groupnames(data)
+    data_new = InferenceData[]
+    for k in dnames
+        knew = get(keymap, k, k)
+        push!(data_new, InferenceData(; knew => getproperty(data, k)))
+    end
+    return concat(data_new...)
+end
+
+const default_group_order = [
+    :posterior,
+    :posterior_predictive,
+    :sample_stats,
+    :prior,
+    :prior_predictive,
+    :sample_stats_prior,
+    :observed_data,
+]
+
+function reorder_groups!(data::InferenceData; group_order = default_group_order)
+    names = groupnames(data)
+    sorted_names = filter(n -> n ∈ names, group_order)
+    other_names = filter(n -> n ∉ sorted_names, names)
+    obj = PyObject(data)
+    setproperty!(obj, :_groups, string.([sorted_names; other_names]))
     return data
 end

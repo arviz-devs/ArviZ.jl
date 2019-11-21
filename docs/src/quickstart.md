@@ -231,7 +231,7 @@ Note that we're using the same [`from_cmdstan`](@ref) function used by ArviZ to 
 data = from_cmdstan(
     stan_chns;
     posterior_predictive = "y_hat",
-#     observed_data = Dict("y" => schools_dat["y"]), # hide
+    observed_data = Dict("y" => schools_dat["y"]),
     log_likelihood = "log_lik",
     coords = Dict("school" => schools),
     dims = Dict(

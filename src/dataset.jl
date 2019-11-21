@@ -1,9 +1,22 @@
 """
     Dataset(::PyObject)
+    Dataset(; data_vars = nothing, coords = nothing, attrs = nothing)
 
 Loose wrapper around `xarray.Dataset`, mostly used for dispatch.
 
-To create a `Dataset`, use [`convert_to_dataset`](@ref).
+# Keywords
+- `data_vars::Dict{String,Any}`: Dict mapping variable names to
+    + `Vector`: Data vector. Single dimension is named after variable.
+    + `Tuple{String,Vector}`: Dimension name and data vector.
+    + `Tuple{NTuple{N,String},Array{T,N}} where {N,T}`: Dimension names and
+        data array.
+- `coords::Dict{String,Any}`: Dict mapping dimension names to index names.
+    Possible arguments has same form as `data_vars`.
+- `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
+
+In most cases, use [`convert_to_dataset`](@ref) or
+[`convert_to_constant_dataset`](@ref) or  to create a `Dataset` instead of
+directly using a constructor.
 """
 struct Dataset
     o::PyObject
@@ -16,6 +29,8 @@ struct Dataset
         return new(o)
     end
 end
+
+Dataset(; kwargs...) = xarray.Dataset(; kwargs...)
 
 @inline Dataset(data::Dataset) = data
 
@@ -61,6 +76,54 @@ function convert_to_dataset(obj; group = :posterior, kwargs...)
 end
 
 convert_to_dataset(data::Dataset; kwargs...) = data
+
+"""
+    convert_to_constant_dataset(obj::Dict; kwargs...) -> Dataset
+
+Convert `obj` into a `Dataset`. Unlike [`convert_to_dataset`](@ref), this is
+intended for containing constant parameters such as observed data and constant
+data, and the first two dimensions are not required to be the number of chains
+and draws.
+
+# Keywords
+- `coords::Dict{String,Vector}`: Map from named dimension to index names
+- `dims::Dict{String,Vector{String}}`: Map from variable name to names
+     of its dimensions
+- `library::Any`: A library associated with the data to add to `attrs`.
+- `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
+"""
+function convert_to_constant_dataset(
+    obj::Dict;
+    coords = nothing,
+    dims = nothing,
+    library = nothing,
+    attrs = nothing,
+)
+    base = arviz.data.base
+    coords = coords === nothing ? Dict{String,Vector}() : coords
+    dims = dims === nothing ? Dict{String,Vector{String}}() : dims
+
+    data = Dict{String,Any}()
+    for (key, vals) in obj
+        vals = _asarray(vals)
+        val_dims = get(dims, key, nothing)
+        (val_dims, val_coords) = base.generate_dims_coords(
+            size(vals),
+            key;
+            dims = val_dims,
+            coords = coords,
+        )
+        data[key] = (val_dims, vals)
+        data[key] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
+    end
+
+    if library !== nothing
+        library = string(library)
+    end
+    default_attrs = base.make_attrs(library = library)
+    attrs = attrs === nothing ? default_attrs : merge(default_attrs, attrs)
+    return Dataset(data_vars = data, coords = coords, attrs = attrs)
+end
 
 """
     dict_to_dataset(data::Dict{String,Array}; kwargs...) -> Dataset
