@@ -72,6 +72,8 @@ Base.isempty(data::InferenceData) = isempty(groupnames(data))
 
 @forwardfun convert_to_inference_data
 
+convert_to_inference_data(::Nothing; kwargs...) = InferenceData()
+
 function convert_to_dataset(data::InferenceData; group = :posterior, kwargs...)
     group = Symbol(group)
     dataset = getproperty(data, group)
