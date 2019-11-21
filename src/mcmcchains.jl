@@ -25,23 +25,6 @@ const stan_key_map = Dict(
 const stats_key_map = merge(turing_key_map, stan_key_map)
 
 """
-    topandas(df::DataFrames.DataFrame) -> Pandas.DataFrame
-    topandas(df::MCMCChains.ChainDataFrame) -> Pandas.DataFrame
-
-Convert `df` into a Pandas format, maintaining column order and replacing
-`missing` with `NaN`.
-"""
-function topandas(df::DataFrames.DataFrame)
-    cols = replacemissing.(eachcol(df))
-    colnames = names(df)
-    df = DataFrames.DataFrame(cols, colnames)
-    pdf = Pandas.DataFrame(df)
-    return pdf[colnames]
-end
-
-topandas(df::ChainDataFrame) = topandas(df.df)
-
-"""
     reshape_values(x::AbstractArray) -> AbstractArray
 
 Convert from `MCMCChains` variable values with dimensions
