@@ -53,6 +53,23 @@ function Base.show(io::IO, data::InferenceData)
     print(io, out)
 end
 
+"""
+    groupnames(data::InferenceData) -> Vector{Symbol}
+
+Get the names of the groups (datasets) in `data`.
+"""
+groupnames(data::InferenceData) = Symbol.(PyObject(data)._groups)
+
+"""
+    groups(data::InferenceData) -> Dict{Symbol,Dataset}
+
+Get the groups in `data` as a dictionary mapping names to datasets.
+"""
+groups(data::InferenceData) =
+    Dict((name => getproperty(data, name) for name in groupnames(data)))
+
+Base.isempty(data::InferenceData) = isempty(groupnames(data))
+
 @forwardfun convert_to_inference_data
 
 function convert_to_dataset(data::InferenceData; group = :posterior, kwargs...)
