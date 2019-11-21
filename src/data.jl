@@ -115,3 +115,5 @@ function concat!(data1::InferenceData, data::InferenceData...; kwargs...)
     arviz.concat(data1, data...; inplace = true, kwargs...)
     return data1
 end
+
+concat!(; kwargs...) = InferenceData()
