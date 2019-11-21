@@ -141,17 +141,16 @@ end
 
     @testset "complete" begin
         nchains, ndraws = 4, 20
+        nobs = 10
         posterior = prior = ["a[1]", "a[2]"]
         posterior_predictive = prior_predictive = ["ahat[1]", "ahat[2]"]
-        observed_data = ["xhat[1]", "xhat[2]"]
-        constant_data = ["x[1]", "x[2]"]
+        observed_data = Dict("xhat" => 1:nobs)
+        constant_data = Dict("x" => (1:nobs) .+ nobs)
         sample_stats = ["stat"]
         log_likelihood = "log_lik"
         post_names = [
             posterior
             posterior_predictive
-            observed_data
-            constant_data
             sample_stats
             log_likelihood
         ]
@@ -163,8 +162,8 @@ end
             posterior_predictive = "ahat",
             prior = chns2,
             prior_predictive = "ahat",
-            observed_data = "xhat",
-            constant_data = "x",
+            observed_data = observed_data,
+            constant_data = constant_data,
             log_likelihood = "log_lik",
         )
         for group in (
@@ -192,9 +191,9 @@ end
         @test "log_likelihood" ∈ keys(dimdict(idata.sample_stats))
         @test length(dimdict(idata.sample_stats_prior)) == 3
         @test "stat" ∈ keys(dimdict(idata.sample_stats_prior))
-        @test length(dimdict(idata.observed_data)) == 4
+        @test length(dimdict(idata.observed_data)) == 2
         @test "xhat" ∈ keys(dimdict(idata.observed_data))
-        @test length(dimdict(idata.constant_data)) == 4
+        @test length(dimdict(idata.constant_data)) == 2
         @test "x" ∈ keys(dimdict(idata.constant_data))
     end
 
