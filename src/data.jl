@@ -23,7 +23,7 @@ struct InferenceData
     end
 end
 
-InferenceData(; kwargs...) = arviz.InferenceData(; kwargs...)
+InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
 
 @inline InferenceData(data::InferenceData) = data
 
@@ -137,3 +137,33 @@ function concat!(data1::InferenceData, data::InferenceData...; kwargs...)
 end
 
 concat!(; kwargs...) = InferenceData()
+
+function rekey(data::InferenceData, keymap)
+    keymap = Dict([Symbol(k) => Symbol(v) for (k, v) in keymap])
+    dnames = groupnames(data)
+    data_new = InferenceData[]
+    for k in dnames
+        knew = get(keymap, k, k)
+        push!(data_new, InferenceData(; knew => getproperty(data, k)))
+    end
+    return concat(data_new...)
+end
+
+const default_group_order = [
+    :posterior,
+    :posterior_predictive,
+    :sample_stats,
+    :prior,
+    :prior_predictive,
+    :sample_stats_prior,
+    :observed_data,
+]
+
+function reorder_groups!(data::InferenceData; group_order = default_group_order)
+    names = groupnames(data)
+    sorted_names = filter(n -> n ∈ names, group_order)
+    other_names = filter(n -> n ∉ sorted_names, names)
+    obj = PyObject(data)
+    setproperty!(obj, :_groups, string.([sorted_names; other_names]))
+    return data
+end
