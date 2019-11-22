@@ -47,13 +47,6 @@ function makechains(nvars::Int, args...; kwargs...)
     return makechains(names, args...; kwargs...)
 end
 
-dimsizes(ds) = ds._dims
-convertindex(x::AbstractArray) = x
-convertindex(o::PyObject) = o.array.values
-vardict(ds) = Dict(k => convertindex(v._data) for (k, v) in ds._variables)
-dimdict(ds) = Dict(k => v._dims for (k, v) in ds._variables)
-attributes(ds) = ds.attrs
-
 function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
     model_name = "school8"
     stan_model = Stanmodel(

@@ -1,5 +1,6 @@
 using Random
 using PyCall
+using ArviZ: attributes
 
 function create_model(seed = 10)
     rng = MersenneTwister(seed)
@@ -75,3 +76,9 @@ function check_multiple_attrs(test_dict, parent)
     end
     return failed_attrs
 end
+
+dimsizes(ds) = ds._dims
+convertindex(x::AbstractArray) = x
+convertindex(o::PyObject) = o.array.values
+vardict(ds) = Dict(k => convertindex(v._data) for (k, v) in ds._variables)
+dimdict(ds) = Dict(k => v._dims for (k, v) in ds._variables)
