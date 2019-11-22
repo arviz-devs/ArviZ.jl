@@ -143,6 +143,7 @@ end
 Convert a dictionary with data and keys as variable names to a [`Dataset`](@ref).
 
 # Keywords
+
 - `attrs::Dict{String,Any}`: Json serializable metadata to attach to the
     dataset, in addition to defaults.
 - `library::String`: Name of library used for performing inference. Will be
