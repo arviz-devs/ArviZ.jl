@@ -128,10 +128,10 @@ function convert_to_constant_dataset(
         data[string(key)] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
     end
 
+    default_attrs = base.make_attrs()
     if library !== nothing
-        library = string(library)
+        default_attrs = merge(default_attrs, Dict("inference_library" => string(library)))
     end
-    default_attrs = base.make_attrs(library = library)
     attrs = attrs === nothing ? default_attrs : merge(default_attrs, attrs)
     return Dataset(data_vars = data, coords = coords, attrs = attrs)
 end
