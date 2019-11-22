@@ -44,11 +44,13 @@ Docs.getdoc(::typeof(waic)) = forwardgetdoc(:waic)
 Compute summary statistics on `data`.
 
 # Arguments
+
 - `data::Union{Dataset,InferenceData}`: The data on which to compute summary
       statistics. If `data` is an [`InferenceData`](@ref), only the dataset
       corresponding to `group` is used.
 
 # Keywords
+
 - `var_names::Vector{String}=nothing`: Names of variables to include in summary
 - `include_circ::Bool=false`: Whether to include circular statistics
 - `fmt::String="wide"`: Return format is either `Pandas.DataFrame` ("wide", "long")
@@ -74,6 +76,7 @@ Compute summary statistics on `data`.
       multivariate parameters.
 
 # Returns
+
 - `Union{Pandas.DataFrame,Dataset}`: Return type dicated by `fmt` argument.
       Return value will contain summary statistics for each variable. Default
       statistics are:
@@ -141,6 +144,7 @@ Compute summary statistics on any object that can be passed to
 [`convert_to_dataset`](@ref).
 
 # Keywords
+
 - `coords::Dict{String,Vector}=nothing`: Map from named dimension to named
       indices.
 - `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names

@@ -5,6 +5,7 @@
 Loose wrapper around `xarray.Dataset`, mostly used for dispatch.
 
 # Keywords
+
 - `data_vars::Dict{String,Any}`: Dict mapping variable names to
     + `Vector`: Data vector. Single dimension is named after variable.
     + `Tuple{String,Vector}`: Dimension name and data vector.
@@ -86,6 +87,7 @@ data, and the first two dimensions are not required to be the number of chains
 and draws.
 
 # Keywords
+
 - `coords::Dict{String,Vector}`: Map from named dimension to index names
 - `dims::Dict{String,Vector{String}}`: Map from variable name to names
      of its dimensions
