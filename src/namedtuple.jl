@@ -166,3 +166,20 @@ from_namedtuple(data::AbstractMatrix{<:NamedTuple}; kwargs...) =
     from_namedtuple(stack(data); kwargs...)
 from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...) =
     from_namedtuple(stack(data); kwargs...)
+
+"""
+    convert_to_inference_data(obj::NamedTuple; kwargs...) -> InferenceData
+    convert_to_inference_data(obj::Vector{<:NamedTuple}; kwargs...) -> InferenceData
+    convert_to_inference_data(obj::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
+    convert_to_inference_data(obj::Vector{Vector{<:NamedTuple}}; kwargs...) -> InferenceData
+
+Convert `obj` to an [`InferenceData`](@ref). See [`from_namedtuple`](@ref) for
+a description of `obj` possibilities and `kwargs`.
+"""
+convert_to_inference_data(data::NamedTuple; kwargs...) = from_namedtuple(data; kwargs...)
+convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...) =
+    from_namedtuple(stack(data); kwargs...)
+convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...) =
+    from_namedtuple(stack(data); kwargs...)
+convert_to_inference_data(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...) =
+    from_namedtuple(stack(data); kwargs...)
