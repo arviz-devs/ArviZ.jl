@@ -55,6 +55,7 @@ export InferenceData,
        load_arviz_data,
        to_netcdf,
        from_netcdf,
+       from_namedtuple,
        from_dict,
        from_cmdstan,
        concat,
@@ -90,5 +91,6 @@ include("diagnostics.jl")
 include("plots.jl")
 include("stats.jl")
 include("stats_utils.jl")
+include("namedtuple.jl")
 
 end # module
