@@ -125,8 +125,7 @@ function convert_to_constant_dataset(
             dims = val_dims,
             coords = coords,
         )
-        data[key] = (val_dims, vals)
-        data[key] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
+        data[string(key)] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
     end
 
     if library !== nothing
