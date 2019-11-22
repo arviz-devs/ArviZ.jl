@@ -63,6 +63,14 @@ function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     print(io, out)
 end
 
+attributes(data::Dataset) = getproperty(PyObject(data), :_attrs)
+
+function setattribute!(data::Dataset, key, value)
+    attrs = merge(attributes(data), Dict(key => value))
+    setproperty!(PyObject(data), :_attrs, attrs)
+    return attrs
+end
+
 """
     convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
 
