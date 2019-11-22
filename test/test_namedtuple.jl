@@ -43,7 +43,7 @@ end
             idata1 = from_namedtuple(; (group => nt,)..., dims = dims, coords = coords, library = "MyLib")
             test_namedtuple_data(idata1, group, keys(sizes), nchains, ndraws; library = "MyLib", coords = coords, dims = dims)
 
-            idata2 = convert_to_inference_data(idata1; (group => nt,)..., dims = dims, coords = coords, library = "MyLib")
+            idata2 = convert_to_inference_data(nt; (group => nt,)..., dims = dims, coords = coords, library = "MyLib")
             test_namedtuple_data(idata2, group, keys(sizes), nchains, ndraws; library = "MyLib", coords = coords, dims = dims)
         end
     end
