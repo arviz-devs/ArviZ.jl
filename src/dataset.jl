@@ -88,6 +88,7 @@ convert_to_dataset(data::Dataset; kwargs...) = data
 
 """
     convert_to_constant_dataset(obj::Dict; kwargs...) -> Dataset
+    convert_to_constant_dataset(obj::NamedTuple; kwargs...) -> Dataset
 
 Convert `obj` into a `Dataset`. Unlike [`convert_to_dataset`](@ref), this is
 intended for containing constant parameters such as observed data and constant
@@ -103,12 +104,13 @@ and draws.
 - `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
 """
 function convert_to_constant_dataset(
-    obj::Dict;
+    obj;
     coords = nothing,
     dims = nothing,
     library = nothing,
     attrs = nothing,
 )
+    obj = convert(Dict, obj)
     base = arviz.data.base
     coords = coords === nothing ? Dict{String,Vector}() : coords
     dims = dims === nothing ? Dict{String,Vector{String}}() : dims
