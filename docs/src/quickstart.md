@@ -69,12 +69,12 @@ To show off ArviZ's labelling, I give the schools the names of [a different eigh
 This model is small enough to write down, is hierarchical, and uses labelling.
 Additionally, a centered parameterization causes [divergences](https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html) (which are interesting for illustration).
 
-First we create our data.
+First we create our data and set some sampling parameters.
 
 ```@example quickstart
 J = 8
 y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
-sigma = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
 schools = [
     "Choate",
     "Deerfield",
@@ -85,6 +85,8 @@ schools = [
     "St. Paul's",
     "Mt. Hermon"
 ];
+
+nwarmup, nsamples, nchains = 1000, 1000, 4
 nothing # hide
 ```
 
@@ -93,26 +95,25 @@ Now we write and run the model using Turing:
 ```julia
 using Turing
 
-@model centered_eight(J, y, sigma) = begin
-    mu ~ Normal(0, 5)
-    tau ~ Truncated(Cauchy(0, 5), 0, Inf)
-    theta = tzeros(J)
-    theta ~ [Normal(mu, tau)]
-    y ~ MvNormal(theta, sigma)
+Turing.@model turing_model(J, y, σ) = begin
+    μ ~ Normal(0, 5)
+    τ ~ Truncated(Cauchy(0, 5), 0, Inf)
+    θ = tzeros(J)
+    θ ~ [Normal(μ, τ)]
+    y ~ MvNormal(θ, σ)
 end
 
-nchains = 4
-model = centered_eight(J, y, sigma)
-sampler = NUTS(1000, 0.8)
+param_mod = turing_model(J, y, σ)
+sampler = NUTS(nwarmup, 0.8)
 turing_chns = mapreduce(chainscat, 1:nchains) do _
-    return sample(model, sampler, 2000; progress = false)
+    return sample(param_mod, sampler, nwarmup + nsamples; progress = false)
 end;
 ```
 
 Most ArviZ functions work fine with `Chains` objects from Turing:
 
 ```@example quickstart
-plot_autocorr(convert_to_inference_data(turing_chns); var_names=["mu", "tau"]);
+plot_autocorr(convert_to_inference_data(turing_chns); var_names = ["μ", "τ"]);
 savefig("quick_turingautocorr.svg"); nothing # hide
 ```
 
@@ -126,13 +127,17 @@ Note we are also giving some information about labelling.
 ArviZ is built to work with [`InferenceData`](@ref) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
 
 ```@example quickstart
-data = from_mcmcchains(
+idata = from_mcmcchains(
     turing_chns,
 #     prior = prior, # hide
 #     posterior_predictive = posterior_predictive, # hide
-    library = "Turing",
     coords = Dict("school" => schools),
-    dims = Dict("theta" => ["school"], "obs" => ["school"])
+    dims = Dict(
+        "y" => ["school"],
+        "σ" => ["school"],
+        "θ" => ["school"],
+    ),
+    library = "Turing",
 )
 ```
 
@@ -140,13 +145,13 @@ Each group is an [`ArviZ.Dataset`](@ref) (a thinly wrapped `xarray.Dataset`).
 We can view a summary of the dataset.
 
 ```@example quickstart
-data.posterior
+idata.posterior
 ```
 
 Here is a plot of the trace. Note the intelligent labels.
 
 ```@example quickstart
-plot_trace(data);
+plot_trace(idata);
 savefig("quick_turingtrace.png"); nothing # hide
 ```
 
@@ -155,13 +160,13 @@ savefig("quick_turingtrace.png"); nothing # hide
 We can also generate summary stats
 
 ```@example quickstart
-summarystats(data)
+summarystats(idata)
 ```
 
 and examine the energy distribution of the Hamiltonian sampler
 
 ```@example quickstart
-plot_energy(data);
+plot_energy(idata);
 savefig("quick_turingenergy.svg"); nothing # hide
 ```
 
@@ -206,13 +211,13 @@ generated quantities {
 }
 """
 
-schools_dat = Dict("J" => J, "y" => y, "sigma" => sigma)
 stan_model = Stanmodel(
     model = schools_code,
     nchains = 4,
     num_warmup = 1000,
     num_samples = 1000,
     random = CmdStan.Random(8675309) # hide
+schools_dat = Dict("J" => J, "y" => y, "sigma" => σ)
 )
 _, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
 nothing # hide
@@ -229,26 +234,30 @@ Again, converting to `InferenceData`, we can get much richer labelling and mixin
 Note that we're using the same [`from_cmdstan`](@ref) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to [`from_mcmcchains`](@ref).
 
 ```@example quickstart
-data = from_cmdstan(
+idata = from_cmdstan(
     stan_chns;
     posterior_predictive = "y_hat",
     observed_data = Dict("y" => schools_dat["y"]),
     log_likelihood = "log_lik",
     coords = Dict("school" => schools),
     dims = Dict(
-        "theta" => ["school"],
         "y" => ["school"],
+        "sigma" => ["school"],
+        "theta" => ["school"],
         "log_lik" => ["school"],
         "y_hat" => ["school"],
-        "theta_tilde" => ["school"]
-    )
+    ),
 )
 ```
 
 Here is a plot showing where the Hamiltonian sampler had divergences:
 
 ```@example quickstart
-plot_pair(data; coords = Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]), divergences = true);
+plot_pair(
+    idata;
+    coords = Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]),
+    divergences = true,
+);
 savefig("quick_cmdstanpair.png"); nothing # hide
 ```
 
