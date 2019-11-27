@@ -1,5 +1,4 @@
-import .MCMCChains: AbstractChains, ChainDataFrame, sections
-using .DataFrames
+import .MCMCChains: AbstractChains, sections
 
 export from_mcmcchains
 
@@ -134,9 +133,11 @@ Any keyword argument below without an an explicitly annotated type above is
 allowed, so long as it can be passed to [`convert_to_inference_data`](@ref).
 
 # Arguments
+
 - `posterior::AbstractChains`: Draws from the posterior
 
 # Keywords
+
 - `posterior_predictive::Any=nothing`: Draws from the posterior predictive
      distribution or name(s) of predictive variables in `posterior`
 - `prior::Any=nothing`: Draws from the prior
@@ -157,6 +158,7 @@ allowed, so long as it can be passed to [`convert_to_inference_data`](@ref).
      of its dimensions
 
 # Returns
+
 - `InferenceData`: The data with groups corresponding to the provided data
 """
 function from_mcmcchains(

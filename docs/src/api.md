@@ -67,6 +67,7 @@
 | [`load_arviz_data`](@ref)           | Load a local or remote pre-made dataset.           |
 | [`to_netcdf`](@ref)                 | Save dataset as a netcdf file.                     |
 | [`from_netcdf`](@ref)               | Load netcdf file back into an `InferenceData`.     |
+| [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`. |
 | [`from_dict`](@ref)                 | Convert `Dict` data into an `InferenceData`.       |
 | [`from_cmdstan`](@ref)              | Convert `CmdStan` data into an `InferenceData`.    |
 | [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`. |

@@ -5,6 +5,7 @@
 Loose wrapper around `xarray.Dataset`, mostly used for dispatch.
 
 # Keywords
+
 - `data_vars::Dict{String,Any}`: Dict mapping variable names to
     + `Vector`: Data vector. Single dimension is named after variable.
     + `Tuple{String,Vector}`: Dimension name and data vector.
@@ -62,6 +63,14 @@ function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     print(io, out)
 end
 
+attributes(data::Dataset) = getproperty(PyObject(data), :_attrs)
+
+function setattribute!(data::Dataset, key, value)
+    attrs = merge(attributes(data), Dict(key => value))
+    setproperty!(PyObject(data), :_attrs, attrs)
+    return attrs
+end
+
 """
     convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
 
@@ -79,6 +88,7 @@ convert_to_dataset(data::Dataset; kwargs...) = data
 
 """
     convert_to_constant_dataset(obj::Dict; kwargs...) -> Dataset
+    convert_to_constant_dataset(obj::NamedTuple; kwargs...) -> Dataset
 
 Convert `obj` into a `Dataset`. Unlike [`convert_to_dataset`](@ref), this is
 intended for containing constant parameters such as observed data and constant
@@ -86,6 +96,7 @@ data, and the first two dimensions are not required to be the number of chains
 and draws.
 
 # Keywords
+
 - `coords::Dict{String,Vector}`: Map from named dimension to index names
 - `dims::Dict{String,Vector{String}}`: Map from variable name to names
      of its dimensions
@@ -93,12 +104,13 @@ and draws.
 - `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
 """
 function convert_to_constant_dataset(
-    obj::Dict;
+    obj;
     coords = nothing,
     dims = nothing,
     library = nothing,
     attrs = nothing,
 )
+    obj = convert(Dict, obj)
     base = arviz.data.base
     coords = coords === nothing ? Dict{String,Vector}() : coords
     dims = dims === nothing ? Dict{String,Vector{String}}() : dims
@@ -113,14 +125,13 @@ function convert_to_constant_dataset(
             dims = val_dims,
             coords = coords,
         )
-        data[key] = (val_dims, vals)
-        data[key] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
+        data[string(key)] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
     end
 
+    default_attrs = base.make_attrs()
     if library !== nothing
-        library = string(library)
+        default_attrs = merge(default_attrs, Dict("inference_library" => string(library)))
     end
-    default_attrs = base.make_attrs(library = library)
     attrs = attrs === nothing ? default_attrs : merge(default_attrs, attrs)
     return Dataset(data_vars = data, coords = coords, attrs = attrs)
 end
@@ -131,6 +142,7 @@ end
 Convert a dictionary with data and keys as variable names to a [`Dataset`](@ref).
 
 # Keywords
+
 - `attrs::Dict{String,Any}`: Json serializable metadata to attach to the
     dataset, in addition to defaults.
 - `library::String`: Name of library used for performing inference. Will be
