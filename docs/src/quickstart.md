@@ -4,6 +4,7 @@ _This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.
 
 ```@setup quickstart
 using PyPlot, ArviZ, Distributions, CmdStan, Pkg, InteractiveUtils
+import MCMCChains
 
 using PyCall
 np = pyimport_conda("numpy", "numpy")
@@ -47,12 +48,12 @@ Below, we have 10 chains of 50 draws each for four different distributions.
 ```@example quickstart
 using Distributions
 
-size = (10, 50)
+s = (10, 50)
 plot_forest(Dict(
-    "normal" => randn(size),
-    "gumbel" => rand(Gumbel(), size),
-    "student t" => rand(TDist(6), size),
-    "exponential" => rand(Exponential(), size)
+    "normal" => randn(s),
+    "gumbel" => rand(Gumbel(), s),
+    "student t" => rand(TDist(6), s),
+    "exponential" => rand(Exponential(), s)
 ));
 savefig("quick_forestdists.svg"); nothing # hide
 ```
