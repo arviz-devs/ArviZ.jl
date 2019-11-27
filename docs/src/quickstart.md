@@ -5,6 +5,7 @@ _This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.
 ```@setup quickstart
 using PyPlot, ArviZ, Distributions, CmdStan, Pkg, InteractiveUtils
 import MCMCChains
+using Soss, NamedTupleTools
 
 using PyCall
 np = pyimport_conda("numpy", "numpy")
@@ -32,7 +33,7 @@ ArviZ.use_style("arviz-darkgrid")
 
 ## Get started with plotting
 
-ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com/StanJulia/CmdStan.jl) and [Turing](https://turing.ml) but works fine with raw arrays.
+ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com/StanJulia/CmdStan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 
 ```@example quickstart
 plot_posterior(randn(100_000));
@@ -262,3 +263,94 @@ savefig("quick_cmdstanpair.png"); nothing # hide
 ```
 
 ![](quick_cmdstanpair.png)
+
+## Plotting with Soss.jl outputs
+
+With Soss, we can define our model for the posterior and easily use it to draw samples from the prior, prior predictive, posterior, and posterior predictive distributions.
+
+First we define our model:
+
+```@example quickstart
+using Soss, NamedTupleTools
+
+mod = Soss.@model (J, σ) begin
+    μ ~ Normal(0, 5)
+    τ ~ HalfCauchy(5)
+    θ ~ Normal(μ, τ) |> iid(J)
+    y ~ For(J) do j
+        Normal(θ[j], σ[j])
+    end
+end
+
+constant_data = (J = 8, σ = σ)
+param_mod = mod(; constant_data...)
+```
+
+Then we draw from the prior and prior predictive distributions.
+
+```@example quickstart
+prior_prior_pred = map(1:nchains*nsamples) do _
+    draw = rand(param_mod)
+    return delete(draw, keys(constant_data))
+end
+
+prior = map(draw -> delete(draw, :y), prior_prior_pred)
+prior_pred = map(draw -> delete(draw, (:μ, :τ, :θ)), prior_prior_pred);
+nothing # hide
+```
+
+Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/DynamicHMC.jl).
+
+```@example quickstart
+post = map(1:nchains) do _
+    dynamicHMC(param_mod, (y = y,))
+end;
+nothing # hide
+```
+
+Finally, we use the posterior samples to draw from the posterior predictive distribution.
+
+```@example quickstart
+pred = predictive(mod, :μ, :τ, :θ)
+post_pred = map(post) do post_draws
+    map(post_draws) do post_draw
+        pred_draw = rand(pred(post_draw)(constant_data))
+        return delete(pred_draw, keys(constant_data))
+    end
+end;
+nothing # hide
+```
+
+Each Soss draw is a `NamedTuple`.
+Now we combine all of the samples to an `InferenceData`:
+
+```@example quickstart
+idata = from_namedtuple(
+    post;
+    posterior_predictive = post_pred,
+    prior = [prior],
+    prior_predictive = [prior_pred],
+    observed_data = Dict("y" => y),
+    constant_data = constant_data,
+    coords = Dict("school" => schools),
+    dims = Dict(
+        "y" => ["school"],
+        "σ" => ["school"],
+        "θ" => ["school"],
+    ),
+    library = Soss,
+)
+```
+
+We can compare the prior and posterior predictive distributions:
+
+```@example quickstart
+plot_density(
+    [idata.posterior_predictive, idata.prior_predictive];
+    data_labels = ["Post-pred", "Prior-pred"],
+    var_names = ["y"],
+)
+savefig("quick_sosspred.png"); nothing # hide
+```
+
+![](quick_sosspred.png)
