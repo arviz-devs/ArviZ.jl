@@ -212,13 +212,13 @@ generated quantities {
 }
 """
 
+schools_dat = Dict("J" => J, "y" => y, "sigma" => σ)
 stan_model = Stanmodel(
     model = schools_code,
-    nchains = 4,
-    num_warmup = 1000,
-    num_samples = 1000,
-    random = CmdStan.Random(8675309) # hide
-schools_dat = Dict("J" => J, "y" => y, "sigma" => σ)
+    nchains = nchains,
+    num_warmup = nwarmup,
+    num_samples = nsamples,
+    random = CmdStan.Random(8675309), # hide
 )
 _, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
 nothing # hide
