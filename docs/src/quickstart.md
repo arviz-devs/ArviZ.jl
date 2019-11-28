@@ -282,7 +282,7 @@ mod = Soss.@model (J, σ) begin
     end
 end
 
-constant_data = (J = 8, σ = σ)
+constant_data = (J = J, σ = σ)
 param_mod = mod(; constant_data...)
 ```
 
@@ -303,7 +303,7 @@ Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/
 
 ```@example quickstart
 post = map(1:nchains) do _
-    dynamicHMC(param_mod, (y = y,))
+    dynamicHMC(param_mod, (y = y,), logpdf, nsamples)
 end;
 nothing # hide
 ```
