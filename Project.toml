@@ -1,7 +1,7 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
