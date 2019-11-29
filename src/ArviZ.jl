@@ -81,6 +81,8 @@ function __init__()
 
     try
         copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
+        pytype_mapping(bokeh.model.Model, BokehPlot)
+        pytype_mapping(bokeh.document.Document, BokehPlot)
     catch ModuleNotFoundError
     end
 
@@ -91,6 +93,7 @@ function __init__()
 end
 
 include("utils.jl")
+include("bokeh.jl")
 include("dataset.jl")
 include("data.jl")
 include("diagnostics.jl")
