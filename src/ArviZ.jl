@@ -3,6 +3,7 @@ module ArviZ
 
 using Base: @__doc__
 using Requires
+using REPL
 using PyCall
 using PyPlot
 using Pandas
