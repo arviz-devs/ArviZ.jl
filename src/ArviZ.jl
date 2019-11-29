@@ -84,7 +84,8 @@ function __init__()
         copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
         pytype_mapping(bokeh.model.Model, BokehPlot)
         pytype_mapping(bokeh.document.Document, BokehPlot)
-    catch ModuleNotFoundError
+    catch e
+        isa(e, ModuleNotFoundError) || rethrow(e)
     end
 
     pytype_mapping(xarray.Dataset, Dataset)

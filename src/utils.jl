@@ -131,9 +131,13 @@ macro forwardplotfun(f)
                     show = false
                 end
             end
-            plots = arviz.$(f)(args...; backend = backend, show = show, kwargs...)
-            backend == "bokeh" && return bokeh.plotting.gridplot(plots)
-            return plots
+            try
+                plots = arviz.$(f)(args...; backend = backend, show = show, kwargs...)
+                backend == "bokeh" && return bokeh.plotting.gridplot(plots)
+            catch e
+                e isa PyCall.PyError || rethrow(e)
+                return arviz.$(f)(args...; kwargs...)
+            end
         end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
