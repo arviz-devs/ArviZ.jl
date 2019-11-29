@@ -112,6 +112,35 @@ macro forwardfun(f)
 end
 
 """
+    @forwardplotfun f
+    @forwardplotfun(f)
+
+Wrap a plotting function `arviz.f` in `f`, forwarding its docstrings.
+
+This macro also ensures that outputs for the different backends are correctly
+handled.
+"""
+macro forwardplotfun(f)
+    fdoc = forwarddoc(f)
+    quote
+        @doc $fdoc
+        function $(f)(args...; backend = nothing, show = true, kwargs...)
+            if backend !== nothing
+                backend = string(backend)
+                if backend == "bokeh"
+                    show = false
+                end
+            end
+            plots = arviz.$(f)(args...; backend = backend, show = show, kwargs...)
+            backend == "bokeh" && return bokeh.plotting.gridplot(plots)
+            return plots
+        end
+
+        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+    end |> esc
+end
+
+"""
     replacemissing(x)
 
 Replace `missing` values with `NaN` and do type inference on the result.
