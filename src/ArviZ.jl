@@ -72,11 +72,17 @@ import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
 const arviz = import_arviz()
 const xarray = PyNULL()
+const bokeh = PyNULL()
 
 function __init__()
     copy!(arviz, import_arviz())
     copy!(xarray, pyimport_conda("xarray", "xarray", "conda-forge"))
     pyimport_conda("dask", "dask", "conda-forge")
+
+    try
+        copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
+    catch ModuleNotFoundError
+    end
 
     pytype_mapping(xarray.Dataset, Dataset)
     pytype_mapping(arviz.InferenceData, InferenceData)
