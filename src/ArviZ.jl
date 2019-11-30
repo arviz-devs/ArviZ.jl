@@ -86,8 +86,8 @@ function __init__()
     end
 
     if !ispynull(bokeh)
-        pytype_mapping(bokeh.model.Model, BokehPlot)
-        pytype_mapping(bokeh.document.Document, BokehPlot)
+        pytype_mapping(pyimport("bokeh.model").Model, BokehPlot)
+        pytype_mapping(pyimport("bokeh.document").Document, BokehPlot)
     end
 
     pytype_mapping(xarray.Dataset, Dataset)
