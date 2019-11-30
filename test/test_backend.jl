@@ -8,36 +8,34 @@ using PyCall
     @test plot_trace(idata) isa Array{PyObject}
 end
 
-if !ispynull(ArviZ.bokeh)
+if !ispynull(ArviZ.bokeh) && "plot.backend" in ArviZ.rc_params()
     @testset "bokeh backend" begin
         idata = load_arviz_data("centered_eight")
 
-        plot = plot_trace(idata; backend = "bokeh")
+        with_rc_context(rc = Dict("plot.backend" => "bokeh")) do
+            backend = get(ArviZ.rc_params(), "plot.backend", nothing)
+            @test backend == "bokeh"
 
-        @test plot isa ArviZ.BokehPlot
+            @test plot_trace(idata) isa ArviZ.BokehPlot
+            @test plot_trace(idata; backend = "matplotlib") isa Array{PyObject}
 
-        pyobj = PyObject(plot)
-        plot2 = convert(ArviZ.BokehPlot, pyobj)
-        @test plot2 isa ArviZ.BokehPlot
-        @test hash(plot) == hash(plot2)
-        @test pyobj === PyObject(plot2)
+            @testset "ArviZ.BokehPlot" begin
+                plot = plot_trace(idata)
 
-        @test propertynames(plot) == propertynames(PyObject(plot))
-        getproperty(plot, :__class__)
+                pyobj = PyObject(plot)
+                plot2 = convert(ArviZ.BokehPlot, pyobj)
+                @test plot2 isa ArviZ.BokehPlot
+                @test hash(plot) == hash(plot2)
+                @test pyobj === PyObject(plot2)
 
-        @testset "MIME::\"$(mime)\"" for mime in ["text/html",]
-            text = repr(MIME(mime), plot)
-            @test text isa String
-            @test occursin("<body", text)
-        end
+                @test propertynames(plot) == propertynames(PyObject(plot))
+                getproperty(plot, :__class__)
 
-        if "plot.backend" in ArviZ.rc_params()
-            with_rc_context(rc = Dict("plot.backend" => "bokeh")) do
-                backend = ArviZ.rc_params()["plot.backend"]
-                @test backend == "bokeh"
-
-                @test plot_trace(idata) isa ArviZ.BokehPlot
-                @test plot_trace(idata; backend = "matplotlib") isa Array{PyObject}
+                @testset "MIME::\"$(mime)\"" for mime in ["text/html",]
+                    text = repr(MIME(mime), plot)
+                    @test text isa String
+                    @test occursin("<body", text)
+                end
             end
         end
     end
