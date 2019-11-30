@@ -124,20 +124,27 @@ macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(args...; backend = nothing, show = true, kwargs...)
-            if backend !== nothing
-                backend = string(backend)
-                if backend == "bokeh"
-                    show = false
-                end
-            end
+        function $(f)(args...; backend = rc_params()["plot.backend"], kwargs...)
+            return $(f)(Val(Symbol(backend)), args...; kwargs...)
+        end
+
+        $(f)(::Val, args...; kwargs...) = $(f)(args...; kwargs...)
+
+        function $(f)(::Val{:matplotlib}, args...; kwargs...)
+            kwargs = merge(kwargs, Dict(:backend => "matplotlib"))
             try
-                plots = arviz.$(f)(args...; backend = backend, show = show, kwargs...)
-                backend == "bokeh" && return bokeh.plotting.gridplot(plots)
+                return arviz.$(f)(args...; kwargs...)
             catch e
                 e isa PyCall.PyError || rethrow(e)
+                pop!(kwargs, :backend)
                 return arviz.$(f)(args...; kwargs...)
             end
+        end
+
+        function $(f)(::Val{:bokeh}, args...; kwargs...)
+            kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
+            plots = arviz.$(f)(args...; kwargs...)
+            return bokeh.plotting.gridplot(plots)
         end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
