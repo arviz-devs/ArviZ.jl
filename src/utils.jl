@@ -52,7 +52,7 @@ Passing a dictionary only is also valid.
 """
 function with_rc_context(f; kwargs...)
     @pywith arviz.rc_context(; kwargs...) as _ begin
-        f()
+        return f()
     end
 end
 
@@ -85,9 +85,10 @@ function with_interactive_backend(f; backend = nothing)
     oldgui = pygui()
     backend === nothing || pygui(Symbol(backend))
     pygui(true)
-    f()
+    ret = f()
     pygui(oldisint)
     pygui(oldgui)
+    return ret
 end
 
 forwarddoc(f::Symbol) =
@@ -106,6 +107,47 @@ macro forwardfun(f)
     quote
         @doc $fdoc
         $(f)(args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+
+        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+    end |> esc
+end
+
+"""
+    @forwardplotfun f
+    @forwardplotfun(f)
+
+Wrap a plotting function `arviz.f` in `f`, forwarding its docstrings.
+
+This macro also ensures that outputs for the different backends are correctly
+handled.
+"""
+macro forwardplotfun(f)
+    fdoc = forwarddoc(f)
+    quote
+        @doc $fdoc
+        function $(f)(args...; backend = get(rc_params(), "plot.backend", nothing), kwargs...)
+            backend === nothing && return arviz.$(f)(args...; kwargs...)
+            return $(f)(Val(Symbol(backend)), args...; kwargs...)
+        end
+
+        $(f)(::Val, args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+
+        function $(f)(::Val{:matplotlib}, args...; kwargs...)
+            kwargs = merge(kwargs, Dict(:backend => "matplotlib"))
+            try
+                return arviz.$(f)(args...; kwargs...)
+            catch e
+                e isa PyCall.PyError || rethrow(e)
+                pop!(kwargs, :backend)
+                return arviz.$(f)(args...; kwargs...)
+            end
+        end
+
+        function $(f)(::Val{:bokeh}, args...; kwargs...)
+            kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
+            plots = arviz.$(f)(args...; kwargs...)
+            return bokeh.plotting.gridplot(plots)
+        end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
     end |> esc
