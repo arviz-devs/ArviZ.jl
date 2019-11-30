@@ -8,7 +8,7 @@ using PyCall
     @test plot_trace(idata) isa Array{PyObject}
 end
 
-if !ispynull(ArviZ.bokeh)
+if !ispynull(ArviZ.bokeh) && "plot.backend" in ArviZ.rc_params()
     @testset "bokeh backend" begin
         idata = load_arviz_data("centered_eight")
 
