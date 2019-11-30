@@ -129,7 +129,7 @@ macro forwardplotfun(f)
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
 
-        $(f)(::Val, args...; kwargs...) = $(f)(args...; kwargs...)
+        $(f)(::Val, args...; kwargs...) = arviz.$(f)(args...; kwargs...)
 
         function $(f)(::Val{:matplotlib}, args...; kwargs...)
             kwargs = merge(kwargs, Dict(:backend => "matplotlib"))
