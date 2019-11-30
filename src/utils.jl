@@ -52,7 +52,7 @@ Passing a dictionary only is also valid.
 """
 function with_rc_context(f; kwargs...)
     @pywith arviz.rc_context(; kwargs...) as _ begin
-        f()
+        return f()
     end
 end
 
@@ -85,9 +85,10 @@ function with_interactive_backend(f; backend = nothing)
     oldgui = pygui()
     backend === nothing || pygui(Symbol(backend))
     pygui(true)
-    f()
+    ret = f()
     pygui(oldisint)
     pygui(oldgui)
+    return ret
 end
 
 forwarddoc(f::Symbol) =
