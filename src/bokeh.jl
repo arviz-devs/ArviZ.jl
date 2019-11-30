@@ -6,9 +6,9 @@ end
 
 Base.convert(::Type{BokehPlot}, o::PyObject) = BokehPlot(o)
 
-Base.hash(plot::BokehPlot) = hash(PyObject(data))
+Base.hash(plot::BokehPlot) = hash(PyObject(plot))
 
-Base.propertynames(plot::BokehPlot) = propertynames(PyObject(data))
+Base.propertynames(plot::BokehPlot) = propertynames(PyObject(plot))
 
 function Base.getproperty(plot::BokehPlot, name::Symbol)
     o = PyObject(plot)
