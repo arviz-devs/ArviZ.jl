@@ -11,7 +11,7 @@ This documentation will be limited to differences between the packages, applicat
 ## [Purpose](@id purpose)
 
 Besides removing the need to explicitly import ArviZ with [PyCall.jl](https://github.com/JuliaPy/PyCall.jl), ArviZ.jl extends ArviZ with functionality for converting Julia types into ArviZ's [`InferenceData`](https://arviz-devs.github.io/arviz/notebooks/XarrayforArviZ.html) format.
-It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) and [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) and provides functions that can be overloaded by other packages to enable their types to be used with ArviZ.
+It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) and provides functions that can be overloaded by other packages to enable their types to be used with ArviZ.
 
 ## [Installation](@id installation)
 
@@ -57,7 +57,7 @@ For arbitrary inputs and the full functionality of `arviz.summary`, use [`ArviZ.
 ArviZ.jl transparently interconverts between `arviz.InferenceData` and our own [`InferenceData`](@ref), used for dispatch.
 `InferenceData` has identical usage to its Python counterpart.
 
-Functions that in ArviZ return Pandas types here return their [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) wrappers, which are used the same way.
+Functions that in ArviZ return Pandas types here return [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl) types.
 
 ArviZ includes the context managers [`with_rc_context`](@ref) and [`with_interactive_backend`](@ref).
 ArviZ.jl includes functions that can be used with a nearly identical syntax.
