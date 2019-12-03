@@ -1,4 +1,4 @@
-import Pandas
+import DataFrames
 
 @testset "summarystats" begin
     rng = MersenneTwister(42)
@@ -8,15 +8,16 @@ import Pandas
         "b" => randn(rng, nchains, ndraws, 3, 4),
     ))
 
-    @test summarystats(idata) isa Pandas.DataFrame
-    @test summarystats(idata; fmt = "wide") isa Pandas.DataFrame
-    @test summarystats(idata; fmt = "long") isa Pandas.DataFrame
+    @test summarystats(idata) isa DataFrames.DataFrame
+    @test summarystats(idata; fmt = "wide") isa DataFrames.DataFrame
+    @test summarystats(idata; fmt = "long") isa DataFrames.DataFrame
     s = summarystats(idata)
-    @test "a" ∈ Pandas.index(s)
-    @test "b" ∉ Pandas.index(s)
-    @test "b[0,0]" ∉ Pandas.index(s)
-    @test "b[1,1]" ∈ Pandas.index(s)
-    @test "b[0,0]" ∈ Pandas.index(summarystats(idata; index_origin = 0))
+    @test :variable in propertynames(s)
+    @test "a" ∈ s.variable
+    @test "b" ∉ s.variable
+    @test "b[0,0]" ∉ s.variable
+    @test "b[1,1]" ∈ s.variable
+    @test "b[0,0]" ∈ summarystats(idata; index_origin = 0).variable
 
     s2 = summarystats(idata; fmt = "xarray")
     @test s2 isa ArviZ.Dataset
@@ -30,5 +31,5 @@ end
         "b" => randn(rng, nchains, ndraws, 3, 4),
     )
 
-    @test ArviZ.summary(data) isa Pandas.DataFrame
+    @test ArviZ.summary(data) isa DataFrames.DataFrame
 end
