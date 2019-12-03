@@ -194,3 +194,23 @@ snakecase(s) = replace(lowercase(s), " " => "_")
 enforce_stat_types(dict) =
     Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
 enforce_stat_types(::Nothing) = nothing
+
+"""
+    todataframe(df::Pandas.DataFrame; [index_name]) -> DataFrames.DataFrame
+    todataframe(df::PyObject; [index_name]) -> DataFrames.DataFrame
+
+Helper function for converting a Python `pandas.DataFrame` into a
+`DataFrames.DataFrame`. If `index_name` is provided, the index is converted
+into a column with that name. Otherwise, it is discarded.
+"""
+function todataframe(df::Pandas.DataFrame; index_name = nothing)
+    pydf = PyObject(df)
+    if index_name !== nothing
+        pydf.index.name = string(index_name)
+        pydf = pydf.reset_index(drop = false)
+    end
+    return DataFrames.DataFrame(Pandas.DataFrame(pydf))
+end
+
+todataframe(s::Pandas.Series; kwargs...) = todataframe(Pandas.DataFrame(s).pyo.T; kwargs...)
+todataframe(df::PyObject; kwargs...) = todataframe(Pandas.DataFrame(df); kwargs...)
