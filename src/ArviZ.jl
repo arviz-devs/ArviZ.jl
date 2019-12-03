@@ -7,6 +7,7 @@ using REPL
 using PyCall
 using PyPlot
 using Pandas
+using DataFrames
 using NamedTupleTools
 
 import Base: convert, propertynames, getproperty, hash, show, +
