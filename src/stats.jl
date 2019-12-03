@@ -12,14 +12,14 @@ const sample_stats_types = Dict(
 )
 
 @doc forwarddoc(:compare) compare(args...; kwargs...) =
-    arviz.compare(args...; kwargs...) |> Pandas.DataFrame
+    todataframe(arviz.compare(args...; kwargs...); index_name = :name)
 
 Docs.getdoc(::typeof(compare)) = forwardgetdoc(:compare)
 
 @forwardfun hpd
 
 @doc forwarddoc(:loo) loo(args...; kwargs...) =
-    arviz.loo(args...; kwargs...) |> Pandas.Series
+    todataframe(Pandas.Series(arviz.loo(args...; kwargs...)))
 
 Docs.getdoc(::typeof(loo)) = forwardgetdoc(:loo)
 
@@ -28,18 +28,18 @@ Docs.getdoc(::typeof(loo)) = forwardgetdoc(:loo)
 @forwardfun psislw
 
 @doc forwarddoc(:r2_score) r2_score(args...; kwargs...) =
-    arviz.r2_score(args...; kwargs...) |> Pandas.Series
+    todataframe(Pandas.Series(arviz.r2_score(args...; kwargs...)))
 
 Docs.getdoc(::typeof(r2_score)) = forwardgetdoc(:r2_score)
 
 @doc forwarddoc(:waic) waic(args...; kwargs...) =
-    arviz.waic(args...; kwargs...) |> Pandas.Series
+    todataframe(Pandas.Series(arviz.waic(args...; kwargs...)))
 
 Docs.getdoc(::typeof(waic)) = forwardgetdoc(:waic)
 
 """
-    summarystats(data::Dataset; kwargs...) -> Union{Pandas.DataFrame,Dataset}
-    summarystats(data::InferenceData; group = :posterior kwargs...) -> Union{Pandas.DataFrame,Dataset}
+    summarystats(data::Dataset; kwargs...) -> Union{Dataset,DataFrames.DataFrame}
+    summarystats(data::InferenceData; group = :posterior kwargs...) -> Union{Dataset,DataFrames.DataFrame}
 
 Compute summary statistics on `data`.
 
@@ -53,7 +53,7 @@ Compute summary statistics on `data`.
 
 - `var_names::Vector{String}=nothing`: Names of variables to include in summary
 - `include_circ::Bool=false`: Whether to include circular statistics
-- `fmt::String="wide"`: Return format is either `Pandas.DataFrame` ("wide", "long")
+- `fmt::String="wide"`: Return format is either `DataFrames.DataFrame` ("wide", "long")
       or [`Dataset`](@ref) ("xarray").
 - `round_to::Int=nothing`: Number of decimals used to round results.
       Use `nothing` to return raw numbers.
@@ -77,7 +77,7 @@ Compute summary statistics on `data`.
 
 # Returns
 
-- `Union{Pandas.DataFrame,Dataset}`: Return type dicated by `fmt` argument.
+- `Union{Dataset,DataFrames.DataFrame}`: Return type dicated by `fmt` argument.
       Return value will contain summary statistics for each variable. Default
       statistics are:
     + `mean`
@@ -123,7 +123,7 @@ summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = 
 function StatsBase.summarystats(data::Dataset; index_origin = 1, kwargs...)
     s = arviz.summary(data; index_origin = index_origin, kwargs...)
     s isa Dataset && return s
-    return Pandas.DataFrame(s)
+    return todataframe(s; index_name = :variable)
 end
 
 function StatsBase.summarystats(data::InferenceData; group = :posterior, kwargs...)
@@ -138,7 +138,7 @@ end
         coords = nothing,
         dims = nothing,
         kwargs...,
-    ) -> Union{Pandas.DataFrame,PyObject}
+    ) -> Union{Dataset,DataFrames.DataFrame}
 
 Compute summary statistics on any object that can be passed to
 [`convert_to_dataset`](@ref).
