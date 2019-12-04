@@ -1,3 +1,5 @@
+using MonteCarloMeasurements: Particles
+
 @testset "InferenceData" begin
     data = load_arviz_data("centered_eight")
 
@@ -111,6 +113,18 @@ end
         idata3 = convert_to_inference_data(nothing)
         @test idata3 isa InferenceData
         @test isempty(idata3)
+    end
+
+    @testset "convert_to_inference_data(::Particles)" begin
+        p = Particles(randn(rng, 5))
+        idata4 = convert_to_inference_data(p)
+        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata4) == []
+    end
+
+    @testset "convert_to_inference_data(::Array{Particles})" begin
+        p = Particles(randn(rng, 4, 5))
+        idata5 = convert_to_inference_data(p)
+        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata5) == []
     end
 end
 
