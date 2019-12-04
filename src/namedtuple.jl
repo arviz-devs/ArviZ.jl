@@ -15,9 +15,10 @@ data = [(x = rand(), y = randn(2), z = randn(2, 3)) for _ in 1:nchains, _ in 1:n
 stacked_data = ArviZ.stack(data);
 ```
 """
+stack(x) = x
+stack(x::AbstractArray{T}) where {T<:Number} = Array(x)
 stack(x::AbstractArray) = stack(stack.(x))
-stack(x::AbstractArray{T}) where {T<:Number} = x
-stack(x::NamedTuple) = x
+stack(x::NamedTuple) = (; (k => stack(v) for (k, v) in pairs(x))...)
 
 function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     ret = Array{T}(undef, (size(x)..., size(x[1])...))
@@ -32,7 +33,7 @@ function stack(x::AbstractArray{<:NamedTuple{K}}) where {K}
     @inbounds x1 = x[1]
     ret = NamedTuple()
     for k in K
-        v = replacemissing.(getproperty.(x, k))
+        v = replacemissing.(stack.(getproperty.(x, k)))
         ret = merge(ret, (k => stack(v),))
     end
     return ret
