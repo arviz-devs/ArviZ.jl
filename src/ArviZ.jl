@@ -93,6 +93,7 @@ function __init__()
     pytype_mapping(xarray.Dataset, Dataset)
     pytype_mapping(arviz.InferenceData, InferenceData)
 
+    @require MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca" include("particles.jl")
     @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" include("mcmcchains.jl")
 end
 
