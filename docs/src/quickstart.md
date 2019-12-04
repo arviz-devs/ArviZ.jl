@@ -286,60 +286,49 @@ mod = Soss.@model (J, σ) begin
     μ ~ Normal(0, 5)
     τ ~ HalfCauchy(5)
     θ ~ Normal(μ, τ) |> iid(J)
-    y ~ For(J) do j
+    y ~ For(1:J) do j
         Normal(θ[j], σ[j])
     end
 end
 
+observed_data = (y = y,)
 constant_data = (J = J, σ = σ)
-param_mod = mod(; constant_data...)
+param_mod = mod(constant_data)
 ```
 
 Then we draw from the prior and prior predictive distributions.
+We will store the outputs in `MonteCarloMeasurements.Particles`.
 
 ```@example quickstart
-prior_prior_pred = map(1:nchains*nsamples) do _
-    draw = rand(param_mod)
-    return delete(draw, keys(constant_data))
+prior_prior_pred = delete(particles(param_mod, nchains * nsamples), keys(constant_data))
+prior = [delete(prior_prior_pred, keys(observed_data))]
+prior_pred = [delete(prior_prior_pred, keys(prior))]
+prior
+```
+
+Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/DynamicHMC.jl) and use the draws to sample from the posterior predicive distribution.
+
+```@example quickstart
+pred = predictive(mod, :μ, :τ, :θ)(constant_data)
+post_post_pred = map(1:nchains) do _
+    post_draws = dynamicHMC(param_mod, observed_data, logpdf, nsamples)
+    pred_draws = rand.(pred.(post_draws))
+    return particles(post_draws), (y = particles(pred_draws).y,)
 end
-
-prior = map(draw -> delete(draw, :y), prior_prior_pred)
-prior_pred = map(draw -> delete(draw, (:μ, :τ, :θ)), prior_prior_pred);
-nothing # hide
+post = first.(post_post_pred)
+post_pred = last.(post_post_pred);
+post
 ```
 
-Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/DynamicHMC.jl).
-
-```@example quickstart
-post = map(1:nchains) do _
-    dynamicHMC(param_mod, (y = y,), logpdf, nsamples)
-end;
-nothing # hide
-```
-
-Finally, we use the posterior samples to draw from the posterior predictive distribution.
-
-```@example quickstart
-pred = predictive(mod, :μ, :τ, :θ)
-post_pred = map(post) do post_draws
-    map(post_draws) do post_draw
-        pred_draw = rand(pred(post_draw)(constant_data))
-        return delete(pred_draw, keys(constant_data))
-    end
-end;
-nothing # hide
-```
-
-Each Soss draw is a `NamedTuple`.
 Now we combine all of the samples to an `InferenceData`:
 
 ```@example quickstart
 idata = from_namedtuple(
     post;
     posterior_predictive = post_pred,
-    prior = [prior],
-    prior_predictive = [prior_pred],
-    observed_data = Dict("y" => y),
+    prior = prior,
+    prior_predictive = prior_pred,
+    observed_data = observed_data,
     constant_data = constant_data,
     coords = Dict("school" => schools),
     dims = Dict(
