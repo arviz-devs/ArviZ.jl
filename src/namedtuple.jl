@@ -112,7 +112,7 @@ idata4 = from_namedtuple(data4)
 """
 function from_namedtuple(
     posterior::Union{NamedTuple,Nothing} = nothing;
-    posterior_predictive= nothing,
+    posterior_predictive = nothing,
     sample_stats = nothing,
     prior = nothing,
     prior_predictive = nothing,

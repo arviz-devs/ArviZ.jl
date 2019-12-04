@@ -125,7 +125,11 @@ macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(args...; backend = get(rc_params(), "plot.backend", nothing), kwargs...)
+        function $(f)(
+            args...;
+            backend = get(rc_params(), "plot.backend", nothing),
+            kwargs...,
+        )
             backend === nothing && return arviz.$(f)(args...; kwargs...)
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
