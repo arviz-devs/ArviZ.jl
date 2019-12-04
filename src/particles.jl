@@ -7,10 +7,20 @@ function stack(v::AbstractArray{<:AbstractParticles})
     return Array(reshape(m, size(m, 1), size(v)...))
 end
 
-function convert_to_inference_data(data::AbstractParticles; kwargs...)
-    return convert_to_inference_data(stack(data); kwargs...)
+"""
+    convert_to_inference_data(::AbstractParticles; kwargs...) -> InferenceData
+    convert_to_inference_data(
+        ::AbstractArray{<:AbstractParticles};
+        kwargs...,
+    ) -> InferenceData
+
+Convert a single- or multi-dimensional `MonteCarloMeasurements.AbstractParticles`
+to an [`InferenceData`](@ref).
+"""
+function convert_to_inference_data(obj::AbstractParticles; kwargs...)
+    return convert_to_inference_data(stack(obj); kwargs...)
 end
 
-function convert_to_inference_data(data::AbstractArray{<:AbstractParticles}; kwargs...)
-    return convert_to_inference_data(stack(data); kwargs...)
+function convert_to_inference_data(obj::AbstractArray{<:AbstractParticles}; kwargs...)
+    return convert_to_inference_data(stack(obj); kwargs...)
 end
