@@ -302,7 +302,7 @@ We will store the outputs in `MonteCarloMeasurements.Particles`.
 ```@example quickstart
 prior_prior_pred = delete(particles(param_mod, nchains * nsamples), keys(constant_data))
 prior = [delete(prior_prior_pred, keys(observed_data))]
-prior_pred = [delete(prior_prior_pred, keys(prior))]
+prior_pred = [delete(prior_prior_pred, keys(prior[1]))]
 prior
 ```
 
