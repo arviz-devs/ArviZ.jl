@@ -1,6 +1,8 @@
 # [ArviZ.jl Quickstart](@id quickstart)
 
-_This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html)._
+!!! note
+
+    This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html).
 
 ```@setup quickstart
 using PyPlot, ArviZ, Distributions, CmdStan, Pkg, InteractiveUtils
@@ -109,6 +111,10 @@ sampler = NUTS(nwarmup, 0.8)
 turing_chns = psample(param_mod, sampler, nwarmup + nsamples, nchains; progress = false)
 end;
 ```
+
+!!! note
+
+    The above example uses `psample`, which is only available when using Turing in Julia 1.3.
 
 Most ArviZ functions work fine with `Chains` objects from Turing:
 
