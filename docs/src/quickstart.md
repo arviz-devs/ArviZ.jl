@@ -106,8 +106,7 @@ end
 
 param_mod = turing_model(J, y, σ)
 sampler = NUTS(nwarmup, 0.8)
-turing_chns = mapreduce(chainscat, 1:nchains) do _
-    return sample(param_mod, sampler, nwarmup + nsamples; progress = false)
+turing_chns = psample(param_mod, sampler, nwarmup + nsamples, nchains; progress = false)
 end;
 ```
 
