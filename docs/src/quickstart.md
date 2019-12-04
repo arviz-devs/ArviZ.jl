@@ -271,6 +271,10 @@ savefig("quick_cmdstanpair.png"); nothing # hide
 
 ## Plotting with Soss.jl outputs
 
+!!! note
+
+    This example requires Soss#dev.
+
 With Soss, we can define our model for the posterior and easily use it to draw samples from the prior, prior predictive, posterior, and posterior predictive distributions.
 
 First we define our model:
