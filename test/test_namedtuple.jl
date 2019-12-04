@@ -1,3 +1,5 @@
+using MonteCarloMeasurements: Particles
+
 function test_namedtuple_data(idata, group, names, nchains, ndraws; library = "MyLib", coords = Dict(), dims = Dict())
     @test idata isa InferenceData
     @test group in ArviZ.groupnames(idata)
@@ -28,6 +30,7 @@ end
         "Vector{NamedTuple}" => [(; (k => randn(rng, ndraws, v...) for (k, v) in pairs(sizes))...) for _ in 1:nchains],
         "Matrix{NamedTuple}" => [(; (k => randn(rng, v...) for (k, v) in pairs(sizes))...) for _ in 1:nchains, _ in 1:ndraws],
         "Vector{Vector{NamedTuple}}" => [[(; (k => randn(rng, v...) for (k, v) in pairs(sizes))...) for _ in 1:ndraws] for _ in 1:nchains],
+        "Vector{NamedTuple} particles" => [(; (k => Particles(randn(rng, ndraws, v...)) for (k, v) in pairs(sizes))...) for _ in 1:nchains],
     ]
 
     @testset "posterior::$(type)" for (type, nt) in nts
