@@ -57,7 +57,8 @@ containers.
     + `::NamedTuple`: The keys are the variable names and the values are arrays
         with dimensions `(nchains, ndraws, sizes...)`.
     + `::Vector{<:NamedTuple}`: Each element is a `NamedTuple` from a chain
-        with array values with dimensions `(ndraws, sizes...)`.
+        with `Array`/`MonteCarloMeasurements.Particle` values with dimensions
+        `(ndraws, sizes...)`.
     + `::Matrix{<:NamedTuple}`: Each element is a single draw from a single
         chain, with array/scalar values with dimensions `sizes`. The dimensions
         of the matrix container are `(nchains, ndraws)`
