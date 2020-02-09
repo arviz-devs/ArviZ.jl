@@ -14,7 +14,7 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
-CmdStan = "5.2.3"
+CmdStan = "5.2.3, 6.0"
 MCMCChains = "0.3.15, 0.4.2"
 MonteCarloMeasurements = "0.6.4, 0.7"
 NamedTupleTools = "0.11.0, 0.12"

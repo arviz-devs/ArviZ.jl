@@ -59,7 +59,8 @@ function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
         model = noncentered_schools_stan_model,
         nchains = chains,
         num_warmup = draws,
-        num_samples = draws,
+        num_samples = draws;
+        output_format = :mcmcchains,
     )
     rc, chns, cnames = stan(stan_model, data, proj_dir, summary = false)
     outfiles = []
