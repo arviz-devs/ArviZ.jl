@@ -38,7 +38,12 @@ function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
     rng = MersenneTwister(seed)
     nvars = length(names)
     vals = randn(rng, ndraws, nvars, nchains)
-    chns = MCMCChains.Chains(vals, names, Dict(:internals => internal_names))
+    chns = MCMCChains.Chains(
+        vals,
+        names,
+        Dict(:internals => internal_names);
+        sorted = true,
+    )
     return chns
 end
 
