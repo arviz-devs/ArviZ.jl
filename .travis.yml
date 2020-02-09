@@ -17,14 +17,9 @@ env:
     - CMDSTAN_VERSION="2.21.0"
     - CMDSTAN_CACHE="$HOME/.cmdstan/"
     - JULIA_CMDSTAN_HOME="$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
-
 cache:
   directories:
-  - $CMDSTAN_CACHE
-
-matrix:
-  fast_finish: true
-
+    - $CMDSTAN_CACHE
 jobs:
   allow_failures:
     - julia: nightly
@@ -46,7 +41,6 @@ jobs:
       script:
         - julia --color=yes --project=docs/ docs/make.jl
       after_success: skip
-
 before_install:
   - if [ ! -d $JULIA_CMDSTAN_HOME ]; then
     wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$CMDSTAN_VERSION/cmdstan-$CMDSTAN_VERSION.tar.gz;
