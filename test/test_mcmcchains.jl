@@ -38,7 +38,12 @@ function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
     rng = MersenneTwister(seed)
     nvars = length(names)
     vals = randn(rng, ndraws, nvars, nchains)
-    chns = MCMCChains.Chains(vals, names, Dict(:internals => internal_names))
+    chns = MCMCChains.Chains(
+        vals,
+        names,
+        Dict(:internals => internal_names);
+        sorted = true,
+    )
     return chns
 end
 
@@ -54,7 +59,8 @@ function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
         model = noncentered_schools_stan_model,
         nchains = chains,
         num_warmup = draws,
-        num_samples = draws,
+        num_samples = draws;
+        output_format = :mcmcchains,
     )
     rc, chns, cnames = stan(stan_model, data, proj_dir, summary = false)
     outfiles = []
