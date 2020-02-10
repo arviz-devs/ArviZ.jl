@@ -5,7 +5,7 @@ Pkg.activate(); Pkg.instantiate()
 pushfirst!(LOAD_PATH, joinpath(@__DIR__, ".."))
 
 using Documenter, ArviZ
-import MCMCChains
+import MCMCChains, MonteCarloMeasurements
 
 makedocs(
     modules = [ArviZ],
