@@ -17,7 +17,6 @@ variables:
 pool:
   vmImage: 'ubuntu-latest'
 
-stages:
 jobs:
 - job: Test_Releases # test released versions of ArviZ and Julia
   strategy:
