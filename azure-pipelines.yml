@@ -83,6 +83,7 @@ jobs:
         export TRAVIS_PULL_REQUEST="$(cut -d'/' -f3 <<< $BUILD_SOURCEBRANCH)"
         echo "TRAVIS_PULL_REQUEST set to $(TRAVIS_PULL_REQUEST)"
       fi
+      export DOCUMENTER_KEY="$(DOCUMENTER_KEY)"
       ./julia -e 'using InteractiveUtils; versioninfo()'
       ./julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
                                              Pkg.develop(PackageSpec(path=pwd()));

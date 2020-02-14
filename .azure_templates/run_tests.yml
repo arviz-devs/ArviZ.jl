@@ -7,6 +7,7 @@ steps:
   displayName: 'Run the tests'
 - bash: |
     set -o xtrace
+    export CODECOV_TOKEN="$(CODECOV_TOKEN)"
     ./julia --project=.coverage -e 'using Pkg; Pkg.instantiate();
                                     Pkg.add("Coverage");
                                     using Coverage;
