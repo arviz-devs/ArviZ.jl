@@ -24,6 +24,8 @@ jobs:
   allow_failures:
     - julia: 1.4
     - julia: nightly
+    - env: ARVIZ_MASTER=true
+      stage: test
   include:
     - stage: test
       julia: 1.1
