@@ -69,5 +69,5 @@ jobs:
       arviz_version: $ARVIZ_VERSION
   - bash: |
       set -o xtrace
-      julia --color=yes --project=docs/ docs/make.jl
+      ./julia --color=yes --project=docs/ docs/make.jl
     displayName: 'Build and deploy the docs'

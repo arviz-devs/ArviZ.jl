@@ -16,6 +16,6 @@ steps:
       mkdir julia-${{ parameters.version }}
       tar zxf julia-${{ parameters.version }}-latest-linux-x86_64.tar.gz -C julia-${{ parameters.version }} --strip-components 1
     fi
-    ln -s ./julia-${{ parameters.version }}/bin/julia julia
-    julia --color=yes -e "VERSION >= v\"0.7.0-DEV.3630\" && using InteractiveUtils; versioninfo()"
+    ln -s ./julia-${{ parameters.version }}/bin/julia ./julia
+    ./julia --color=yes -e "VERSION >= v\"0.7.0-DEV.3630\" && using InteractiveUtils; versioninfo()"
   displayName: 'Download and extract Julia'
