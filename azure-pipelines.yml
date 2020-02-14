@@ -1,3 +1,8 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
 trigger:
 - master
 - releases/*
@@ -8,71 +13,66 @@ variables:
   CMDSTAN_CACHE: "$HOME/.cmdstan/"
   JULIA_CMDSTAN_HOME: "$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
 
-jobs:
-- job: Linux
+pool:
+  vmImage: 'ubuntu-latest'
 
-  timeoutInMinutes: 0
-
-  pool:
-    vmImage: "ubuntu-latest"
-
-  strategy:
-    matrix:
-      Julia_1.0:
-        JULIA_VERSION: "1.0"
-        ARVIZ_MASTER: false
-        TYPE: "test"
-      Julia_1.3:
-        JULIA_VERSION: "1.3"
-        ARVIZ_MASTER: false
-        TYPE: "test"
-      Julia_1.3_ArviZ_master:
-        JULIA_VERSION: "1.3"
-        ARVIZ_MASTER: true
-        TYPE: "test"
-      Julia_1.4:
-        JULIA_VERSION: "1.4"
-        ARVIZ_MASTER: false
-        TYPE: "test"
-      Julia_nightly:
-        JULIA_VERSION: "nightly"
-        ARVIZ_MASTER: false
-        TYPE: "test"
-      Julia_Documentation:
-        JULIA_VERSION: "1.3"
-        ARVIZ_MASTER: true
-        TYPE: "doc"
-  steps:
-  - bash: |
-      set -o xtrace
-      wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$(CMDSTAN_VERSION)/cmdstan-$(CMDSTAN_VERSION).tar.gz
-      tar -xzpf $(CMDSTAN_CACHE)/cmdstan-$(CMDSTAN_VERSION).tar.gz -C $CMDSTAN_CACHE
-      make -C $JULIA_CMDSTAN_HOME build
-    displayName: 'Download and install dependencies'
-  - bash: |
-      set -o xtrace
-      if [[ $JULIA_VERSION == nightly ]]
-      then
-        wget -nv https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
-        mkdir julia-$(JULIA_VERSION)
-        tar zxf julia-latest-linux64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
-      else
-        wget -nv https://julialang-s3.julialang.org/bin/linux/x64/$(JULIA_VERSION)/julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz
-        mkdir julia-$(JULIA_VERSION)
-        tar zxf julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
-      fi
-    displayName: 'Download and extract Julia'
-  - bash: |
-      set -o xtrace
-      if [[ $TYPE == test ]]; then
-        ./julia-$(JULIA_VERSION)/bin/julia -e 'using InteractiveUtils; versioninfo()'
-        ./julia-$(JULIA_VERSION)/bin/julia --project=@. -e 'using Pkg; Pkg.instantiate()'
-        ./julia-$(JULIA_VERSION)/bin/julia --project=@. -e 'using Pkg; Pkg.test(coverage=true)'
-      fi
-    displayName: 'Run the tests'
-  - bash: |
-      set -o xtrace
-      if [[ $TYPE == doc ]]; then
-        ./julia-$(JULIA_VERSION)/bin/julia --color=yes --project=docs/ docs/make.jl
-      fi
-    displayName: 'Build and deploy the docs'
+strategy:
+  matrix:
+    Julia_1.0:
+      JULIA_VERSION: "1.0"
+      ARVIZ_MASTER: false
+      TYPE: "test"
+    Julia_1.3:
+      JULIA_VERSION: "1.3"
+      ARVIZ_MASTER: false
+      TYPE: "test"
+    Julia_1.3_ArviZ_master:
+      JULIA_VERSION: "1.3"
+      ARVIZ_MASTER: true
+      TYPE: "test"
+    Julia_1.4:
+      JULIA_VERSION: "1.4"
+      ARVIZ_MASTER: false
+      TYPE: "test"
+    Julia_nightly:
+      JULIA_VERSION: "nightly"
+      ARVIZ_MASTER: false
+      TYPE: "test"
+    Julia_Documentation:
+      JULIA_VERSION: "1.3"
+      ARVIZ_MASTER: true
+      TYPE: "doc"
+steps:
+- bash: |
+    set -o xtrace
+    wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$(CMDSTAN_VERSION)/cmdstan-$(CMDSTAN_VERSION).tar.gz
+    tar -xzpf $(CMDSTAN_CACHE)/cmdstan-$(CMDSTAN_VERSION).tar.gz -C $CMDSTAN_CACHE
+    make -C $JULIA_CMDSTAN_HOME build
+  displayName: 'Download and install dependencies'
+- bash: |
+    set -o xtrace
+    if [[ $JULIA_VERSION == nightly ]]
+    then
+      wget -nv https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
+      mkdir julia-$(JULIA_VERSION)
+      tar zxf julia-latest-linux64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
+    else
+      wget -nv https://julialang-s3.julialang.org/bin/linux/x64/$(JULIA_VERSION)/julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz
+      mkdir julia-$(JULIA_VERSION)
+      tar zxf julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
+    fi
+  displayName: 'Download and extract Julia'
+- bash: |
+    set -o xtrace
+    if [[ $TYPE == test ]]; then
+      ./julia-$(JULIA_VERSION)/bin/julia -e 'using InteractiveUtils; versioninfo()'
+      ./julia-$(JULIA_VERSION)/bin/julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+      ./julia-$(JULIA_VERSION)/bin/julia --project=@. -e 'using Pkg; Pkg.test(coverage=true)'
+    fi
+  displayName: 'Run the tests'
+- bash: |
+    set -o xtrace
+    if [[ $TYPE == doc ]]; then
+      ./julia-$(JULIA_VERSION)/bin/julia --color=yes --project=docs/ docs/make.jl
+    fi
+  displayName: 'Build and deploy the docs'
