@@ -5,3 +5,17 @@ steps:
     ./julia --project=@. -e 'using Pkg; Pkg.instantiate()'
     ./julia --project=@. -e 'using Pkg; Pkg.test(coverage=true)'
   displayName: 'Run the tests'
+- bash |
+    set -o xtrace
+    ./julia --project=.coverage -e 'using Pkg; Pkg.instantiate();
+                                    Pkg.add("Coverage");
+                                    using Coverage;
+                                    Codecov.submit_local(Codecov.process_folder();
+                                      service = "azure_pipelines",
+                                      commit       = ENV["BUILD_SOURCEVERSION"],
+                                      pull_request = get(ENV, "SYSTEM_PULLREQUEST_PULLREQUESTNUMBER", "false"),
+                                      job          = ENV["BUILD_DEFINITIONNAME"],
+                                      slug         = ENV["BUILD_REPOSITORY_NAME"],
+                                      build        = ENV["BUILD_BUILDID"])'
+  displayName: 'Submit code coverage'
+  continueOnError: true
