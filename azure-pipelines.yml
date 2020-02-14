@@ -30,10 +30,10 @@ jobs:
   steps:
   - template: .azure_templates/install_dependencies.yml
     parameters:
-      cmdstan_version: "$(CMDSTAN_VERSION)"
-      cmdstan_dir: "$(CMDSTAN_DIR)"
-      julia_version: "$(JULIA_VERSION)"
-      arviz_version: "$(ARVIZ_VERSION)"
+      cmdstan_version: $CMDSTAN_VERSION
+      cmdstan_dir: $CMDSTAN_DIR
+      julia_version: $JULIA_VERSION
+      arviz_version: $ARVIZ_VERSION
   - template: .azure_templates/run_tests.yml
 - job: Test_Futures # test future versions of ArviZ and Julia
   continueOnError: true # allow_failures
@@ -49,10 +49,10 @@ jobs:
   steps:
   - template: .azure_templates/install_dependencies.yml
     parameters:
-      cmdstan_version: "$(CMDSTAN_VERSION)"
-      cmdstan_dir: "$(CMDSTAN_DIR)"
-      julia_version: "$(JULIA_VERSION)"
-      arviz_version: "$(ARVIZ_VERSION)"
+      cmdstan_version: $CMDSTAN_VERSION
+      cmdstan_dir: $CMDSTAN_DIR
+      julia_version: $JULIA_VERSION
+      arviz_version: $ARVIZ_VERSION
   - template: .azure_templates/run_tests.yml
 - job: Documentation # build and deploy documentation if tests passed
   timeoutInMinutes: 0
@@ -66,8 +66,8 @@ jobs:
     condition: startsWith(variables['build.sourceBranch'], 'refs/tags/')
   - template: .azure_templates/install_dependencies.yml
     parameters:
-      cmdstan_version: "$(CMDSTAN_VERSION)"
-      cmdstan_dir: "$(CMDSTAN_DIR)"
-      julia_version: "$(JULIA_VERSION)"
-      arviz_version: "$(ARVIZ_VERSION)"
+      cmdstan_version: $CMDSTAN_VERSION
+      cmdstan_dir: $CMDSTAN_DIR
+      julia_version: $JULIA_VERSION
+      arviz_version: $ARVIZ_VERSION
   - template: .azure_templates/build_docs.yml
