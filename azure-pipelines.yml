@@ -55,7 +55,6 @@ jobs:
       arviz_version: $ARVIZ_VERSION
   - template: .azure_templates/run_tests.yml
 - job: Documentation # build and deploy documentation if tests passed
-  dependsOn: Test_Releases
   timeoutInMinutes: 0
   variables:
     JULIA_VERSION: "1.3"
