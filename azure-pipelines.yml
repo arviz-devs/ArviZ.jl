@@ -43,25 +43,13 @@ strategy:
       ARVIZ_MASTER: true
       TYPE: "doc"
 steps:
-- bash: |
-    set -o xtrace
-    wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$(CMDSTAN_VERSION)/cmdstan-$(CMDSTAN_VERSION).tar.gz
-    tar -xzpf $(CMDSTAN_CACHE)/cmdstan-$(CMDSTAN_VERSION).tar.gz -C $CMDSTAN_CACHE
-    make -C $JULIA_CMDSTAN_HOME build
-  displayName: 'Download and install dependencies'
-- bash: |
-    set -o xtrace
-    if [[ $JULIA_VERSION == nightly ]]
-    then
-      wget -nv https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
-      mkdir julia-$(JULIA_VERSION)
-      tar zxf julia-latest-linux64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
-    else
-      wget -nv https://julialang-s3.julialang.org/bin/linux/x64/$(JULIA_VERSION)/julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz
-      mkdir julia-$(JULIA_VERSION)
-      tar zxf julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
-    fi
-  displayName: 'Download and extract Julia'
+- template: azurepipelines-install_cmdstan.yml
+  parameters:
+    version: $CMDSTAN_VERSION
+    dir: $CMDSTAN_CACHE
+- template: azurepipelines-install_julia.yml
+  parameters:
+    version: $JULIA_VERSION
 - bash: |
     set -o xtrace
     if [[ $TYPE == test ]]; then

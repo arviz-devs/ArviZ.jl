@@ -1,0 +1,19 @@
+parameters:
+- name: version
+  type: string
+  default: ''
+
+steps:
+- bash: |
+  set -o xtrace
+  if [[ ${{ parameters.version }} == nightly ]]
+  then
+    wget -nv https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
+    mkdir julia-${{ parameters.version }}
+    tar zxf julia-latest-linux64.tar.gz -C julia-${{ parameters.version }} --strip-components 1
+  else
+    wget -nv https://julialang-s3.julialang.org/bin/linux/x64/${{ parameters.version }}/julia-${{ parameters.version }}-latest-linux-x86_64.tar.gz
+    mkdir julia-${{ parameters.version }}
+    tar zxf julia-${{ parameters.version }}-latest-linux-x86_64.tar.gz -C julia-${{ parameters.version }} --strip-components 1
+  fi
+  displayName: 'Download and extract Julia'
