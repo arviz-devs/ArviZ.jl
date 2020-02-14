@@ -12,4 +12,4 @@ steps:
     wget -P ${{ parameters.dir }} https://github.com/stan-dev/cmdstan/releases/download/v${{ parameters.version }}/cmdstan-${{ parameters.version }}.tar.gz
     tar -xzpf ${{ parameters.dir }}/cmdstan-${{ parameters.version }}.tar.gz -C ${{ parameters.dir }}
     make -C ${{ parameters.dir }}/cmdstan-${{ parameters.version }}/ build
-    displayName: 'Download and build CmdStan'
+  displayName: 'Download and build CmdStan'
