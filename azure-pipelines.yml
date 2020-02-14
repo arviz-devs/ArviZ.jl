@@ -80,7 +80,7 @@ jobs:
         export TRAVIS_BRANCH="${BUILD_SOURCEBRANCH:11}"
         echo "TRAVIS_BRANCH set to $(TRAVIS_BRANCH)"
       elif [[ $BUILD_SOURCEBRANCH == refs/pull/* ]]; then
-        export TRAVIS_PULL_REQUEST="$(cut -d'/' -f3 <<<$($BUILD_SOURCEBRANCH))"
+        export TRAVIS_PULL_REQUEST="$(cut -d'/' -f3 <<< $(BUILD_SOURCEBRANCH))"
         echo "TRAVIS_PULL_REQUEST set to $(TRAVIS_PULL_REQUEST)"
       fi
       ./julia -e 'using InteractiveUtils; versioninfo()'
