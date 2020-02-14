@@ -70,23 +70,4 @@ jobs:
       cmdstan_dir: "$(CMDSTAN_DIR)"
       julia_version: "$(JULIA_VERSION)"
       arviz_version: "$(ARVIZ_VERSION)"
-  - bash: |
-      set -o xtrace
-      export TRAVIS_REPO_SLUG="$BUILD_REPOSITORY_NAME"
-      if [[ $BUILD_SOURCEBRANCH == refs/tags/* ]]; then
-        export TRAVIS_TAG="${BUILD_SOURCEBRANCH:10}"
-        echo "TRAVIS_TAG set to $(TRAVIS_TAG)"
-      elif [[ $BUILD_SOURCEBRANCH == refs/heads/* ]]; then
-        export TRAVIS_BRANCH="${BUILD_SOURCEBRANCH:11}"
-        echo "TRAVIS_BRANCH set to $(TRAVIS_BRANCH)"
-      elif [[ $BUILD_SOURCEBRANCH == refs/pull/* ]]; then
-        export TRAVIS_PULL_REQUEST="$(cut -d'/' -f3 <<< $BUILD_SOURCEBRANCH)"
-        echo "TRAVIS_PULL_REQUEST set to $(TRAVIS_PULL_REQUEST)"
-      fi
-      export DOCUMENTER_KEY="$(DOCUMENTER_KEY)"
-      ./julia -e 'using InteractiveUtils; versioninfo()'
-      ./julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
-                                             Pkg.develop(PackageSpec(path=pwd()));
-                                             Pkg.build()'
-      ./julia --color=yes --project=docs/ docs/make.jl
-    displayName: 'Build and deploy the docs'
+  - template: .azure_templates/build_docs.yml
