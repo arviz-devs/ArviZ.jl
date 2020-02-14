@@ -7,5 +7,5 @@ steps:
 - bash: | # install master if requested and not a tagged release
     set -o xtrace
     julia -e 'using Pkg; Pkg.add("PyCall"); using PyCall; run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
-  condition: eq(parameters.version, 'master')
+  condition: eq(${{ parameters.version }}, 'master')
   displayName: 'Install arviz#master'
