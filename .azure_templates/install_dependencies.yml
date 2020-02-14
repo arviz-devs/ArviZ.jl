@@ -13,13 +13,13 @@ parameters:
   default: ''
 
 steps:
-- template: .azure_templates/install_cmdstan.yml
+- template: install_cmdstan.yml
   parameters:
     version: ${{ parameters.cmdstan_version }}
     dir: ${{ parameters.cmdstan_dir }}
-- template: .azure_templates/install_julia.yml
+- template: install_julia.yml
   parameters:
     version: ${{ parameters.julia_version }}
-- template: .azure_templates/install_arvizmaster.yml
+- template: install_arvizmaster.yml
   parameters:
     version: ${{ parameters.arviz_version }}
