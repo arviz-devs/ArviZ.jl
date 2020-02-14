@@ -63,7 +63,7 @@ jobs:
   - powershell: |
       Write-Host ##vso[task.setvariable variable=ARVIZ_VERSION;isOutput=true]release
     displayName: "Set ArviZ version to release"
-    condition: not(startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+    condition: startsWith(variables['build.sourceBranch'], 'refs/tags/')
   - template: .azure_templates/install_dependencies.yml
     parameters:
       cmdstan_version: $CMDSTAN_VERSION
