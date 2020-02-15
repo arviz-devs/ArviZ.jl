@@ -35,7 +35,6 @@ jobs:
       julia_version: $JULIA_VERSION
   - template: .azure_templates/run_tests.yml
 - job: Test_Futures # test future versions of ArviZ and Julia
-  continueOnError: true # allow_failures
   strategy:
     matrix:
       Julia_1_3_ArviZ_master:
@@ -60,6 +59,8 @@ jobs:
     displayName: 'Install arviz#master'
     condition: eq(variables['ARVIZ_VERSION'], 'master')
   - template: .azure_templates/run_tests.yml
+    parameters:
+      allow_failures: true
 - job: Documentation # build and deploy documentation if tests passed
   dependsOn: Test_Releases
   timeoutInMinutes: 0

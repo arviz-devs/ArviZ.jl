@@ -1,3 +1,8 @@
+parameters:
+- name: allow_failures
+  type: boolean
+  default: false
+
 steps:
 - bash: |
     set -o xtrace
@@ -5,6 +10,7 @@ steps:
     ./julia --project=@. -e 'using Pkg; Pkg.instantiate()'
     ./julia --project=@. -e 'using Pkg; Pkg.test(coverage=true)'
   displayName: 'Run the tests'
+  continueOnError: ${{ parameters.allow_failures }}
 - bash: |
     set -o xtrace
     export CODECOV_TOKEN="$(CODECOV_TOKEN)"
