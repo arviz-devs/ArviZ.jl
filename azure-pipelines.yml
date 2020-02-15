@@ -24,7 +24,7 @@ jobs:
     JULIA_VERSION: "1.3"
   steps:
   - template: .azure_templates/install_dependencies.yml
-  -bash: |
+  - bash: |
     ./julia -e 'using InteractiveUtils; versioninfo()'
     ./julia --project=@. -e 'using Pkg; Pkg.instantiate()'
     ./julia --project=@. -e 'using Soss'
