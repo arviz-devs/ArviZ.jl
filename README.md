@@ -2,6 +2,7 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Build Status](https://travis-ci.com/arviz-devs/ArviZ.jl.svg?branch=master)](https://travis-ci.com/arviz-devs/ArviZ.jl)
+[![Build Status](https://dev.azure.com/ArviZ/ArviZ/_apis/build/status/arviz-devs.ArviZ.jl?branchName=master)](https://dev.azure.com/ArviZ/ArviZ/_build/latest?definitionId=2&branchName=master)
 [![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://arviz-devs.github.io/ArviZ.jl/stable)
 [![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://arviz-devs.github.io/ArviZ.jl/dev)

@@ -1,0 +1,4 @@
+steps:
+- template: install_cmdstan.yml
+- template: install_julia.yml
+- template: install_arvizmaster.yml

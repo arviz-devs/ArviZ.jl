@@ -1,0 +1,16 @@
+steps:
+- bash: |
+    set -o xtrace
+    if [[ $(JULIA_VERSION) == nightly ]]
+    then
+      wget -nv https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
+      mkdir julia-$(JULIA_VERSION)
+      tar zxf julia-latest-linux64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
+    else
+      wget -nv https://julialang-s3.julialang.org/bin/linux/x64/$(JULIA_VERSION)/julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz
+      mkdir julia-$(JULIA_VERSION)
+      tar zxf julia-$(JULIA_VERSION)-latest-linux-x86_64.tar.gz -C julia-$(JULIA_VERSION) --strip-components 1
+    fi
+    ln -s ./julia-$(JULIA_VERSION)/bin/julia ./julia
+    ./julia --color=yes -e "VERSION >= v\"0.7.0-DEV.3630\" && using InteractiveUtils; versioninfo()"
+  displayName: 'Download and extract Julia'
