@@ -179,7 +179,7 @@ CmdStan.jl and StanSample.jl also default to producing `Chains` outputs, and we 
 Here is the same centered eight schools model:
 
 ```@example quickstart
-using CmdStan
+using CmdStan, MCMCChains
 
 schools_code = """
 data {
@@ -217,6 +217,7 @@ stan_model = Stanmodel(
     nchains = nchains,
     num_warmup = nwarmup,
     num_samples = nsamples,
+    output_format = :mcmcchains,
     random = CmdStan.Random(8675309), # hide
 )
 _, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
@@ -302,7 +303,7 @@ Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/
 
 ```@example quickstart
 post = map(1:nchains) do _
-    dynamicHMC(param_mod, (y = y,), logpdf, nsamples)
+    dynamicHMC(param_mod, (y = y,), nsamples)
 end;
 nothing # hide
 ```
