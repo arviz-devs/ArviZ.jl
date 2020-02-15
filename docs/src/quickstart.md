@@ -214,6 +214,7 @@ generated quantities {
 schools_dat = Dict("J" => J, "y" => y, "sigma" => σ)
 stan_model = Stanmodel(
     model = schools_code,
+    name = "schools",
     nchains = nchains,
     num_warmup = nwarmup,
     num_samples = nsamples,
@@ -221,6 +222,7 @@ stan_model = Stanmodel(
     random = CmdStan.Random(8675309), # hide
 )
 _, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
+Base.Filesystem.rm(stan_model.tmpdir; recursive = true, force = true); # hide
 nothing # hide
 ```
 
@@ -354,3 +356,14 @@ savefig("quick_sosspred.png"); nothing # hide
 ```
 
 ![](quick_sosspred.png)
+
+## Environment
+
+```@example quickstart
+using Pkg
+Pkg.status()
+```
+
+```@example quickstart
+versioninfo()
+```
