@@ -8,9 +8,6 @@ parameters:
 - name: julia_version
   type: string
   default: ''
-- name: arviz_version
-  type: string
-  default: ''
 
 steps:
 - template: install_cmdstan.yml
@@ -20,6 +17,3 @@ steps:
 - template: install_julia.yml
   parameters:
     version: ${{ parameters.julia_version }}
-- template: install_arvizmaster.yml
-  parameters:
-    version: ${{ parameters.arviz_version }}

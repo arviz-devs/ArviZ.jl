@@ -33,7 +33,6 @@ jobs:
       cmdstan_version: $CMDSTAN_VERSION
       cmdstan_dir: $CMDSTAN_DIR
       julia_version: $JULIA_VERSION
-      arviz_version: $ARVIZ_VERSION
   - template: .azure_templates/run_tests.yml
 - job: Test_Futures # test future versions of ArviZ and Julia
   continueOnError: true # allow_failures
@@ -52,22 +51,31 @@ jobs:
       cmdstan_version: $CMDSTAN_VERSION
       cmdstan_dir: $CMDSTAN_DIR
       julia_version: $JULIA_VERSION
-      arviz_version: $ARVIZ_VERSION
+  - bash: |
+      set -o xtrace
+      ./julia -e 'using Pkg;
+                  Pkg.add("PyCall");
+                  using PyCall;
+                  run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
+    displayName: 'Install arviz#master'
+    condition: eq($(ARVIZ_VERSION), 'master')
   - template: .azure_templates/run_tests.yml
 - job: Documentation # build and deploy documentation if tests passed
   timeoutInMinutes: 0
   variables:
     JULIA_VERSION: "1.3"
-    ARVIZ_VERSION: master
   steps:
-  - powershell: |
-      Write-Host ##vso[task.setvariable variable=ARVIZ_VERSION;isOutput=true]release
-    displayName: "Set ArviZ version to release"
-    condition: startsWith(variables['build.sourceBranch'], 'refs/tags/')
   - template: .azure_templates/install_dependencies.yml
     parameters:
       cmdstan_version: $CMDSTAN_VERSION
       cmdstan_dir: $CMDSTAN_DIR
       julia_version: $JULIA_VERSION
-      arviz_version: $ARVIZ_VERSION
+  - bash: |
+      set -o xtrace
+      ./julia -e 'using Pkg;
+                  Pkg.add("PyCall");
+                  using PyCall;
+                  run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
+    displayName: 'Install arviz#master'
+    condition: not(startsWith(variables['build.sourceBranch'], 'refs/tags/'))
   - template: .azure_templates/build_docs.yml
