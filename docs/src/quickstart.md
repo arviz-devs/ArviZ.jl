@@ -289,7 +289,7 @@ mod = Soss.@model (J, σ) begin
     μ ~ Normal(0, 5)
     τ ~ HalfCauchy(5)
     θ ~ Normal(μ, τ) |> iid(J)
-    y ~ For(J) do j
+    y ~ For(1:J) do j
         Normal(θ[j], σ[j])
     end
 end
