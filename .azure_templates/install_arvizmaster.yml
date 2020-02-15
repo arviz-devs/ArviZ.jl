@@ -1,0 +1,13 @@
+steps:
+- bash: |
+    set -o xtrace
+    ./julia -e 'using Pkg;
+                Pkg.add("PyCall");
+                using PyCall;
+                run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
+  displayName: 'Install arviz#master'
+  condition: |
+    and(
+      eq(variables['ARVIZ_VERSION'], 'master'),
+      not(startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+    )
