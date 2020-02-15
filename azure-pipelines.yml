@@ -58,7 +58,7 @@ jobs:
                   using PyCall;
                   run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
     displayName: 'Install arviz#master'
-    condition: eq($(ARVIZ_VERSION), 'master')
+    condition: eq(variables['ARVIZ_VERSION'], 'master')
   - template: .azure_templates/run_tests.yml
 - job: Documentation # build and deploy documentation if tests passed
   timeoutInMinutes: 0
