@@ -18,6 +18,16 @@ pool:
   vmImage: 'ubuntu-latest'
 
 jobs:
+- job: Test_MCM_Soss
+  timeoutInMinutes: 0
+  variables:
+    JULIA_VERSION: "1.3"
+  steps:
+  - template: .azure_templates/install_dependencies.yml
+  -bash: |
+    ./julia -e 'using InteractiveUtils; versioninfo()'
+    ./julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+    ./julia --project=@. -e 'using Soss'
 - job: Test_Releases # test released versions of ArviZ and Julia
   strategy:
     matrix:
