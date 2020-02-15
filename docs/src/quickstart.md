@@ -3,9 +3,8 @@
 _This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html)._
 
 ```@setup quickstart
-using PyPlot, ArviZ, Distributions, CmdStan, Pkg, InteractiveUtils
+using PyPlot, ArviZ, Pkg, InteractiveUtils
 import MCMCChains
-using Soss, NamedTupleTools
 
 using PyCall
 np = pyimport_conda("numpy", "numpy")
