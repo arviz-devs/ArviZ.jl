@@ -3,11 +3,17 @@
 _This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html)._
 
 ```@setup quickstart
-using PyPlot, ArviZ
+using PyPlot, ArviZ, Pkg, InteractiveUtils
+import MCMCChains
 
 using PyCall
 np = pyimport_conda("numpy", "numpy")
 np.seterr(divide="ignore", invalid="ignore")
+
+using Random
+Random.seed!(42)
+
+turing_chns = read("../src/assets/turing_centered_eight_chains.jls", MCMCChains.Chains)
 
 # use fancy HTML for xarray.Dataset if available
 try
@@ -29,10 +35,7 @@ ArviZ.use_style("arviz-darkgrid")
 ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com/StanJulia/CmdStan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 
 ```@example quickstart
-using Random
-
-rng = Random.MersenneTwister(42)
-plot_posterior(randn(rng, 100_000));
+plot_posterior(randn(100_000));
 savefig("quick_postarray.svg"); nothing # hide
 ```
 
@@ -47,10 +50,10 @@ using Distributions
 
 s = (10, 50)
 plot_forest(Dict(
-    "normal" => randn(rng, s),
-    "gumbel" => rand(rng, Gumbel(), s),
-    "student t" => rand(rng, TDist(6), s),
-    "exponential" => rand(rng, Exponential(), s)
+    "normal" => randn(s),
+    "gumbel" => rand(Gumbel(), s),
+    "student t" => rand(TDist(6), s),
+    "exponential" => rand(Exponential(), s)
 ));
 savefig("quick_forestdists.svg"); nothing # hide
 ```
@@ -83,39 +86,28 @@ schools = [
     "Mt. Hermon"
 ];
 
-nwarmup, nsamples, nchains = 1000, 1000, 4;
+nwarmup, nsamples, nchains = 1000, 1000, 4
 nothing # hide
 ```
 
 Now we write and run the model using Turing:
 
-```@example quickstart
+```julia
 using Turing
 
-Turing.@model turing_model(
-    J,
-    y,
-    σ,
-    ::Type{TV} = Vector{Float64},
-) where {TV} = begin
+Turing.@model turing_model(J, y, σ) = begin
     μ ~ Normal(0, 5)
-    τ ~ truncated(Cauchy(0, 5), 0, Inf)
-    θ = TV(undef, J)
-    θ .~ Normal(μ, τ)
+    τ ~ Truncated(Cauchy(0, 5), 0, Inf)
+    θ = tzeros(J)
+    θ ~ [Normal(μ, τ)]
     y ~ MvNormal(θ, σ)
 end
 
 param_mod = turing_model(J, y, σ)
 sampler = NUTS(nwarmup, 0.8)
-rng = Random.MersenneTwister(1257)
-turing_chns = psample(
-    rng,
-    param_mod,
-    sampler,
-    nwarmup + nsamples,
-    nchains;
-    progress = false,
-);
+turing_chns = mapreduce(chainscat, 1:nchains) do _
+    return sample(param_mod, sampler, nwarmup + nsamples; progress = false)
+end;
 ```
 
 Most ArviZ functions work fine with `Chains` objects from Turing:
@@ -227,7 +219,7 @@ stan_model = Stanmodel(
     num_warmup = nwarmup,
     num_samples = nsamples,
     output_format = :mcmcchains,
-    random = CmdStan.Random(8675309),
+    random = CmdStan.Random(8675309), # hide
 )
 _, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
 Base.Filesystem.rm(stan_model.tmpdir; recursive = true, force = true); # hide
@@ -299,7 +291,6 @@ param_mod = mod(; constant_data...)
 Then we draw from the prior and prior predictive distributions.
 
 ```@example quickstart
-Random.seed!(5298)
 prior_prior_pred = map(1:nchains*nsamples) do _
     draw = rand(param_mod)
     return delete(draw, keys(constant_data))
@@ -374,6 +365,5 @@ Pkg.status()
 ```
 
 ```@example quickstart
-using InteractiveUtils
 versioninfo()
 ```
