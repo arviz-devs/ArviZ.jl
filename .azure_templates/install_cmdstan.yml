@@ -1,22 +1,14 @@
-parameters:
-- name: version
-  type: string
-  default: ''
-- name: dir
-  type: string
-  default: ''
-
 steps:
 - task: Cache@2
   inputs:
-    key: cmdstan | "$(${{ parameters.version }})" | "$(Agent.OS)"
-    restoreKeys: cmdstan | "$(${{ parameters.version }})" | "$(Agent.OS)"
-    path: ${{ parameters.dir }}
+    key: cmdstan | "$(CMDSTAN_VERSION)" | "$(Agent.OS)"
+    restoreKeys: cmdstan | "$(CMDSTAN_VERSION)" | "$(Agent.OS)"
+    path: "$(CMDSTAN_DIR)"
     cacheHitVar: CMDSTAN_CACHE_RESTORED
 - bash: |
     set -o xtrace
-    wget -P ${{ parameters.dir }} https://github.com/stan-dev/cmdstan/releases/download/v${{ parameters.version }}/cmdstan-${{ parameters.version }}.tar.gz
-    tar -xzpf ${{ parameters.dir }}/cmdstan-${{ parameters.version }}.tar.gz -C ${{ parameters.dir }}
-    make -C ${{ parameters.dir }}/cmdstan-${{ parameters.version }}/ build
+    wget -P $(CMDSTAN_DIR) https://github.com/stan-dev/cmdstan/releases/download/v$(CMDSTAN_VERSION)/cmdstan-$(CMDSTAN_VERSION).tar.gz
+    tar -xzpf $(CMDSTAN_DIR)/cmdstan-$(CMDSTAN_VERSION).tar.gz -C $(CMDSTAN_DIR)
+    make -C $(CMDSTAN_DIR)/cmdstan-$(CMDSTAN_VERSION)/ build
   displayName: 'Download and build CmdStan'
   condition: ne(variables.CMDSTAN_CACHE_RESTORED, 'true')

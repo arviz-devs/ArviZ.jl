@@ -1,19 +1,10 @@
 parameters:
-- name: cmdstan_version
-  type: string
-  default: ''
-- name: cmdstan_dir
-  type: string
-  default: ''
 - name: julia_version
   type: string
   default: ''
 
 steps:
 - template: install_cmdstan.yml
-  parameters:
-    version: ${{ parameters.cmdstan_version }}
-    dir: ${{ parameters.cmdstan_dir }}
 - template: install_julia.yml
   parameters:
     version: ${{ parameters.julia_version }}

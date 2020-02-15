@@ -30,8 +30,6 @@ jobs:
   steps:
   - template: .azure_templates/install_dependencies.yml
     parameters:
-      cmdstan_version: $CMDSTAN_VERSION
-      cmdstan_dir: $CMDSTAN_DIR
       julia_version: $JULIA_VERSION
   - template: .azure_templates/run_tests.yml
 - job: Test_Futures # test future versions of ArviZ and Julia
@@ -47,8 +45,6 @@ jobs:
   steps:
   - template: .azure_templates/install_dependencies.yml
     parameters:
-      cmdstan_version: $CMDSTAN_VERSION
-      cmdstan_dir: $CMDSTAN_DIR
       julia_version: $JULIA_VERSION
   - bash: |
       set -o xtrace
@@ -69,8 +65,6 @@ jobs:
   steps:
   - template: .azure_templates/install_dependencies.yml
     parameters:
-      cmdstan_version: $CMDSTAN_VERSION
-      cmdstan_dir: $CMDSTAN_DIR
       julia_version: $JULIA_VERSION
   - bash: |
       set -o xtrace
