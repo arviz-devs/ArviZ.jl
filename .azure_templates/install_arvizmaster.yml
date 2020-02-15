@@ -9,5 +9,5 @@ steps:
   condition: |
     and(
       eq(variables['ARVIZ_VERSION'], 'master'),
-      not(startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+      not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
     )
