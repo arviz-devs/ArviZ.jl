@@ -5,7 +5,7 @@
 
 trigger:
 - master
-- releases/*
+- refs/tags/*
 
 variables:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
