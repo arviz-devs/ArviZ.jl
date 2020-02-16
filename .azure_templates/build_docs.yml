@@ -1,7 +1,6 @@
 steps:
 - bash: |
     set -o xtrace
-    export DOCUMENTER_KEY=$DOCUMENTER_KEY2
     export TRAVIS_REPO_SLUG="$BUILD_REPOSITORY_NAME"
     export TRAVIS_PULL_REQUEST=false
     if [[ $BUILD_SOURCEBRANCH == refs/tags/* ]]; then
@@ -16,4 +15,6 @@ steps:
                                            Pkg.develop(PackageSpec(path=pwd()));
                                            Pkg.build()'
     ./julia --color=yes --project=docs/ docs/make.jl
+  env:
+    DOCUMENTER_KEY: $(DOCUMENTER_KEY2)
   displayName: 'Build and deploy the docs'
