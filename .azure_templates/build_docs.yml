@@ -2,6 +2,7 @@ steps:
 - bash: |
     set -o xtrace
     export TRAVIS_REPO_SLUG="$BUILD_REPOSITORY_NAME"
+    export TRAVIS_PULL_REQUEST=false
     if [[ $BUILD_SOURCEBRANCH == refs/tags/* ]]; then
       export TRAVIS_TAG="${BUILD_SOURCEBRANCH:10}"
     elif [[ $BUILD_SOURCEBRANCH == refs/heads/* ]]; then
