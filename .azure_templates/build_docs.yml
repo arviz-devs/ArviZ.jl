@@ -1,6 +1,7 @@
 steps:
 - bash: |
     set -o xtrace
+    export DOCUMENTER_KEY="$(DOCUMENTER_KEY2)"
     export TRAVIS_REPO_SLUG="$BUILD_REPOSITORY_NAME"
     export TRAVIS_PULL_REQUEST=false
     if [[ $BUILD_SOURCEBRANCH == refs/tags/* ]]; then
@@ -10,7 +11,6 @@ steps:
     elif [[ $BUILD_SOURCEBRANCH == refs/pull/* ]]; then
       export TRAVIS_PULL_REQUEST="$(cut -d'/' -f3 <<< $BUILD_SOURCEBRANCH)"
     fi
-    export DOCUMENTER_KEY="$(DOCUMENTER_KEY)"
     ./julia -e 'using InteractiveUtils; versioninfo()'
     ./julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
                                            Pkg.develop(PackageSpec(path=pwd()));
