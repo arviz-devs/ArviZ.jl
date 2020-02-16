@@ -1,4 +1,4 @@
-import .MCMCChains: AbstractChains, sections
+import .MCMCChains: Chains, sections
 
 export from_mcmcchains
 
@@ -57,14 +57,14 @@ function varnames_locs_dict(loc_names)
     return vars_to_locs
 end
 
-function attributes_dict(chns::AbstractChains)
+function attributes_dict(chns::Chains)
     info = delete(chns.info, :hashedsummary)
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
 
 attributes_dict(::Nothing) = Dict()
 
-function section_dict(chns::AbstractChains, section)
+function section_dict(chns::Chains, section)
     ndraws, _, nchains = size(chns)
     loc_names = string.(getfield(chns.name_map, section))
     vars_to_locs = varnames_locs_dict(loc_names)
@@ -91,7 +91,7 @@ function section_dict(chns::AbstractChains, section)
 end
 
 function chains_to_dict(
-    chns::AbstractChains;
+    chns::Chains;
     ignore = String[],
     section = :parameters,
     rekey_fun = identity,
@@ -105,28 +105,28 @@ end
 chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
-    convert_to_inference_data(obj::AbstractChains; group = :posterior, kwargs...) -> InferenceData
+    convert_to_inference_data(obj::Chains; group = :posterior, kwargs...) -> InferenceData
 
 Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group`.
 Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
 """
-function convert_to_inference_data(chns::AbstractChains; group = :posterior, kwargs...)
+function convert_to_inference_data(chns::Chains; group = :posterior, kwargs...)
     group = Symbol(group)
     group == :posterior && return from_mcmcchains(chns; kwargs...)
     return from_mcmcchains(; group => chns)
 end
 
 """
-    from_mcmcchains(posterior::AbstractChains; kwargs...) -> InferenceData
+    from_mcmcchains(posterior::Chains; kwargs...) -> InferenceData
     from_mcmcchains(; kwargs...) -> InferenceData
     from_mcmcchains(
-        posterior::AbstractChains,
+        posterior::Chains,
         posterior_predictive::Any,
         log_likelihood::String;
         kwargs...
     ) -> InferenceData
 
-Convert data in an `MCMCChains.AbstractChains` format into an
+Convert data in an `MCMCChains.Chains` format into an
 [`InferenceData`](@ref).
 
 Any keyword argument below without an an explicitly annotated type above is
@@ -134,7 +134,7 @@ allowed, so long as it can be passed to [`convert_to_inference_data`](@ref).
 
 # Arguments
 
-- `posterior::AbstractChains`: Draws from the posterior
+- `posterior::Chains`: Draws from the posterior
 
 # Keywords
 
@@ -287,9 +287,9 @@ function from_mcmcchains(
 end
 
 """
-    from_cmdstan(posterior::AbstractChains; kwargs...) -> InferenceData
+    from_cmdstan(posterior::Chains; kwargs...) -> InferenceData
 
 Call [`from_mcmcchains`](@ref) on output of `CmdStan`.
 """
-from_cmdstan(posterior::AbstractChains; kwargs...) =
+from_cmdstan(posterior::Chains; kwargs...) =
     from_mcmcchains(posterior; library = "CmdStan", kwargs...)
