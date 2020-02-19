@@ -286,5 +286,8 @@ if VERSION.minor > 0
                 end
             end
         end
+
+        # cleanup
+        Base.Filesystem.rm(output.model.tmpdir; recursive = true, force = true)
     end
 end
