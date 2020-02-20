@@ -78,11 +78,11 @@ const _min_arviz_version = v"0.6.1"
 
 arviz_version() = VersionNumber(arviz.__version__)
 
-const _precompile_version = arviz_version()
+const _precompile_arviz_version = arviz_version()
 
 function __init__()
     copy!(arviz, import_arviz())
-    if arviz_version() != _precompile_version
+    if arviz_version() != _precompile_arviz_version
         @warn "ArviZ.jl was precompiled using arviz version $(_precompile_version) but loaded with version $(arviz_version()). Please recompile with `using Pkg; Pkg.build('ArviZ')`."
     end
     if arviz_version() < _min_arviz_version
