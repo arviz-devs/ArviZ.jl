@@ -7,7 +7,10 @@ using REPL
 using NamedTupleTools
 
 using PyCall
-using Conda; Conda.add_channel("conda-forge") # try to avoid mixing channels
+if PyCall.conda # PyCall is using Conda.jl's Python
+    using Conda
+    Conda.add_channel("conda-forge") # try to avoid mixing channels
+end
 using PyPlot
 using Pandas
 
