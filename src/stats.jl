@@ -11,8 +11,7 @@ const sample_stats_types = Dict(
     "diverging" => Bool,
 )
 
-@doc forwarddoc(:compare)
-function compare(args...; kwargs...)
+@doc forwarddoc(:compare) function compare(args...; kwargs...)
     pyo = arviz.compare(args...; kwargs...)
     return Pandas.DataFrame(pyo)
 end
@@ -21,8 +20,7 @@ Docs.getdoc(::typeof(compare)) = forwardgetdoc(:compare)
 
 @forwardfun hpd
 
-@doc forwarddoc(:loo)
-function loo(args...; kwargs...)
+@doc forwarddoc(:loo) function loo(args...; kwargs...)
     pyo = arviz.loo(args...; kwargs...)
     return Pandas.Series(pyo)
 end
@@ -33,16 +31,14 @@ Docs.getdoc(::typeof(loo)) = forwardgetdoc(:loo)
 
 @forwardfun psislw
 
-@doc forwarddoc(:r2_score)
-function r2_score(args...; kwargs...)
+@doc forwarddoc(:r2_score) function r2_score(args...; kwargs...)
     pyo = arviz.r2_score(args...; kwargs...)
     return Pandas.Series(pyo)
 end
 
 Docs.getdoc(::typeof(r2_score)) = forwardgetdoc(:r2_score)
 
-@doc forwarddoc(:waic)
-function waic(args...; kwargs...)
+@doc forwarddoc(:waic) function waic(args...; kwargs...)
     pyo = arviz.waic(args...; kwargs...)
     return Pandas.Series(pyo)
 end
