@@ -49,7 +49,6 @@ before_install:
       tar -xzpf $CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION.tar.gz -C $CMDSTAN_CACHE;
       make -C $JULIA_CMDSTAN_HOME build;
     fi
-  - julia -e 'using Pkg; Pkg.add("Conda"); using Conda; Conda.add_channel("conda-forge")'
   - if [[ ( "$ARVIZ_VERSION" = 'master' ) && ( ! -n "$TRAVIS_TAG" ) ]]; then
       julia -e 'using Pkg;
                 Pkg.add("PyCall");
