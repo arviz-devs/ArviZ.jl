@@ -19,7 +19,6 @@ stack(x) = x
 stack(x::AbstractArray{T}) where {T<:Number} = Array(x)
 stack(x::AbstractArray) = stack(stack.(x))
 stack(x::NamedTuple) = (; (k => stack(v) for (k, v) in pairs(x))...)
-
 function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     ret = Array{T}(undef, (size(x)..., size(x[1])...))
     @simd for k in keys(x)
@@ -27,7 +26,6 @@ function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     end
     return ret
 end
-
 function stack(x::AbstractArray{<:NamedTuple{K}}) where {K}
     length(x) == 0 && return
     @inbounds x1 = x[1]
@@ -152,13 +150,15 @@ function from_namedtuple(
 
     return InferenceData(; group_datasets...)
 end
-
-from_namedtuple(data::AbstractVector{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-from_namedtuple(data::AbstractMatrix{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
+function from_namedtuple(data::AbstractVector{<:NamedTuple}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
+function from_namedtuple(data::AbstractMatrix{<:NamedTuple}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
+function from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
 
 """
     convert_to_inference_data(obj::NamedTuple; kwargs...) -> InferenceData
@@ -170,9 +170,15 @@ Convert `obj` to an [`InferenceData`](@ref). See [`from_namedtuple`](@ref) for a
 of `obj` possibilities and `kwargs`.
 """
 convert_to_inference_data(data::NamedTuple; kwargs...) = from_namedtuple(data; kwargs...)
-convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-convert_to_inference_data(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
+function convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
+function convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
+function convert_to_inference_data(
+    data::AbstractVector{<:AbstractVector{<:NamedTuple}};
+    kwargs...,
+)
+    return from_namedtuple(stack(data); kwargs...)
+end

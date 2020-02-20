@@ -21,7 +21,6 @@ struct InferenceData
 end
 
 InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
-
 @inline InferenceData(data::InferenceData) = data
 
 @inline PyObject(data::InferenceData) = getfield(data, :o)
@@ -62,8 +61,9 @@ groupnames(data::InferenceData) = Symbol.(PyObject(data)._groups)
 
 Get the groups in `data` as a dictionary mapping names to datasets.
 """
-groups(data::InferenceData) =
-    Dict((name => getproperty(data, name) for name in groupnames(data)))
+function groups(data::InferenceData)
+    return Dict((name => getproperty(data, name) for name in groupnames(data)))
+end
 
 Base.isempty(data::InferenceData) = isempty(groupnames(data))
 
@@ -131,7 +131,6 @@ function concat!(data1::InferenceData, data::InferenceData...; kwargs...)
     arviz.concat(data1, data...; inplace = true, kwargs...)
     return data1
 end
-
 concat!(; kwargs...) = InferenceData()
 
 function rekey(data::InferenceData, keymap)

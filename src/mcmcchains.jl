@@ -57,7 +57,6 @@ function attributes_dict(chns::Chains)
     info = delete(chns.info, :hashedsummary)
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
-
 attributes_dict(::Nothing) = Dict()
 
 function section_dict(chns::Chains, section)
@@ -97,7 +96,6 @@ function chains_to_dict(
     removekeys!(chns_dict, ignore)
     return rekey_fun(chns_dict)
 end
-
 chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
@@ -211,7 +209,6 @@ function from_mcmcchains(
     idata = InferenceData(; groups(post_idata)..., groups(post_pred_idata)...)
     return idata
 end
-
 function from_mcmcchains(
     posterior = nothing;
     prior = nothing,
@@ -285,5 +282,6 @@ end
 
 Call [`from_mcmcchains`](@ref) on output of `CmdStan`.
 """
-from_cmdstan(posterior::Chains; kwargs...) =
-    from_mcmcchains(posterior; library = "CmdStan", kwargs...)
+function from_cmdstan(posterior::Chains; kwargs...)
+    return from_mcmcchains(posterior; library = "CmdStan", kwargs...)
+end
