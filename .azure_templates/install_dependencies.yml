@@ -2,12 +2,7 @@ steps:
 - template: install_cmdstan.yml
 - template: install_julia.yml
 - bash: |
-    set -o xtrace
     ./julia -e 'using Pkg; Pkg.add("Conda");
                 using Conda; Conda.add_channel("conda-forge")'
-  displayName: 'Set-up Conda'
+  displayName: 'Set-up conda'
 - template: install_arvizmaster.yml
-- bash: |
-    set -o xtrace
-    ./julia --project=@. -e 'using Pkg; Pkg.instantiate()'
-  displayName: 'Instantiate package'
