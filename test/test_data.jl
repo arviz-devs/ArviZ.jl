@@ -85,6 +85,14 @@ end
     idata3 = concat!()
     @test idata3 isa InferenceData
     @test isempty(idata3)
+
+    idata4 = InferenceData()
+    new_idata = concat!(idata4, idata1)
+    @test new_idata === idata4
+    @test check_multiple_attrs(
+        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]),
+        idata4,
+    ) == []
 end
 
 @testset "convert_to_inference_data" begin
