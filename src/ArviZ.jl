@@ -4,10 +4,12 @@ module ArviZ
 using Base: @__doc__
 using Requires
 using REPL
+using NamedTupleTools
+
 using PyCall
+using Conda; Conda.add_channel("conda-forge") # try to avoid mixing channels
 using PyPlot
 using Pandas
-using NamedTupleTools
 
 import Base: convert, propertynames, getproperty, hash, show, +
 import Base.Docs: getdoc
