@@ -6,10 +6,8 @@ parameters:
 steps:
 - bash: |
     set -o xtrace
-    ./julia -e 'using InteractiveUtils; versioninfo()'
-    ./julia --project=@. -e 'using Pkg; Pkg.instantiate()'
     ./julia --project=@. -e 'using Pkg; Pkg.test(coverage=true)'
-  displayName: 'Run the tests'
+  displayName: 'Run tests'
   continueOnError: ${{ parameters.allow_failures }}
 - bash: |
     set -o xtrace
