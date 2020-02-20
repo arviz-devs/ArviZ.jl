@@ -20,26 +20,26 @@ import PyCall: PyObject
 
 ## Plots
 export plot_autocorr,
-       plot_compare,
-       plot_density,
-       plot_dist,
-       plot_elpd,
-       plot_energy,
-       plot_ess,
-       plot_forest,
-       plot_hpd,
-       plot_joint,
-       plot_kde,
-       plot_khat,
-       plot_loo_pit,
-       plot_mcse,
-       plot_pair,
-       plot_parallel,
-       plot_posterior,
-       plot_ppc,
-       plot_rank,
-       plot_trace,
-       plot_violin
+    plot_compare,
+    plot_density,
+    plot_dist,
+    plot_elpd,
+    plot_energy,
+    plot_ess,
+    plot_forest,
+    plot_hpd,
+    plot_joint,
+    plot_kde,
+    plot_khat,
+    plot_loo_pit,
+    plot_mcse,
+    plot_pair,
+    plot_parallel,
+    plot_posterior,
+    plot_ppc,
+    plot_rank,
+    plot_trace,
+    plot_violin
 
 ## Stats
 export summarystats, compare, hpd, loo, loo_pit, psislw, r2_score, waic
@@ -52,15 +52,15 @@ export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
 
 ## Data
 export InferenceData,
-       convert_to_inference_data,
-       load_arviz_data,
-       to_netcdf,
-       from_netcdf,
-       from_namedtuple,
-       from_dict,
-       from_cmdstan,
-       concat,
-       concat!
+    convert_to_inference_data,
+    load_arviz_data,
+    to_netcdf,
+    from_netcdf,
+    from_namedtuple,
+    from_dict,
+    from_cmdstan,
+    concat,
+    concat!
 
 ## Utils
 export with_interactive_backend

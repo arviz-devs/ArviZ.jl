@@ -23,7 +23,7 @@ stack(x::NamedTuple) = (; (k => stack(v) for (k, v) in pairs(x))...)
 function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     ret = Array{T}(undef, (size(x)..., size(x[1])...))
     @simd for k in keys(x)
-        @inbounds setindex!(ret, x[k], k, (Colon() for _ = 1:N)...)
+        @inbounds setindex!(ret, x[k], k, (Colon() for _ in 1:N)...)
     end
     return ret
 end
@@ -145,17 +145,12 @@ function from_namedtuple(
         end
     end
 
-    for (group, group_data) in [
-        :observed_data => observed_data,
-        :constant_data => constant_data,
-    ]
+    for (group, group_data) in
+        [:observed_data => observed_data, :constant_data => constant_data]
         if group_data !== nothing
             group_dict = convert(Dict, group_data)
-            group_datasets[group] = convert_to_constant_dataset(
-                group_dict;
-                library = library,
-                kwargs...,
-            )
+            group_datasets[group] =
+                convert_to_constant_dataset(group_dict; library = library, kwargs...)
         end
     end
 

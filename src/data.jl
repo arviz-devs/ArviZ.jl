@@ -15,11 +15,8 @@ struct InferenceData
     o::PyObject
 
     function InferenceData(o::PyObject)
-        pyisinstance(
-            o,
-            arviz.InferenceData,
-        ) || throw(ArgumentError("$o is not an `arviz.InferenceData`."))
-        return new(o)
+        pyisinstance(o, arviz.InferenceData) && return new(o)
+        throw(ArgumentError("$o is not an `arviz.InferenceData`."))
     end
 end
 

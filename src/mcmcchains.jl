@@ -181,11 +181,8 @@ function from_mcmcchains(
         post_pred_dict = popsubdict!(post_dict, posterior_predictive)
     else
         if posterior_predictive !== nothing
-            post_pred_dataset = convert_to_dataset(
-                posterior_predictive;
-                library = library,
-                kwargs...,
-            )
+            post_pred_dataset =
+                convert_to_dataset(posterior_predictive; library = library, kwargs...)
             post_pred_idata = InferenceData(posterior_predictive = post_pred_dataset)
         else
             post_pred_idata = InferenceData()
@@ -264,20 +261,24 @@ function from_mcmcchains(
     end
 
     if observed_data !== nothing
-        observed_idata = InferenceData(observed_data = convert_to_constant_dataset(
-            observed_data;
-            dims = kwargs[:dims],
-            coords = kwargs[:coords],
-        ))
+        observed_idata = InferenceData(
+            observed_data = convert_to_constant_dataset(
+                observed_data;
+                dims = kwargs[:dims],
+                coords = kwargs[:coords],
+            ),
+        )
         push!(all_idata, observed_idata)
     end
 
     if constant_data !== nothing
-        constant_idata = InferenceData(constant_data = convert_to_constant_dataset(
-            constant_data;
-            dims = kwargs[:dims],
-            coords = kwargs[:coords],
-        ))
+        constant_idata = InferenceData(
+            constant_data = convert_to_constant_dataset(
+                constant_data;
+                dims = kwargs[:dims],
+                coords = kwargs[:coords],
+            ),
+        )
         push!(all_idata, constant_idata)
     end
 

@@ -23,11 +23,8 @@ struct Dataset
     o::PyObject
 
     function Dataset(o::PyObject)
-        pyisinstance(
-            o,
-            xarray.Dataset,
-        ) || throw(ArgumentError("$o is not an `xarray.Dataset`."))
-        return new(o)
+        pyisinstance(o, xarray.Dataset) && return new(o)
+        throw(ArgumentError("$o is not an `xarray.Dataset`."))
     end
 end
 
@@ -119,12 +116,8 @@ function convert_to_constant_dataset(
     for (key, vals) in obj
         vals = _asarray(vals)
         val_dims = get(dims, key, nothing)
-        (val_dims, val_coords) = base.generate_dims_coords(
-            size(vals),
-            key;
-            dims = val_dims,
-            coords = coords,
-        )
+        (val_dims, val_coords) =
+            base.generate_dims_coords(size(vals), key; dims = val_dims, coords = coords)
         data[string(key)] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
     end
 
