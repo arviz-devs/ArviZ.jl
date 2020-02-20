@@ -68,15 +68,28 @@ export with_interactive_backend
 ## rcParams
 export with_rc_context
 
-# Load ArviZ once at precompilation time for docstrings
-import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
-
-const arviz = import_arviz()
+const arviz = PyNULL()
 const xarray = PyNULL()
 const bokeh = PyNULL()
+const _min_arviz_version = v"0.6.1"
+
+import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
+
+arviz_version() = VersionNumber(arviz.__version__)
+
+# Load ArviZ once at precompilation time for docstrings
+copy!(arviz, import_arviz())
+const _precompile_version = arviz_version()
 
 function __init__()
     copy!(arviz, import_arviz())
+    if arviz_version() != _precompile_version
+        @warn "ArviZ.jl was precompiled using arviz version $(_precompile_version) but loaded with version $(arviz_version()). Please recompile with `using Pkg; Pkg.build('ArviZ')`."
+    end
+    if arviz_version() < _min_arviz_version
+        @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or greater but found version $(arviz_version()). Please update."
+    end
+
     copy!(xarray, pyimport_conda("xarray", "xarray", "conda-forge"))
     pyimport_conda("dask", "dask", "conda-forge")
 
