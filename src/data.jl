@@ -1,3 +1,5 @@
+const SUPPORTED_GROUPS = map(Symbol, arviz.data.inference_data.SUPPORTED_GROUPS)
+
 """
     InferenceData(::PyObject)
     InferenceData(; kwargs...)
@@ -144,17 +146,8 @@ function rekey(data::InferenceData, keymap)
     return concat(data_new...)
 end
 
-const default_group_order = [
-    :posterior,
-    :posterior_predictive,
-    :sample_stats,
-    :prior,
-    :prior_predictive,
-    :sample_stats_prior,
-    :observed_data,
-]
-
-function reorder_groups!(data::InferenceData; group_order = default_group_order)
+function reorder_groups!(data::InferenceData; group_order = SUPPORTED_GROUPS)
+    group_order = map(Symbol, group_order)
     names = groupnames(data)
     sorted_names = filter(n -> n ∈ names, group_order)
     other_names = filter(n -> n ∉ sorted_names, names)
