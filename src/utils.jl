@@ -4,10 +4,10 @@
 
 Use matplotlib style settings from a style specification `style`.
 
-The style name of "default" is reserved for reverting back to the default style
-settings.
+The style name of "default" is reserved for reverting back to the default style settings.
 
-ArviZ-specific styles are `["arviz-whitegrid", "arviz-darkgrid", "arviz-colors", "arviz-white"]`.
+ArviZ-specific styles are
+`["arviz-whitegrid", "arviz-darkgrid", "arviz-colors", "arviz-white"]`.
 To see all available style specifications, use [`styles()`](@ref).
 
 If a `Vector` of styles is provided, they are applied from first to last.
@@ -24,8 +24,8 @@ styles() = arviz.style.available
 """
     with_rc_context(f; rc = nothing, fname = nothing)
 
-Execute the thunk `f` within a context controlled by rc params. To see
-supported params, execute [`rc_params()`](@ref).
+Execute the thunk `f` within a context controlled by rc params. To see supported params,
+execute [`rc_params()`](@ref).
 
 This allows one to do:
 
@@ -47,8 +47,8 @@ with_rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
 end
 ```
 
-The `rc` dictionary takes precedence over the settings loaded from `fname`.
-Passing a dictionary only is also valid.
+The `rc` dictionary takes precedence over the settings loaded from `fname`. Passing a
+dictionary only is also valid.
 """
 function with_rc_context(f; kwargs...)
     @pywith arviz.rc_context(; kwargs...) as _ begin
@@ -57,7 +57,7 @@ function with_rc_context(f; kwargs...)
 end
 
 """
-    rc_params() > Dict{String,Any}
+    rc_params() -> Dict{String,Any}
 
 Get the list of customizable `rc` params using [`with_rc_context`](@ref).
 """
@@ -66,8 +66,8 @@ rc_params() = Dict(k => v for (k, v) in ArviZ.arviz.rcParams)
 """
     with_interactive_backend(f; backend::Symbol = nothing)
 
-Execute the thunk `f` in a temporary interactive context with the chosen
-`backend`, or provide no arguments to use a default.
+Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
+provide no arguments to use a default.
 
 # Example
 
@@ -118,8 +118,7 @@ end
 
 Wrap a plotting function `arviz.f` in `f`, forwarding its docstrings.
 
-This macro also ensures that outputs for the different backends are correctly
-handled.
+This macro also ensures that outputs for the different backends are correctly handled.
 """
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)

@@ -9,15 +9,13 @@ Loose wrapper around `xarray.Dataset`, mostly used for dispatch.
 - `data_vars::Dict{String,Any}`: Dict mapping variable names to
     + `Vector`: Data vector. Single dimension is named after variable.
     + `Tuple{String,Vector}`: Dimension name and data vector.
-    + `Tuple{NTuple{N,String},Array{T,N}} where {N,T}`: Dimension names and
-        data array.
-- `coords::Dict{String,Any}`: Dict mapping dimension names to index names.
-    Possible arguments has same form as `data_vars`.
+    + `Tuple{NTuple{N,String},Array{T,N}} where {N,T}`: Dimension names and data array.
+- `coords::Dict{String,Any}`: Dict mapping dimension names to index names. Possible
+    arguments has same form as `data_vars`.
 - `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
 
-In most cases, use [`convert_to_dataset`](@ref) or
-[`convert_to_constant_dataset`](@ref) or  to create a `Dataset` instead of
-directly using a constructor.
+In most cases, use [`convert_to_dataset`](@ref) or [`convert_to_constant_dataset`](@ref) or
+to create a `Dataset` instead of directly using a constructor.
 """
 struct Dataset
     o::PyObject
@@ -71,8 +69,10 @@ end
 """
     convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
 
-Convert a supported object to a `Dataset`. In most cases, this function calls
-[`convert_to_inference_data`](@ref) and returns the corresponding `group`.
+Convert a supported object to a `Dataset`.
+
+In most cases, this function calls [`convert_to_inference_data`](@ref) and returns the
+corresponding `group`.
 """
 function convert_to_dataset(obj; group = :posterior, kwargs...)
     group = Symbol(group)
@@ -87,16 +87,16 @@ convert_to_dataset(data::Dataset; kwargs...) = data
     convert_to_constant_dataset(obj::Dict; kwargs...) -> Dataset
     convert_to_constant_dataset(obj::NamedTuple; kwargs...) -> Dataset
 
-Convert `obj` into a `Dataset`. Unlike [`convert_to_dataset`](@ref), this is
-intended for containing constant parameters such as observed data and constant
-data, and the first two dimensions are not required to be the number of chains
-and draws.
+Convert `obj` into a `Dataset`.
+
+Unlike [`convert_to_dataset`](@ref), this is intended for containing constant parameters
+such as observed data and constant data, and the first two dimensions are not required to be
+the number of chains and draws.
 
 # Keywords
 
 - `coords::Dict{String,Vector}`: Map from named dimension to index names
-- `dims::Dict{String,Vector{String}}`: Map from variable name to names
-     of its dimensions
+- `dims::Dict{String,Vector{String}}`: Map from variable name to names of its dimensions
 - `library::Any`: A library associated with the data to add to `attrs`.
 - `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
 """
@@ -136,13 +136,13 @@ Convert a dictionary with data and keys as variable names to a [`Dataset`](@ref)
 
 # Keywords
 
-- `attrs::Dict{String,Any}`: Json serializable metadata to attach to the
-    dataset, in addition to defaults.
-- `library::String`: Name of library used for performing inference. Will be
-    attached to the attrs metadata.
+- `attrs::Dict{String,Any}`: Json serializable metadata to attach to the dataset, in
+    addition to defaults.
+- `library::String`: Name of library used for performing inference. Will be attached to the
+    `attrs` metadata.
 - `coords::Dict{String,Array}`: Coordinates for the dataset
-- `dims::Dict{String,Vector{String}}`: Dimensions of each variable. The keys
-    are variable names, values are vectors of coordinates.
+- `dims::Dict{String,Vector{String}}`: Dimensions of each variable. The keys are variable
+    names, values are vectors of coordinates.
 
 # Examples
 
@@ -162,8 +162,8 @@ end
 """
     dataset_to_dict(ds::Dataset) -> Tuple{Dict{String,Array},NamedTuple}
 
-Convert a `Dataset` to a dictionary of `Array`s. The function also
-returns keyword arguments to [`dict_to_dataset`](@ref).
+Convert a `Dataset` to a dictionary of `Array`s. The function also returns keyword arguments
+to [`dict_to_dataset`](@ref).
 """
 function dataset_to_dict(ds::Dataset)
     ds_dict = ds.to_dict()

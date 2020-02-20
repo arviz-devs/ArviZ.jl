@@ -3,8 +3,8 @@
     stack(x::AbstractArray{NamedTuple}) -> NamedTuple
     stack(x::AbstractArray{AbstractArray{<:NamedTuple}}) -> NamedTuple
 
-Given a container of `NamedTuple`s, concatenate them, using the container
-dimensions as the dimensions of the resulting arrays.
+Given a container of `NamedTuple`s, concatenate them, using the container dimensions as the
+dimensions of the resulting arrays.
 
 # Examples
 
@@ -47,42 +47,38 @@ end
 
 Convert a `NamedTuple` or container of `NamedTuple`s to an `InferenceData`.
 
-If containers are passed, they are flattened into a single `NamedTuple` with
-array elements whose first dimensions correspond to the dimensions of the
-containers.
+If containers are passed, they are flattened into a single `NamedTuple` with array elements
+whose first dimensions correspond to the dimensions of the containers.
 
 # Arguments
 
 - `posterior`: The data to be converted. It may be of the following types:
-    + `::NamedTuple`: The keys are the variable names and the values are arrays
-        with dimensions `(nchains, ndraws, sizes...)`.
-    + `::Vector{<:NamedTuple}`: Each element is a `NamedTuple` from a chain
-        with `Array`/`MonteCarloMeasurements.Particle` values with dimensions
+    + `::NamedTuple`: The keys are the variable names and the values are arrays with
+        dimensions `(nchains, ndraws, sizes...)`.
+    + `::Vector{<:NamedTuple}`: Each element is a `NamedTuple` from a chain with
+        `Array`/`MonteCarloMeasurements.Particle` values with dimensions
         `(ndraws, sizes...)`.
-    + `::Matrix{<:NamedTuple}`: Each element is a single draw from a single
-        chain, with array/scalar values with dimensions `sizes`. The dimensions
-        of the matrix container are `(nchains, ndraws)`
+    + `::Matrix{<:NamedTuple}`: Each element is a single draw from a single chain, with
+        array/scalar values with dimensions `sizes`. The dimensions of the matrix container
+        are `(nchains, ndraws)`
     + `::Vector{Vector{<:NamedTuple}}`: The same as the above case.
 
 # Keywords
 
-- `posterior_predictive::Any=nothing`: Draws from the posterior predictive
-     distribution
+- `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution
 - `sample_stats::Any=nothing`: Statistics of the posterior sampling process
 - `prior::Any=nothing`: Draws from the prior
 - `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
 - `sample_stats_prior::Any=nothing`: Statistics of the prior sampling process
-- `observed_data::Dict{String,Array}=nothing`: Observed data on which the
-     `posterior` is conditional. It should only contain data which is modeled as
-     a random variable. Keys are parameter names and values.
-- `constant_data::Dict{String,Array}=nothing`: Model constants, data included
-     in the model which is not modeled as a random variable. Keys are parameter
-     names and values.
+- `observed_data::Dict{String,Array}=nothing`: Observed data on which the `posterior` is
+     conditional. It should only contain data which is modeled as a random variable. Keys
+     are parameter names and values.
+- `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
+     which is not modeled as a random variable. Keys are parameter names and values.
 - `library=nothing`: Name of library that generated the draws
-- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named
-     indices
-- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names
-     of its dimensions
+- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
+- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
+     dimensions
 
 # Returns
 
@@ -170,8 +166,8 @@ from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...)
     convert_to_inference_data(obj::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
     convert_to_inference_data(obj::Vector{Vector{<:NamedTuple}}; kwargs...) -> InferenceData
 
-Convert `obj` to an [`InferenceData`](@ref). See [`from_namedtuple`](@ref) for
-a description of `obj` possibilities and `kwargs`.
+Convert `obj` to an [`InferenceData`](@ref). See [`from_namedtuple`](@ref) for a description
+of `obj` possibilities and `kwargs`.
 """
 convert_to_inference_data(data::NamedTuple; kwargs...) = from_namedtuple(data; kwargs...)
 convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...) =
