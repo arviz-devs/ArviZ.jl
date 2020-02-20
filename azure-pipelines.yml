@@ -1,6 +1,10 @@
 trigger:
-- master
-- refs/tags/*
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - v*
 
 variables:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
