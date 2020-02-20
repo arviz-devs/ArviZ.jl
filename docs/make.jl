@@ -1,7 +1,8 @@
-using Pkg;
-Pkg.activate(joinpath(@__DIR__, "..")); Pkg.instantiate()
-Pkg.activate(); Pkg.instantiate()
-
+using Pkg
+Pkg.activate(joinpath(@__DIR__, ".."))
+Pkg.instantiate()
+Pkg.activate()
+Pkg.instantiate()
 pushfirst!(LOAD_PATH, joinpath(@__DIR__, ".."))
 
 using Documenter, ArviZ
@@ -28,7 +29,4 @@ makedocs(
     linkcheck = true,
 )
 
-deploydocs(
-    repo = "github.com/arviz-devs/ArviZ.jl.git",
-    push_preview = true,
-)
+deploydocs(repo = "github.com/arviz-devs/ArviZ.jl.git", push_preview = true)
