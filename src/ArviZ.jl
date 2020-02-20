@@ -7,6 +7,7 @@ using REPL
 using NamedTupleTools
 
 using PyCall
+using Conda; Conda.add_channel("conda-forge") # try to avoid mixing channels
 using PyPlot
 using Pandas
 
@@ -82,9 +83,6 @@ arviz_version() = VersionNumber(arviz.__version__)
 const _precompile_arviz_version = arviz_version()
 
 function __init__()
-    using Conda
-    Conda.add_channel("conda-forge") # try to avoid mixing channels
-
     copy!(arviz, import_arviz())
     if arviz_version() != _precompile_arviz_version
         @warn "ArviZ.jl was precompiled using arviz version $(_precompile_version) but loaded with version $(arviz_version()). Please recompile with `using Pkg; Pkg.build('ArviZ')`."
