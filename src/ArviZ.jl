@@ -69,17 +69,15 @@ export with_interactive_backend
 ## rcParams
 export with_rc_context
 
-const arviz = PyNULL()
+import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
+
+const arviz = import_arviz() # Load ArviZ once at precompilation time for docstrings
 const xarray = PyNULL()
 const bokeh = PyNULL()
 const _min_arviz_version = v"0.6.1"
 
-import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
-
 arviz_version() = VersionNumber(arviz.__version__)
 
-# Load ArviZ once at precompilation time for docstrings
-copy!(arviz, import_arviz())
 const _precompile_version = arviz_version()
 
 function __init__()
