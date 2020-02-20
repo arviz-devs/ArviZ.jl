@@ -25,10 +25,8 @@ end
 @testset "ArviZ.summary" begin
     rng = MersenneTwister(42)
     nchains, ndraws = 4, 10
-    data = Dict(
-        "a" => randn(rng, nchains, ndraws),
-        "b" => randn(rng, nchains, ndraws, 3, 4),
-    )
+    data =
+        Dict("a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, 3, 4))
 
     @test ArviZ.summary(data) isa Pandas.DataFrame
 end

@@ -71,15 +71,19 @@ end
     K = 6
     nchains = 4
     ndraws = 500
-    vars = Dict(
-        "a" => randn(rng, nchains, ndraws),
-        "b" => randn(rng, nchains, ndraws, J, K),
-    )
+    vars =
+        Dict("a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, J, K))
     coords = Dict("bi" => 1:J, "bj" => 1:K)
     dims = Dict("b" => ["bi", "bj"])
     attrs = Dict("mykey" => 5)
 
-    ds = ArviZ.dict_to_dataset(vars; library = :MyLib, coords = coords, dims = dims, attrs = attrs)
+    ds = ArviZ.dict_to_dataset(
+        vars;
+        library = :MyLib,
+        coords = coords,
+        dims = dims,
+        attrs = attrs,
+    )
     @test ds isa ArviZ.Dataset
     vars2, kwargs = ArviZ.dataset_to_dict(ds)
     for (k, v) in vars

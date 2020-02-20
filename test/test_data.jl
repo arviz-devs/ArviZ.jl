@@ -46,14 +46,11 @@ end
 
 @testset "+(::InferenceData, ::InferenceData)" begin
     rng = MersenneTwister(42)
-    idata1 = from_dict(posterior = Dict(
-        "A" => randn(rng, 2, 10, 2),
-        "B" => randn(rng, 2, 10, 5, 2),
-    ))
-    idata2 = from_dict(prior = Dict(
-        "C" => randn(rng, 2, 10, 2),
-        "D" => randn(rng, 2, 10, 5, 2),
-    ))
+    idata1 = from_dict(
+        posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2)),
+    )
+    idata2 =
+        from_dict(prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2)))
 
     new_idata = idata1 + idata2
     @test new_idata isa InferenceData
@@ -65,14 +62,11 @@ end
 
 @testset "concat" begin
     rng = MersenneTwister(42)
-    idata1 = from_dict(posterior = Dict(
-        "A" => randn(rng, 2, 10, 2),
-        "B" => randn(rng, 2, 10, 5, 2),
-    ))
-    idata2 = from_dict(prior = Dict(
-        "C" => randn(rng, 2, 10, 2),
-        "D" => randn(rng, 2, 10, 5, 2),
-    ))
+    idata1 = from_dict(
+        posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2)),
+    )
+    idata2 =
+        from_dict(prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2)))
 
     new_idata = concat(idata1, idata2)
     @test new_idata isa InferenceData

@@ -31,7 +31,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rc_params())
                 @test propertynames(plot) == propertynames(PyObject(plot))
                 getproperty(plot, :__class__)
 
-                @testset "MIME::\"$(mime)\"" for mime in ["text/html",]
+                @testset "MIME::\"$(mime)\"" for mime in ["text/html"]
                     text = repr(MIME(mime), plot)
                     @test text isa String
                     @test occursin("<body", text)

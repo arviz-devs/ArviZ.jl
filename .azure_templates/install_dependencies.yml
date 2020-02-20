@@ -4,4 +4,5 @@ steps:
 - bash: |
     ./julia -e 'using Pkg; Pkg.add("Conda");
                 using Conda; Conda.add_channel("conda-forge")'
+  displayName: 'Set-up conda'
 - template: install_arvizmaster.yml

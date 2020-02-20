@@ -1,7 +1,3 @@
-import .MCMCChains: Chains, sections
-
-export from_mcmcchains
-
 const turing_key_map = Dict(
     "acceptance_rate" => "mean_tree_accept",
     "hamiltonian_energy" => "energy",
@@ -26,8 +22,8 @@ const stats_key_map = merge(turing_key_map, stan_key_map)
 """
     reshape_values(x::AbstractArray) -> AbstractArray
 
-Convert from `MCMCChains` variable values with dimensions
-`(ndraw, size..., nchain)` to ArviZ's expected `(nchain, ndraw, size...)`.
+Convert from `MCMCChains` variable values with dimensions `(ndraw, size..., nchain)` to
+ArviZ's expected `(nchain, ndraw, size...)`.
 """
 reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (N, 1, 2:(N-1)...))
 
@@ -108,6 +104,7 @@ chains_to_dict(::Nothing; kwargs...) = nothing
     convert_to_inference_data(obj::Chains; group = :posterior, kwargs...) -> InferenceData
 
 Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group`.
+
 Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
 """
 function convert_to_inference_data(chns::Chains; group = :posterior, kwargs...)
@@ -126,11 +123,10 @@ end
         kwargs...
     ) -> InferenceData
 
-Convert data in an `MCMCChains.Chains` format into an
-[`InferenceData`](@ref).
+Convert data in an `MCMCChains.Chains` format into an [`InferenceData`](@ref).
 
-Any keyword argument below without an an explicitly annotated type above is
-allowed, so long as it can be passed to [`convert_to_inference_data`](@ref).
+Any keyword argument below without an an explicitly annotated type above is allowed, so long
+as it can be passed to [`convert_to_inference_data`](@ref).
 
 # Arguments
 
@@ -138,24 +134,21 @@ allowed, so long as it can be passed to [`convert_to_inference_data`](@ref).
 
 # Keywords
 
-- `posterior_predictive::Any=nothing`: Draws from the posterior predictive
-     distribution or name(s) of predictive variables in `posterior`
+- `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution or
+    name(s) of predictive variables in `posterior`
 - `prior::Any=nothing`: Draws from the prior
-- `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
-     or name(s) of predictive variables in `prior`
-- `observed_data::Dict{String,Array}=nothing`: Observed data on which the
-     `posterior` is conditional. It should only contain data which is modeled as
-     a random variable. Keys are parameter names and values.
-- `constant_data::Dict{String,Array}=nothing`: Model constants, data included
-     in the model which is not modeled as a random variable. Keys are parameter
-     names and values.
-- `log_likelihood::String=nothing`: Name of variable in `posterior` with log
-     likelihoods
+- `prior_predictive::Any=nothing`: Draws from the prior predictive distribution or name(s)
+    of predictive variables in `prior`
+- `observed_data::Dict{String,Array}=nothing`: Observed data on which the `posterior` is
+    conditional. It should only contain data which is modeled as a random variable. Keys are
+    parameter names and values.
+- `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
+    which is not modeled as a random variable. Keys are parameter names and values.
+- `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
 - `library=MCMCChains`: Name of library that generated the chains
-- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named
-     indices
-- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names
-     of its dimensions
+- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
+- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
+    dimensions
 
 # Returns
 
@@ -181,11 +174,8 @@ function from_mcmcchains(
         post_pred_dict = popsubdict!(post_dict, posterior_predictive)
     else
         if posterior_predictive !== nothing
-            post_pred_dataset = convert_to_dataset(
-                posterior_predictive;
-                library = library,
-                kwargs...,
-            )
+            post_pred_dataset =
+                convert_to_dataset(posterior_predictive; library = library, kwargs...)
             post_pred_idata = InferenceData(posterior_predictive = post_pred_dataset)
         else
             post_pred_idata = InferenceData()
@@ -264,20 +254,24 @@ function from_mcmcchains(
     end
 
     if observed_data !== nothing
-        observed_idata = InferenceData(observed_data = convert_to_constant_dataset(
-            observed_data;
-            dims = kwargs[:dims],
-            coords = kwargs[:coords],
-        ))
+        observed_idata = InferenceData(
+            observed_data = convert_to_constant_dataset(
+                observed_data;
+                dims = kwargs[:dims],
+                coords = kwargs[:coords],
+            ),
+        )
         push!(all_idata, observed_idata)
     end
 
     if constant_data !== nothing
-        constant_idata = InferenceData(constant_data = convert_to_constant_dataset(
-            constant_data;
-            dims = kwargs[:dims],
-            coords = kwargs[:coords],
-        ))
+        constant_idata = InferenceData(
+            constant_data = convert_to_constant_dataset(
+                constant_data;
+                dims = kwargs[:dims],
+                coords = kwargs[:coords],
+            ),
+        )
         push!(all_idata, constant_idata)
     end
 

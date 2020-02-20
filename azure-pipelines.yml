@@ -1,15 +1,14 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- master
-- refs/tags/*
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - v*
 
 variables:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
-  CMDSTAN_VERSION: "2.21.0"
+  CMDSTAN_VERSION: "2.22.1"
   CMDSTAN_DIR: "$(Agent.TempDirectory)/.cmdstan/"
   JULIA_CMDSTAN_HOME: "$(CMDSTAN_DIR)/cmdstan-$(CMDSTAN_VERSION)/" # required by CmdStan.jl
   ARVIZ_VERSION: release
@@ -50,6 +49,7 @@ jobs:
   timeoutInMinutes: 0
   variables:
     JULIA_VERSION: "1.3"
+    ARVIZ_VERSION: master
   steps:
   - template: .azure_templates/install_dependencies.yml
   - template: .azure_templates/build_docs.yml
