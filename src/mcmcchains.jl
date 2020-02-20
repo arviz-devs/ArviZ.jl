@@ -1,7 +1,3 @@
-import .MCMCChains: Chains, sections
-
-export from_mcmcchains
-
 const turing_key_map = Dict(
     "acceptance_rate" => "mean_tree_accept",
     "hamiltonian_energy" => "energy",

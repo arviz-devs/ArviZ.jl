@@ -1,5 +1,3 @@
-import .MonteCarloMeasurements: AbstractParticles
-
 stack(x::AbstractParticles) = Array(x)
 
 function stack(v::AbstractArray{<:AbstractParticles})
