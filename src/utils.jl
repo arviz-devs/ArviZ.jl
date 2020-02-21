@@ -91,9 +91,8 @@ function with_interactive_backend(f; backend = nothing)
     return ret
 end
 
-function forwarddoc(f::Symbol)
-    return "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
-end
+forwarddoc(f::Symbol) =
+    "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
 
 forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
 
@@ -194,7 +193,6 @@ snakecase(s) = replace(lowercase(s), " " => "_")
 @inline _asarray(x) = [x]
 @inline _asarray(x::AbstractArray) = x
 
-function enforce_stat_types(dict)
-    return Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
-end
+enforce_stat_types(dict) =
+    Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
 enforce_stat_types(::Nothing) = nothing
