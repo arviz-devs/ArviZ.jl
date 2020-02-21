@@ -189,4 +189,27 @@ end
             )
         end
     end
+
+    @testset "$(group)" for group in [
+        :observed_data,
+        :constant_data,
+        :predictions_constant_data,
+    ]
+        _, nt = nts[1]
+        idata = from_namedtuple(
+            nt;
+            (group => Dict("w" => [1.0, 2.0],),)...,
+            dims = Dict("w" => ["wx"]),
+            coords = Dict("wx" => 1:2),
+            library = "MyLib",
+        )
+        @test idata isa InferenceData
+        @test group in ArviZ.groupnames(idata)
+        ds = getproperty(idata, group)
+        sizes = dimsizes(ds)
+        @test length(sizes) == 1
+        @test "w" in keys(vardict(ds))
+        @test "inference_library" in keys(attributes(ds))
+        @test attributes(ds)["inference_library"] == "MyLib"
+    end
 end
