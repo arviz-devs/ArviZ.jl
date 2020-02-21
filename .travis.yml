@@ -17,6 +17,7 @@ env:
     - CMDSTAN_VERSION="2.22.1"
     - CMDSTAN_CACHE="$HOME/.cmdstan/"
     - JULIA_CMDSTAN_HOME="$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
+    - ARVIZ_VERSION=master
 cache:
   directories:
     - $CMDSTAN_CACHE
