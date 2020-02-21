@@ -140,12 +140,15 @@ end
         posterior_predictive = prior_predictive = ["ahat[1]", "ahat[2]"]
         observed_data = Dict("xhat" => 1:nobs)
         constant_data = Dict("x" => (1:nobs) .+ nobs)
+        predictions_constant_data = Dict("z" => (1:nobs) .+ nobs)
+        predictions = "zhat"
         sample_stats = ["stat"]
         log_likelihood = "log_lik"
         post_names = [
             posterior
             posterior_predictive
             sample_stats
+            predictions
             log_likelihood
         ]
         prior_names = [prior; prior_predictive; sample_stats]
@@ -154,10 +157,12 @@ end
         idata = from_mcmcchains(
             chns;
             posterior_predictive = "ahat",
+            predictions = "zhat",
             prior = chns2,
             prior_predictive = "ahat",
             observed_data = observed_data,
             constant_data = constant_data,
+            predictions_constant_data = predictions_constant_data,
             log_likelihood = "log_lik",
         )
         for group in (
@@ -165,8 +170,11 @@ end
             :prior,
             :posterior_predictive,
             :prior_predictive,
+            :predictions,
+            :log_likelihood,
             :observed_data,
             :constant_data,
+            :predictions_constant_data,
             :sample_stats,
             :sample_stats_prior,
         )
@@ -180,15 +188,20 @@ end
         @test "a" ∈ keys(dimdict(idata.prior))
         @test length(dimdict(idata.prior_predictive)) == 4
         @test "ahat" ∈ keys(dimdict(idata.prior_predictive))
-        @test length(dimdict(idata.sample_stats)) == 4
+        @test length(dimdict(idata.sample_stats)) == 3
         @test "stat" ∈ keys(dimdict(idata.sample_stats))
-        @test "log_likelihood" ∈ keys(dimdict(idata.sample_stats))
+        @test length(dimdict(idata.predictions)) == 3
+        @test "zhat" ∈ keys(dimdict(idata.predictions))
+        @test length(dimdict(idata.log_likelihood)) == 3
+        @test "log_lik" ∈ keys(dimdict(idata.log_likelihood))
         @test length(dimdict(idata.sample_stats_prior)) == 3
         @test "stat" ∈ keys(dimdict(idata.sample_stats_prior))
         @test length(dimdict(idata.observed_data)) == 2
         @test "xhat" ∈ keys(dimdict(idata.observed_data))
         @test length(dimdict(idata.constant_data)) == 2
         @test "x" ∈ keys(dimdict(idata.constant_data))
+        @test length(dimdict(idata.predictions_constant_data)) == 2
+        @test "z" ∈ keys(dimdict(idata.predictions_constant_data))
     end
 
     @testset "missing -> NaN" begin
