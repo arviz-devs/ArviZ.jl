@@ -111,12 +111,13 @@ end
 param_mod = turing_model(J, y, σ)
 sampler = NUTS(nwarmup, 0.8)
 
+rng = Random.MersenneTwister(5130)
 turing_chns = psample(
     param_mod,
     sampler,
     nwarmup + nsamples,
     nchains;
-    progress = true,
+    progress = false,
 );
 ```
 
