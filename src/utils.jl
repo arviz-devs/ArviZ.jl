@@ -91,6 +91,25 @@ function with_interactive_backend(f; backend = nothing)
     return ret
 end
 
+"""
+    convert_arguments(f, args...; kwargs...) -> NTuple{2}
+
+Convert arguments to the function `f` before calling.
+
+This function is used primarily for pre-processing arguments within macros before sending
+to arviz.
+"""
+convert_arguments(::Any, args...; kwargs...) = args, kwargs
+
+"""
+    convert_result(f, result)
+
+Convert result of the function `f` before returning.
+
+This function is used primarily for post-processing outputs of arviz before returning.
+"""
+convert_result(::Any, result) = result
+
 forwarddoc(f::Symbol) =
     "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
 
@@ -101,12 +120,19 @@ forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
     @forwardfun(f)
 
 Wrap a function `arviz.f` in `f`, forwarding its docstrings.
+
+Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what is passed to
+and returned from `f`.
 """
 macro forwardfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        $(f)(args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+        function $(f)(args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs...)
+            return convert_result($(f), result)
+        end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
     end |> esc
@@ -119,6 +145,8 @@ end
 Wrap a plotting function `arviz.f` in `f`, forwarding its docstrings.
 
 This macro also ensures that outputs for the different backends are correctly handled.
+Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what is passed to
+and returned from `f`.
 """
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
@@ -133,20 +161,28 @@ macro forwardplotfun(f)
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
 
-        $(f)(::Val, args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+        function $(f)(::Val, args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs...)
+            return convert_result($(f), result)
+        end
 
         function $(f)(::Val{:matplotlib}, args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
             kwargs = merge(kwargs, Dict(:backend => "matplotlib"))
             try
-                return arviz.$(f)(args...; kwargs...)
+                result = arviz.$(f)(args...; kwargs...)
+                return convert_result($(f), result)
             catch e
                 e isa PyCall.PyError || rethrow(e)
                 pop!(kwargs, :backend)
-                return arviz.$(f)(args...; kwargs...)
+                result = arviz.$(f)(args...; kwargs...)
+                return convert_result($(f), result)
             end
         end
 
         function $(f)(::Val{:bokeh}, args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
             kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
             plots = arviz.$(f)(args...; kwargs...)
             return bokeh.plotting.gridplot(plots)
