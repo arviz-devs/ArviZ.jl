@@ -67,6 +67,12 @@ Compute summary statistics on `data`.
 - `order::String="C"`: If `fmt` is "wide", use either "C" or "F" unpacking order.
 - `index_origin::Int=1`: If `fmt` is "wide", select 𝑛-based indexing for multivariate
     parameters.
+- `skipna::Bool=false`: If `true`, ignores `NaN` values when computing the summary
+    statistics. It does not affect the behaviour of the functions passed to `stat_funcs`.
+- `coords::Dict{String,Vector}=Dict()`: Coordinates specification to be used if the `fmt`
+    is `"xarray"`.
+- `dims::Dict{String,Vector}=Dict()`: Dimensions specification for the variables to be used
+    if the `fmt` is `"xarray"`.
 
 # Returns
 
@@ -142,6 +148,6 @@ Compute summary statistics on any object that can be passed to [`convert_to_data
 - `kwargs`: Keyword arguments passed to [`summarystats`](@ref).
 """
 function summary(data; group = :posterior, coords = nothing, dims = nothing, kwargs...)
-    idata = convert_to_inference_data(data; group = group, coords = coords, dims = dims)
-    return summarystats(idata; group = group, kwargs...)
+    dataset = convert_to_dataset(data; group = group, coords = coords, dims = dims)
+    return summarystats(dataset; kwargs...)
 end
