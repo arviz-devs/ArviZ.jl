@@ -120,8 +120,8 @@ func_dict = Dict(
 summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
 """
-function StatsBase.summarystats(data::Dataset; kwargs...)
-    s = arviz.summary(data; kwargs...)
+function StatsBase.summarystats(data::Dataset; index_origin = 1, kwargs...)
+    s = arviz.summary(data; index_origin = index_origin, kwargs...)
     s isa Dataset && return s
     return Pandas.DataFrame(s)
 end
