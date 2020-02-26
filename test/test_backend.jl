@@ -29,10 +29,21 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rc_params())
                 @test pyobj === PyObject(plot2)
 
                 @test propertynames(plot) == propertynames(PyObject(plot))
-                getproperty(plot, :__class__)
+                @test occursin("bokeh", "$(getproperty(plot, :__class__))")
 
-                @testset "MIME::\"$(mime)\"" for mime in ["text/html",]
-                    text = repr(MIME(mime), plot)
+                @testset "show MIME::\"$(mime)\"" for mime in [
+                    "text/html",
+                    "juliavscode/html",
+                    "application/juno+plotpane",
+                    "application/prs.juno.plotpane+html",
+                ]
+                    text = sprint(show, MIME(mime), plot)
+                    @test text isa String
+                    @test occursin("<body", text)
+                end
+
+                @testset "write html" begin
+                    text = sprint(write, plot)
                     @test text isa String
                     @test occursin("<body", text)
                 end

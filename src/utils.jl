@@ -4,10 +4,10 @@
 
 Use matplotlib style settings from a style specification `style`.
 
-The style name of "default" is reserved for reverting back to the default style
-settings.
+The style name of "default" is reserved for reverting back to the default style settings.
 
-ArviZ-specific styles are `["arviz-whitegrid", "arviz-darkgrid", "arviz-colors", "arviz-white"]`.
+ArviZ-specific styles are
+`["arviz-whitegrid", "arviz-darkgrid", "arviz-colors", "arviz-white"]`.
 To see all available style specifications, use [`styles()`](@ref).
 
 If a `Vector` of styles is provided, they are applied from first to last.
@@ -24,8 +24,8 @@ styles() = arviz.style.available
 """
     with_rc_context(f; rc = nothing, fname = nothing)
 
-Execute the thunk `f` within a context controlled by rc params. To see
-supported params, execute [`rc_params()`](@ref).
+Execute the thunk `f` within a context controlled by rc params. To see supported params,
+execute [`rc_params()`](@ref).
 
 This allows one to do:
 
@@ -47,8 +47,8 @@ with_rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
 end
 ```
 
-The `rc` dictionary takes precedence over the settings loaded from `fname`.
-Passing a dictionary only is also valid.
+The `rc` dictionary takes precedence over the settings loaded from `fname`. Passing a
+dictionary only is also valid.
 """
 function with_rc_context(f; kwargs...)
     @pywith arviz.rc_context(; kwargs...) as _ begin
@@ -57,7 +57,7 @@ function with_rc_context(f; kwargs...)
 end
 
 """
-    rc_params() > Dict{String,Any}
+    rc_params() -> Dict{String,Any}
 
 Get the list of customizable `rc` params using [`with_rc_context`](@ref).
 """
@@ -66,8 +66,8 @@ rc_params() = Dict(k => v for (k, v) in ArviZ.arviz.rcParams)
 """
     with_interactive_backend(f; backend::Symbol = nothing)
 
-Execute the thunk `f` in a temporary interactive context with the chosen
-`backend`, or provide no arguments to use a default.
+Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
+provide no arguments to use a default.
 
 # Example
 
@@ -91,6 +91,25 @@ function with_interactive_backend(f; backend = nothing)
     return ret
 end
 
+"""
+    convert_arguments(f, args...; kwargs...) -> NTuple{2}
+
+Convert arguments to the function `f` before calling.
+
+This function is used primarily for pre-processing arguments within macros before sending
+to arviz.
+"""
+convert_arguments(::Any, args...; kwargs...) = args, kwargs
+
+"""
+    convert_result(f, result)
+
+Convert result of the function `f` before returning.
+
+This function is used primarily for post-processing outputs of arviz before returning.
+"""
+convert_result(::Any, result) = result
+
 forwarddoc(f::Symbol) =
     "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
 
@@ -101,12 +120,19 @@ forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
     @forwardfun(f)
 
 Wrap a function `arviz.f` in `f`, forwarding its docstrings.
+
+Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what is passed to
+and returned from `f`.
 """
 macro forwardfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        $(f)(args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+        function $(f)(args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs...)
+            return convert_result($(f), result)
+        end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
     end |> esc
@@ -118,34 +144,48 @@ end
 
 Wrap a plotting function `arviz.f` in `f`, forwarding its docstrings.
 
-This macro also ensures that outputs for the different backends are correctly
-handled.
+This macro also ensures that outputs for the different backends are correctly handled.
+Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what is passed to
+and returned from `f`.
 """
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(args...; backend = get(rc_params(), "plot.backend", nothing), kwargs...)
+        function $(f)(
+            args...;
+            backend = get(rc_params(), "plot.backend", nothing),
+            kwargs...,
+        )
             backend === nothing && return arviz.$(f)(args...; kwargs...)
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
 
-        $(f)(::Val, args...; kwargs...) = arviz.$(f)(args...; kwargs...)
+        function $(f)(::Val, args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs...)
+            return convert_result($(f), result)
+        end
 
         function $(f)(::Val{:matplotlib}, args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
             kwargs = merge(kwargs, Dict(:backend => "matplotlib"))
             try
-                return arviz.$(f)(args...; kwargs...)
+                result = arviz.$(f)(args...; kwargs...)
+                return convert_result($(f), result)
             catch e
                 e isa PyCall.PyError || rethrow(e)
                 pop!(kwargs, :backend)
-                return arviz.$(f)(args...; kwargs...)
+                result = arviz.$(f)(args...; kwargs...)
+                return convert_result($(f), result)
             end
         end
 
         function $(f)(::Val{:bokeh}, args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
             kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
             plots = arviz.$(f)(args...; kwargs...)
+            plots isa BokehPlot && return plots 
             return bokeh.plotting.gridplot(plots)
         end
 

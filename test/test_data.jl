@@ -1,3 +1,5 @@
+using MonteCarloMeasurements: Particles
+
 @testset "InferenceData" begin
     data = load_arviz_data("centered_eight")
 
@@ -6,9 +8,11 @@
         @test InferenceData(pydata) isa InferenceData
         @test PyObject(InferenceData(pydata)) === pydata
         @test InferenceData(data) === data
+        @test_throws ArgumentError InferenceData(py"PyNullObject()")
         data2 = InferenceData(; posterior = data.posterior)
         @test data2 isa InferenceData
         @test :posterior in propertynames(data2)
+        @test hash(data) == hash(pydata)
     end
 
     @testset "properties" begin
@@ -26,7 +30,6 @@
         g = ArviZ.groups(data4)
         @test g isa Dict
         @test :posterior in keys(g)
-        @test hash(data4.posterior) === hash(g[:posterior])
     end
 
     @testset "isempty" begin
@@ -39,19 +42,30 @@
         data4 = convert(InferenceData, PyObject(data))
         @test data4 isa InferenceData
         @test PyObject(data4) === PyObject(data)
+
+        # TODO: improve this test
+        @test convert(InferenceData, [1.0, 2.0, 3.0, 4.0]) isa InferenceData
+    end
+
+    @testset "show" begin
+        @test startswith(
+            sprint(show, data),
+            """
+            InferenceData with groups:
+            	> posterior
+            	> sample_stats
+            	> posterior_predictive""",
+        )
     end
 end
 
 @testset "+(::InferenceData, ::InferenceData)" begin
     rng = MersenneTwister(42)
-    idata1 = from_dict(posterior = Dict(
-        "A" => randn(rng, 2, 10, 2),
-        "B" => randn(rng, 2, 10, 5, 2),
-    ))
-    idata2 = from_dict(prior = Dict(
-        "C" => randn(rng, 2, 10, 2),
-        "D" => randn(rng, 2, 10, 5, 2),
-    ))
+    idata1 = from_dict(
+        posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2)),
+    )
+    idata2 =
+        from_dict(prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2)))
 
     new_idata = idata1 + idata2
     @test new_idata isa InferenceData
@@ -63,14 +77,11 @@ end
 
 @testset "concat" begin
     rng = MersenneTwister(42)
-    idata1 = from_dict(posterior = Dict(
-        "A" => randn(rng, 2, 10, 2),
-        "B" => randn(rng, 2, 10, 5, 2),
-    ))
-    idata2 = from_dict(prior = Dict(
-        "C" => randn(rng, 2, 10, 2),
-        "D" => randn(rng, 2, 10, 5, 2),
-    ))
+    idata1 = from_dict(
+        posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2)),
+    )
+    idata2 =
+        from_dict(prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2)))
 
     new_idata = concat(idata1, idata2)
     @test new_idata isa InferenceData
@@ -111,6 +122,23 @@ end
         idata3 = convert_to_inference_data(nothing)
         @test idata3 isa InferenceData
         @test isempty(idata3)
+    end
+
+    @testset "convert_to_inference_data(::Particles)" begin
+        p = Particles(randn(rng, 10))
+        idata4 = convert_to_inference_data(p)
+        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata4) == []
+    end
+
+    @testset "convert_to_inference_data(::Vector{Particles})" begin
+        p = [Particles(randn(rng, 10)) for _ in 1:4]
+        idata5 = convert_to_inference_data(p)
+        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata5) == []
+    end
+    @testset "convert_to_inference_data(::Vector{Array{Particles}})" begin
+        p = [Particles(randn(rng, 10, 3)) for _ in 1:4]
+        idata6 = convert_to_inference_data(p)
+        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata6) == []
     end
 end
 

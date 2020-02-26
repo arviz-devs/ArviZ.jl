@@ -38,12 +38,12 @@ function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
     rng = MersenneTwister(seed)
     nvars = length(names)
     vals = randn(rng, ndraws, nvars, nchains)
-    chns = MCMCChains.Chains(vals, names, Dict(:internals => internal_names))
+    chns = MCMCChains.Chains(vals, names, Dict(:internals => internal_names); sorted = true)
     return chns
 end
 
 function makechains(nvars::Int, args...; kwargs...)
-    names = ["var$(i)" for i = 1:nvars]
+    names = ["var$(i)" for i in 1:nvars]
     return makechains(names, args...; kwargs...)
 end
 
@@ -54,11 +54,12 @@ function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
         model = noncentered_schools_stan_model,
         nchains = chains,
         num_warmup = draws,
-        num_samples = draws,
+        num_samples = draws;
+        output_format = :mcmcchains,
     )
     rc, chns, cnames = stan(stan_model, data, proj_dir, summary = false)
     outfiles = []
-    for i = 1:chains
+    for i in 1:chains
         push!(outfiles, "$(proj_dir)/tmp/$(model_name)_samples_$(i).csv")
     end
     return (model = stan_model, files = outfiles, chains = chns)
@@ -196,7 +197,7 @@ end
         vals = randn(rng, ndraws, nvars, nchains)
         vals = Array{Union{Float64,Missing},3}(vals)
         vals[1, 1, 1] = missing
-        names = ["var$(i)" for i = 1:nvars]
+        names = ["var$(i)" for i in 1:nvars]
         chns = MCMCChains.Chains(vals, names)
         @test Missing <: eltype(chns.value)
         idata = from_mcmcchains(chns)
@@ -280,5 +281,8 @@ if VERSION.minor > 0
                 end
             end
         end
+
+        # cleanup
+        Base.Filesystem.rm(output.model.tmpdir; recursive = true, force = true)
     end
 end

@@ -1,0 +1,20 @@
+steps:
+- bash: |
+    set -o xtrace
+    export TRAVIS_REPO_SLUG="$BUILD_REPOSITORY_NAME"
+    export TRAVIS_PULL_REQUEST=false
+    if [[ $BUILD_SOURCEBRANCH == refs/tags/* ]]; then
+      export TRAVIS_TAG="${BUILD_SOURCEBRANCH:10}"
+    elif [[ $BUILD_SOURCEBRANCH == refs/heads/* ]]; then
+      export TRAVIS_BRANCH="${BUILD_SOURCEBRANCH:11}"
+    elif [[ $BUILD_SOURCEBRANCH == refs/pull/* ]]; then
+      export TRAVIS_PULL_REQUEST="$(cut -d'/' -f3 <<< $BUILD_SOURCEBRANCH)"
+    fi
+    julia -e 'using InteractiveUtils; versioninfo()'
+    julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
+                                         Pkg.develop(PackageSpec(path=pwd()));
+                                         Pkg.build()'
+    julia --color=yes --project=docs/ docs/make.jl
+  env:
+    DOCUMENTER_KEY: $(DOCUMENTER_KEY2)
+  displayName: 'Build and deploy the docs'

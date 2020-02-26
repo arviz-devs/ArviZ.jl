@@ -14,47 +14,46 @@ git:
 env:
   global:
     - PYTHON=Conda # Install dependencies in Julia's conda env
-    - CMDSTAN_VERSION="2.21.0"
+    - CMDSTAN_VERSION="2.22.1"
     - CMDSTAN_CACHE="$HOME/.cmdstan/"
     - JULIA_CMDSTAN_HOME="$CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION/"
-
 cache:
   directories:
-  - $CMDSTAN_CACHE
-
-matrix:
-  fast_finish: true
-
+    - $CMDSTAN_CACHE
 jobs:
   allow_failures:
+    - julia: 1.3
+      env: ARVIZ_VERSION=master
+    - julia: 1.4
     - julia: nightly
   include:
-    - stage: test
+    - stage: Test
       julia: 1.1
-    - stage: test
-      julia: 1.2
-    - stage: test
+    - stage: Test
       julia: 1.3
-    - stage: test
+    - stage: Test
       julia: 1.3
-      env: ARVIZ_MASTER=true
-    - stage: test
+      env: ARVIZ_VERSION=master
+    - stage: Test
+      julia: 1.4
+    - stage: Test
       julia: nightly
-    - stage: Documentation
-      julia: 1.3
-      env: ARVIZ_MASTER=true
-      script:
-        - julia --color=yes --project=docs/ docs/make.jl
-      after_success: skip
-
+    # - stage: Documentation
+    #   julia: 1.3
+    #   script:
+    #     - julia --color=yes --project=docs/ docs/make.jl
+    #   after_success: skip
 before_install:
   - if [ ! -d $JULIA_CMDSTAN_HOME ]; then
-    wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$CMDSTAN_VERSION/cmdstan-$CMDSTAN_VERSION.tar.gz;
-    tar -xzpf $CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION.tar.gz -C $CMDSTAN_CACHE;
-    make -C $JULIA_CMDSTAN_HOME build;
+      wget -P $CMDSTAN_CACHE https://github.com/stan-dev/cmdstan/releases/download/v$CMDSTAN_VERSION/cmdstan-$CMDSTAN_VERSION.tar.gz;
+      tar -xzpf $CMDSTAN_CACHE/cmdstan-$CMDSTAN_VERSION.tar.gz -C $CMDSTAN_CACHE;
+      make -C $JULIA_CMDSTAN_HOME build;
     fi
-  - if [[ ( "$ARVIZ_MASTER" = true ) && ( ! -n "$TRAVIS_TAG" ) ]]; then
-    julia -e 'using Pkg; Pkg.add("PyCall"); using PyCall; run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
+  - if [[ ( "$ARVIZ_VERSION" = 'master' ) && ( ! -n "$TRAVIS_TAG" ) ]]; then
+      julia -e 'using Pkg;
+                Pkg.add("PyCall");
+                using PyCall;
+                run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
     fi
 after_success:
   - julia --project=test/coverage -e 'using Pkg; Pkg.instantiate()'

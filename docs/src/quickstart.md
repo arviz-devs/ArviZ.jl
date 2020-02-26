@@ -3,18 +3,17 @@
 _This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html)._
 
 ```@setup quickstart
-using PyPlot, ArviZ, Distributions, CmdStan, Pkg, InteractiveUtils
+using PyPlot, ArviZ, Pkg
 import MCMCChains
-using Soss, NamedTupleTools
 
 using PyCall
 np = pyimport_conda("numpy", "numpy")
 np.seterr(divide="ignore", invalid="ignore")
 
-using Random
-Random.seed!(42)
-
-turing_chns = read("../src/assets/turing_centered_eight_chains.jls", MCMCChains.Chains)
+turing_chns = read(
+    "../src/assets/turing_centered_eight_chains.jls",
+    MCMCChains.Chains,
+)
 
 # use fancy HTML for xarray.Dataset if available
 try
@@ -36,7 +35,10 @@ ArviZ.use_style("arviz-darkgrid")
 ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com/StanJulia/CmdStan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 
 ```@example quickstart
-plot_posterior(randn(100_000));
+using Random
+
+rng = Random.MersenneTwister(42)
+plot_posterior(randn(rng, 100_000));
 savefig("quick_postarray.svg"); nothing # hide
 ```
 
@@ -51,10 +53,10 @@ using Distributions
 
 s = (10, 50)
 plot_forest(Dict(
-    "normal" => randn(s),
-    "gumbel" => rand(Gumbel(), s),
-    "student t" => rand(TDist(6), s),
-    "exponential" => rand(Exponential(), s)
+    "normal" => randn(rng, s),
+    "gumbel" => rand(rng, Gumbel(), s),
+    "student t" => rand(rng, TDist(6), s),
+    "exponential" => rand(rng, Exponential(), s)
 ));
 savefig("quick_forestdists.svg"); nothing # hide
 ```
@@ -87,7 +89,7 @@ schools = [
     "Mt. Hermon"
 ];
 
-nwarmup, nsamples, nchains = 1000, 1000, 4
+nwarmup, nsamples, nchains = 1000, 1000, 4;
 nothing # hide
 ```
 
@@ -96,25 +98,36 @@ Now we write and run the model using Turing:
 ```julia
 using Turing
 
-Turing.@model turing_model(J, y, σ) = begin
+Turing.@model turing_model(
+    J,
+    y,
+    σ,
+    ::Type{TV} = Vector{Float64},
+) where {TV} = begin
     μ ~ Normal(0, 5)
-    τ ~ Truncated(Cauchy(0, 5), 0, Inf)
-    θ = tzeros(J)
-    θ ~ [Normal(μ, τ)]
+    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    θ = TV(undef, J)
+    θ .~ Normal(μ, τ)
     y ~ MvNormal(θ, σ)
 end
 
 param_mod = turing_model(J, y, σ)
 sampler = NUTS(nwarmup, 0.8)
-turing_chns = mapreduce(chainscat, 1:nchains) do _
-    return sample(param_mod, sampler, nwarmup + nsamples; progress = false)
-end;
+
+rng = Random.MersenneTwister(5130)
+turing_chns = psample(
+    param_mod,
+    sampler,
+    nwarmup + nsamples,
+    nchains;
+    progress = false,
+);
 ```
 
 Most ArviZ functions work fine with `Chains` objects from Turing:
 
 ```@example quickstart
-plot_autocorr(convert_to_inference_data(turing_chns); var_names = ["μ", "τ"]);
+plot_autocorr(turing_chns; var_names = ["μ", "τ"]);
 savefig("quick_turingautocorr.svg"); nothing # hide
 ```
 
@@ -180,7 +193,7 @@ CmdStan.jl and StanSample.jl also default to producing `Chains` outputs, and we 
 Here is the same centered eight schools model:
 
 ```@example quickstart
-using CmdStan
+using CmdStan, MCMCChains
 
 schools_code = """
 data {
@@ -215,17 +228,20 @@ generated quantities {
 schools_dat = Dict("J" => J, "y" => y, "sigma" => σ)
 stan_model = Stanmodel(
     model = schools_code,
+    name = "schools",
     nchains = nchains,
     num_warmup = nwarmup,
     num_samples = nsamples,
-    random = CmdStan.Random(8675309), # hide
+    output_format = :mcmcchains,
+    random = CmdStan.Random(8675309),
 )
 _, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
+Base.Filesystem.rm(stan_model.tmpdir; recursive = true, force = true); # hide
 nothing # hide
 ```
 
 ```@example quickstart
-plot_density(convert_to_inference_data(stan_chns); var_names=["mu", "tau"]);
+plot_density(stan_chns; var_names=["mu", "tau"]);
 savefig("quick_cmdstandensity.svg"); nothing # hide
 ```
 
@@ -277,7 +293,7 @@ mod = Soss.@model (J, σ) begin
     μ ~ Normal(0, 5)
     τ ~ HalfCauchy(5)
     θ ~ Normal(μ, τ) |> iid(J)
-    y ~ For(J) do j
+    y ~ For(1:J) do j
         Normal(θ[j], σ[j])
     end
 end
@@ -289,6 +305,7 @@ param_mod = mod(; constant_data...)
 Then we draw from the prior and prior predictive distributions.
 
 ```@example quickstart
+Random.seed!(5298)
 prior_prior_pred = map(1:nchains*nsamples) do _
     draw = rand(param_mod)
     return delete(draw, keys(constant_data))
@@ -303,7 +320,7 @@ Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/
 
 ```@example quickstart
 post = map(1:nchains) do _
-    dynamicHMC(param_mod, (y = y,), logpdf, nsamples)
+    dynamicHMC(param_mod, (y = y,), nsamples)
 end;
 nothing # hide
 ```
@@ -322,6 +339,15 @@ nothing # hide
 ```
 
 Each Soss draw is a `NamedTuple`.
+We can plot the rank order statistics of the posterior to identify poor convergence:
+
+```@example quickstart
+plot_rank(post; var_names = ["μ", "τ"]);
+savefig("quick_sossrank.png"); nothing # hide
+```
+
+![](quick_sossrank.png)
+
 Now we combine all of the samples to an `InferenceData`:
 
 ```@example quickstart
@@ -354,3 +380,15 @@ savefig("quick_sosspred.png"); nothing # hide
 ```
 
 ![](quick_sosspred.png)
+
+## Environment
+
+```@example quickstart
+using Pkg
+Pkg.status()
+```
+
+```@example quickstart
+using InteractiveUtils
+versioninfo()
+```
