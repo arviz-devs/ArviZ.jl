@@ -185,6 +185,7 @@ macro forwardplotfun(f)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
             kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
             plots = arviz.$(f)(args...; kwargs...)
+            plots isa BokehPlot && return plots 
             return bokeh.plotting.gridplot(plots)
         end
 
