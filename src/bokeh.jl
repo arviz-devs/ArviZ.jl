@@ -1,5 +1,13 @@
+"""
+    BokehPlot(::PyObject)
+
+Loose wrapper around a Bokeh figure, mostly used for dispatch.
+
+In most cases, use one of the plotting functions with `backend=:bokeh` to create a
+`BokehPlot` instead of using a constructor.
+"""
 struct BokehPlot
-    o
+    o::PyObject
 end
 
 @inline PyObject(plot::BokehPlot) = getfield(plot, :o)
