@@ -2,7 +2,7 @@ steps:
 - bash: |
     set -o xtrace
     CURL_USER_AGENT="Azure pipelines $(curl --version | head -n 1)"
-    export JULIA_DIR="$(Agent.HomeDirectory)/julia-$(JULIA_VERSION)"
+    JULIA_DIR="$(Agent.HomeDirectory)/julia-$(JULIA_VERSION)"
     if [[ $(JULIA_VERSION) == nightly ]]
     then
       export JULIA_BINARY_URL="https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz"
@@ -11,8 +11,10 @@ steps:
     fi
     mkdir -p $JULIA_DIR
     curl -A "$CURL_USER_AGENT" -sSf -L --retry 7 $JULIA_BINARY_URL | tar -C "$JULIA_DIR" -x -z --strip-components=1 -f -
-    echo "##vso[task.prependpath]$(JULIA_DIR)/bin"
   displayName: 'Download and extract Julia'
+- script: |
+    echo "##vso[task.prependpath]$(Agent.HomeDirectory)/julia-$(JULIA_VERSION)/bin"
+  displayName: 'Prepend Julia to path'
 - bash: |
     julia --color=yes -e "VERSION >= v\"0.7.0-DEV.3630\" && using InteractiveUtils; versioninfo()"
   displayName: 'Log Julia version info'
