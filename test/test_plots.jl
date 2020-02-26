@@ -7,6 +7,7 @@ using PyCall, PyPlot
     rng = MersenneTwister(42)
     arr1 = randn(rng, 4, 100)
     arr2 = randn(rng, 4, 100)
+    arr3 = randn(rng, 100)
 
     @testset "$(f)" for f in (plot_trace, plot_pair, plot_joint)
         f(data; var_names = ["tau", "mu"])
@@ -46,7 +47,7 @@ using PyCall, PyPlot
         close(gcf())
         f([(x = arr1,), (x = arr2,)], var_names = ["x"])
         close(gcf())
-        f(arr1)
+        f(arr3)
         close(gcf())
         f((x = arr1, y = arr2); var_names = ["x", "y"])
         close(gcf())
