@@ -2,6 +2,12 @@ using Random
 using PyCall
 using ArviZ: attributes
 
+py"""
+class PyNullObject(object):
+   def __init__(self):
+       pass
+"""
+
 function create_model(seed = 10)
     rng = MersenneTwister(seed)
     J = 8

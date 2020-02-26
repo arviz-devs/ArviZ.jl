@@ -31,7 +31,9 @@ Dataset(; kwargs...) = xarray.Dataset(; kwargs...)
 
 @inline PyObject(data::Dataset) = getfield(data, :o)
 
-Base.convert(::Type{Dataset}, o::PyObject) = Dataset(o)
+Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(obj)
+Base.convert(::Type{Dataset}, obj::Dataset) = obj
+Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
 
 Base.hash(data::Dataset) = hash(PyObject(data))
 

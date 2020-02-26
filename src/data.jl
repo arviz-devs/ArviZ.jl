@@ -27,7 +27,9 @@ InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
 
 @inline PyObject(data::InferenceData) = getfield(data, :o)
 
-Base.convert(::Type{InferenceData}, o::PyObject) = InferenceData(o)
+Base.convert(::Type{InferenceData}, obj::PyObject) = InferenceData(obj)
+Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
+Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 
 Base.hash(data::InferenceData) = hash(PyObject(data))
 

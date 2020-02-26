@@ -1,5 +1,13 @@
+"""
+    BokehPlot(::PyObject)
+
+Loose wrapper around a Bokeh figure, mostly used for dispatch.
+
+In most cases, use one of the plotting functions with `backend=:bokeh` to create a
+`BokehPlot` instead of using a constructor.
+"""
 struct BokehPlot
-    o
+    o::PyObject
 end
 
 @inline PyObject(plot::BokehPlot) = getfield(plot, :o)
@@ -24,9 +32,24 @@ end
 Base.display(::REPL.REPLDisplay, plot::BokehPlot) = bokeh.plotting.show(plot)
 
 Base.show(io::IO, ::MIME"text/html", plot::BokehPlot) = print(io, render_html(plot))
-function Base.show(io::IO, ::MIME"application/prs.juno.plotpane+html", plot::BokehPlot)
+function Base.show(
+    io::IO,
+    ::Union{MIME"application/juno+plotpane",MIME"application/prs.juno.plotpane+html"},
+    plot::BokehPlot,
+)
     return print(io, render_html(plot))
 end
 function Base.show(io::IO, ::MIME"juliavscode/html", plot::BokehPlot)
     return print(io, render_html(plot))
 end
+
+# We don't need to implement this `save` since FileIO defaults to calling the above
+# `show` method.
+
+"""
+    write(io::IO, plot::BokehPlot)
+    write(filename::AbstractString, plot::BokehPlot)
+
+Write the HTML representation of the Bokeh plot to the I/O stream or file.
+"""
+Base.write(io::IO, plot::BokehPlot) = print(io, render_html(plot))

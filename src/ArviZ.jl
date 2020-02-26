@@ -14,7 +14,7 @@ end
 using PyPlot
 using Pandas
 
-import Base: convert, propertynames, getproperty, hash, show, +
+import Base: convert, propertynames, getproperty, hash, show, write, +
 import Base.Docs: getdoc
 import StatsBase
 import StatsBase: summarystats
@@ -109,6 +109,11 @@ function __init__()
 
     pytype_mapping(xarray.Dataset, Dataset)
     pytype_mapping(arviz.InferenceData, InferenceData)
+
+    # use 1-based indexing by default within arviz
+    py"""
+    $(arviz).rcparams.rcParams["data.index_origin"] = 1
+    """
 
     @require MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca" begin
         import .MonteCarloMeasurements: AbstractParticles
