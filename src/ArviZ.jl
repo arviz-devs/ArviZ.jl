@@ -11,7 +11,7 @@ using Conda; Conda.add_channel("conda-forge") # try to avoid mixing channels
 using PyPlot
 using Pandas
 
-import Base: convert, propertynames, getproperty, hash, show, +
+import Base: convert, propertynames, getproperty, hash, show, write, +
 import Base.Docs: getdoc
 import StatsBase
 import StatsBase: summarystats
