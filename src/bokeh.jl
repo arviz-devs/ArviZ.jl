@@ -25,7 +25,11 @@ Base.display(::REPL.REPLDisplay, plot::BokehPlot) = bokeh.plotting.show(plot)
 
 Base.show(io::IO, ::MIME"text/html", plot::BokehPlot) = print(io, render_html(plot))
 
-function Base.show(io::IO, ::MIME"application/prs.juno.plotpane+html", plot::BokehPlot)
+function Base.show(
+    io::IO,
+    ::Union{MIME"application/juno+plotpane",MIME"application/prs.juno.plotpane+html"},
+    plot::BokehPlot,
+)
     return print(io, render_html(plot))
 end
 
