@@ -42,7 +42,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rc_params())
                     @test occursin("<body", text)
                 end
 
-                @testset "write html"
+                @testset "write html" begin
                     text = sprint(write, plot)
                     @test text isa String
                     @test occursin("<body", text)
