@@ -5,7 +5,7 @@ import Pandas
 
     @testset "compare" begin
         idata2 = load_arviz_data("non_centered_eight")
-        df = compare(Dict("a"=>idata, "b"=>idata2))
+        df = compare(Dict("a" => idata, "b" => idata2))
         @test df isa Pandas.DataFrame
     end
 
@@ -66,8 +66,10 @@ import Pandas
     @testset "ArviZ.summary" begin
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
-        data =
-            Dict("a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, 3, 4))
+        data = Dict(
+            "a" => randn(rng, nchains, ndraws),
+            "b" => randn(rng, nchains, ndraws, 3, 4),
+        )
 
         @test ArviZ.summary(data) isa Pandas.DataFrame
     end

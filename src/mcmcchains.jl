@@ -200,11 +200,7 @@ function from_mcmcchains(
     attrs = attributes_dict(posterior)
     attrs = merge(attrs, Dict("inference_library" => library))
     kwargs = convert(Dict, merge((; attrs = attrs, dims = nothing), kwargs))
-    post_idata = _from_dict(
-        post_dict;
-        sample_stats = stats_dict,
-        kwargs...,
-    )
+    post_idata = _from_dict(post_dict; sample_stats = stats_dict, kwargs...)
     concat!(all_idata, post_idata)
     return all_idata
 end
