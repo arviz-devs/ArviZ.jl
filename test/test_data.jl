@@ -48,13 +48,14 @@ using MonteCarloMeasurements: Particles
     end
 
     @testset "show" begin
-        @test sprint(show, data) == """
-        InferenceData with groups:
-        	> posterior
-        	> sample_stats
-        	> posterior_predictive
-        	> observed_data
-        	> prior"""
+        @test startswith(
+            sprint(show, data),
+            """
+            InferenceData with groups:
+            	> posterior
+            	> sample_stats
+            	> posterior_predictive""",
+        )
     end
 end
 
