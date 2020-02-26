@@ -36,3 +36,14 @@ end
 function Base.show(io::IO, ::MIME"juliavscode/html", plot::BokehPlot)
     return print(io, render_html(plot))
 end
+
+# We don't need to implement this `save` since FileIO defaults to calling the above
+# `show` method.
+
+"""
+    write(io::IO, plot::BokehPlot)
+    write(filename::AbstractString, plot::BokehPlot)
+
+Write the HTML representation of the Bokeh plot to the I/O stream or file.
+"""
+Base.write(io::IO, plot::BokehPlot) = print(io, render_html(plot))
