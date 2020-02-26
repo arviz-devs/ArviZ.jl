@@ -19,15 +19,19 @@ const sample_stats_types = Dict(
 @forwardfun r2_score
 @forwardfun waic
 
-function convert_arguments(::typeof(loo), data, args...; kwargs...)
-    idata = convert_to_inference_data(data)
-    return tuple(idata, args...), kwargs
+for f in (:loo, :waic)
+    @eval begin
+        function convert_arguments(::typeof($(f)), data, args...; kwargs...)
+            idata = convert_to_inference_data(data)
+            return tuple(idata, args...), kwargs
+        end
+    end
 end
 
-convert_result(::typeof(compare), result) = Pandas.DataFrame(result)
 convert_result(::typeof(loo), result) = Pandas.Series(result)
-convert_result(::typeof(r2_score), result) = Pandas.Series(result)
 convert_result(::typeof(waic), result) = Pandas.Series(result)
+convert_result(::typeof(r2_score), result) = Pandas.Series(result)
+convert_result(::typeof(compare), result) = Pandas.DataFrame(result)
 
 """
     summarystats(data::Dataset; kwargs...) -> Union{Pandas.DataFrame,Dataset}
