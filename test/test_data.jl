@@ -8,9 +8,11 @@ using MonteCarloMeasurements: Particles
         @test InferenceData(pydata) isa InferenceData
         @test PyObject(InferenceData(pydata)) === pydata
         @test InferenceData(data) === data
+        @test_throws ArgumentError InferenceData(py"PyNullObject()")
         data2 = InferenceData(; posterior = data.posterior)
         @test data2 isa InferenceData
         @test :posterior in propertynames(data2)
+        @test hash(data) == hash(pydata)
     end
 
     @testset "properties" begin
@@ -28,7 +30,6 @@ using MonteCarloMeasurements: Particles
         g = ArviZ.groups(data4)
         @test g isa Dict
         @test :posterior in keys(g)
-        @test hash(data4.posterior) === hash(g[:posterior])
     end
 
     @testset "isempty" begin
@@ -41,6 +42,19 @@ using MonteCarloMeasurements: Particles
         data4 = convert(InferenceData, PyObject(data))
         @test data4 isa InferenceData
         @test PyObject(data4) === PyObject(data)
+
+        # TODO: improve this test
+        @test convert(InferenceData, [1.0, 2.0, 3.0, 4.0]) isa InferenceData
+    end
+
+    @testset "show" begin
+        @test sprint(show, data) == """
+        InferenceData with groups:
+        	> posterior
+        	> sample_stats
+        	> posterior_predictive
+        	> observed_data
+        	> prior"""
     end
 end
 

@@ -8,6 +8,8 @@
         @test ArviZ.Dataset(pydataset) isa ArviZ.Dataset
         @test PyObject(ArviZ.Dataset(pydataset)) === pydataset
         @test ArviZ.Dataset(dataset) === dataset
+        @test_throws ArgumentError ArviZ.Dataset(py"PyNullObject()")
+        @test hash(dataset) == hash(pydataset)
     end
 
     @testset "properties" begin
@@ -19,6 +21,9 @@
         dataset4 = convert(ArviZ.Dataset, PyObject(dataset))
         @test dataset4 isa ArviZ.Dataset
         @test PyObject(dataset4) === PyObject(dataset)
+
+        # TODO: improve this test
+        @test convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0]) isa ArviZ.Dataset
     end
 
     @testset "show(::ArviZ.Dataset)" begin
