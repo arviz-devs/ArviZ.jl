@@ -29,7 +29,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rc_params())
                 @test pyobj === PyObject(plot2)
 
                 @test propertynames(plot) == propertynames(PyObject(plot))
-                @test "bokeh" in "$(getproperty(plot, :__class__))"
+                @test occursin("bokeh", "$(getproperty(plot, :__class__))")
 
                 @testset "show MIME::\"$(mime)\"" for mime in [
                     "text/html",
