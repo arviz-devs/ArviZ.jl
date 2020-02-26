@@ -11,31 +11,27 @@ const sample_stats_types = Dict(
     "diverging" => Bool,
 )
 
-@doc forwarddoc(:compare) compare(args...; kwargs...) =
-    arviz.compare(args...; kwargs...) |> Pandas.DataFrame
-
-Docs.getdoc(::typeof(compare)) = forwardgetdoc(:compare)
-
+@forwardfun compare
 @forwardfun hpd
-
-@doc forwarddoc(:loo) loo(args...; kwargs...) =
-    arviz.loo(args...; kwargs...) |> Pandas.Series
-
-Docs.getdoc(::typeof(loo)) = forwardgetdoc(:loo)
-
+@forwardfun loo
 @forwardfun loo_pit
-
 @forwardfun psislw
+@forwardfun r2_score
+@forwardfun waic
 
-@doc forwarddoc(:r2_score) r2_score(args...; kwargs...) =
-    arviz.r2_score(args...; kwargs...) |> Pandas.Series
+for f in (:loo, :waic)
+    @eval begin
+        function convert_arguments(::typeof($(f)), data, args...; kwargs...)
+            idata = convert_to_inference_data(data)
+            return tuple(idata, args...), kwargs
+        end
+    end
+end
 
-Docs.getdoc(::typeof(r2_score)) = forwardgetdoc(:r2_score)
-
-@doc forwarddoc(:waic) waic(args...; kwargs...) =
-    arviz.waic(args...; kwargs...) |> Pandas.Series
-
-Docs.getdoc(::typeof(waic)) = forwardgetdoc(:waic)
+convert_result(::typeof(loo), result) = Pandas.Series(result)
+convert_result(::typeof(waic), result) = Pandas.Series(result)
+convert_result(::typeof(r2_score), result) = Pandas.Series(result)
+convert_result(::typeof(compare), result) = Pandas.DataFrame(result)
 
 """
     summarystats(data::Dataset; kwargs...) -> Union{Pandas.DataFrame,Dataset}
@@ -75,6 +71,12 @@ Compute summary statistics on `data`.
 - `order::String="C"`: If `fmt` is "wide", use either "C" or "F" unpacking order.
 - `index_origin::Int=1`: If `fmt` is "wide", select 𝑛-based indexing for multivariate
     parameters.
+- `skipna::Bool=false`: If `true`, ignores `NaN` values when computing the summary
+    statistics. It does not affect the behaviour of the functions passed to `stat_funcs`.
+- `coords::Dict{String,Vector}=Dict()`: Coordinates specification to be used if the `fmt`
+    is `"xarray"`.
+- `dims::Dict{String,Vector}=Dict()`: Dimensions specification for the variables to be used
+    if the `fmt` is `"xarray"`.
 
 # Returns
 
@@ -150,6 +152,6 @@ Compute summary statistics on any object that can be passed to [`convert_to_data
 - `kwargs`: Keyword arguments passed to [`summarystats`](@ref).
 """
 function summary(data; group = :posterior, coords = nothing, dims = nothing, kwargs...)
-    idata = convert_to_inference_data(data; group = group, coords = coords, dims = dims)
-    return summarystats(idata; group = group, kwargs...)
+    dataset = convert_to_dataset(data; group = group, coords = coords, dims = dims)
+    return summarystats(dataset; kwargs...)
 end

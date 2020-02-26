@@ -10,7 +10,10 @@ using PyCall
 np = pyimport_conda("numpy", "numpy")
 np.seterr(divide="ignore", invalid="ignore")
 
-turing_chns = read("../src/assets/turing_centered_eight_chains.jls", MCMCChains.Chains)
+turing_chns = read(
+    "../src/assets/turing_centered_eight_chains.jls",
+    MCMCChains.Chains,
+)
 
 # use fancy HTML for xarray.Dataset if available
 try
@@ -124,7 +127,7 @@ turing_chns = psample(
 Most ArviZ functions work fine with `Chains` objects from Turing:
 
 ```@example quickstart
-plot_autocorr(convert_to_inference_data(turing_chns); var_names = ["μ", "τ"]);
+plot_autocorr(turing_chns; var_names = ["μ", "τ"]);
 savefig("quick_turingautocorr.svg"); nothing # hide
 ```
 
@@ -238,7 +241,7 @@ nothing # hide
 ```
 
 ```@example quickstart
-plot_density(convert_to_inference_data(stan_chns); var_names=["mu", "tau"]);
+plot_density(stan_chns; var_names=["mu", "tau"]);
 savefig("quick_cmdstandensity.svg"); nothing # hide
 ```
 
@@ -336,6 +339,15 @@ nothing # hide
 ```
 
 Each Soss draw is a `NamedTuple`.
+We can plot the rank order statistics of the posterior to identify poor convergence:
+
+```@example quickstart
+plot_rank(post; var_names = ["μ", "τ"]);
+savefig("quick_sossrank.png"); nothing # hide
+```
+
+![](quick_sossrank.png)
+
 Now we combine all of the samples to an `InferenceData`:
 
 ```@example quickstart
