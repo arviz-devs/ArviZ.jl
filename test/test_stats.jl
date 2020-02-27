@@ -50,19 +50,24 @@ import Pandas
             "b" => randn(rng, nchains, ndraws, 3, 4),
         ))
 
-        @test summarystats(idata) isa DataFrames.DataFrame
-        @test summarystats(idata; fmt = "wide") isa DataFrames.DataFrame
-        @test summarystats(idata; fmt = "long") isa DataFrames.DataFrame
         s = summarystats(idata)
-        @test :variable in propertynames(s)
+        @test s isa DataFrames.DataFrame
+        @test first(names(summarystats(idata))) == :variable
+        @test first(names(summarystats(idata; fmt = "wide"))) == :variable
+        @test :variable in propertynames(summarystats(idata; fmt = "wide"))
         @test "a" ∈ s.variable
         @test "b" ∉ s.variable
         @test "b[0,0]" ∉ s.variable
         @test "b[1,1]" ∈ s.variable
         @test "b[0,0]" ∈ summarystats(idata; index_origin = 0).variable
 
-        s2 = summarystats(idata; fmt = "xarray")
-        @test s2 isa ArviZ.Dataset
+        s2 = summarystats(idata; fmt = "long")
+        @test s2 isa DataFrames.DataFrame
+        @test first(names(s2)) == :statistic
+        @test "mean" ∈ s2.statistic
+
+        s3 = summarystats(idata; fmt = "xarray")
+        @test s3 isa ArviZ.Dataset
     end
 
     @testset "ArviZ.summary" begin

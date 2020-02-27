@@ -124,10 +124,11 @@ func_dict = Dict(
 summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
 """
-function StatsBase.summarystats(data::Dataset; index_origin = 1, kwargs...)
-    s = arviz.summary(data; index_origin = index_origin, kwargs...)
+function StatsBase.summarystats(data::Dataset; index_origin = 1, fmt = :wide, kwargs...)
+    s = arviz.summary(data; index_origin = index_origin, fmt = fmt, kwargs...)
     s isa Dataset && return s
-    return todataframe(s; index_name = :variable)
+    index_name = Symbol(fmt) == :long ? :statistic : :variable
+    return todataframes(s; index_name = index_name)
 end
 
 function StatsBase.summarystats(data::InferenceData; group = :posterior, kwargs...)
