@@ -28,10 +28,12 @@ for f in (:loo, :waic)
     end
 end
 
-convert_result(::typeof(loo), result) = todataframe(Pandas.Series(result))
-convert_result(::typeof(waic), result) = todataframe(Pandas.Series(result))
-convert_result(::typeof(r2_score), result) = todataframe(Pandas.Series(result))
-convert_result(::typeof(compare), result) = todataframe(Pandas.DataFrame(result); index_name = :name)
+convert_result(::typeof(loo), result) = todataframes(Pandas.Series(result))
+convert_result(::typeof(waic), result) = todataframes(Pandas.Series(result))
+convert_result(::typeof(r2_score), result) = todataframes(Pandas.Series(result))
+function convert_result(::typeof(compare), result)
+    return todataframes(Pandas.DataFrame(result); index_name = :name)
+end
 
 """
     summarystats(data::Dataset; kwargs...) -> Union{Dataset,DataFrames.DataFrame}

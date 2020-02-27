@@ -90,15 +90,6 @@ using PyCall, PyPlot
         end
     end
 
-    @testset "plot_elpd" begin
-        plot_elpd(Dict("a" => data, "b" => data2))
-        close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_elpd(Dict("a" => data, "b" => data2); backend = :bokeh) isa
-                  ArviZ.BokehPlot
-        end
-    end
-
     @testset "plot_hpd" begin
         x_data = randn(rng, 100)
         y_data = 2 .+ reshape(x_data, 1, 100) .* 0.5
@@ -107,6 +98,17 @@ using PyCall, PyPlot
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
             @test plot_hpd(x_data, y_data_rep; backend = :bokeh) isa ArviZ.BokehPlot
+        end
+    end
+
+    @testset "plot_elpd" begin
+        plot_elpd(Dict("a" => data, "b" => data2))
+        close(gcf())
+        plot_elpd(Dict("a" => loo(data; pointwise=true), "b" => loo(data2; pointwise=true)))
+        close(gcf())
+        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
+            @test plot_elpd(Dict("a" => data, "b" => data2); backend = :bokeh) isa
+                  ArviZ.BokehPlot
         end
     end
 
