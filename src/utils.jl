@@ -193,15 +193,11 @@ macro forwardplotfun(f)
     end |> esc
 end
 
-"""
-    replacemissing(x)
-
-Replace `missing` values with `NaN` and do type inference on the result.
-"""
+# Replace `missing` values with `NaN` and do type inference on the result
 replacemissing(x) = map(identity, replace(x, missing => NaN))
-replacemissing(x::AbstractArray{<:Real}) = x
-replacemissing(x::Missing) = NaN
-replacemissing(x::Number) = x
+@inline replacemissing(x::AbstractArray{<:Real}) = x
+@inline replacemissing(x::Missing) = NaN
+@inline replacemissing(x::Number) = x
 
 function rekey(d, keymap)
     dnew = empty(d)
