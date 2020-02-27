@@ -185,7 +185,7 @@ macro forwardplotfun(f)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
             kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
             plots = arviz.$(f)(args...; kwargs...)
-            plots isa BokehPlot && return plots 
+            plots isa BokehPlot && return plots
             return bokeh.plotting.gridplot(plots)
         end
 
@@ -239,21 +239,65 @@ enforce_stat_types(dict) =
 enforce_stat_types(::Nothing) = nothing
 
 """
-    todataframe(df::Pandas.DataFrame; [index_name]) -> DataFrames.DataFrame
-    todataframe(df::PyObject; [index_name]) -> DataFrames.DataFrame
+    todataframes(df; index_name = nothing) -> DataFrames.DataFrame
 
-Helper function for converting a Python `pandas.DataFrame` into a
-`DataFrames.DataFrame`. If `index_name` is provided, the index is converted
-into a column with that name. Otherwise, it is discarded.
+Convert a Python `Pandas.DataFrame` or `Pandas.Series` into a `DataFrames.DataFrame`.
+
+If `index_name` is not `nothing`, the index is converted into a column with `index_name`.
+Otherwise, it is discarded.
 """
-function todataframe(df::Pandas.DataFrame; index_name = nothing)
-    pydf = PyObject(df)
-    if index_name !== nothing
-        pydf.index.name = string(index_name)
-        pydf = pydf.reset_index(drop = false)
+function todataframes(df::Pandas.DataFrame; index_name = nothing)
+    col_vals = map(columns(df)) do name
+        series = getindex(df, name)
+        vals = PyObject(series).values
+        return Symbol(name) => frompytype(vals)
     end
-    return DataFrames.DataFrame(Pandas.DataFrame(pydf))
+    if index_name !== nothing
+        index_vals = frompytype(Array(Pandas.index(df)))
+        col_vals = [Symbol(index_name) => index_vals; col_vals]
+    end
+    return DataFrames.DataFrame(col_vals)
+end
+function todataframes(s::Pandas.Series; kwargs...)
+    colnames = map(Symbol, Pandas.index(s))
+    colvals = map(x -> [frompytype(x)], PyObject(s).values)
+    return DataFrames.DataFrame(colvals, colnames)
+end
+function todataframes(df::PyObject; kwargs...)
+    if pyisinstance(df, Pandas.pandas_raw.Series)
+        return todataframes(Pandas.Series(df); kwargs...)
+    end
+    return todataframes(Pandas.DataFrame(df); kwargs...)
 end
 
-todataframe(s::Pandas.Series; kwargs...) = todataframe(Pandas.DataFrame(s).pyo.T; kwargs...)
-todataframe(df::PyObject; kwargs...) = todataframe(Pandas.DataFrame(df); kwargs...)
+"""
+    topandas(::Type{Pandas.DataFrame}, df; index_name = nothing) -> Pandas.DataFrame
+    topandas(::Type{Pandas.Series}, df) -> Pandas.Series
+    topandas(::Val{:ELPDData}, df) -> Pandas.Series
+
+Convert a `DataFrames.DataFrame` to the specified Pandas type.
+
+If `index_name` is not `nothing`, the corresponding column is made the index of the
+returned dataframe.
+"""
+function topandas(::Type{Pandas.DataFrame}, df; index_name = nothing)
+    df = DataFrames.DataFrame(df)
+    colnames = names(df)
+    rowvals = map(Array, eachrow(df))
+    pdf = Pandas.DataFrame(rowvals; columns = colnames)
+    index_name !== nothing && set_index(pdf, index_name; inplace = true)
+    return pdf
+end
+function topandas(::Type{Pandas.Series}, df)
+    df = DataFrames.DataFrame(df)
+    rownames = names(df)
+    colvals = Array(first(eachrow(df)))
+    return Pandas.Series(colvals, rownames)
+end
+function topandas(::Val{:ELPDData}, df)
+    df = DataFrames.DataFrame(df)
+    rownames = names(df)
+    colvals = Array(first(eachrow(df)))
+    elpd_data = ArviZ.arviz.stats.ELPDData(colvals, rownames)
+    return Pandas.Series(elpd_data)
+end
