@@ -199,6 +199,13 @@ replacemissing(x) = map(identity, replace(x, missing => NaN))
 @inline replacemissing(x::Missing) = NaN
 @inline replacemissing(x::Number) = x
 
+# Convert python types to Julia types if possible
+@inline frompytype(x) = x
+@inline frompytype(x::PyObject) = PyAny(x)
+frompytype(x::AbstractArray{PyObject}) = map(frompytype, x)
+frompytype(x::AbstractArray{Any}) = map(frompytype, x)
+frompytype(x::AbstractArray{<:AbstractArray}) = map(frompytype, x)
+
 function rekey(d, keymap)
     dnew = empty(d)
     for (k, v) in d
