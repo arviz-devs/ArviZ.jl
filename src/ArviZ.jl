@@ -5,16 +5,29 @@ using Base: @__doc__
 using Requires
 using REPL
 using NamedTupleTools
+using DataFrames
 
 using PyCall
-if PyCall.conda # PyCall is using Conda.jl's Python
+if PyCall.conda
     using Conda
     Conda.add_channel("conda-forge") # try to avoid mixing channels
 end
 using PyPlot
 using Pandas
+using DataFrames
 
-import Base: convert, propertynames, getproperty, hash, show, write, +
+import Base: convert,
+    get,
+    getproperty,
+    hash,
+    haskey,
+    iterate,
+    length,
+    propertynames,
+    setindex,
+    show,
+    write,
+    +
 import Base.Docs: getdoc
 import StatsBase
 import StatsBase: summarystats
@@ -72,7 +85,7 @@ export InferenceData,
 export with_interactive_backend
 
 ## rcParams
-export with_rc_context
+export rcParams, with_rc_context
 
 import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
@@ -80,6 +93,7 @@ const arviz = import_arviz() # Load ArviZ once at precompilation time for docstr
 const xarray = PyNULL()
 const bokeh = PyNULL()
 const _min_arviz_version = v"0.6.1"
+const _rcParams = PyNULL()
 
 arviz_version() = VersionNumber(arviz.__version__)
 
@@ -110,10 +124,16 @@ function __init__()
     pytype_mapping(xarray.Dataset, Dataset)
     pytype_mapping(arviz.InferenceData, InferenceData)
 
+    # pytypemap-ing RcParams produces a Dict
+    copy!(_rcParams, py"$(arviz).rcparams.rcParams"o)
+
     # use 1-based indexing by default within arviz
-    py"""
-    $(arviz).rcparams.rcParams["data.index_origin"] = 1
-    """
+    rcParams["data.index_origin"] = 1
+    # handle Bokeh showing ourselves
+    rcParams["plot.bokeh.show"] = false
+
+    # Trigger NumPy initialization, see https://github.com/JuliaPy/PyCall.jl/issues/744
+    PyObject([true])
 
     @require MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca" begin
         import .MonteCarloMeasurements: AbstractParticles
@@ -126,6 +146,7 @@ function __init__()
 end
 
 include("utils.jl")
+include("rcparams.jl")
 include("bokeh.jl")
 include("dataset.jl")
 include("data.jl")

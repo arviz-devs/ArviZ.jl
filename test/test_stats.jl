@@ -1,3 +1,4 @@
+import DataFrames
 import Pandas
 
 @testset "stats" begin
@@ -6,7 +7,7 @@ import Pandas
     @testset "compare" begin
         idata2 = load_arviz_data("non_centered_eight")
         df = compare(Dict("a" => idata, "b" => idata2))
-        @test df isa Pandas.DataFrame
+        @test df isa DataFrames.DataFrame
     end
 
     @testset "hpd" begin
@@ -20,20 +21,20 @@ import Pandas
         ytrue = randn(rng, 100)
         ypred = randn(rng, 100)
         df = r2_score(ytrue, ypred)
-        @test df isa Pandas.Series
-        @test all(df == Pandas.Series(ArviZ.arviz.r2_score(ytrue, ypred)))
+        @test df isa DataFrames.DataFrame
+        @test all(df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.r2_score(ytrue, ypred))))
     end
 
     @testset "loo" begin
         df = loo(idata)
-        @test df isa Pandas.Series
-        @test all(df == Pandas.Series(ArviZ.arviz.loo(idata)))
+        @test df isa DataFrames.DataFrame
+        @test all(df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.loo(idata))))
     end
 
     @testset "waic" begin
         df = waic(idata)
-        @test df isa Pandas.Series
-        @test all(df == Pandas.Series(ArviZ.arviz.waic(idata)))
+        @test df isa DataFrames.DataFrame
+        @test all(df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.waic(idata))))
     end
 
     @testset "loo_pit" begin
@@ -49,18 +50,24 @@ import Pandas
             "b" => randn(rng, nchains, ndraws, 3, 4),
         ))
 
-        @test summarystats(idata) isa Pandas.DataFrame
-        @test summarystats(idata; fmt = "wide") isa Pandas.DataFrame
-        @test summarystats(idata; fmt = "long") isa Pandas.DataFrame
         s = summarystats(idata)
-        @test "a" ∈ Pandas.index(s)
-        @test "b" ∉ Pandas.index(s)
-        @test "b[0,0]" ∉ Pandas.index(s)
-        @test "b[1,1]" ∈ Pandas.index(s)
-        @test "b[0,0]" ∈ Pandas.index(summarystats(idata; index_origin = 0))
+        @test s isa DataFrames.DataFrame
+        @test first(names(summarystats(idata))) == :variable
+        @test first(names(summarystats(idata; fmt = "wide"))) == :variable
+        @test :variable in propertynames(summarystats(idata; fmt = "wide"))
+        @test "a" ∈ s.variable
+        @test "b" ∉ s.variable
+        @test "b[0,0]" ∉ s.variable
+        @test "b[1,1]" ∈ s.variable
+        @test "b[0,0]" ∈ summarystats(idata; index_origin = 0).variable
 
-        s2 = summarystats(idata; fmt = "xarray")
-        @test s2 isa ArviZ.Dataset
+        s2 = summarystats(idata; fmt = "long")
+        @test s2 isa DataFrames.DataFrame
+        @test first(names(s2)) == :statistic
+        @test "mean" ∈ s2.statistic
+
+        s3 = summarystats(idata; fmt = "xarray")
+        @test s3 isa ArviZ.Dataset
     end
 
     @testset "ArviZ.summary" begin
@@ -71,6 +78,6 @@ import Pandas
             "b" => randn(rng, nchains, ndraws, 3, 4),
         )
 
-        @test ArviZ.summary(data) isa Pandas.DataFrame
+        @test ArviZ.summary(data) isa DataFrames.DataFrame
     end
 end

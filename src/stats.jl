@@ -28,18 +28,20 @@ for f in (:loo, :waic)
     end
 end
 
-convert_result(::typeof(loo), result) = Pandas.Series(result)
-convert_result(::typeof(waic), result) = Pandas.Series(result)
-convert_result(::typeof(r2_score), result) = Pandas.Series(result)
-convert_result(::typeof(compare), result) = Pandas.DataFrame(result)
+convert_result(::typeof(loo), result) = todataframes(Pandas.Series(result))
+convert_result(::typeof(waic), result) = todataframes(Pandas.Series(result))
+convert_result(::typeof(r2_score), result) = todataframes(Pandas.Series(result))
+function convert_result(::typeof(compare), result)
+    return todataframes(Pandas.DataFrame(result); index_name = :name)
+end
 
 """
-    summarystats(data::Dataset; kwargs...) -> Union{Pandas.DataFrame,Dataset}
+    summarystats(data::Dataset; kwargs...) -> Union{Dataset,DataFrames.DataFrame}
     summarystats(
         data::InferenceData;
         group = :posterior,
         kwargs...,
-    ) -> Union{Pandas.DataFrame,Dataset}
+    ) -> Union{Dataset,DataFrames.DataFrame}
 
 Compute summary statistics on `data`.
 
@@ -52,7 +54,7 @@ Compute summary statistics on `data`.
 
 - `var_names::Vector{String}=nothing`: Names of variables to include in summary
 - `include_circ::Bool=false`: Whether to include circular statistics
-- `fmt::String="wide"`: Return format is either `Pandas.DataFrame` ("wide", "long") or
+- `fmt::String="wide"`: Return format is either `DataFrames.DataFrame` ("wide", "long") or
     [`Dataset`](@ref) ("xarray").
 - `round_to::Int=nothing`: Number of decimals used to round results. Use `nothing` to return
     raw numbers.
@@ -80,7 +82,7 @@ Compute summary statistics on `data`.
 
 # Returns
 
-- `Union{Pandas.DataFrame,Dataset}`: Return type dicated by `fmt` argument. Return value
+- `Union{Dataset,DataFrames.DataFrame}`: Return type dicated by `fmt` argument. Return value
     will contain summary statistics for each variable. Default statistics are:
     + `mean`
     + `sd`
@@ -122,10 +124,11 @@ func_dict = Dict(
 summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
 """
-function StatsBase.summarystats(data::Dataset; index_origin = 1, kwargs...)
-    s = arviz.summary(data; index_origin = index_origin, kwargs...)
+function StatsBase.summarystats(data::Dataset; index_origin = 1, fmt = :wide, kwargs...)
+    s = arviz.summary(data; index_origin = index_origin, fmt = fmt, kwargs...)
     s isa Dataset && return s
-    return Pandas.DataFrame(s)
+    index_name = Symbol(fmt) == :long ? :statistic : :variable
+    return todataframes(s; index_name = index_name)
 end
 function StatsBase.summarystats(data::InferenceData; group = :posterior, kwargs...)
     dataset = getproperty(data, Symbol(group))
@@ -139,7 +142,7 @@ end
         coords = nothing,
         dims = nothing,
         kwargs...,
-    ) -> Union{Pandas.DataFrame,PyObject}
+    ) -> Union{Dataset,DataFrames.DataFrame}
 
 Compute summary statistics on any object that can be passed to [`convert_to_dataset`](@ref).
 
