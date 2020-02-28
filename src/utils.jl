@@ -22,12 +22,81 @@ Get all available matplotlib styles for use with [`use_style`](@ref)
 styles() = arviz.style.available
 
 """
+    RcParams <: AbstractDict
+
+Class to contain ArviZ default parameters, with validation when setting items.
+
+# Examples
+
+```julia
+julia> ArviZ.rcParams["plot.backend"]
+"matplotlib"
+
+julia> ArviZ.rcParams["plot.backend"] = "bokeh"
+"bokeh"
+
+julia> ArviZ.rcParams["plot.backend"]
+"bokeh"
+```
+"""
+struct RcParams{K,V} <: AbstractDict{K,V}
+    o::PyObject
+end
+RcParams(obj) = RcParams{Any,Any}(obj)
+
+@inline PyObject(r::RcParams) = getfield(r, :o)
+
+Base.convert(::Type{RcParams{K,V}}, obj::PyObject) where {K,V} = RcParams{K,V}(obj)
+Base.convert(::Type{RcParams}, obj::PyObject) = RcParams(obj)
+
+const rcParams = RcParams(_rcParams)
+
+@inline Base.length(r::RcParams) = py"len"(PyObject(r))
+function Base.get(r::RcParams, k, default)
+    haskey(r, k) && return PyObject(r).__getitem__(k)
+    return default
+end
+function Base.setindex!(r::RcParams, v, k)
+    try
+        PyObject(r).__setitem__(k, v)
+    catch e
+        if e isa PyCall.PyError
+            err = e.val
+            if pyisinstance(err, py"ValueError")
+                throw(err.args[1])
+            elseif pyisinstance(err, py"KeyError")
+                throw(KeyError("$(k) is not a valid rc parameter (see keys(ArviZ.rcParams) for a list of valid parameters)"))
+            end
+        end
+        throw(e)
+    end
+    return r
+end
+
+@inline Base.haskey(r::RcParams, k) = PyObject(r).__contains__(k)
+
+function Base.iterate(r::RcParams, it)
+    try
+        pair = Pair(py"next"(it)...)
+        return (pair, it)
+    catch
+        return nothing
+    end
+end
+function Base.iterate(r::RcParams)
+    items = PyObject(r).items()
+    it = py"iter"(items)
+    return Base.iterate(r, it)
+end
+
+"""
     with_rc_context(f; rc = nothing, fname = nothing)
 
-Execute the thunk `f` within a context controlled by rc params. To see supported params,
-execute [`rc_params()`](@ref).
+Execute the thunk `f` within a context controlled by temporary rc params.
 
-This allows one to do:
+See [`ArviZ.rcParams`](@ref) for supported params or to modify params long-term.
+
+# Examples
 
 ```julia
 with_rc_context(fname = "pystan.rc") do
@@ -57,19 +126,12 @@ function with_rc_context(f; kwargs...)
 end
 
 """
-    rc_params() -> Dict{String,Any}
-
-Get the list of customizable `rc` params using [`with_rc_context`](@ref).
-"""
-rc_params() = Dict(k => v for (k, v) in ArviZ.arviz.rcParams)
-
-"""
     with_interactive_backend(f; backend::Symbol = nothing)
 
 Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
 provide no arguments to use a default.
 
-# Example
+# Examples
 
 ```julia
 idata = load_arviz_data("centered_eight")
@@ -152,39 +214,24 @@ macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(
-            args...;
-            backend = get(rc_params(), "plot.backend", nothing),
-            kwargs...,
-        )
-            backend === nothing && return arviz.$(f)(args...; kwargs...)
+        function $(f)(args...; backend = get(rcParams, "plot.backend", nothing), kwargs...)
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
 
-        function $(f)(::Val, args...; kwargs...)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
+        function $(f)(::Val{:nothing}, args...; kwargs...)
             result = arviz.$(f)(args...; kwargs...)
             return convert_result($(f), result)
         end
 
         function $(f)(::Val{:matplotlib}, args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
-            kwargs = merge(kwargs, Dict(:backend => "matplotlib"))
-            try
-                result = arviz.$(f)(args...; kwargs...)
-                return convert_result($(f), result)
-            catch e
-                e isa PyCall.PyError || rethrow(e)
-                pop!(kwargs, :backend)
-                result = arviz.$(f)(args...; kwargs...)
-                return convert_result($(f), result)
-            end
+            result = arviz.$(f)(args...; kwargs..., backend = "matplotlib")
+            return convert_result($(f), result)
         end
 
         function $(f)(::Val{:bokeh}, args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
-            kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
-            plots = arviz.$(f)(args...; kwargs...)
+            plots = arviz.$(f)(args...; kwargs..., backend = "bokeh")
             plots isa BokehPlot && return plots
             return bokeh.plotting.gridplot(plots)
         end
