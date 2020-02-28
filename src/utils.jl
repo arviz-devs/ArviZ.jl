@@ -63,7 +63,7 @@ function Base.setindex!(r::RcParams, v, k)
         if e isa PyCall.PyError
             err = e.val
             if pyisinstance(err, py"ValueError")
-                throw(err.args[1])
+                throw(ErrorException(err.args[1]))
             elseif pyisinstance(err, py"KeyError")
                 throw(KeyError("$(k) is not a valid rc parameter (see keys(ArviZ.rcParams) for a list of valid parameters)"))
             end
