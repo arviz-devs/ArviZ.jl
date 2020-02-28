@@ -12,7 +12,7 @@ This documentation will be limited to differences between the packages, applicat
 ## [Purpose](@id purpose)
 
 Besides removing the need to explicitly import ArviZ with [PyCall.jl](https://github.com/JuliaPy/PyCall.jl), ArviZ.jl extends ArviZ with functionality for converting Julia types into ArviZ's [`InferenceData`](https://arviz-devs.github.io/arviz/notebooks/XarrayforArviZ.html) format.
-It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) and [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) and provides functions that can be overloaded by other packages to enable their types to be used with ArviZ.
+It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) and provides functions that can be overloaded by other packages to enable their types to be used with ArviZ.
 
 ## [Installation](@id installation)
 
@@ -48,7 +48,7 @@ Issues and pull requests are welcome.
 ## [Differences from ArviZ](@id differences)
 
 In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html) are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
-In ArviZ.jl, most of the [same functions](@ref api) are exported and therefore called without the prefix (e.g. `plot_posterior`).
+In ArviZ.jl, most of the [same functions](@ref api) are exported and therefore can be called without the prefix (e.g. `plot_posterior`).
 The exception are `from_xyz` converters for packages that have no (known) Julia wrappers.
 These functions are not exported to reduce namespace clutter.
 
@@ -58,13 +58,13 @@ For arbitrary inputs and the full functionality of `arviz.summary`, use [`ArviZ.
 ArviZ.jl transparently interconverts between `arviz.InferenceData` and our own [`InferenceData`](@ref), used for dispatch.
 `InferenceData` has identical usage to its Python counterpart.
 
-Functions that in ArviZ return Pandas types here return their [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) wrappers, which are used the same way.
+Functions that in ArviZ return Pandas types here return [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl) types.
 
 ArviZ includes the context managers [`with_rc_context`](@ref) and [`with_interactive_backend`](@ref).
 ArviZ.jl includes functions that can be used with a nearly identical syntax.
 `with_interactive_backend` here is not limited to an IPython/IJulia context.
 
-In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
+In place of `arviz.style.use` and `arviz.style.available`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
 
 ## [Extending ArviZ.jl](@id extendingarviz)
 

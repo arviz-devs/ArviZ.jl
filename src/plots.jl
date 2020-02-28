@@ -20,7 +20,23 @@
 @forwardplotfun plot_trace
 @forwardplotfun plot_violin
 
-# TODO: Add conversions for plot_compare, plot_elpd, and plot_khat
+function convert_arguments(::typeof(plot_compare), df, args...; kwargs...)
+    pdf = topandas(Pandas.DataFrame, df; index_name = :name)
+    return tuple(pdf, args...), kwargs
+end
+
+function convert_arguments(::typeof(plot_elpd), data, args...; kwargs...)
+    p = pairs(data)
+    dict = if valtype(p) <: Union{DataFrames.DataFrame,Pandas.PandasWrapped}
+        Dict(k => ArviZ.topandas(Val(:ELPDData), v) for (k, v) in p)
+    else
+        Dict(k => convert_to_inference_data(v) for (k, v) in p)
+    end
+    return tuple(dict, args...), kwargs
+end
+function convert_arguments(::typeof(plot_khat), df, args...; kwargs...)
+    return tuple(topandas(Val(:ELPDData), df), args...), kwargs
+end
 
 for f in (
     :plot_autocorr,

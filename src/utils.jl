@@ -1,4 +1,32 @@
 """
+    with_interactive_backend(f; backend::Symbol = nothing)
+
+Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
+provide no arguments to use a default.
+
+# Examples
+
+```julia
+idata = load_arviz_data("centered_eight")
+plot_posterior(idata) # inline
+with_interactive_backend() do
+    plot_density(idata) # interactive
+end
+plot_trace(idata) # inline
+```
+"""
+function with_interactive_backend(f; backend = nothing)
+    oldisint = PyPlot.isinteractive()
+    oldgui = pygui()
+    backend === nothing || pygui(Symbol(backend))
+    pygui(true)
+    ret = f()
+    pygui(oldisint)
+    pygui(oldgui)
+    return ret
+end
+
+"""
     use_style(style::String)
     use_style(style::Vector{String})
 
@@ -20,76 +48,6 @@ use_style(style) = arviz.style.use(style)
 Get all available matplotlib styles for use with [`use_style`](@ref)
 """
 styles() = arviz.style.available
-
-"""
-    with_rc_context(f; rc = nothing, fname = nothing)
-
-Execute the thunk `f` within a context controlled by rc params. To see supported params,
-execute [`rc_params()`](@ref).
-
-This allows one to do:
-
-```julia
-with_rc_context(fname = "pystan.rc") do
-    idata = load_arviz_data("radon")
-    plot_posterior(idata; var_names=["gamma"])
-end
-```
-
-The plot would have settings from `pystan.rc`.
-
-A dictionary can also be passed to the context manager:
-
-```julia
-with_rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
-    idata = load_arviz_data("radon")
-    plot_posterior(idata, var_names=["gamma"])
-end
-```
-
-The `rc` dictionary takes precedence over the settings loaded from `fname`. Passing a
-dictionary only is also valid.
-"""
-function with_rc_context(f; kwargs...)
-    @pywith arviz.rc_context(; kwargs...) as _ begin
-        return f()
-    end
-end
-
-"""
-    rc_params() -> Dict{String,Any}
-
-Get the list of customizable `rc` params using [`with_rc_context`](@ref).
-"""
-rc_params() = Dict(k => v for (k, v) in ArviZ.arviz.rcParams)
-
-"""
-    with_interactive_backend(f; backend::Symbol = nothing)
-
-Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
-provide no arguments to use a default.
-
-# Example
-
-```julia
-idata = load_arviz_data("centered_eight")
-plot_posterior(idata) # inline
-with_interactive_backend() do
-    plot_density(idata) # interactive
-end
-plot_trace(idata) # inline
-```
-"""
-function with_interactive_backend(f; backend = nothing)
-    oldisint = PyPlot.isinteractive()
-    oldgui = pygui()
-    backend === nothing || pygui(Symbol(backend))
-    pygui(true)
-    ret = f()
-    pygui(oldisint)
-    pygui(oldgui)
-    return ret
-end
 
 """
     convert_arguments(f, args...; kwargs...) -> NTuple{2}
@@ -152,40 +110,25 @@ macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(
-            args...;
-            backend = get(rc_params(), "plot.backend", nothing),
-            kwargs...,
-        )
-            backend === nothing && return arviz.$(f)(args...; kwargs...)
+        function $(f)(args...; backend = get(rcParams, "plot.backend", nothing), kwargs...)
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
 
-        function $(f)(::Val, args...; kwargs...)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
+        function $(f)(::Val{:nothing}, args...; kwargs...)
             result = arviz.$(f)(args...; kwargs...)
             return convert_result($(f), result)
         end
 
         function $(f)(::Val{:matplotlib}, args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
-            kwargs = merge(kwargs, Dict(:backend => "matplotlib"))
-            try
-                result = arviz.$(f)(args...; kwargs...)
-                return convert_result($(f), result)
-            catch e
-                e isa PyCall.PyError || rethrow(e)
-                pop!(kwargs, :backend)
-                result = arviz.$(f)(args...; kwargs...)
-                return convert_result($(f), result)
-            end
+            result = arviz.$(f)(args...; kwargs..., backend = "matplotlib")
+            return convert_result($(f), result)
         end
 
         function $(f)(::Val{:bokeh}, args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
-            kwargs = merge(kwargs, Dict(:backend => "bokeh", :show => false))
-            plots = arviz.$(f)(args...; kwargs...)
-            plots isa BokehPlot && return plots 
+            plots = arviz.$(f)(args...; kwargs..., backend = "bokeh")
+            plots isa BokehPlot && return plots
             return bokeh.plotting.gridplot(plots)
         end
 
@@ -193,15 +136,19 @@ macro forwardplotfun(f)
     end |> esc
 end
 
-"""
-    replacemissing(x)
-
-Replace `missing` values with `NaN` and do type inference on the result.
-"""
+# Replace `missing` values with `NaN` and do type inference on the result
 replacemissing(x) = map(identity, replace(x, missing => NaN))
-replacemissing(x::AbstractArray{<:Real}) = x
-replacemissing(x::Missing) = NaN
-replacemissing(x::Number) = x
+replacemissing(x::AbstractArray{<:AbstractArray}) = map(replacemissing, x)
+@inline replacemissing(x::AbstractArray{<:Real}) = x
+@inline replacemissing(x::Missing) = NaN
+@inline replacemissing(x::Number) = x
+
+# Convert python types to Julia types if possible
+@inline frompytype(x) = x
+@inline frompytype(x::PyObject) = PyAny(x)
+frompytype(x::AbstractArray{PyObject}) = map(frompytype, x)
+frompytype(x::AbstractArray{Any}) = map(frompytype, x)
+frompytype(x::AbstractArray{<:AbstractArray}) = map(frompytype, x)
 
 function rekey(d, keymap)
     dnew = empty(d)
@@ -234,3 +181,67 @@ snakecase(s) = replace(lowercase(s), " " => "_")
 enforce_stat_types(dict) =
     Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
 enforce_stat_types(::Nothing) = nothing
+
+"""
+    todataframes(df; index_name = nothing) -> DataFrames.DataFrame
+
+Convert a Python `Pandas.DataFrame` or `Pandas.Series` into a `DataFrames.DataFrame`.
+
+If `index_name` is not `nothing`, the index is converted into a column with `index_name`.
+Otherwise, it is discarded.
+"""
+function todataframes(df::Pandas.DataFrame; index_name = nothing)
+    col_vals = map(columns(df)) do name
+        series = getindex(df, name)
+        vals = PyObject(series).values
+        return Symbol(name) => frompytype(vals)
+    end
+    if index_name !== nothing
+        index_vals = frompytype(Array(Pandas.index(df)))
+        col_vals = [Symbol(index_name) => index_vals; col_vals]
+    end
+    return DataFrames.DataFrame(col_vals)
+end
+function todataframes(s::Pandas.Series; kwargs...)
+    colnames = map(Symbol, Pandas.index(s))
+    colvals = map(x -> [frompytype(x)], PyObject(s).values)
+    return DataFrames.DataFrame(colvals, colnames)
+end
+function todataframes(df::PyObject; kwargs...)
+    if pyisinstance(df, Pandas.pandas_raw.Series)
+        return todataframes(Pandas.Series(df); kwargs...)
+    end
+    return todataframes(Pandas.DataFrame(df); kwargs...)
+end
+
+"""
+    topandas(::Type{Pandas.DataFrame}, df; index_name = nothing) -> Pandas.DataFrame
+    topandas(::Type{Pandas.Series}, df) -> Pandas.Series
+    topandas(::Val{:ELPDData}, df) -> Pandas.Series
+
+Convert a `DataFrames.DataFrame` to the specified Pandas type.
+
+If `index_name` is not `nothing`, the corresponding column is made the index of the
+returned dataframe.
+"""
+function topandas(::Type{Pandas.DataFrame}, df; index_name = nothing)
+    df = DataFrames.DataFrame(df)
+    colnames = names(df)
+    rowvals = map(Array, eachrow(df))
+    pdf = Pandas.DataFrame(rowvals; columns = colnames)
+    index_name !== nothing && set_index(pdf, index_name; inplace = true)
+    return pdf
+end
+function topandas(::Type{Pandas.Series}, df)
+    df = DataFrames.DataFrame(df)
+    rownames = names(df)
+    colvals = Array(first(eachrow(df)))
+    return Pandas.Series(colvals, rownames)
+end
+function topandas(::Val{:ELPDData}, df)
+    df = DataFrames.DataFrame(df)
+    rownames = names(df)
+    colvals = Array(first(eachrow(df)))
+    elpd_data = ArviZ.arviz.stats.ELPDData(colvals, rownames)
+    return Pandas.Series(elpd_data)
+end
