@@ -146,6 +146,7 @@ function __init__()
 end
 
 include("utils.jl")
+include("rcparams.jl")
 include("bokeh.jl")
 include("dataset.jl")
 include("data.jl")
