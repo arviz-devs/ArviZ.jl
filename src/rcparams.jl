@@ -1,7 +1,7 @@
-"""
-    RcParams <: AbstractDict
+@doc doc"""
+    rcParams
 
-Class to contain ArviZ default parameters, with validation when setting items.
+Dictionary to contain ArviZ default parameters, with validation when setting items.
 
 # Examples
 
@@ -16,6 +16,8 @@ julia> rcParams["plot.backend"]
 "bokeh"
 ```
 """
+rcParams
+
 struct RcParams{K,V} <: AbstractDict{K,V}
     o::PyObject
 end
