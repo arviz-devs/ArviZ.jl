@@ -61,8 +61,8 @@ ArviZ.jl transparently interconverts between `arviz.InferenceData` and our own [
 
 Functions that in ArviZ return Pandas types here return [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl) types.
 
-ArviZ includes the context managers [`with_rc_context`](@ref) and [`with_interactive_backend`](@ref).
-ArviZ.jl includes functions that can be used with a nearly identical syntax.
+ArviZ includes the context managers `rc_context` and `interactive_backend`.
+ArviZ.jl includes the functions [`with_rc_context`](@ref) and [`with_interactive_backend`](@ref), which can be used with a nearly identical syntax.
 `with_interactive_backend` here is not limited to an IPython/IJulia context.
 
 In place of `arviz.style.use` and `arviz.style.available`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
