@@ -132,6 +132,9 @@ function __init__()
     # handle Bokeh showing ourselves
     rcParams["plot.bokeh.show"] = false
 
+    # Trigger NumPy initialization, see https://github.com/JuliaPy/PyCall.jl/issues/744
+    PyObject([true])
+
     @require MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca" begin
         import .MonteCarloMeasurements: AbstractParticles
         include("particles.jl")
