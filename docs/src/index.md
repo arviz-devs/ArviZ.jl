@@ -48,7 +48,7 @@ Issues and pull requests are welcome.
 ## [Differences from ArviZ](@id differences)
 
 In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html) are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
-In ArviZ.jl, most of the [same functions](@ref api) are exported and therefore called without the prefix (e.g. `plot_posterior`).
+In ArviZ.jl, most of the [same functions](@ref api) are exported and therefore can be called without the prefix (e.g. `plot_posterior`).
 The exception are `from_xyz` converters for packages that have no (known) Julia wrappers.
 These functions are not exported to reduce namespace clutter.
 
@@ -64,7 +64,7 @@ ArviZ includes the context managers [`with_rc_context`](@ref) and [`with_interac
 ArviZ.jl includes functions that can be used with a nearly identical syntax.
 `with_interactive_backend` here is not limited to an IPython/IJulia context.
 
-In place of `arviz.style.use` and `arviz.style.styles`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
+In place of `arviz.style.use` and `arviz.style.available`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
 
 ## [Extending ArviZ.jl](@id extendingarviz)
 

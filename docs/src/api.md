@@ -69,7 +69,7 @@
 | [`from_netcdf`](@ref)               | Load netcdf file back into an `InferenceData`.     |
 | [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`. |
 | [`from_dict`](@ref)                 | Convert `Dict` data into an `InferenceData`.       |
-| [`from_cmdstan`](@ref)              | Convert `CmdStan` data into an `InferenceData`.    |
+| [`from_cmdstan`](@ref)              | Convert CmdStan data into an `InferenceData`.      |
 | [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`. |
 | [`concat`](@ref)                    | Concatenate `InferenceData` objects.               |
 | [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.      |
@@ -82,6 +82,7 @@
 
 ## [rcParams](@id rcparams-api)
 
-| Name                      | Description                                              |
-|:------------------------- |:-------------------------------------------------------- |
-| [`with_rc_context`](@ref) | Change ArviZ's matplotlib-style rc settings temporarily. |
+| Name                      | Description                                                            |
+|:------------------------- |:---------------------------------------------------------------------- |
+| [`rcParams`](@ref)        | Access ArviZ's matplotlib-style rc settings and change them long-term. |
+| [`with_rc_context`](@ref) | Change ArviZ's rc settings temporarily.                                |
