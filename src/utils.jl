@@ -195,6 +195,7 @@ end
 
 # Replace `missing` values with `NaN` and do type inference on the result
 replacemissing(x) = map(identity, replace(x, missing => NaN))
+replacemissing(x::AbstractArray{<:AbstractArray}) = map(replacemissing, x)
 @inline replacemissing(x::AbstractArray{<:Real}) = x
 @inline replacemissing(x::Missing) = NaN
 @inline replacemissing(x::Number) = x
