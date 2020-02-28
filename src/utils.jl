@@ -49,7 +49,7 @@ RcParams(obj) = RcParams{Any,Any}(obj)
 Base.convert(::Type{RcParams{K,V}}, obj::PyObject) where {K,V} = RcParams{K,V}(obj)
 Base.convert(::Type{RcParams}, obj::PyObject) = RcParams(obj)
 
-const rcParams = RcParams(_rcParams)
+const rcParams = RcParams{String,Any}(_rcParams)
 
 @inline Base.length(r::RcParams) = py"len"(PyObject(r))
 function Base.get(r::RcParams, k, default)
