@@ -29,13 +29,13 @@ Class to contain ArviZ default parameters, with validation when setting items.
 # Examples
 
 ```julia
-julia> ArviZ.rcParams["plot.backend"]
+julia> rcParams["plot.backend"]
 "matplotlib"
 
-julia> ArviZ.rcParams["plot.backend"] = "bokeh"
+julia> rcParams["plot.backend"] = "bokeh"
 "bokeh"
 
-julia> ArviZ.rcParams["plot.backend"]
+julia> rcParams["plot.backend"]
 "bokeh"
 ```
 """
@@ -65,7 +65,7 @@ function Base.setindex!(r::RcParams, v, k)
             if pyisinstance(err, py"ValueError")
                 throw(ErrorException(err.args[1]))
             elseif pyisinstance(err, py"KeyError")
-                throw(KeyError("$(k) is not a valid rc parameter (see keys(ArviZ.rcParams) for a list of valid parameters)"))
+                throw(KeyError("$(k) is not a valid rc parameter (see keys(rcParams) for a list of valid parameters)"))
             end
         end
         throw(e)
@@ -94,7 +94,7 @@ end
 
 Execute the thunk `f` within a context controlled by temporary rc params.
 
-See [`ArviZ.rcParams`](@ref) for supported params or to modify params long-term.
+See [`rcParams`](@ref) for supported params or to modify params long-term.
 
 # Examples
 
