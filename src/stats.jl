@@ -130,7 +130,6 @@ function StatsBase.summarystats(data::Dataset; index_origin = 1, fmt = :wide, kw
     index_name = Symbol(fmt) == :long ? :statistic : :variable
     return todataframes(s; index_name = index_name)
 end
-
 function StatsBase.summarystats(data::InferenceData; group = :posterior, kwargs...)
     dataset = getproperty(data, Symbol(group))
     return summarystats(dataset; kwargs...)

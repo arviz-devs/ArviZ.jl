@@ -85,16 +85,26 @@ end
     @testset "$(group)" for group in [
         :posterior_predictive,
         :sample_stats,
-        :prior,
-        :prior_predictive,
-        :sample_stats_prior,
+        :predictions,
+        :log_likelihood,
     ]
         @testset "::$(type)" for (type, nt) in nts
-            idata1 = from_namedtuple(;
+            idata1 = convert_to_inference_data(
+                nt;
                 (group => nt,)...,
                 dims = dims,
                 coords = coords,
                 library = "MyLib",
+            )
+            test_namedtuple_data(
+                idata1,
+                :posterior,
+                keys(sizes),
+                nchains,
+                ndraws;
+                library = "MyLib",
+                coords = coords,
+                dims = dims,
             )
             test_namedtuple_data(
                 idata1,
@@ -109,7 +119,7 @@ end
 
             idata2 = convert_to_inference_data(
                 nt;
-                (group => nt,)...,
+                (group => keys(sizes),)...,
                 dims = dims,
                 coords = coords,
                 library = "MyLib",
@@ -125,5 +135,75 @@ end
                 dims = dims,
             )
         end
+    end
+
+    @testset "$(group)" for group in [:prior_predictive, :sample_stats_prior]
+        @testset "::$(type)" for (type, nt) in nts
+            idata1 = from_namedtuple(;
+                prior = nt,
+                (group => nt,)...,
+                dims = dims,
+                coords = coords,
+                library = "MyLib",
+            )
+            test_namedtuple_data(
+                idata1,
+                :prior,
+                keys(sizes),
+                nchains,
+                ndraws;
+                library = "MyLib",
+                coords = coords,
+                dims = dims,
+            )
+            test_namedtuple_data(
+                idata1,
+                group,
+                keys(sizes),
+                nchains,
+                ndraws;
+                library = "MyLib",
+                coords = coords,
+                dims = dims,
+            )
+
+            idata2 = from_namedtuple(;
+                prior = nt,
+                (group => keys(sizes),)...,
+                dims = dims,
+                coords = coords,
+                library = "MyLib",
+            )
+            test_namedtuple_data(
+                idata2,
+                group,
+                keys(sizes),
+                nchains,
+                ndraws;
+                library = "MyLib",
+                coords = coords,
+                dims = dims,
+            )
+        end
+    end
+
+    @testset "$(group)" for group in
+                            [:observed_data, :constant_data, :predictions_constant_data]
+        _, nt = nts[1]
+        idata = from_namedtuple(
+            nt;
+            (group => Dict("w" => [1.0, 2.0]),)...,
+            dims = Dict("w" => ["wx"]),
+            coords = Dict("wx" => 1:2),
+            library = "MyLib",
+        )
+        @test idata isa InferenceData
+        @test group in ArviZ.groupnames(idata)
+        ds = getproperty(idata, group)
+        sizes = dimsizes(ds)
+        @test length(sizes) == 1
+        @test "w" in keys(vardict(ds))
+        @test "inference_library" in keys(attributes(ds))
+        @test attributes(ds)["inference_library"] == "MyLib"
     end
 end

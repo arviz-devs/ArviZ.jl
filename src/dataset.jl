@@ -27,7 +27,6 @@ struct Dataset
 end
 
 Dataset(; kwargs...) = xarray.Dataset(; kwargs...)
-
 @inline Dataset(data::Dataset) = data
 
 @inline PyObject(data::Dataset) = getfield(data, :o)
@@ -51,7 +50,6 @@ function Base.show(io::IO, data::Dataset)
     out = replace(out, "<xarray.Dataset>" => "Dataset (xarray.Dataset)")
     print(io, out)
 end
-
 function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     obj = data.o
     (:_repr_html_ in propertynames(obj)) || return show(io, data)
@@ -82,7 +80,6 @@ function convert_to_dataset(obj; group = :posterior, kwargs...)
     dataset = getproperty(idata, group)
     return dataset
 end
-
 convert_to_dataset(data::Dataset; kwargs...) = data
 
 """

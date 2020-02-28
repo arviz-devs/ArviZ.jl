@@ -57,7 +57,6 @@ function attributes_dict(chns::Chains)
     info = delete(chns.info, :hashedsummary)
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
-
 attributes_dict(::Nothing) = Dict()
 
 function section_dict(chns::Chains, section)
@@ -97,7 +96,6 @@ function chains_to_dict(
     removekeys!(chns_dict, ignore)
     return rekey_fun(chns_dict)
 end
-
 chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
@@ -119,7 +117,8 @@ end
     from_mcmcchains(
         posterior::Chains,
         posterior_predictive::Any,
-        log_likelihood::String;
+        predictions::Any,
+        log_likelihood::Any;
         kwargs...
     ) -> InferenceData
 
@@ -136,6 +135,7 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 
 - `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution or
     name(s) of predictive variables in `posterior`
+- `predictions::Any=nothing`: Out-of-sample predictions for the posterior.
 - `prior::Any=nothing`: Draws from the prior
 - `prior_predictive::Any=nothing`: Draws from the prior predictive distribution or name(s)
     of predictive variables in `prior`
@@ -144,6 +144,11 @@ as it can be passed to [`convert_to_inference_data`](@ref).
     parameter names and values.
 - `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
     which is not modeled as a random variable. Keys are parameter names and values.
+- `predictions_constant_data::Dict{String,Array}=nothing`: Constants relevant to the model
+     predictions (i.e. new `x` values in a linear regression).
+- `log_likelihood::Any=nothing`: Pointwise log-likelihood for the data. It is recommended
+     to use this argument as a dictionary whose keys are observed variable names and whose
+     values are log likelihood arrays.
 - `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
 - `library=MCMCChains`: Name of library that generated the chains
 - `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
@@ -157,11 +162,13 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 function from_mcmcchains(
     posterior,
     posterior_predictive,
+    predictions,
     log_likelihood;
     library = MCMCChains,
     kwargs...,
 )
     kwargs = convert(Dict, merge((; dims = nothing), kwargs))
+    library = string(library)
     rekey_fun = d -> rekey(d, stats_key_map)
 
     # Convert chains to dicts
@@ -169,71 +176,57 @@ function from_mcmcchains(
     stats_dict = chains_to_dict(posterior; section = :internals, rekey_fun = rekey_fun)
     stats_dict = enforce_stat_types(stats_dict)
 
-    if typeof(posterior_predictive) <: Union{String,Vector{String}}
-        post_pred_idata = InferenceData()
-        post_pred_dict = popsubdict!(post_dict, posterior_predictive)
-    else
-        if posterior_predictive !== nothing
-            post_pred_dataset =
-                convert_to_dataset(posterior_predictive; library = library, kwargs...)
-            post_pred_idata = InferenceData(posterior_predictive = post_pred_dataset)
-        else
-            post_pred_idata = InferenceData()
+    all_idata = InferenceData()
+    for (group, group_data) in [
+        :posterior_predictive => posterior_predictive,
+        :predictions => predictions,
+        :log_likelihood => log_likelihood,
+    ]
+        group_data === nothing && continue
+        if group_data isa Union{Symbol,String}
+            group_data = [string(group_data)]
         end
-        post_pred_dict = nothing
-    end
-
-    # Handle log likelihood as a special case
-    if log_likelihood !== nothing
-        log_like_dict = popsubdict!(post_dict, log_likelihood)
-        log_like_dict = Dict("log_likelihood" => log_like_dict[log_likelihood])
-        if stats_dict === nothing
-            stats_dict = log_like_dict
-        else
-            stats_dict = merge(stats_dict, log_like_dict)
+        if group_data isa Union{AbstractVector{Symbol},NTuple{N,Symbol} where {N}}
+            group_data = map(string, group_data)
         end
-        dims = kwargs[:dims]
-        if dims !== nothing && log_likelihood in keys(dims)
-            dims["log_likelihood"] = dims[log_likelihood]
+        if group_data isa Union{AbstractVector{String},NTuple{N,String} where {N}}
+            group_data = popsubdict!(post_dict, group_data)
         end
+        group_dataset = convert_to_dataset(group_data; library = library, kwargs...)
+        setattribute!(group_dataset, "inference_library", library)
+        concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
     attrs = attributes_dict(posterior)
-    attrs = merge(attrs, Dict("inference_library" => string(library)))
+    attrs = merge(attrs, Dict("inference_library" => library))
     kwargs = convert(Dict, merge((; attrs = attrs, dims = nothing), kwargs))
-    post_idata = _from_dict(
-        post_dict;
-        sample_stats = stats_dict,
-        posterior_predictive = post_pred_dict,
-        kwargs...,
-    )
-
-    idata = InferenceData(; groups(post_idata)..., groups(post_pred_idata)...)
-    return idata
+    post_idata = _from_dict(post_dict; sample_stats = stats_dict, kwargs...)
+    concat!(all_idata, post_idata)
+    return all_idata
 end
-
 function from_mcmcchains(
     posterior = nothing;
-    prior = nothing,
     posterior_predictive = nothing,
+    predictions = nothing,
+    prior = nothing,
     prior_predictive = nothing,
     observed_data = nothing,
     constant_data = nothing,
+    predictions_constant_data = nothing,
     log_likelihood = nothing,
     library = MCMCChains,
     kwargs...,
 )
     kwargs = convert(Dict, merge((; dims = nothing, coords = nothing), kwargs))
 
-    all_idata = InferenceData[]
-    post_idata = from_mcmcchains(
+    all_idata = from_mcmcchains(
         posterior,
         posterior_predictive,
+        predictions,
         log_likelihood;
         library = library,
         kwargs...,
     )
-    push!(all_idata, post_idata)
 
     if prior !== nothing
         pre_prior_idata = convert_to_inference_data(
@@ -250,34 +243,22 @@ function from_mcmcchains(
                 :sample_stats => :sample_stats_prior,
             ),
         )
-        push!(all_idata, prior_idata)
+        concat!(all_idata, prior_idata)
     end
 
-    if observed_data !== nothing
-        observed_idata = InferenceData(
-            observed_data = convert_to_constant_dataset(
-                observed_data;
-                dims = kwargs[:dims],
-                coords = kwargs[:coords],
-            ),
-        )
-        push!(all_idata, observed_idata)
+    for (group, group_data) in [
+        :observed_data => observed_data,
+        :constant_data => constant_data,
+        :predictions_constant_data => predictions_constant_data,
+    ]
+        group_data === nothing && continue
+        group_dict = convert(Dict, group_data)
+        group_dataset =
+            convert_to_constant_dataset(group_dict; library = library, kwargs...)
+        concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
-    if constant_data !== nothing
-        constant_idata = InferenceData(
-            constant_data = convert_to_constant_dataset(
-                constant_data;
-                dims = kwargs[:dims],
-                coords = kwargs[:coords],
-            ),
-        )
-        push!(all_idata, constant_idata)
-    end
-
-    all_groups = mapreduce(groups, merge, all_idata)
-    idata = InferenceData(; all_groups...)
-    return idata
+    return all_idata
 end
 
 """
@@ -285,5 +266,6 @@ end
 
 Call [`from_mcmcchains`](@ref) on output of `CmdStan`.
 """
-from_cmdstan(posterior::Chains; kwargs...) =
-    from_mcmcchains(posterior; library = "CmdStan", kwargs...)
+function from_cmdstan(posterior::Chains; kwargs...)
+    return from_mcmcchains(posterior; library = "CmdStan", kwargs...)
+end

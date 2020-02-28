@@ -110,7 +110,11 @@ macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(args...; backend = get(rcParams, "plot.backend", nothing), kwargs...)
+        function $(f)(
+            args...;
+            backend = get(rcParams, "plot.backend", nothing),
+            kwargs...,
+        )
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
 
@@ -170,7 +174,6 @@ function popsubdict!(dict, names)
     end
     return subdict
 end
-
 popsubdict!(dict, key::String) = popsubdict!(dict, [key])
 
 snakecase(s) = replace(lowercase(s), " " => "_")

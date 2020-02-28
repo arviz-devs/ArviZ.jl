@@ -16,7 +16,8 @@ using PyPlot
 using Pandas
 using DataFrames
 
-import Base: convert,
+import Base:
+    convert,
     get,
     getproperty,
     hash,

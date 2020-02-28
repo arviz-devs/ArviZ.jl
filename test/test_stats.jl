@@ -6,7 +6,7 @@ import Pandas
 
     @testset "compare" begin
         idata2 = load_arviz_data("non_centered_eight")
-        df = compare(Dict("a"=>idata, "b"=>idata2))
+        df = compare(Dict("a" => idata, "b" => idata2))
         @test df isa DataFrames.DataFrame
     end
 
@@ -22,7 +22,9 @@ import Pandas
         ypred = randn(rng, 100)
         df = r2_score(ytrue, ypred)
         @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.r2_score(ytrue, ypred))))
+        @test all(
+            df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.r2_score(ytrue, ypred))),
+        )
     end
 
     @testset "loo" begin
@@ -73,8 +75,10 @@ import Pandas
     @testset "ArviZ.summary" begin
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
-        data =
-            Dict("a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, 3, 4))
+        data = Dict(
+            "a" => randn(rng, nchains, ndraws),
+            "b" => randn(rng, nchains, ndraws, 3, 4),
+        )
 
         @test ArviZ.summary(data) isa DataFrames.DataFrame
     end

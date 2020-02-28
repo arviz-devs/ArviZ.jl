@@ -50,9 +50,12 @@ using PyCall, PyPlot
             pdf = Pandas.DataFrame(rowvals; columns = colnames, index = index)
             df = ArviZ.todataframes(pdf; index_name = :i)
             @test df isa DataFrames.DataFrame
-            @test df == DataFrames.DataFrame(
-                [:i => ["d", "e"], :a => [1.0, 4.0], :b => [2.0, 5.0], :c => [3.0, 6.0]]
-            )
+            @test df == DataFrames.DataFrame([
+                :i => ["d", "e"],
+                :a => [1.0, 4.0],
+                :b => [2.0, 5.0],
+                :c => [3.0, 6.0],
+            ])
             @test df == ArviZ.todataframes(PyObject(pdf); index_name = :i)
         end
 
@@ -70,9 +73,12 @@ using PyCall, PyPlot
             colnames = [:a, :b, :c]
             index = ["d", "e"]
             rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
-            df = DataFrames.DataFrame(
-                [:i => ["d", "e"], :a => [1.0, 4.0], :b => [2.0, 5.0], :c => [3.0, 6.0]]
-            )
+            df = DataFrames.DataFrame([
+                :i => ["d", "e"],
+                :a => [1.0, 4.0],
+                :b => [2.0, 5.0],
+                :c => [3.0, 6.0],
+            ])
             pdf = ArviZ.topandas(Pandas.DataFrame, df; index_name = :i)
             @test pdf isa Pandas.DataFrame
             pdf_exp = Pandas.DataFrame(rowvals; columns = colnames, index = index)

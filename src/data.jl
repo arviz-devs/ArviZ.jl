@@ -1,3 +1,5 @@
+const SUPPORTED_GROUPS = map(Symbol, arviz.data.inference_data.SUPPORTED_GROUPS)
+
 """
     InferenceData(::PyObject)
     InferenceData(; kwargs...)
@@ -21,7 +23,6 @@ struct InferenceData
 end
 
 InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
-
 @inline InferenceData(data::InferenceData) = data
 
 @inline PyObject(data::InferenceData) = getfield(data, :o)
@@ -64,8 +65,9 @@ groupnames(data::InferenceData) = Symbol.(PyObject(data)._groups)
 
 Get the groups in `data` as a dictionary mapping names to datasets.
 """
-groups(data::InferenceData) =
-    Dict((name => getproperty(data, name) for name in groupnames(data)))
+function groups(data::InferenceData)
+    return Dict((name => getproperty(data, name) for name in groupnames(data)))
+end
 
 Base.isempty(data::InferenceData) = isempty(groupnames(data))
 
@@ -116,7 +118,6 @@ function _from_dict(
 end
 
 @doc forwarddoc(:concat) function concat(data::InferenceData...; kwargs...)
-    data = Iterators.filter(x -> !isempty(x), data)
     return arviz.concat(data...; inplace = false, kwargs...)
 end
 
@@ -128,12 +129,10 @@ Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 In-place version of `concat`, where `data1` is modified to contain the concatenation of
 `data` and `args`. See [`concat`](@ref) for a description of `kwargs`.
 """
-function concat!(data1::InferenceData, data::InferenceData...; kwargs...)
-    data = Iterators.filter(x -> !isempty(x), data)
-    arviz.concat(data1, data...; inplace = true, kwargs...)
-    return data1
+function concat!(data::InferenceData, other_data::InferenceData...; kwargs...)
+    arviz.concat(data, other_data...; inplace = true, kwargs...)
+    return data
 end
-
 concat!(; kwargs...) = InferenceData()
 
 function rekey(data::InferenceData, keymap)
@@ -147,17 +146,8 @@ function rekey(data::InferenceData, keymap)
     return concat(data_new...)
 end
 
-const default_group_order = [
-    :posterior,
-    :posterior_predictive,
-    :sample_stats,
-    :prior,
-    :prior_predictive,
-    :sample_stats_prior,
-    :observed_data,
-]
-
-function reorder_groups!(data::InferenceData; group_order = default_group_order)
+function reorder_groups!(data::InferenceData; group_order = SUPPORTED_GROUPS)
+    group_order = map(Symbol, group_order)
     names = groupnames(data)
     sorted_names = filter(n -> n ∈ names, group_order)
     other_names = filter(n -> n ∉ sorted_names, names)

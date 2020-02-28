@@ -306,13 +306,12 @@ Then we draw from the prior and prior predictive distributions.
 
 ```@example quickstart
 Random.seed!(5298)
-prior_prior_pred = map(1:nchains*nsamples) do _
-    draw = rand(param_mod)
-    return delete(draw, keys(constant_data))
-end
-
-prior = map(draw -> delete(draw, :y), prior_prior_pred)
-prior_pred = map(draw -> delete(draw, (:μ, :τ, :θ)), prior_prior_pred);
+prior_priorpred = [
+    map(1:nchains*nsamples) do _
+        draw = rand(param_mod)
+        return delete(draw, keys(constant_data))
+    end
+];
 nothing # hide
 ```
 
@@ -325,14 +324,15 @@ end;
 nothing # hide
 ```
 
-Finally, we use the posterior samples to draw from the posterior predictive distribution.
+Finally, we update the posterior samples with draws from the posterior predictive distribution.
 
 ```@example quickstart
 pred = predictive(mod, :μ, :τ, :θ)
-post_pred = map(post) do post_draws
+post_postpred = map(post) do post_draws
     map(post_draws) do post_draw
-        pred_draw = rand(pred(post_draw)(constant_data))
-        return delete(pred_draw, keys(constant_data))
+        pred_draw = rand(pred(post_draw))
+        pred_draw = delete(pred_draw, keys(constant_data))
+        return merge(pred_draw, post_draw)
     end
 end;
 nothing # hide
@@ -352,11 +352,11 @@ Now we combine all of the samples to an `InferenceData`:
 
 ```@example quickstart
 idata = from_namedtuple(
-    post;
-    posterior_predictive = post_pred,
-    prior = [prior],
-    prior_predictive = [prior_pred],
-    observed_data = Dict("y" => y),
+    post_postpred;
+    posterior_predictive = [:y],
+    prior = prior_priorpred,
+    prior_predictive = [:y],
+    observed_data = (y = y,),
     constant_data = constant_data,
     coords = Dict("school" => schools),
     dims = Dict(

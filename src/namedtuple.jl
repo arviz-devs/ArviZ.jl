@@ -19,7 +19,6 @@ stack(x) = x
 stack(x::AbstractArray{T}) where {T<:Number} = Array(x)
 stack(x::AbstractArray) = stack(stack.(x))
 stack(x::NamedTuple) = (; (k => stack(v) for (k, v) in pairs(x))...)
-
 function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     ret = Array{T}(undef, (size(x)..., size(x[1])...))
     @simd for k in keys(x)
@@ -27,7 +26,6 @@ function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     end
     return ret
 end
-
 function stack(x::AbstractArray{<:NamedTuple{K}}) where {K}
     length(x) == 0 && return
     @inbounds x1 = x[1]
@@ -44,6 +42,14 @@ end
     from_namedtuple(posterior::Vector{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Vector{Vector{<:NamedTuple}}; kwargs...) -> InferenceData
+    from_mcmcchains(
+        posterior::NamedTuple,
+        sample_stats::Any,
+        posterior_predictive::Any,
+        predictions::Any,
+        log_likelihood::Any;
+        kwargs...
+    ) -> InferenceData
 
 Convert a `NamedTuple` or container of `NamedTuple`s to an `InferenceData`.
 
@@ -67,6 +73,7 @@ whose first dimensions correspond to the dimensions of the containers.
 
 - `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution
 - `sample_stats::Any=nothing`: Statistics of the posterior sampling process
+- `predictions::Any=nothing`: Out-of-sample predictions for the posterior.
 - `prior::Any=nothing`: Draws from the prior
 - `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
 - `sample_stats_prior::Any=nothing`: Statistics of the prior sampling process
@@ -75,6 +82,11 @@ whose first dimensions correspond to the dimensions of the containers.
      are parameter names and values.
 - `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
      which is not modeled as a random variable. Keys are parameter names and values.
+- `predictions_constant_data::Dict{String,Array}=nothing`: Constants relevant to the model
+     predictions (i.e. new `x` values in a linear regression).
+- `log_likelihood::Any=nothing`: Pointwise log-likelihood for the data. It is recommended
+     to use this argument as a dictionary whose keys are observed variable names and whose
+     values are log likelihood arrays.
 - `library=nothing`: Name of library that generated the draws
 - `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
 - `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
@@ -108,57 +120,116 @@ idata4 = from_namedtuple(data4)
 ```
 """
 function from_namedtuple(
+    posterior,
+    posterior_predictive,
+    sample_stats,
+    predictions,
+    log_likelihood;
+    library = nothing,
+    kwargs...,
+)
+    all_idata = InferenceData()
+    post_dict = posterior === nothing ? nothing : convert(Dict, posterior)
+    for (group, group_data) in [
+        :posterior_predictive => posterior_predictive,
+        :sample_stats => sample_stats,
+        :predictions => predictions,
+        :log_likelihood => log_likelihood,
+    ]
+        group_data === nothing && continue
+        if post_dict !== nothing
+            if group_data isa Union{Symbol,String}
+                group_data = [Symbol(group_data)]
+            end
+            if group_data isa Union{AbstractVector{Symbol},NTuple{N,Symbol} where {N}}
+                group_data = popsubdict!(post_dict, group_data)
+            end
+            isempty(group_data) && continue
+        end
+        group_dataset = convert_to_dataset(group_data; kwargs...)
+        if library !== nothing
+            setattribute!(group_dataset, "inference_library", string(library))
+        end
+        concat!(all_idata, InferenceData(; group => group_dataset))
+    end
+
+    (post_dict === nothing || isempty(post_dict)) && return all_idata
+
+    group_dataset = convert_to_dataset(post_dict; kwargs...)
+    if library !== nothing
+        setattribute!(group_dataset, "inference_library", string(library))
+    end
+    concat!(all_idata, InferenceData(posterior = group_dataset))
+
+    return all_idata
+end
+function from_namedtuple(
     posterior::Union{NamedTuple,Nothing} = nothing;
     posterior_predictive = nothing,
     sample_stats = nothing,
+    predictions = nothing,
     prior = nothing,
     prior_predictive = nothing,
     sample_stats_prior = nothing,
     observed_data = nothing,
     constant_data = nothing,
+    predictions_constant_data = nothing,
+    log_likelihood = nothing,
     library = nothing,
     kwargs...,
 )
-    group_datasets = Dict{Symbol,Dataset}()
+    all_idata = from_namedtuple(
+        posterior,
+        posterior_predictive,
+        sample_stats,
+        predictions,
+        log_likelihood;
+        library = library,
+        kwargs...,
+    )
+
+    if any(x -> x !== nothing, [prior, prior_predictive, sample_stats_prior])
+        pre_prior_idata = convert_to_inference_data(
+            prior;
+            posterior_predictive = prior_predictive,
+            sample_stats = sample_stats_prior,
+            library = library,
+            kwargs...,
+        )
+        prior_idata = rekey(
+            pre_prior_idata,
+            Dict(
+                :posterior => :prior,
+                :posterior_predictive => :prior_predictive,
+                :sample_stats => :sample_stats_prior,
+            ),
+        )
+        concat!(all_idata, prior_idata)
+    end
 
     for (group, group_data) in [
-        :posterior => posterior,
-        :posterior_predictive => posterior_predictive,
-        :sample_stats => sample_stats,
-        :prior => prior,
-        :prior_predictive => prior_predictive,
-        :sample_stats_prior => sample_stats_prior,
+        :observed_data => observed_data,
+        :constant_data => constant_data,
+        :predictions_constant_data => predictions_constant_data,
     ]
-        if group_data !== nothing
-            if group === :posterior
-                group_data = convert(Dict, group_data)
-            end
-            group_dataset = convert_to_dataset(group_data; kwargs...)
-            if library !== nothing
-                setattribute!(group_dataset, "inference_library", string(library))
-            end
-            group_datasets[group] = group_dataset
-        end
+        group_data === nothing && continue
+        group_dict = convert(Dict, group_data)
+        group_dataset =
+            convert_to_constant_dataset(group_dict; library = library, kwargs...)
+        concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
-    for (group, group_data) in
-        [:observed_data => observed_data, :constant_data => constant_data]
-        if group_data !== nothing
-            group_dict = convert(Dict, group_data)
-            group_datasets[group] =
-                convert_to_constant_dataset(group_dict; library = library, kwargs...)
-        end
-    end
-
-    return InferenceData(; group_datasets...)
+    return all_idata
 end
-
-from_namedtuple(data::AbstractVector{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-from_namedtuple(data::AbstractMatrix{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
+function from_namedtuple(data::AbstractVector{<:NamedTuple}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
+function from_namedtuple(data::AbstractMatrix{<:NamedTuple}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
+function from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...)
+    return from_namedtuple(stack(data); kwargs...)
+end
 
 """
     convert_to_inference_data(obj::NamedTuple; kwargs...) -> InferenceData
@@ -170,9 +241,15 @@ Convert `obj` to an [`InferenceData`](@ref). See [`from_namedtuple`](@ref) for a
 of `obj` possibilities and `kwargs`.
 """
 convert_to_inference_data(data::NamedTuple; kwargs...) = from_namedtuple(data; kwargs...)
-convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
-convert_to_inference_data(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...) =
-    from_namedtuple(stack(data); kwargs...)
+function convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...)
+    return from_namedtuple(data; kwargs...)
+end
+function convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...)
+    return from_namedtuple(data; kwargs...)
+end
+function convert_to_inference_data(
+    data::AbstractVector{<:AbstractVector{<:NamedTuple}};
+    kwargs...,
+)
+    return from_namedtuple(data; kwargs...)
+end

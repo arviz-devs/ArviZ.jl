@@ -3,11 +3,14 @@
 [![Build Status](https://travis-ci.com/arviz-devs/ArviZ.jl.svg?branch=master)](https://travis-ci.com/arviz-devs/ArviZ.jl)
 [![Build Status](https://dev.azure.com/ArviZ/ArviZ/_apis/build/status/arviz-devs.ArviZ.jl?branchName=master)](https://dev.azure.com/ArviZ/ArviZ/_build/latest?definitionId=2&branchName=master)
 [![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
+[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
 ArviZ.jl is a Julia interface to the [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis of Bayesian models.
 
-The reader is urged to consult [ArviZ's documentation](https://arviz-devs.github.io/arviz/) for detailed description of features and usage.
-This documentation will be limited to differences between the packages, applications using Julia's probabilistic programming languages (PPLs), and examples in Julia.
+Please see [ArviZ's documentation](https://arviz-devs.github.io/arviz/) for detailed descriptions of features and usage.
+See for example the [gallery](https://arviz-devs.github.io/arviz/examples/index.html) for a sample of the plots and backends ArviZ supports.
+
+This documentation will focus on differences between ArviZ.jl and ArviZ, applications using Julia's probabilistic programming languages (PPLs), and examples in Julia.
 
 ## [Purpose](@id purpose)
 
