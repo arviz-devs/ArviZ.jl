@@ -7,8 +7,10 @@
 
 ArviZ.jl is a Julia interface to the [ArviZ](https://arviz-devs.github.io/arviz/) package for exploratory analysis of Bayesian models.
 
-The reader is urged to consult [ArviZ's documentation](https://arviz-devs.github.io/arviz/) for detailed description of features and usage.
-This documentation will be limited to differences between the packages, applications using Julia's probabilistic programming languages (PPLs), and examples in Julia.
+Please see [ArviZ's documentation](https://arviz-devs.github.io/arviz/) for detailed descriptions of features and usage.
+See for example the [gallery](https://arviz-devs.github.io/arviz/examples/index.html) for a sample of the plots and backends ArviZ supports.
+
+This documentation will focus on differences between ArviZ.jl and ArviZ, applications using Julia's probabilistic programming languages (PPLs), and examples in Julia.
 
 ## [Purpose](@id purpose)
 
