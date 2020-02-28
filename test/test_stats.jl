@@ -22,7 +22,9 @@ import Pandas
         ypred = randn(rng, 100)
         df = r2_score(ytrue, ypred)
         @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.r2_score(ytrue, ypred))))
+        @test all(
+            df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.r2_score(ytrue, ypred))),
+        )
     end
 
     @testset "loo" begin

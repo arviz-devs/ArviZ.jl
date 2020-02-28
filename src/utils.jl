@@ -110,7 +110,11 @@ macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(args...; backend = get(rcParams, "plot.backend", nothing), kwargs...)
+        function $(f)(
+            args...;
+            backend = get(rcParams, "plot.backend", nothing),
+            kwargs...,
+        )
             return $(f)(Val(Symbol(backend)), args...; kwargs...)
         end
 

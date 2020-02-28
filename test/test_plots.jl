@@ -104,7 +104,10 @@ using PyCall, PyPlot
     @testset "plot_elpd" begin
         plot_elpd(Dict("a" => data, "b" => data2))
         close(gcf())
-        plot_elpd(Dict("a" => loo(data; pointwise=true), "b" => loo(data2; pointwise=true)))
+        plot_elpd(Dict(
+            "a" => loo(data; pointwise = true),
+            "b" => loo(data2; pointwise = true),
+        ))
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
             @test plot_elpd(Dict("a" => data, "b" => data2); backend = :bokeh) isa
