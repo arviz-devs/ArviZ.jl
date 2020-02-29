@@ -9,7 +9,15 @@ function initialize_bokeh()
 end
 
 # install selenium for saving PNGs if using conda
-initialize_selenium() = pyimport_conda("selenium", "selenium", "conda-forge")
+function initialize_selenium()
+    ispynull(selenium) || return
+    try
+        copy!(selenium, pyimport_conda("selenium", "selenium", "conda-forge"))
+    catch err
+        copy!(selenium, PyNULL())
+        throw(err)
+    end
+end
 
 load_backend(::Val{:bokeh}) = initialize_bokeh()
 
