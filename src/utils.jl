@@ -60,13 +60,18 @@ to arviz.
 convert_arguments(::Any, args...; kwargs...) = args, kwargs
 
 """
-    convert_result(f, result)
+    convert_result(f, result, args...)
 
 Convert result of the function `f` before returning.
 
 This function is used primarily for post-processing outputs of arviz before returning.
+The `args` are primarily used for dispatch.
 """
-convert_result(::Any, result) = result
+convert_result(f, result, args...) = result
+convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
+
+load_backend(backend) = nothing
+load_backend(::Val{:bokeh}) = initialize_bokeh()
 
 forwarddoc(f::Symbol) =
     "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
@@ -115,25 +120,14 @@ macro forwardplotfun(f)
             backend = get(rcParams, "plot.backend", nothing),
             kwargs...,
         )
-            return $(f)(Val(Symbol(backend)), args...; kwargs...)
-        end
-
-        function $(f)(::Val{:nothing}, args...; kwargs...)
-            result = arviz.$(f)(args...; kwargs...)
-            return convert_result($(f), result)
-        end
-
-        function $(f)(::Val{:matplotlib}, args...; kwargs...)
+            if backend !== nothing
+                backend = Symbol(backend)
+            end
+            backend_val = Val(backend)
+            load_backend(backend_val)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
-            result = arviz.$(f)(args...; kwargs..., backend = "matplotlib")
-            return convert_result($(f), result)
-        end
-
-        function $(f)(::Val{:bokeh}, args...; kwargs...)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
-            plots = arviz.$(f)(args...; kwargs..., backend = "bokeh")
-            plots isa BokehPlot && return plots
-            return bokeh.plotting.gridplot(plots)
+            result = arviz.$(f)(args...; kwargs..., backend = backend)
+            return convert_result($(f), result, backend_val)
         end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
@@ -188,63 +182,68 @@ enforce_stat_types(::Nothing) = nothing
 """
     todataframes(df; index_name = nothing) -> DataFrames.DataFrame
 
-Convert a Python `Pandas.DataFrame` or `Pandas.Series` into a `DataFrames.DataFrame`.
+Convert a Python `pandas.DataFrame` or `pandas.Series` into a `DataFrames.DataFrame`.
 
 If `index_name` is not `nothing`, the index is converted into a column with `index_name`.
 Otherwise, it is discarded.
 """
-function todataframes(df::Pandas.DataFrame; index_name = nothing)
-    col_vals = map(columns(df)) do name
-        series = getindex(df, name)
-        vals = PyObject(series).values
+function todataframes(::Val{:DataFrame}, df::PyObject; index_name = nothing)
+    initialize_pandas()
+    col_vals = map(df.columns) do name
+        series = py"$(df)[$(name)]"
+        vals = series.values
         return Symbol(name) => frompytype(vals)
     end
     if index_name !== nothing
-        index_vals = frompytype(Array(Pandas.index(df)))
+        index_vals = frompytype(df.index.values)
         col_vals = [Symbol(index_name) => index_vals; col_vals]
     end
     return DataFrames.DataFrame(col_vals)
 end
-function todataframes(s::Pandas.Series; kwargs...)
-    colnames = map(Symbol, Pandas.index(s))
-    colvals = map(x -> [frompytype(x)], PyObject(s).values)
+function todataframes(::Val{:Series}, series::PyObject; kwargs...)
+    initialize_pandas()
+    colnames = map(i -> Symbol(frompytype(i)), series.index)
+    colvals = map(x -> [frompytype(x)], series.values)
     return DataFrames.DataFrame(colvals, colnames)
 end
 function todataframes(df::PyObject; kwargs...)
-    if pyisinstance(df, Pandas.pandas_raw.Series)
-        return todataframes(Pandas.Series(df); kwargs...)
+    initialize_pandas()
+    if pyisinstance(df, pandas.Series)
+        return todataframes(Val(:Series), df; kwargs...)
     end
-    return todataframes(Pandas.DataFrame(df); kwargs...)
+    return todataframes(Val(:DataFrame), df; kwargs...)
 end
 
 """
-    topandas(::Type{Pandas.DataFrame}, df; index_name = nothing) -> Pandas.DataFrame
-    topandas(::Type{Pandas.Series}, df) -> Pandas.Series
-    topandas(::Val{:ELPDData}, df) -> Pandas.Series
+    topandas(::Type{:DataFrame}, df; index_name = nothing) -> PyObject
+    topandas(::Type{:Series}, df) -> PyObject
+    topandas(::Val{:ELPDData}, df) -> PyObject
 
-Convert a `DataFrames.DataFrame` to the specified Pandas type.
+Convert a `DataFrames.DataFrame` to the specified pandas type.
 
 If `index_name` is not `nothing`, the corresponding column is made the index of the
 returned dataframe.
 """
-function topandas(::Type{Pandas.DataFrame}, df; index_name = nothing)
+function topandas(::Val{:DataFrame}, df; index_name = nothing)
+    initialize_pandas()
     df = DataFrames.DataFrame(df)
     colnames = names(df)
     rowvals = map(Array, eachrow(df))
-    pdf = Pandas.DataFrame(rowvals; columns = colnames)
-    index_name !== nothing && set_index(pdf, index_name; inplace = true)
+    pdf = pandas.DataFrame(rowvals; columns = colnames)
+    index_name !== nothing && pdf.set_index(index_name; inplace = true)
     return pdf
 end
-function topandas(::Type{Pandas.Series}, df)
+function topandas(::Val{:Series}, df)
+    initialize_pandas()
     df = DataFrames.DataFrame(df)
     rownames = names(df)
     colvals = Array(first(eachrow(df)))
-    return Pandas.Series(colvals, rownames)
+    return pandas.Series(colvals, rownames)
 end
 function topandas(::Val{:ELPDData}, df)
+    initialize_pandas()
     df = DataFrames.DataFrame(df)
     rownames = names(df)
     colvals = Array(first(eachrow(df)))
-    elpd_data = ArviZ.arviz.stats.ELPDData(colvals, rownames)
-    return Pandas.Series(elpd_data)
+    return ArviZ.arviz.stats.ELPDData(colvals, rownames)
 end

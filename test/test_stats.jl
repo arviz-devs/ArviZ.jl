@@ -1,5 +1,4 @@
 import DataFrames
-import Pandas
 
 @testset "stats" begin
     idata = load_arviz_data("centered_eight")
@@ -22,21 +21,19 @@ import Pandas
         ypred = randn(rng, 100)
         df = r2_score(ytrue, ypred)
         @test df isa DataFrames.DataFrame
-        @test all(
-            df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.r2_score(ytrue, ypred))),
-        )
+        @test all(df == ArviZ.todataframes(ArviZ.arviz.r2_score(ytrue, ypred)))
     end
 
     @testset "loo" begin
         df = loo(idata)
         @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.loo(idata))))
+        @test all(df == ArviZ.todataframes(ArviZ.arviz.loo(idata)))
     end
 
     @testset "waic" begin
         df = waic(idata)
         @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(Pandas.Series(ArviZ.arviz.waic(idata))))
+        @test all(df == ArviZ.todataframes(ArviZ.arviz.waic(idata)))
     end
 
     @testset "loo_pit" begin

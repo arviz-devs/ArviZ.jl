@@ -1,6 +1,7 @@
 import DataFrames
-import Pandas
 using PyCall, PyPlot
+
+pandas = ArviZ.pandas
 
 @testset "utils" begin
     @testset "replacemissing" begin
@@ -42,34 +43,8 @@ using PyCall, PyPlot
         @test ArviZ.frompytype([[x2]]) == [[x]]
     end
 
-    @testset "todataframes" begin
-        @testset "Pandas.DataFrame -> DataFrames.DataFrame" begin
-            colnames = [:a, :b, :c]
-            index = ["d", "e"]
-            rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
-            pdf = Pandas.DataFrame(rowvals; columns = colnames, index = index)
-            df = ArviZ.todataframes(pdf; index_name = :i)
-            @test df isa DataFrames.DataFrame
-            @test df == DataFrames.DataFrame([
-                :i => ["d", "e"],
-                :a => [1.0, 4.0],
-                :b => [2.0, 5.0],
-                :c => [3.0, 6.0],
-            ])
-            @test df == ArviZ.todataframes(PyObject(pdf); index_name = :i)
-        end
-
-        @testset "Pandas.Series -> DataFrames.DataFrame" begin
-            ps = Pandas.Series([1.0, 2.0, 3.0], [:a, :b, :c])
-            df2 = ArviZ.todataframes(ps)
-            @test df2 isa DataFrames.DataFrame
-            @test df2 == DataFrames.DataFrame([:a => [1.0], :b => [2.0], :c => [3.0]])
-            @test df2 == ArviZ.todataframes(PyObject(ps))
-        end
-    end
-
     @testset "topandas" begin
-        @testset "DataFrames.DataFrame -> Pandas.DataFrame" begin
+        @testset "DataFrames.DataFrame -> pandas.DataFrame" begin
             colnames = [:a, :b, :c]
             index = ["d", "e"]
             rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
@@ -79,17 +54,17 @@ using PyCall, PyPlot
                 :b => [2.0, 5.0],
                 :c => [3.0, 6.0],
             ])
-            pdf = ArviZ.topandas(Pandas.DataFrame, df; index_name = :i)
-            @test pdf isa Pandas.DataFrame
-            pdf_exp = Pandas.DataFrame(rowvals; columns = colnames, index = index)
+            pdf = ArviZ.topandas(Val(:DataFrame), df; index_name = :i)
+            @test pyisinstance(pdf, pandas.DataFrame)
+            pdf_exp = pandas.DataFrame(rowvals; columns = colnames, index = index)
             @test py"($(pdf) == $(pdf_exp)).all().all()"
         end
 
-        @testset "DataFrames.DataFrame -> Pandas.Series" begin
+        @testset "DataFrames.DataFrame -> pandas.Series" begin
             df2 = DataFrames.DataFrame([:a => [1.0], :b => [2.0], :c => [3.0]])
-            ps = ArviZ.topandas(Pandas.Series, df2)
-            @test ps isa Pandas.Series
-            ps_exp = Pandas.Series([1.0, 2.0, 3.0], [:a, :b, :c])
+            ps = ArviZ.topandas(Val(:Series), df2)
+            @test pyisinstance(ps, pandas.Series)
+            ps_exp = pandas.Series([1.0, 2.0, 3.0], [:a, :b, :c])
             @test py"($(ps) == $(ps_exp)).all()"
         end
 
@@ -97,11 +72,36 @@ using PyCall, PyPlot
             idata = load_arviz_data("centered_eight")
             df = loo(idata)
             elpd_data = ArviZ.arviz.loo(idata)
-            @test all(df == ArviZ.todataframes(Pandas.Series(elpd_data)))
+            @test all(df == ArviZ.todataframes(elpd_data))
             ps = ArviZ.topandas(Val(:ELPDData), df)
-            @test ps isa Pandas.Series
-            @test pyisinstance(PyObject(ps), ArviZ.arviz.stats.ELPDData)
+            @test pyisinstance(ps, ArviZ.arviz.stats.ELPDData)
             @test py"($(ps) == $(elpd_data)).all()"
+        end
+    end
+
+    @testset "todataframes" begin
+        @testset "pandas.DataFrame -> DataFrames.DataFrame" begin
+            colnames = [:a, :b, :c]
+            index = ["d", "e"]
+            rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+            pdf = pandas.DataFrame(rowvals; columns = colnames, index = index)
+            df = ArviZ.todataframes(pdf; index_name = :i)
+            @test df isa DataFrames.DataFrame
+            @test df == DataFrames.DataFrame([
+                :i => ["d", "e"],
+                :a => [1.0, 4.0],
+                :b => [2.0, 5.0],
+                :c => [3.0, 6.0],
+            ])
+            @test df == ArviZ.todataframes(pdf; index_name = :i)
+        end
+
+        @testset "pandas.Series -> DataFrames.DataFrame" begin
+            ps = pandas.Series([1.0, 2.0, 3.0], [:a, :b, :c])
+            df2 = ArviZ.todataframes(ps)
+            @test df2 isa DataFrames.DataFrame
+            @test df2 == DataFrames.DataFrame([:a => [1.0], :b => [2.0], :c => [3.0]])
+            @test df2 == ArviZ.todataframes(ps)
         end
     end
 
