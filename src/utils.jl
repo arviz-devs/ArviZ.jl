@@ -194,6 +194,7 @@ If `index_name` is not `nothing`, the index is converted into a column with `ind
 Otherwise, it is discarded.
 """
 function todataframes(::Val{:DataFrame}, df::PyObject; index_name = nothing)
+    initialize_pandas()
     col_vals = map(df.columns) do name
         series = py"$(df)[$(name)]"
         vals = series.values
@@ -206,11 +207,13 @@ function todataframes(::Val{:DataFrame}, df::PyObject; index_name = nothing)
     return DataFrames.DataFrame(col_vals)
 end
 function todataframes(::Val{:Series}, series::PyObject; kwargs...)
+    initialize_pandas()
     colnames = map(i -> Symbol(frompytype(i)), series.index)
     colvals = map(x -> [frompytype(x)], series.values)
     return DataFrames.DataFrame(colvals, colnames)
 end
 function todataframes(df::PyObject; kwargs...)
+    initialize_pandas()
     if pyisinstance(df, pandas.Series)
         return todataframes(Val(:Series), df; kwargs...)
     end
@@ -228,6 +231,7 @@ If `index_name` is not `nothing`, the corresponding column is made the index of 
 returned dataframe.
 """
 function topandas(::Val{:DataFrame}, df; index_name = nothing)
+    initialize_pandas()
     df = DataFrames.DataFrame(df)
     colnames = names(df)
     rowvals = map(Array, eachrow(df))
@@ -236,12 +240,14 @@ function topandas(::Val{:DataFrame}, df; index_name = nothing)
     return pdf
 end
 function topandas(::Val{:Series}, df)
+    initialize_pandas()
     df = DataFrames.DataFrame(df)
     rownames = names(df)
     colvals = Array(first(eachrow(df)))
     return pandas.Series(colvals, rownames)
 end
 function topandas(::Val{:ELPDData}, df)
+    initialize_pandas()
     df = DataFrames.DataFrame(df)
     rownames = names(df)
     colvals = Array(first(eachrow(df)))

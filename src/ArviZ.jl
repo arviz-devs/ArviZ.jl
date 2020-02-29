@@ -122,7 +122,6 @@ function initialize_arviz()
     rcParams["plot.bokeh.show"] = false
 
     initialize_xarray()
-    initialize_pandas()
     initialize_numpy()
     initialize_bokeh()
 end
