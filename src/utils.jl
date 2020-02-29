@@ -88,7 +88,8 @@ and returned from `f`.
 macro forwardfun(f)
     fdoc = forwarddoc(f)
     quote
-        @doc $fdoc
+        @doc $fdoc $f
+
         function $(f)(args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
             result = arviz.$(f)(args...; kwargs...)
@@ -112,7 +113,8 @@ and returned from `f`.
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
-        @doc $fdoc
+        @doc $fdoc $f
+
         function $(f)(args...; backend = nothing, kwargs...)
             if backend === nothing
                 backend = get(rcParams, "plot.backend", nothing)
