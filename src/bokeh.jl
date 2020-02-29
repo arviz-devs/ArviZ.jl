@@ -2,8 +2,6 @@ function initialize_bokeh()
     ispynull(bokeh) || return
     try
         copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
-        pytype_mapping(pyimport("bokeh.model").Model, BokehPlot)
-        pytype_mapping(pyimport("bokeh.document").Document, BokehPlot)
     catch err
         copy!(bokeh, PyNULL())
         throw(err)
@@ -15,7 +13,13 @@ initialize_selenium() = pyimport_conda("selenium", "selenium", "conda-forge")
 
 load_backend(::Val{:bokeh}) = initialize_bokeh()
 
-convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
+convert_result(f, axis, ::Val{:bokeh}) = BokehPlot(axis)
+function convert_result(f, axes::AbstractArray, ::Val{:bokeh})
+    return BokehPlot(arviz.plots.backends.create_layout(axes))
+end
+function convert_result(::typeof(plot_joint), axes::AbstractArray, ::Val{:bokeh})
+    return BokehPlot(arviz.plots.backends.create_layout(axes; force_layout = false))
+end
 
 """
     BokehPlot(::PyObject)
