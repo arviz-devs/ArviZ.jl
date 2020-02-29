@@ -91,7 +91,6 @@ import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 const arviz = import_arviz() # Load ArviZ once at precompilation time for docstrings
 const xarray = PyNULL()
 const bokeh = PyNULL()
-const selenium = PyNULL()
 const pandas = PyNULL()
 const _min_arviz_version = v"0.6.1"
 const _rcParams = PyNULL()

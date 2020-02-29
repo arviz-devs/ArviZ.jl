@@ -12,9 +12,9 @@ end
 
 if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
     try
-        ArviZ.initialize_selenium()
+        ArviZ.initialize_bokeh_png_deps()
     catch
-        @info "selenium not found. skipping tests for bokeh png"
+        @info "bokeh png depencies not found. Skipping tests for bokeh png"
     end
 
     @testset "bokeh backend" begin
@@ -40,7 +40,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
                 @test propertynames(plot) == propertynames(PyObject(plot))
                 @test occursin("bokeh", "$(getproperty(plot, :__class__))")
 
-                !ispynull(ArviZ.selenium) && @testset "show MIME\"image/png\"" begin
+                ArviZ.has_bokeh_png_deps && @testset "show MIME\"image/png\"" begin
                     fn = tempname() * ".png"
                     py"$(ArviZ.bokeh).io.export_png($(plot), filename = $(fn))"o
                     # FileIO.save(fn, plot)

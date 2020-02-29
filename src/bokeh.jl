@@ -1,3 +1,5 @@
+const has_bokeh_png_deps = false
+
 function initialize_bokeh()
     ispynull(bokeh) || return
     try
@@ -8,13 +10,15 @@ function initialize_bokeh()
     end
 end
 
-# install selenium for saving PNGs if using conda
-function initialize_selenium()
-    ispynull(selenium) || return
+# install dependencies for saving PNGs if using conda
+function initialize_bokeh_png_deps()
+    has_bokeh_png_deps && return
     try
-        copy!(selenium, pyimport_conda("selenium", "selenium", "conda-forge"))
+        pyimport_conda("selenium", "selenium", "conda-forge")
+        pyimport_conda("phantomjs", "phantomjs", "conda-forge")
+        has_bokeh_png_deps = true
     catch err
-        copy!(selenium, PyNULL())
+        has_bokeh_png_deps = false
         throw(err)
     end
 end
@@ -76,7 +80,7 @@ function Base.show(io::IO, ::MIME"juliavscode/html", plot::BokehPlot)
     return print(io, render_html(plot))
 end
 function Base.show(io::IO, ::MIME"image/png", plot::BokehPlot)
-    initialize_selenium()
+    initialize_bokeh_png_deps()
     fn = tempname() * ".png"
     bokeh.io.export_png(plot; filename = fn)
     png = read(fn, String)
