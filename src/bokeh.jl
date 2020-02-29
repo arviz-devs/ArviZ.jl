@@ -33,6 +33,8 @@ struct BokehPlot
     o::PyObject
 end
 
+BokehPlot(plot::BokehPlot) = plot
+
 @inline PyObject(plot::BokehPlot) = getfield(plot, :o)
 
 Base.convert(::Type{BokehPlot}, o::PyObject) = BokehPlot(o)
