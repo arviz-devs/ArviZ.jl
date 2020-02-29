@@ -155,11 +155,11 @@ end
 
 include("utils.jl")
 include("rcparams.jl")
-include("bokeh.jl")
 include("dataset.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
+include("bokeh.jl")
 include("stats.jl")
 include("stats_utils.jl")
 include("namedtuple.jl")
