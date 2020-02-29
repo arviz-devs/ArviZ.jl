@@ -111,7 +111,7 @@ function convert_to_inference_data(chns::Chains; group = :posterior, kwargs...)
     return from_mcmcchains(; group => chns)
 end
 
-"""
+@doc doc"""
     from_mcmcchains(posterior::Chains; kwargs...) -> InferenceData
     from_mcmcchains(; kwargs...) -> InferenceData
     from_mcmcchains(
@@ -159,6 +159,8 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 
 - `InferenceData`: The data with groups corresponding to the provided data
 """
+from_mcmcchains
+
 function from_mcmcchains(
     posterior,
     posterior_predictive,

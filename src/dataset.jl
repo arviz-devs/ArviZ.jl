@@ -66,7 +66,7 @@ function setattribute!(data::Dataset, key, value)
     return attrs
 end
 
-"""
+@doc doc"""
     convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
 
 Convert a supported object to a `Dataset`.
@@ -74,6 +74,8 @@ Convert a supported object to a `Dataset`.
 In most cases, this function calls [`convert_to_inference_data`](@ref) and returns the
 corresponding `group`.
 """
+convert_to_dataset
+
 function convert_to_dataset(obj; group = :posterior, kwargs...)
     group = Symbol(group)
     idata = convert_to_inference_data(obj; group = group, kwargs...)
@@ -82,7 +84,7 @@ function convert_to_dataset(obj; group = :posterior, kwargs...)
 end
 convert_to_dataset(data::Dataset; kwargs...) = data
 
-"""
+@doc doc"""
     convert_to_constant_dataset(obj::Dict; kwargs...) -> Dataset
     convert_to_constant_dataset(obj::NamedTuple; kwargs...) -> Dataset
 
@@ -99,6 +101,8 @@ the number of chains and draws.
 - `library::Any`: A library associated with the data to add to `attrs`.
 - `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
 """
+convert_to_constant_dataset
+
 function convert_to_constant_dataset(
     obj;
     coords = nothing,
@@ -128,7 +132,7 @@ function convert_to_constant_dataset(
     return Dataset(data_vars = data, coords = coords, attrs = attrs)
 end
 
-"""
+@doc doc"""
     dict_to_dataset(data::Dict{String,Array}; kwargs...) -> Dataset
 
 Convert a dictionary with data and keys as variable names to a [`Dataset`](@ref).
@@ -150,6 +154,8 @@ using ArviZ
 ArviZ.dict_to_dataset(Dict("x" => randn(4, 100), "y" => randn(4, 100)))
 ```
 """
+dict_to_dataset
+
 function dict_to_dataset(data; library = nothing, attrs = nothing, kwargs...)
     if library !== nothing
         ldict = Dict("inference_library" => string(library))
@@ -158,12 +164,14 @@ function dict_to_dataset(data; library = nothing, attrs = nothing, kwargs...)
     return arviz.dict_to_dataset(data; attrs = attrs, kwargs...)
 end
 
-"""
+@doc doc"""
     dataset_to_dict(ds::Dataset) -> Tuple{Dict{String,Array},NamedTuple}
 
 Convert a `Dataset` to a dictionary of `Array`s. The function also returns keyword arguments
 to [`dict_to_dataset`](@ref).
 """
+dataset_to_dict
+
 function dataset_to_dict(ds::Dataset)
     ds_dict = ds.to_dict()
     data_vars = ds_dict["data_vars"]

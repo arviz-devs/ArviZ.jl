@@ -1,4 +1,4 @@
-"""
+@doc doc"""
     with_interactive_backend(f; backend::Symbol = nothing)
 
 Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
@@ -15,6 +15,8 @@ end
 plot_trace(idata) # inline
 ```
 """
+with_interactive_backend
+
 function with_interactive_backend(f; backend = nothing)
     oldisint = PyPlot.isinteractive()
     oldgui = pygui()
