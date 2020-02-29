@@ -4,8 +4,9 @@ function initialize_bokeh()
         copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
         pytype_mapping(pyimport("bokeh.model").Model, BokehPlot)
         pytype_mapping(pyimport("bokeh.document").Document, BokehPlot)
-    catch
-        throw(ArgumentError("bokeh backend not available."))
+    catch err
+        copy!(bokeh, PyNULL())
+        throw(err)
     end
 end
 
