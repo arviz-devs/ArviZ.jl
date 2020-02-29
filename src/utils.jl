@@ -68,10 +68,8 @@ This function is used primarily for post-processing outputs of arviz before retu
 The `args` are primarily used for dispatch.
 """
 convert_result(f, result, args...) = result
-convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
 
 load_backend(backend) = nothing
-load_backend(::Val{:bokeh}) = initialize_bokeh()
 
 forwarddoc(f::Symbol) =
     "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."

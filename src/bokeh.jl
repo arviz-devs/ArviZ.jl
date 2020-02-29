@@ -10,6 +10,10 @@ function initialize_bokeh()
     end
 end
 
+load_backend(::Val{:bokeh}) = initialize_bokeh()
+
+convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
+
 """
     BokehPlot(::PyObject)
 
