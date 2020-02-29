@@ -93,6 +93,7 @@ import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 const arviz = import_arviz() # Load ArviZ once at precompilation time for docstrings
 const xarray = PyNULL()
 const bokeh = PyNULL()
+const pandas = PyNULL()
 const _min_arviz_version = v"0.6.1"
 const _rcParams = PyNULL()
 
@@ -122,6 +123,7 @@ function initialize_arviz()
     rcParams["plot.bokeh.show"] = false
 
     initialize_xarray()
+    initialize_pandas()
     initialize_numpy()
     initialize_bokeh()
 end
@@ -131,6 +133,11 @@ function initialize_xarray()
     copy!(xarray, pyimport_conda("xarray", "xarray", "conda-forge"))
     pyimport_conda("dask", "dask", "conda-forge")
     pytype_mapping(xarray.Dataset, Dataset)
+end
+
+function initialize_pandas()
+    ispynull(pandas) || return
+    copy!(pandas, pyimport_conda("pandas", "pandas", "conda-forge"))
 end
 
 function initialize_numpy()
