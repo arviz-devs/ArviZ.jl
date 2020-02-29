@@ -132,14 +132,14 @@ function initialize_xarray()
     pytype_mapping(xarray.Dataset, Dataset)
 end
 
-function initialize_pandas()
-    ispynull(pandas) || return
-    copy!(pandas, pyimport_conda("pandas", "pandas", "conda-forge"))
-end
-
 function initialize_numpy()
     # Trigger NumPy initialization, see https://github.com/JuliaPy/PyCall.jl/issues/744
     PyObject([true])
+end
+
+function initialize_pandas()
+    ispynull(pandas) || return
+    copy!(pandas, pyimport_conda("pandas", "pandas", "conda-forge"))
 end
 
 function __init__()
