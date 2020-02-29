@@ -1,5 +1,4 @@
 import DataFrames
-import Pandas
 
 @testset "stats" begin
     idata = load_arviz_data("centered_eight")

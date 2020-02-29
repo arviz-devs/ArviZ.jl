@@ -13,7 +13,6 @@ if PyCall.conda
     Conda.add_channel("conda-forge") # try to avoid mixing channels
 end
 using PyPlot
-using Pandas
 using DataFrames
 
 import Base:

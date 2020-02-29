@@ -1,5 +1,4 @@
 import DataFrames
-import Pandas
 using PyCall, PyPlot
 
 pandas = ArviZ.pandas
