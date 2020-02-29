@@ -45,6 +45,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
                     io = IOBuffer(maxsize = 8)
                     show(io, MIME"image/png"(), plot)
                     @test take!(io) == UInt8[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+                    close(io)
                 end
 
                 @testset "show MIME\"$(mime)\"" for mime in [
