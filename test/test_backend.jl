@@ -40,10 +40,12 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
                 @test occursin("bokeh", "$(getproperty(plot, :__class__))")
 
                 !ispynull(ArviZ.selenium) && @testset "show MIME\"image/png\"" begin
-                    io = IOBuffer()
-                    show(IOContext(io), MIME"image/png"(), plot)
-                    @test take!(io)[1:8] == UInt8[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
-                    close(io)
+                    fn = tempname() * ".png"
+                    open(fn, "w") do s
+                        show(s, MIME"image/png"(), plot)
+                    end
+                    bytes = read(fn)
+                    @test bytes[1:8] == UInt8[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
                 end
 
                 @testset "show MIME\"$(mime)\"" for mime in [
