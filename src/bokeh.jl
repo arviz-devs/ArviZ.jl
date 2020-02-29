@@ -6,6 +6,7 @@ function initialize_bokeh()
         pytype_mapping(pyimport("bokeh.model").Model, BokehPlot)
         pytype_mapping(pyimport("bokeh.document").Document, BokehPlot)
     catch
+    end
 end
 
 """
