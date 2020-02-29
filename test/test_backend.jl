@@ -42,7 +42,8 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
 
                 !ispynull(ArviZ.selenium) && @testset "show MIME\"image/png\"" begin
                     fn = tempname() * ".png"
-                    FileIO.save(fn, plot)
+                    py"$(ArviZ.bokeh).io.export_png($(plot), filename = $(fn))"o
+                    # FileIO.save(fn, plot)
                 end
 
                 @testset "show MIME\"$(mime)\"" for mime in [
