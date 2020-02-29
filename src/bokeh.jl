@@ -10,6 +10,9 @@ function initialize_bokeh()
     end
 end
 
+# install selenium for saving PNGs if using conda
+initialize_selenium() = pyimport_conda("selenium", "selenium", "conda-forge")
+
 load_backend(::Val{:bokeh}) = initialize_bokeh()
 
 convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
@@ -57,6 +60,12 @@ function Base.show(
 end
 function Base.show(io::IO, ::MIME"juliavscode/html", plot::BokehPlot)
     return print(io, render_html(plot))
+end
+function Base.show(io::IO, ::MIME"image/png", plot::BokehPlot)
+    initialize_selenium()
+    layout = PyObject(plot)
+    image = bokeh.io.export.get_screenshot_as_png(layout)
+    print(io, image._repr_png_())
 end
 
 """
