@@ -11,6 +11,14 @@ end
 
 if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
     @testset "bokeh backend" begin
+        test_bokeh_png = try
+            ArviZ.initialize_selenium()
+            true
+        catch
+            @info "selenium not found. skipping tests for bokeh png"
+            false
+        end
+
         idata = load_arviz_data("centered_eight")
 
         with_rc_context(rc = Dict("plot.backend" => "bokeh")) do
@@ -33,8 +41,8 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
                 @test propertynames(plot) == propertynames(PyObject(plot))
                 @test occursin("bokeh", "$(getproperty(plot, :__class__))")
 
-                @testset "show MIME\"image/png\"" begin
-                    io = IOBuffer(max_size = 8)
+                test_bokeh_png && @testset "show MIME\"image/png\"" begin
+                    io = IOBuffer(maxsize = 8)
                     show(io, MIME"image/png"(), plot)
                     @test take!(io) == UInt8[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
                 end
