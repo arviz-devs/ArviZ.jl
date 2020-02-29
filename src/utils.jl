@@ -60,13 +60,15 @@ to arviz.
 convert_arguments(::Any, args...; kwargs...) = args, kwargs
 
 """
-    convert_result(f, result)
+    convert_result(f, result, args...)
 
 Convert result of the function `f` before returning.
 
 This function is used primarily for post-processing outputs of arviz before returning.
+The `args` are primarily used for dispatch.
 """
-convert_result(::Any, result) = result
+convert_result(f, result, args...) = result
+convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
 
 forwarddoc(f::Symbol) =
     "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
@@ -115,25 +117,13 @@ macro forwardplotfun(f)
             backend = get(rcParams, "plot.backend", nothing),
             kwargs...,
         )
-            return $(f)(Val(Symbol(backend)), args...; kwargs...)
-        end
-
-        function $(f)(::Val{:nothing}, args...; kwargs...)
-            result = arviz.$(f)(args...; kwargs...)
-            return convert_result($(f), result)
-        end
-
-        function $(f)(::Val{:matplotlib}, args...; kwargs...)
+            if backend !== nothing
+                backend = Symbol(backend)
+            end
+            backend_val = Val(backend)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
-            result = arviz.$(f)(args...; kwargs..., backend = "matplotlib")
-            return convert_result($(f), result)
-        end
-
-        function $(f)(::Val{:bokeh}, args...; kwargs...)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
-            plots = arviz.$(f)(args...; kwargs..., backend = "bokeh")
-            plots isa BokehPlot && return plots
-            return bokeh.plotting.gridplot(plots)
+            result = arviz.$(f)(args...; kwargs..., backend = backend)
+            return convert_result($(f), result, backend_val)
         end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
