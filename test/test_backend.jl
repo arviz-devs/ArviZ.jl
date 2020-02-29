@@ -26,13 +26,20 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
                 pyobj = PyObject(plot)
                 plot2 = convert(ArviZ.BokehPlot, pyobj)
                 @test plot2 isa ArviZ.BokehPlot
+                @test ArviZ.BokehPlot(plot) === plot
                 @test hash(plot) == hash(plot2)
                 @test pyobj === PyObject(plot2)
 
                 @test propertynames(plot) == propertynames(PyObject(plot))
                 @test occursin("bokeh", "$(getproperty(plot, :__class__))")
 
-                @testset "show MIME::\"$(mime)\"" for mime in [
+                @testset "show MIME\"image/png\"" begin
+                    io = IOBuffer(max_size = 8)
+                    show(io, MIME"image/png"(), plot)
+                    @test take!(io) == UInt8[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+                end
+
+                @testset "show MIME\"$(mime)\"" for mime in [
                     "text/html",
                     "juliavscode/html",
                     "application/juno+plotpane",
