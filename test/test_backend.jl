@@ -6,6 +6,7 @@ using PyCall
     backend = get(ArviZ.rcParams, "plot.backend", nothing)
     @test backend in ["matplotlib", nothing]
     @test plot_trace(idata) isa Array{PyObject}
+    @test plot_trace(idata; backend = nothing) isa Array{PyObject}
 end
 
 if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)

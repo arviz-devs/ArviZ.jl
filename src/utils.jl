@@ -113,14 +113,11 @@ macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
         @doc $fdoc
-        function $(f)(
-            args...;
-            backend = get(rcParams, "plot.backend", nothing),
-            kwargs...,
-        )
-            if backend !== nothing
-                backend = Symbol(backend)
+        function $(f)(args...; backend = nothing, kwargs...)
+            if backend === nothing
+                backend = get(rcParams, "plot.backend", nothing)
             end
+            backend = Symbol(backend)
             backend_val = Val(backend)
             load_backend(backend_val)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
