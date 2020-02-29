@@ -70,6 +70,9 @@ The `args` are primarily used for dispatch.
 convert_result(f, result, args...) = result
 convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
 
+load_backend(backend) = nothing
+load_backend(::Val{:bokeh}) = initialize_bokeh()
+
 forwarddoc(f::Symbol) =
     "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
 
@@ -121,6 +124,7 @@ macro forwardplotfun(f)
                 backend = Symbol(backend)
             end
             backend_val = Val(backend)
+            load_backend(backend_val)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
             result = arviz.$(f)(args...; kwargs..., backend = backend)
             return convert_result($(f), result, backend_val)

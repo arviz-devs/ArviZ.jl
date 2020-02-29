@@ -123,7 +123,6 @@ function initialize_arviz()
 
     initialize_xarray()
     initialize_numpy()
-    initialize_bokeh()
 end
 
 function initialize_xarray()
