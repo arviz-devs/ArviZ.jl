@@ -1,3 +1,13 @@
+function initialize_bokeh()
+    ispynull(bokeh) || return
+
+    try
+        copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
+        pytype_mapping(pyimport("bokeh.model").Model, BokehPlot)
+        pytype_mapping(pyimport("bokeh.document").Document, BokehPlot)
+    catch
+end
+
 """
     BokehPlot(::PyObject)
 
