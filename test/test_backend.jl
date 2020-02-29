@@ -10,15 +10,15 @@ using PyCall
 end
 
 if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
-    @testset "bokeh backend" begin
-        test_bokeh_png = try
-            ArviZ.initialize_selenium()
-            true
-        catch
-            @info "selenium not found. skipping tests for bokeh png"
-            false
-        end
+    test_bokeh_png = try
+        ArviZ.initialize_selenium()
+        true
+    catch
+        @info "selenium not found. skipping tests for bokeh png"
+        false
+    end
 
+    @testset "bokeh backend" begin
         idata = load_arviz_data("centered_eight")
 
         with_rc_context(rc = Dict("plot.backend" => "bokeh")) do
