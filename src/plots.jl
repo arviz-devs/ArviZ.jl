@@ -21,17 +21,16 @@
 @forwardplotfun plot_violin
 
 function convert_arguments(::typeof(plot_compare), df, args...; kwargs...)
-    pdf = topandas(Pandas.DataFrame, df; index_name = :name)
+    pdf = topandas(Val(:DataFrame), df; index_name = :name)
     return tuple(pdf, args...), kwargs
 end
 
 function convert_arguments(::typeof(plot_elpd), data, args...; kwargs...)
-    p = pairs(data)
-    dict = if valtype(p) <: Union{DataFrames.DataFrame,Pandas.PandasWrapped}
-        Dict(k => ArviZ.topandas(Val(:ELPDData), v) for (k, v) in p)
-    else
-        Dict(k => convert_to_inference_data(v) for (k, v) in p)
-    end
+    dict = Dict(k => try
+        topandas(Val(:ELPDData), v)
+    catch
+        convert_to_inference_data(v)
+    end for (k, v) in pairs(data))
     return tuple(dict, args...), kwargs
 end
 function convert_arguments(::typeof(plot_khat), df, args...; kwargs...)

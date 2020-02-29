@@ -188,63 +188,62 @@ enforce_stat_types(::Nothing) = nothing
 """
     todataframes(df; index_name = nothing) -> DataFrames.DataFrame
 
-Convert a Python `Pandas.DataFrame` or `Pandas.Series` into a `DataFrames.DataFrame`.
+Convert a Python `pandas.DataFrame` or `pandas.Series` into a `DataFrames.DataFrame`.
 
 If `index_name` is not `nothing`, the index is converted into a column with `index_name`.
 Otherwise, it is discarded.
 """
-function todataframes(df::Pandas.DataFrame; index_name = nothing)
-    col_vals = map(columns(df)) do name
-        series = getindex(df, name)
-        vals = PyObject(series).values
+function todataframes(::Val{:DataFrame}, df::PyObject; index_name = nothing)
+    col_vals = map(df.columns) do name
+        series = py"$(df)[$(name)]"
+        vals = series.values
         return Symbol(name) => frompytype(vals)
     end
     if index_name !== nothing
-        index_vals = frompytype(Array(Pandas.index(df)))
+        index_vals = frompytype(df.index.values)
         col_vals = [Symbol(index_name) => index_vals; col_vals]
     end
     return DataFrames.DataFrame(col_vals)
 end
-function todataframes(s::Pandas.Series; kwargs...)
-    colnames = map(Symbol, Pandas.index(s))
-    colvals = map(x -> [frompytype(x)], PyObject(s).values)
+function todataframes(::Val{:Series}, series::PyObject; kwargs...)
+    colnames = map(i -> Symbol(frompytype(i)), series.index)
+    colvals = map(x -> [frompytype(x)], series.values)
     return DataFrames.DataFrame(colvals, colnames)
 end
 function todataframes(df::PyObject; kwargs...)
-    if pyisinstance(df, Pandas.pandas_raw.Series)
-        return todataframes(Pandas.Series(df); kwargs...)
+    if pyisinstance(df, pandas.Series)
+        return todataframes(Val(:Series), df; kwargs...)
     end
-    return todataframes(Pandas.DataFrame(df); kwargs...)
+    return todataframes(Val(:DataFrame), df; kwargs...)
 end
 
 """
-    topandas(::Type{Pandas.DataFrame}, df; index_name = nothing) -> Pandas.DataFrame
-    topandas(::Type{Pandas.Series}, df) -> Pandas.Series
-    topandas(::Val{:ELPDData}, df) -> Pandas.Series
+    topandas(::Type{:DataFrame}, df; index_name = nothing) -> PyObject
+    topandas(::Type{:Series}, df) -> PyObject
+    topandas(::Val{:ELPDData}, df) -> PyObject
 
-Convert a `DataFrames.DataFrame` to the specified Pandas type.
+Convert a `DataFrames.DataFrame` to the specified pandas type.
 
 If `index_name` is not `nothing`, the corresponding column is made the index of the
 returned dataframe.
 """
-function topandas(::Type{Pandas.DataFrame}, df; index_name = nothing)
+function topandas(::Val{:DataFrame}, df; index_name = nothing)
     df = DataFrames.DataFrame(df)
     colnames = names(df)
     rowvals = map(Array, eachrow(df))
-    pdf = Pandas.DataFrame(rowvals; columns = colnames)
-    index_name !== nothing && set_index(pdf, index_name; inplace = true)
+    pdf = pandas.DataFrame(rowvals; columns = colnames)
+    index_name !== nothing && pdf.set_index(index_name; inplace = true)
     return pdf
 end
-function topandas(::Type{Pandas.Series}, df)
+function topandas(::Val{:Series}, df)
     df = DataFrames.DataFrame(df)
     rownames = names(df)
     colvals = Array(first(eachrow(df)))
-    return Pandas.Series(colvals, rownames)
+    return pandas.Series(colvals, rownames)
 end
 function topandas(::Val{:ELPDData}, df)
     df = DataFrames.DataFrame(df)
     rownames = names(df)
     colvals = Array(first(eachrow(df)))
-    elpd_data = ArviZ.arviz.stats.ELPDData(colvals, rownames)
-    return Pandas.Series(elpd_data)
+    return ArviZ.arviz.stats.ELPDData(colvals, rownames)
 end

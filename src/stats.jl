@@ -28,11 +28,11 @@ for f in (:loo, :waic)
     end
 end
 
-convert_result(::typeof(loo), result) = todataframes(Pandas.Series(result))
-convert_result(::typeof(waic), result) = todataframes(Pandas.Series(result))
-convert_result(::typeof(r2_score), result) = todataframes(Pandas.Series(result))
+convert_result(::typeof(loo), result) = todataframes(result)
+convert_result(::typeof(waic), result) = todataframes(result)
+convert_result(::typeof(r2_score), result) = todataframes(result)
 function convert_result(::typeof(compare), result)
-    return todataframes(Pandas.DataFrame(result); index_name = :name)
+    return todataframes(result; index_name = :name)
 end
 
 """
