@@ -80,11 +80,9 @@ function Base.show(io::IO, ::MIME"juliavscode/html", plot::BokehPlot)
 end
 function Base.show(io::IO, ::MIME"image/png", plot::BokehPlot)
     initialize_bokeh_png_deps()
-    fn = tempname() * ".png"
-    bokeh.io.export_png(plot; filename = fn)
-    png = read(fn, String)
-    rm(fn)
-    print(io, png)
+    layout = PyObject(plot)
+    image = bokeh.io.export.get_screenshot_as_png(layout)
+    print(io, image._repr_png_())
 end
 
 """
