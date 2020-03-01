@@ -92,8 +92,8 @@ using PyCall, PyPlot
 
     @testset "plot_hpd" begin
         x_data = randn(rng, 100)
-        y_data = 2 .+ reshape(x_data, 1, 100) .* 0.5
-        y_data_rep = 0.5 .* randn(rng, 200, 100) .* y_data
+        y_data = 2 .+ x_data .* 0.5
+        y_data_rep = 0.5 .* randn(rng, 200, 100) .+ transpose(y_data)
         plot_hpd(x_data, y_data_rep)
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
