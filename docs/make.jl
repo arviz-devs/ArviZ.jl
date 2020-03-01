@@ -17,6 +17,9 @@ makedocs(
         "Home" => "index.md",
         "Quickstart" => "quickstart.md",
         "API" => "api.md",
+        "Example Gallery" => [
+            "Matplotlib" => "mpl_examples.md",
+        ],
         "Reference" => "reference.md",
     ],
     checkdocs = :exports,
