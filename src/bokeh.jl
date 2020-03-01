@@ -15,7 +15,6 @@ function initialize_bokeh_png_deps()
     has_bokeh_png_deps && return
     try
         pyimport_conda("selenium", "selenium", "conda-forge")
-        pyimport_conda("phantomjs", "phantomjs", "conda-forge")
         has_bokeh_png_deps = true
     catch err
         has_bokeh_png_deps = false
