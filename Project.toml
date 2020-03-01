@@ -29,11 +29,10 @@ julia = "^1"
 
 [extras]
 CmdStan = "593b3428-ca2f-500c-ae53-031589ec8ddd"
-FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["CmdStan", "FileIO", "MCMCChains", "MonteCarloMeasurements", "Random", "Test"]
+test = ["CmdStan", "MCMCChains", "MonteCarloMeasurements", "Random", "Test"]

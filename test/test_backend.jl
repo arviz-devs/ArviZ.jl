@@ -1,5 +1,4 @@
 using PyCall
-using FileIO
 
 @testset "matplotlib backend" begin
     idata = load_arviz_data("centered_eight")
@@ -42,7 +41,12 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
 
                 ArviZ.has_bokeh_png_deps && @testset "show MIME\"image/png\"" begin
                     fn = tempname() * ".png"
-                    FileIO.save(fn, plot)
+                    open(fn, "w") do s
+                        show(s, MIME"image/png"(), plot)
+                    end
+                    bytes = read(fn)
+                    @test bytes[1:8] ==
+                          UInt8[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
                 end
 
                 @testset "show MIME\"$(mime)\"" for mime in [
