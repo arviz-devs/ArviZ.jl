@@ -42,14 +42,14 @@ To see all available style specifications, use [`styles()`](@ref).
 
 If a `Vector` of styles is provided, they are applied from first to last.
 """
-use_style(style) = arviz.style.use(style)
+use_style(style) = plt.style.use(style)
 
 """
     styles() -> Vector{String}
 
 Get all available matplotlib styles for use with [`use_style`](@ref)
 """
-styles() = arviz.style.available
+styles() = plt.style.available
 
 """
     convert_arguments(f, args...; kwargs...) -> NTuple{2}
