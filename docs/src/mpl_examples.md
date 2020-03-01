@@ -604,7 +604,7 @@ gcf()
 
 See [`plot_rank`](@ref)
 
-## Traceplot
+## Trace Plot
 
 ```@example
 using PyPlot
@@ -621,7 +621,7 @@ gcf()
 
 See [`plot_trace`](@ref)
 
-## Violinplot
+## Violin Plot
 
 ```@example
 using PyPlot
