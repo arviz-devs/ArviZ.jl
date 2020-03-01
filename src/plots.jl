@@ -43,6 +43,7 @@ for f in (
     :plot_joint,
     :plot_mcse,
     :plot_pair,
+    :plot_parallel,
     :plot_posterior,
     :plot_trace,
     :plot_violin,
@@ -63,13 +64,9 @@ for f in (:plot_autocorr, :plot_ess, :plot_mcse, :plot_posterior, :plot_violin)
     end
 end
 
-for f in (:plot_energy, :plot_parallel)
-    @eval begin
-        function convert_arguments(::typeof($(f)), data, args...; kwargs...)
-            dataset = convert_to_dataset(data; group = :sample_stats)
-            return tuple(dataset, args...), kwargs
-        end
-    end
+function convert_arguments(::typeof(plot_energy), data, args...; kwargs...)
+    dataset = convert_to_dataset(data; group = :sample_stats)
+    return tuple(dataset, args...), kwargs
 end
 
 for f in (:plot_density, :plot_forest, :plot_rank)
