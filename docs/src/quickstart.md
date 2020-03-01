@@ -39,10 +39,8 @@ using Random
 
 rng = Random.MersenneTwister(42)
 plot_posterior(randn(rng, 100_000));
-savefig("quick_postarray.svg"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_postarray.svg)
 
 Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of a different random variable.
 Each row of an array is treated as an independent series of draws from the variable, called a _chain_.
@@ -58,10 +56,8 @@ plot_forest(Dict(
     "student t" => rand(rng, TDist(6), s),
     "exponential" => rand(rng, Exponential(), s)
 ));
-savefig("quick_forestdists.svg"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_forestdists.svg)
 
 ## Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl
 
@@ -128,10 +124,8 @@ Most ArviZ functions work fine with `Chains` objects from Turing:
 
 ```@example quickstart
 plot_autocorr(turing_chns; var_names = ["μ", "τ"]);
-savefig("quick_turingautocorr.svg"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_turingautocorr.svg)
 
 ### Convert to `InferenceData`
 
@@ -166,10 +160,8 @@ Here is a plot of the trace. Note the intelligent labels.
 
 ```@example quickstart
 plot_trace(idata);
-savefig("quick_turingtrace.png"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_turingtrace.png)
 
 We can also generate summary stats
 
@@ -181,10 +173,8 @@ and examine the energy distribution of the Hamiltonian sampler
 
 ```@example quickstart
 plot_energy(idata);
-savefig("quick_turingenergy.svg"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_turingenergy.svg)
 
 ## Plotting with CmdStan.jl outputs
 
@@ -242,10 +232,8 @@ nothing # hide
 
 ```@example quickstart
 plot_density(stan_chns; var_names=["mu", "tau"]);
-savefig("quick_cmdstandensity.svg"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_cmdstandensity.svg)
 
 Again, converting to `InferenceData`, we can get much richer labelling and mixing of data.
 Note that we're using the same [`from_cmdstan`](@ref) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to [`from_mcmcchains`](@ref).
@@ -275,10 +263,8 @@ plot_pair(
     coords = Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]),
     divergences = true,
 );
-savefig("quick_cmdstanpair.png"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_cmdstanpair.png)
 
 ## Plotting with Soss.jl outputs
 
@@ -343,10 +329,8 @@ We can plot the rank order statistics of the posterior to identify poor converge
 
 ```@example quickstart
 plot_rank(post; var_names = ["μ", "τ"]);
-savefig("quick_sossrank.png"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_sossrank.png)
 
 Now we combine all of the samples to an `InferenceData`:
 
@@ -376,10 +360,8 @@ plot_density(
     data_labels = ["Post-pred", "Prior-pred"],
     var_names = ["y"],
 )
-savefig("quick_sosspred.png"); nothing # hide
+gcf() # hide
 ```
-
-![](quick_sosspred.png)
 
 ## Environment
 
