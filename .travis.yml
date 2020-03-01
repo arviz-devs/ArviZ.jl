@@ -56,6 +56,12 @@ before_install:
                 using PyCall;
                 run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
     fi
+  - julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+    julia --project=@. -e 'using ArviZ; ArviZ.initialize_arviz();
+                                        ArviZ.initialize_pandas();
+                                        ArviZ.initialize_bokeh()'
+    julia --project=@. -e 'using Conda; Conda.add("selenium");
+                                        Conda.add("phantomjs")'
 after_success:
   - julia --project=test/coverage -e 'using Pkg; Pkg.instantiate()'
   - julia --project=test/coverage test/coverage/coverage.jl
