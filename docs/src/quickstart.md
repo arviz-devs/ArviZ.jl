@@ -1,6 +1,7 @@
 # [ArviZ.jl Quickstart](@id quickstart)
 
-_This quickstart is adapted from [ArviZ's Quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html)._
+!!! note
+    This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html).
 
 ```@setup quickstart
 using PyPlot, ArviZ, Pkg
