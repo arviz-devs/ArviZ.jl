@@ -42,8 +42,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
 
                 ArviZ.has_bokeh_png_deps && @testset "show MIME\"image/png\"" begin
                     fn = tempname() * ".png"
-                    py"$(ArviZ.bokeh).io.export_png($(plot), filename = $(fn))"o
-                    # FileIO.save(fn, plot)
+                    FileIO.save(fn, plot)
                 end
 
                 @testset "show MIME\"$(mime)\"" for mime in [
