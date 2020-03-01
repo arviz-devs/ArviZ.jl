@@ -4,8 +4,9 @@ steps:
 - template: install_arvizmaster.yml
 - bash: |
     set -o xtrace
-    julia --project=. -e 'using ArviZ; ArviZ.initialize_arviz();
-                                       ArviZ.initialize_pandas();
-                                       ArviZ.initialize_bokeh();
-                                       ArviZ.initialize_selenium()';
+    julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+    julia --project=@. -e 'using ArviZ; ArviZ.initialize_arviz();
+                                        ArviZ.initialize_pandas();
+                                        ArviZ.initialize_bokeh();
+                                        ArviZ.initialize_selenium()';
   displayName: 'Install ArviZ dependencies'
