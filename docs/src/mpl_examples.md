@@ -327,7 +327,7 @@ gcf()
 
 See [`plot_kde`](@ref)
 
-## KDE Quantiles
+## KDE Quantiles Plot
 
 ```@example
 using Random
