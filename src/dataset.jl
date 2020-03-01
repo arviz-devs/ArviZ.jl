@@ -45,6 +45,8 @@ function Base.getproperty(data::Dataset, name::Symbol)
     return getproperty(o, name)
 end
 
+Base.getindex(data::Dataset, k) = py"$(data)[$k]"
+
 function Base.show(io::IO, data::Dataset)
     out = pycall(pybuiltin("str"), String, data)
     out = replace(out, "<xarray.Dataset>" => "Dataset (xarray.Dataset)")

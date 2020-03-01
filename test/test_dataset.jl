@@ -14,6 +14,8 @@
 
     @testset "properties" begin
         @test length(propertynames(dataset)) > 1
+        @test dataset["mu"] isa PyObject
+        @test dataset["mu"].values == py"$(dataset)['mu'].values"
     end
 
     @testset "conversion" begin
