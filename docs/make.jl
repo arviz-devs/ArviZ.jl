@@ -19,6 +19,7 @@ makedocs(
         "API" => "api.md",
         "Example Gallery" => [
             "Matplotlib" => "mpl_examples.md",
+            "Bokeh" => "bokeh_examples.md",
         ],
         "Reference" => "reference.md",
     ],
