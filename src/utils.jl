@@ -1,4 +1,4 @@
-"""
+@doc doc"""
     with_interactive_backend(f; backend::Symbol = nothing)
 
 Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
@@ -15,6 +15,8 @@ end
 plot_trace(idata) # inline
 ```
 """
+with_interactive_backend
+
 function with_interactive_backend(f; backend = nothing)
     oldisint = PyPlot.isinteractive()
     oldgui = pygui()
@@ -68,10 +70,8 @@ This function is used primarily for post-processing outputs of arviz before retu
 The `args` are primarily used for dispatch.
 """
 convert_result(f, result, args...) = result
-convert_result(f, axes::AbstractArray, ::Val{:bokeh}) = bokeh.plotting.gridplot(axes)
 
 load_backend(backend) = nothing
-load_backend(::Val{:bokeh}) = initialize_bokeh()
 
 forwarddoc(f::Symbol) =
     "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
@@ -90,7 +90,8 @@ and returned from `f`.
 macro forwardfun(f)
     fdoc = forwarddoc(f)
     quote
-        @doc $fdoc
+        @doc $fdoc $f
+
         function $(f)(args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
             result = arviz.$(f)(args...; kwargs...)
@@ -114,15 +115,13 @@ and returned from `f`.
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
     quote
-        @doc $fdoc
-        function $(f)(
-            args...;
-            backend = get(rcParams, "plot.backend", nothing),
-            kwargs...,
-        )
-            if backend !== nothing
-                backend = Symbol(backend)
+        @doc $fdoc $f
+
+        function $(f)(args...; backend = nothing, kwargs...)
+            if backend === nothing
+                backend = get(rcParams, "plot.backend", nothing)
             end
+            backend = Symbol(backend)
             backend_val = Val(backend)
             load_backend(backend_val)
             args, kwargs = convert_arguments($(f), args...; kwargs...)

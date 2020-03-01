@@ -4,6 +4,12 @@
         @test pyisinstance(PyObject(rcParams), ArviZ.arviz.rcparams.RcParams)
         pyrcParams = ArviZ.arviz.rcParams
         @test rcParams == pyrcParams
+        @test ArviZ.RcParams(pyrcParams) isa ArviZ.RcParams{Any,Any}
+        @test isa(
+            convert(ArviZ.RcParams{String,Union{Int64,String}}, pyrcParams),
+            ArviZ.RcParams{String,Union{Int64,String}},
+        )
+        @test convert(ArviZ.RcParams, pyrcParams) isa ArviZ.RcParams
         @test haskey(rcParams, "plot.backend")
         def_backend = rcParams["plot.backend"]
         @test ("plot.backend" => def_backend) ∈ rcParams

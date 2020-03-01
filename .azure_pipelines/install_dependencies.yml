@@ -2,3 +2,12 @@ steps:
 - template: install_cmdstan.yml
 - template: install_julia.yml
 - template: install_arvizmaster.yml
+- bash: |
+    set -o xtrace
+    julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+    julia --project=@. -e 'using ArviZ; ArviZ.initialize_arviz();
+                                        ArviZ.initialize_pandas();
+                                        ArviZ.initialize_bokeh()'
+    julia --project=@. -e 'using Conda; Conda.add("selenium");
+                                        Conda.add("phantomjs")'
+  displayName: 'Install ArviZ dependencies'

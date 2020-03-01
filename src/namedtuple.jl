@@ -37,7 +37,7 @@ function stack(x::AbstractArray{<:NamedTuple{K}}) where {K}
     return ret
 end
 
-"""
+@doc doc"""
     from_namedtuple(posterior::NamedTuple; kwargs...) -> InferenceData
     from_namedtuple(posterior::Vector{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
@@ -119,6 +119,8 @@ data4 = [[(x = rand(), y = randn(2), z = randn(3, 2)) for _ = 1:ndraws] for _ = 
 idata4 = from_namedtuple(data4)
 ```
 """
+from_namedtuple
+
 function from_namedtuple(
     posterior,
     posterior_predictive,

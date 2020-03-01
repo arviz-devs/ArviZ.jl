@@ -1,13 +1,35 @@
+const has_bokeh_png_deps = false
+
 function initialize_bokeh()
     ispynull(bokeh) || return
     try
         copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
-        pytype_mapping(pyimport("bokeh.model").Model, BokehPlot)
-        pytype_mapping(pyimport("bokeh.document").Document, BokehPlot)
     catch err
         copy!(bokeh, PyNULL())
         throw(err)
     end
+end
+
+# install dependencies for saving PNGs if using conda
+function initialize_bokeh_png_deps()
+    has_bokeh_png_deps && return
+    try
+        pyimport_conda("selenium", "selenium", "conda-forge")
+        has_bokeh_png_deps = true
+    catch err
+        has_bokeh_png_deps = false
+        throw(err)
+    end
+end
+
+load_backend(::Val{:bokeh}) = initialize_bokeh()
+
+convert_result(f, axis, ::Val{:bokeh}) = BokehPlot(axis)
+function convert_result(f, axes::AbstractArray, ::Val{:bokeh})
+    return BokehPlot(arviz.plots.backends.create_layout(axes))
+end
+function convert_result(::typeof(plot_joint), axes::AbstractArray, ::Val{:bokeh})
+    return BokehPlot(arviz.plots.backends.create_layout(axes; force_layout = false))
 end
 
 """
@@ -21,6 +43,8 @@ In most cases, use one of the plotting functions with `backend=:bokeh` to create
 struct BokehPlot
     o::PyObject
 end
+
+BokehPlot(plot::BokehPlot) = plot
 
 @inline PyObject(plot::BokehPlot) = getfield(plot, :o)
 
@@ -54,9 +78,11 @@ end
 function Base.show(io::IO, ::MIME"juliavscode/html", plot::BokehPlot)
     return print(io, render_html(plot))
 end
-
-# We don't need to implement this `save` since FileIO defaults to calling the above
-# `show` method.
+function Base.show(io::IO, ::MIME"image/png", plot::BokehPlot)
+    initialize_bokeh_png_deps()
+    image = bokeh.io.export.get_screenshot_as_png(plot)
+    print(io, image._repr_png_())
+end
 
 """
     write(io::IO, plot::BokehPlot)

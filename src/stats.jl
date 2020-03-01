@@ -35,13 +35,13 @@ function convert_result(::typeof(compare), result)
     return todataframes(result; index_name = :name)
 end
 
-"""
-    summarystats(data::Dataset; kwargs...) -> Union{Dataset,DataFrames.DataFrame}
+@doc doc"""
     summarystats(
         data::InferenceData;
         group = :posterior,
         kwargs...,
     ) -> Union{Dataset,DataFrames.DataFrame}
+    summarystats(data::Dataset; kwargs...) -> Union{Dataset,DataFrames.DataFrame}
 
 Compute summary statistics on `data`.
 
@@ -124,15 +124,15 @@ func_dict = Dict(
 summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
 """
+function StatsBase.summarystats(data::InferenceData; group = :posterior, kwargs...)
+    dataset = getproperty(data, Symbol(group))
+    return summarystats(dataset; kwargs...)
+end
 function StatsBase.summarystats(data::Dataset; index_origin = 1, fmt = :wide, kwargs...)
     s = arviz.summary(data; index_origin = index_origin, fmt = fmt, kwargs...)
     s isa Dataset && return s
     index_name = Symbol(fmt) == :long ? :statistic : :variable
     return todataframes(s; index_name = index_name)
-end
-function StatsBase.summarystats(data::InferenceData; group = :posterior, kwargs...)
-    dataset = getproperty(data, Symbol(group))
-    return summarystats(dataset; kwargs...)
 end
 
 """

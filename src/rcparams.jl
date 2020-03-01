@@ -68,7 +68,7 @@ function Base.iterate(r::RcParams)
     return Base.iterate(r, it)
 end
 
-"""
+@doc doc"""
     with_rc_context(f; rc = nothing, fname = nothing)
 
 Execute the thunk `f` within a context controlled by temporary rc params.
@@ -98,6 +98,8 @@ end
 The `rc` dictionary takes precedence over the settings loaded from `fname`. Passing a
 dictionary only is also valid.
 """
+with_rc_context
+
 function with_rc_context(f; kwargs...)
     @pywith arviz.rc_context(; kwargs...) as _ begin
         return f()
