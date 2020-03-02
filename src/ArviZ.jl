@@ -92,7 +92,7 @@ const arviz = import_arviz() # Load ArviZ once at precompilation time for docstr
 const xarray = PyNULL()
 const bokeh = PyNULL()
 const pandas = PyNULL()
-const _min_arviz_version = v"0.6.1"
+const _min_arviz_version = v"0.7.0"
 const _rcParams = PyNULL()
 
 arviz_version() = VersionNumber(arviz.__version__)
