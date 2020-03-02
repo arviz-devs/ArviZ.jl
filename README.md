@@ -10,7 +10,7 @@
 
 # ArviZ.jl
 
-ArviZ.jl is a Julia interface to the [ArviZ](https://arviz-devs.github.io/arviz/) (pronounced "AR-vees") package for exploratory analysis of Bayesian models.
+ArviZ.jl is a Julia interface to the [ArviZ](https://arviz-devs.github.io/arviz/) (pronounced "AR-_vees_") package for exploratory analysis of Bayesian models.
 It includes functions for posterior analysis, model checking, comparison and diagnostics.
 
 See the [documentation](https://arviz-devs.github.io/ArviZ.jl/stable) for details.
