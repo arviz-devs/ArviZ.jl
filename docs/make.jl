@@ -7,7 +7,7 @@ pushfirst!(LOAD_PATH, joinpath(@__DIR__, ".."))
 
 using Documenter, ArviZ
 # Avoid precompilation warnings
-using CmdStan, Distributions, Soss
+using PyPlot, CmdStan, Distributions, Soss
 import MCMCChains
 
 makedocs(
