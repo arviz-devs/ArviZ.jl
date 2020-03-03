@@ -11,7 +11,7 @@ variables:
   CMDSTAN_VERSION: "2.22.1"
   CMDSTAN_DIR: "$(Agent.TempDirectory)/.cmdstan/"
   JULIA_CMDSTAN_HOME: "$(CMDSTAN_DIR)/cmdstan-$(CMDSTAN_VERSION)/" # required by CmdStan.jl
-  ARVIZ_VERSION: master
+  ARVIZ_VERSION: release
 
 pool:
   vmImage: 'ubuntu-latest'

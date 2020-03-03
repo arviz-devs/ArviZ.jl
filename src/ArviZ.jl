@@ -86,17 +86,26 @@ export with_interactive_backend
 ## rcParams
 export rcParams, with_rc_context
 
-import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
-
-const arviz = import_arviz() # Load ArviZ once at precompilation time for docstrings
+const arviz = PyNULL()
 const xarray = PyNULL()
 const bokeh = PyNULL()
 const pandas = PyNULL()
-const _min_arviz_version = v"0.6.1"
 const _rcParams = PyNULL()
+const _min_arviz_version = v"0.7.0"
+
+import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
 arviz_version() = VersionNumber(arviz.__version__)
 
+function check_version()
+  if arviz_version() < _min_arviz_version
+      @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or greater but found version $(arviz_version()). Please update."
+  end
+end
+
+# Load ArviZ once at precompilation time for docstringS
+copy!(arviz, import_arviz())
+check_version()
 const _precompile_arviz_version = arviz_version()
 
 function initialize_arviz()
@@ -104,9 +113,6 @@ function initialize_arviz()
     copy!(arviz, import_arviz())
     if arviz_version() != _precompile_arviz_version
         @warn "ArviZ.jl was precompiled using arviz version $(_precompile_version) but loaded with version $(arviz_version()). Please recompile with `using Pkg; Pkg.build('ArviZ')`."
-    end
-    if arviz_version() < _min_arviz_version
-        @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or greater but found version $(arviz_version()). Please update."
     end
 
     pytype_mapping(arviz.InferenceData, InferenceData)

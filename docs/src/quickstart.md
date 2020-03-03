@@ -4,7 +4,7 @@
     This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html).
 
 ```@setup quickstart
-using PyPlot, ArviZ, Pkg
+using ArviZ, Pkg
 import MCMCChains
 
 using PyCall
@@ -26,6 +26,7 @@ end
 
 ```@example quickstart
 using ArviZ
+using PyPlot
 
 # ArviZ ships with style sheets!
 ArviZ.use_style("arviz-darkgrid")
@@ -40,7 +41,7 @@ using Random
 
 rng = Random.MersenneTwister(42)
 plot_posterior(randn(rng, 100_000));
-gcf() # hide
+gcf()
 ```
 
 Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of a different random variable.
@@ -57,7 +58,7 @@ plot_forest(Dict(
     "student t" => rand(rng, TDist(6), s),
     "exponential" => rand(rng, Exponential(), s)
 ));
-gcf() # hide
+gcf()
 ```
 
 ## Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl
@@ -125,7 +126,7 @@ Most ArviZ functions work fine with `Chains` objects from Turing:
 
 ```@example quickstart
 plot_autocorr(turing_chns; var_names = ["μ", "τ"]);
-gcf() # hide
+gcf()
 ```
 
 ### Convert to `InferenceData`
@@ -161,7 +162,7 @@ Here is a plot of the trace. Note the intelligent labels.
 
 ```@example quickstart
 plot_trace(idata);
-gcf() # hide
+gcf()
 ```
 
 We can also generate summary stats
@@ -174,7 +175,7 @@ and examine the energy distribution of the Hamiltonian sampler
 
 ```@example quickstart
 plot_energy(idata);
-gcf() # hide
+gcf()
 ```
 
 ## Plotting with CmdStan.jl outputs
@@ -233,7 +234,7 @@ nothing # hide
 
 ```@example quickstart
 plot_density(stan_chns; var_names=["mu", "tau"]);
-gcf() # hide
+gcf()
 ```
 
 Again, converting to `InferenceData`, we can get much richer labelling and mixing of data.
@@ -264,7 +265,7 @@ plot_pair(
     coords = Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]),
     divergences = true,
 );
-gcf() # hide
+gcf()
 ```
 
 ## Plotting with Soss.jl outputs
@@ -330,7 +331,7 @@ We can plot the rank order statistics of the posterior to identify poor converge
 
 ```@example quickstart
 plot_rank(post; var_names = ["μ", "τ"]);
-gcf() # hide
+gcf()
 ```
 
 Now we combine all of the samples to an `InferenceData`:
@@ -361,7 +362,7 @@ plot_density(
     data_labels = ["Post-pred", "Prior-pred"],
     var_names = ["y"],
 )
-gcf() # hide
+gcf()
 ```
 
 ## Environment
