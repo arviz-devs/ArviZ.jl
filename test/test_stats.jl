@@ -62,7 +62,7 @@ import DataFrames
 
         s2 = summarystats(idata; fmt = "long")
         @test s2 isa DataFrames.DataFrame
-        @test first(names(s2)) == :statistic
+        @test string(first(names(s2))) == "statistic"
         @test "mean" ∈ s2.statistic
 
         s3 = summarystats(idata; fmt = "xarray")
