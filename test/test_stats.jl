@@ -51,8 +51,8 @@ import DataFrames
 
         s = summarystats(idata)
         @test s isa DataFrames.DataFrame
-        @test first(names(summarystats(idata))) == :variable
-        @test first(names(summarystats(idata; fmt = "wide"))) == :variable
+        @test string(first(names(summarystats(idata)))) == "variable"
+        @test string(first(names(summarystats(idata; fmt = "wide")))) == "variable"
         @test :variable in propertynames(summarystats(idata; fmt = "wide"))
         @test "a" ∈ s.variable
         @test "b" ∉ s.variable
