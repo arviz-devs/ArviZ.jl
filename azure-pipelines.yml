@@ -8,7 +8,7 @@ trigger:
 
 variables:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
-  CMDSTAN_VERSION: "2.22.1"
+  CMDSTAN_VERSION: "2.23.0"
   CMDSTAN_DIR: "$(Agent.TempDirectory)/.cmdstan/"
   JULIA_CMDSTAN_HOME: "$(CMDSTAN_DIR)/cmdstan-$(CMDSTAN_VERSION)/" # required by CmdStan.jl
   ARVIZ_VERSION: release
