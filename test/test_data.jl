@@ -52,9 +52,9 @@ using MonteCarloMeasurements: Particles
             sprint(show, data),
             """
             InferenceData with groups:
-            	> posterior
-            	> sample_stats
-            	> posterior_predictive""",
+            \t> posterior
+            \t> posterior_predictive
+            \t> sample_stats""",
         )
     end
 end

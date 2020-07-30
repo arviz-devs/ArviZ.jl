@@ -250,6 +250,22 @@ end
     @test :prior in propertynames(idata)
 end
 
+@testset "test MCMCChains readme example" begin
+    # Define the experiment
+    n_iter = 500
+    n_name = 3
+    n_chain = 2
+
+    # experiment results
+    val = randn(n_iter, n_name, n_chain) .+ [1, 2, 3]'
+    val = hcat(val, rand(1:2, n_iter, 1, n_chain))
+
+    # construct a Chains object
+    chn = MCMCChains.Chains(val)  # According to version, this may introduce String or Symbol name
+
+    @test ArviZ.summary(chn) !== nothing
+end
+
 if VERSION.minor > 0
     @testset "from_cmdstan" begin
         data = noncentered_schools_data()
