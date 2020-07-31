@@ -50,11 +50,12 @@ using MonteCarloMeasurements: Particles
     @testset "show" begin
         @test startswith(
             sprint(show, data),
-            """
-            InferenceData with groups:
-            	> posterior
-            	> sample_stats
-            	> posterior_predictive""",
+            """InferenceData with groups:
+            \t> posterior
+            \t> posterior_predictive
+            \t> sample_stats
+            \t> prior
+            \t> observed_data""",
         )
     end
 end
