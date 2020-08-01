@@ -44,8 +44,7 @@ export plot_autocorr,
     plot_energy,
     plot_ess,
     plot_forest,
-    plot_hpd,
-    plot_joint,
+    plot_hdi,
     plot_kde,
     plot_khat,
     plot_loo_pit,
@@ -59,7 +58,7 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
-export summarystats, compare, hpd, loo, loo_pit, psislw, r2_score, waic
+export summarystats, compare, hdi, loo, loo_pit, psislw, r2_score, waic
 
 ## Diagnostics
 export bfmi, geweke, ess, rhat, mcse
@@ -91,7 +90,7 @@ const xarray = PyNULL()
 const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
-const _min_arviz_version = v"0.7.0"
+const _min_arviz_version = v"0.8.0"
 
 import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 

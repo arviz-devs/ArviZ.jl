@@ -28,9 +28,6 @@ convert_result(f, axis, ::Val{:bokeh}) = BokehPlot(axis)
 function convert_result(f, axes::AbstractArray, ::Val{:bokeh})
     return BokehPlot(arviz.plots.backends.create_layout(axes))
 end
-function convert_result(::typeof(plot_joint), axes::AbstractArray, ::Val{:bokeh})
-    return BokehPlot(arviz.plots.backends.create_layout(axes; force_layout = false))
-end
 
 """
     BokehPlot(::PyObject)

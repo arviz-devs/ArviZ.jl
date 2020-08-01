@@ -233,7 +233,7 @@ gcf()
 
 See [`plot_forest`](@ref)
 
-## Plot HPD
+## Plot HDI
 
 ```@example
 using Random
@@ -249,12 +249,12 @@ x_data = randn(100)
 y_data = 2 .+ x_data .* 0.5
 y_data_rep = 0.5 .* randn(200, 100) .+ transpose(y_data)
 plot(x_data, y_data; color = "C6")
-plot_hpd(x_data, y_data_rep; color = "k", plot_kwargs = Dict("ls" => "--"))
+plot_hdi(x_data, y_data_rep; color = "k", plot_kwargs = Dict("ls" => "--"))
 
 gcf()
 ```
 
-See [`plot_hpd`](@ref)
+See [`plot_hdi`](@ref)
 
 ## Joint Plot
 
@@ -266,18 +266,19 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("non_centered_eight")
-plot_joint(
+plot_pair(
     data;
     var_names = ["theta"],
     coords = Dict("school" => ["Choate", "Phillips Andover"]),
     kind = "hexbin",
+    marginals = true,
     figsize = (10, 10),
 )
 
 gcf()
 ```
 
-See [`plot_joint`](@ref)
+See [`plot_pair`](@ref)
 
 ## KDE Plot
 
@@ -503,6 +504,33 @@ plot_pair(
     coords = coords,
     divergences = true,
     textsize = 22,
+)
+
+gcf()
+```
+
+See [`plot_pair`](@ref)
+
+## Point Estimate Pair Plot
+
+```@example
+using PyPlot
+figure() #hide
+using ArviZ
+
+ArviZ.use_style("arviz-darkgrid")
+
+centered = load_arviz_data("centered_eight")
+coords = Dict("school" => ["Choate", "Deerfield"])
+plot_pair(
+    centered;
+    var_names = ["mu", "theta"],
+    kind = ["scatter", "kde"],
+    kde_kwargs = Dict("fill_last" => false),
+    marginals = true,
+    coords = coords,
+    point_estimate = "median",
+    figsize = (10, 8),
 )
 
 gcf()

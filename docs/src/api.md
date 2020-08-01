@@ -11,14 +11,13 @@
 | [`plot_elpd`](@ref)      | Plot a scatter or hexbin matrix of the sampled parameters.                               |
 | [`plot_energy`](@ref)    | Plot energy transition distribution and marginal energy distribution in HMC algorithms.  |
 | [`plot_ess`](@ref)       | Plot quantile, local or evolution of effective sample sizes (ESS).                       |
-| [`plot_forest`](@ref)    | Forest plot to compare credible intervals from a number of distributions.                |
-| [`plot_hpd`](@ref)       | Plot hpd intervals for regression data.                                                  |
-| [`plot_joint`](@ref)     | Plot a scatter or hexbin of two variables with their respective marginals distributions. |
+| [`plot_forest`](@ref)    | Forest plot to compare HDI intervals from a number of distributions.                     |
+| [`plot_hdi`](@ref)       | Plot HDI intervals for regression data.                                                  |
 | [`plot_kde`](@ref)       | 1D or 2D KDE plot taking into account boundary conditions.                               |
 | [`plot_khat`](@ref)      | Plot Pareto tail indices.                                                                |
 | [`plot_loo_pit`](@ref)   | Plot Leave-One-Out (LOO) probability integral transformation (PIT) predictive checks.    |
 | [`plot_mcse`](@ref)      | Plot quantile, local or evolution of effective sample sizes (ESS).                       |
-| [`plot_pair`](@ref)      | Plot a scatter or hexbin matrix of the sampled parameters.                               |
+| [`plot_pair`](@ref)      | Plot a scatter, kde and/or hexbin matrix with (optional) marginals on the diagonal.      |
 | [`plot_parallel`](@ref)  | Plot parallel coordinates plot showing posterior points with and without divergences.    |
 | [`plot_posterior`](@ref) | Plot Posterior densities in the style of John K.                                         |
 | [`plot_ppc`](@ref)       | Plot for posterior predictive checks.                                                    |
@@ -32,7 +31,7 @@
 |:------------------------ |:------------------------------------------------------------------------------- |
 | [`summarystats`](@ref)   | Compute summary statistics on an `InferenceData`                                |
 | [`compare`](@ref)        | Compare models based on WAIC or LOO cross-validation.                           |
-| [`hpd`](@ref)            | Calculate highest posterior density (HPD) of array for given credible_interval. |
+| [`hdi`](@ref)            | Calculate highest density interval (HDI) of array for given probability.        |
 | [`loo`](@ref)            | Pareto-smoothed importance sampling leave-one-out (LOO) cross-validation.       |
 | [`loo_pit`](@ref)        | Compute leave-one-out probability integral transform (PIT) values.              |
 | [`psislw`](@ref)         | Pareto smoothed importance sampling (PSIS).                                     |
