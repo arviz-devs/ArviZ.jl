@@ -4,24 +4,11 @@
     This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html).
 
 ```@setup quickstart
-using ArviZ, Pkg
 import MCMCChains
-
-using PyCall
-np = pyimport_conda("numpy", "numpy")
-np.seterr(divide="ignore", invalid="ignore")
-
 turing_chns = read(
     "../src/assets/turing_centered_eight_chains.jls",
     MCMCChains.Chains,
 )
-
-# use fancy HTML for xarray.Dataset if available
-try
-    ArviZ.xarray.set_options(display_style = "html")
-catch
-    nothing
-end
 ```
 
 ```@example quickstart
