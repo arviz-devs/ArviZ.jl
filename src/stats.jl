@@ -70,8 +70,8 @@ Compute summary statistics on `data`.
 - `extend::Bool=true`: If `true`, use the statistics returned by `stat_funcs` in addition
     to, rather than in place of, the default statistics. This is only meaningful when
     `stat_funcs` is not `nothing`.
-- `credible_interval::Real=0.94`: Credible interval to plot. This is only meaningful when
-    `stat_funcs` is `nothing`.
+- `hdi_prob::Real=0.94`: HDI interval to compute. This is only meaningful when `stat_funcs`
+    is `nothing`.
 - `order::String="C"`: If `fmt` is "wide", use either "C" or "F" unpacking order.
 - `index_origin::Int=1`: If `fmt` is "wide", select 𝑛-based indexing for multivariate
     parameters.
