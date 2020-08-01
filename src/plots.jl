@@ -6,7 +6,6 @@
 @forwardplotfun plot_energy
 @forwardplotfun plot_ess
 @forwardplotfun plot_forest
-@forwardplotfun plot_joint
 @forwardplotfun plot_hdi
 @forwardplotfun plot_kde
 @forwardplotfun plot_khat
@@ -21,6 +20,8 @@
 @forwardplotfun plot_violin
 
 @deprecate plot_hpd(args...; kwargs...) plot_hdi(args...; kwargs...)
+@deprecate plot_joint(args...; kwargs...) plot_pair(args...; kwargs...)
+
 function convert_arguments(::typeof(plot_compare), df, args...; kwargs...)
     pdf = topandas(Val(:DataFrame), df; index_name = :name)
     return tuple(pdf, args...), kwargs
@@ -41,7 +42,6 @@ end
 for f in (
     :plot_autocorr,
     :plot_ess,
-    :plot_joint,
     :plot_mcse,
     :plot_pair,
     :plot_parallel,
