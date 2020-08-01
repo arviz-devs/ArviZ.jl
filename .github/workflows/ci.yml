@@ -24,7 +24,14 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
           arch: x64
+      - name: Cache CmdStan
+        id: cache-cmdstan
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CMDSTAN_PATH }}
+          key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
       - name: Download and build CmdStan
+        if: steps.cache-cmdstan.outputs.cache-hit != 'true'
         run: |
           wget -P ${{ env.CMDSTAN_PATH }} https://github.com/stan-dev/cmdstan/releases/download/v${{ env.CMDSTAN_VERSION }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz
           tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
