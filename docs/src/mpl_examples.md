@@ -511,6 +511,33 @@ gcf()
 
 See [`plot_pair`](@ref)
 
+## Point Estimate Pair Plot
+
+```@example
+using PyPlot
+figure() #hide
+using ArviZ
+
+ArviZ.use_style("arviz-darkgrid")
+
+centered = load_arviz_data("centered_eight")
+coords = Dict("school" => ["Choate", "Deerfield"])
+plot_pair(
+    centered;
+    var_names = ["mu", "theta"],
+    kind = ["scatter", "kde"],
+    kde_kwargs = Dict("fill_last" => false),
+    marginals = true,
+    coords = coords,
+    point_estimate = "median",
+    figsize = (10, 8),
+)
+
+gcf()
+```
+
+See [`plot_pair`](@ref)
+
 ## Parallel Plot
 
 ```@example
