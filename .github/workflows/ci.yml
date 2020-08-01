@@ -26,9 +26,9 @@ jobs:
           arch: x64
       - name: Download and build CmdStan
         run: |
-          wget -P $(CMDSTAN_PATH) https://github.com/stan-dev/cmdstan/releases/download/v$(CMDSTAN_VERSION)/cmdstan-$(CMDSTAN_VERSION).tar.gz
-          tar -xzpf $(CMDSTAN_PATH)/cmdstan-$(CMDSTAN_VERSION).tar.gz -C $(CMDSTAN_PATH)
-          make -C $(CMDSTAN_PATH)/cmdstan-$(CMDSTAN_VERSION)/ build
+          wget -P ${{ env.CMDSTAN_PATH }} https://github.com/stan-dev/cmdstan/releases/download/v${{ env.CMDSTAN_VERSION }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz
+          tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
+          make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
         shell: bash
       - uses: julia-actions/julia-buildpkg@latest
       - name: Install ArviZ dependencies
