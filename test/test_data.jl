@@ -48,14 +48,9 @@ using MonteCarloMeasurements: Particles
     end
 
     @testset "show" begin
-        @test startswith(
-            sprint(show, data),
-            """
-            InferenceData with groups:
-            	> posterior
-            	> sample_stats
-            	> posterior_predictive""",
-        )
+        @test startswith(sprint(show, data), "InferenceData with groups:")
+        rest = split(PyObject(data).__str__(), '\n'; limit = 2)[2]
+        @test split(sprint(show, data), '\n'; limit = 2)[2] == rest
     end
 end
 
