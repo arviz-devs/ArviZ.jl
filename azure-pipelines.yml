@@ -43,7 +43,6 @@ jobs:
     parameters:
       allow_failures: true
 - job: Documentation # build and deploy documentation if tests passed
-  dependsOn: Test_Releases
   timeoutInMinutes: 0
   variables:
     JULIA_VERSION: "1.4"
