@@ -5,6 +5,9 @@ on:
     tags: [v*]
   pull_request:
 
+env:
+  PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
+
 jobs:
   docs:
     name: Documentation
