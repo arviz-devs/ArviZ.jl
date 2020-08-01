@@ -8,8 +8,8 @@ on:
 env:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
   CMDSTAN_VERSION: "2.23.0"
-  CMDSTAN_PATH: "$GITHUB_WORKSPACE/.cmdstan/"
-  JULIA_CMDSTAN_HOME: "$CMDSTAN_PATH/cmdstan-$CMDSTAN_VERSION/" # required by CmdStan.jl
+  CMDSTAN_PATH: "${{ env.GITHUB_WORKSPACE }}/.cmdstan/"
+  JULIA_CMDSTAN_HOME: "${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/" # required by CmdStan.jl
 
 jobs:
   test:
