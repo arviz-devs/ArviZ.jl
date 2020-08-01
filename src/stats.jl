@@ -12,12 +12,14 @@ const sample_stats_types = Dict(
 )
 
 @forwardfun compare
-@forwardfun hpd
+@forwardfun hdi
 @forwardfun loo
 @forwardfun loo_pit
 @forwardfun psislw
 @forwardfun r2_score
 @forwardfun waic
+
+@deprecate hpd(args...; kwargs...) hdi(args...; kwargs...)
 
 for f in (:loo, :waic)
     @eval begin
