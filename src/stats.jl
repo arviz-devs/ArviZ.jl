@@ -88,8 +88,8 @@ Compute summary statistics on `data`.
     will contain summary statistics for each variable. Default statistics are:
     + `mean`
     + `sd`
-    + `hpd_3%`
-    + `hpd_97%`
+    + `hdi_3%`
+    + `hdi_97%`
     + `mcse_mean`
     + `mcse_sd`
     + `ess_bulk`
