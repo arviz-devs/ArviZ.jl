@@ -1,0 +1,50 @@
+name: CI
+on:
+  push:
+    branches: [master]
+    tags: [v*]
+  pull_request:
+
+env:
+  PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
+  CMDSTAN_VERSION: "2.23.0"
+  CMDSTAN_PATH: "$GITHUB_WORKSPACE/.cmdstan/"
+  JULIA_CMDSTAN_HOME: "$CMDSTAN_PATH/cmdstan-$CMDSTAN_VERSION/" # required by CmdStan.jl
+
+jobs:
+  test:
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: [1.0, 1.3, 1.4]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: x64
+      - name: Download and build CmdStan
+        run: |
+          wget -P $(CMDSTAN_PATH) https://github.com/stan-dev/cmdstan/releases/download/v$(CMDSTAN_VERSION)/cmdstan-$(CMDSTAN_VERSION).tar.gz
+          tar -xzpf $(CMDSTAN_PATH)/cmdstan-$(CMDSTAN_VERSION).tar.gz -C $(CMDSTAN_PATH)
+          make -C $(CMDSTAN_PATH)/cmdstan-$(CMDSTAN_VERSION)/ build
+        shell: bash
+      - uses: julia-actions/julia-buildpkg@latest
+      - name: Install ArviZ dependencies
+        run: |
+          julia --color=yes --project -e 'using Pkg; Pkg.instantiate()'
+          julia --color=yes --project -e 'using ArviZ;
+                                          ArviZ.initialize_arviz();
+                                          ArviZ.initialize_pandas();
+                                          ArviZ.initialize_bokeh()'
+          julia --color=yes --project -e 'using Conda;
+                                          Conda.add("selenium");
+                                          Conda.add("phantomjs")'
+      - uses: julia-actions/julia-runtest@latest
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: false
+        if: ${{ matrix.julia-version == '1.4' && matrix.os =='ubuntu-latest' }}
