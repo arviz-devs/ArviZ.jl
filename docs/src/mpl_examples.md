@@ -266,18 +266,19 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("non_centered_eight")
-plot_joint(
+plot_pair(
     data;
     var_names = ["theta"],
     coords = Dict("school" => ["Choate", "Phillips Andover"]),
     kind = "hexbin",
+    marginals = true,
     figsize = (10, 10),
 )
 
 gcf()
 ```
 
-See [`plot_joint`](@ref)
+See [`plot_pair`](@ref)
 
 ## KDE Plot
 
