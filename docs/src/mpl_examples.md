@@ -233,7 +233,7 @@ gcf()
 
 See [`plot_forest`](@ref)
 
-## Plot HPD
+## Plot HDI
 
 ```@example
 using Random
@@ -249,12 +249,12 @@ x_data = randn(100)
 y_data = 2 .+ x_data .* 0.5
 y_data_rep = 0.5 .* randn(200, 100) .+ transpose(y_data)
 plot(x_data, y_data; color = "C6")
-plot_hpd(x_data, y_data_rep; color = "k", plot_kwargs = Dict("ls" => "--"))
+plot_hdi(x_data, y_data_rep; color = "k", plot_kwargs = Dict("ls" => "--"))
 
 gcf()
 ```
 
-See [`plot_hpd`](@ref)
+See [`plot_hdi`](@ref)
 
 ## Joint Plot
 
