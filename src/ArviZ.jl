@@ -91,7 +91,7 @@ const xarray = PyNULL()
 const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
-const _min_arviz_version = v"0.7.0"
+const _min_arviz_version = v"0.8.0"
 
 import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
