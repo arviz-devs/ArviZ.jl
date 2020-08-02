@@ -168,6 +168,7 @@ end
         data2 = from_netcdf(path)
         @test data2 isa InferenceData
         @test propertynames(data) == propertynames(data2)
+        return nothing
     end
 end
 

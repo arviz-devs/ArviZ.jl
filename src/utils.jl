@@ -73,8 +73,9 @@ convert_result(f, result, args...) = result
 
 load_backend(backend) = nothing
 
-forwarddoc(f::Symbol) =
-    "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
+function forwarddoc(f::Symbol)
+    return "See documentation for [`arviz.$(f)`](https://arviz-devs.github.io/arviz/generated/arviz.$(f).html)."
+end
 
 forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
 
@@ -89,7 +90,7 @@ and returned from `f`.
 """
 macro forwardfun(f)
     fdoc = forwarddoc(f)
-    quote
+    return esc(quote
         @doc $fdoc $f
 
         function $(f)(args...; kwargs...)
@@ -99,7 +100,7 @@ macro forwardfun(f)
         end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-    end |> esc
+    end)
 end
 
 """
@@ -114,7 +115,7 @@ and returned from `f`.
 """
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
-    quote
+    return esc(quote
         @doc $fdoc $f
 
         function $(f)(args...; backend = nothing, kwargs...)
@@ -130,7 +131,7 @@ macro forwardplotfun(f)
         end
 
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-    end |> esc
+    end)
 end
 
 # Replace `missing` values with `NaN` and do type inference on the result
@@ -174,8 +175,9 @@ snakecase(s) = replace(lowercase(s), " " => "_")
 @inline _asarray(x) = [x]
 @inline _asarray(x::AbstractArray) = x
 
-enforce_stat_types(dict) =
-    Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
+function enforce_stat_types(dict)
+    return Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
+end
 enforce_stat_types(::Nothing) = nothing
 
 """

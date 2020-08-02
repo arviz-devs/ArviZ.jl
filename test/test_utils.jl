@@ -1,4 +1,4 @@
-import DataFrames
+using DataFrames: DataFrames
 using PyCall, PyPlot
 
 pandas = ArviZ.pandas
