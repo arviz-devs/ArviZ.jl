@@ -21,7 +21,6 @@ jobs:
         include:
           - julia-version: "1.4"
             arviz_version: "master"
-        include:
           - julia-version: "nightly"
             arviz_version: "release"
     steps:
