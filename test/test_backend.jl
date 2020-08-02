@@ -42,7 +42,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
                 ArviZ.has_bokeh_png_deps && @testset "show MIME\"image/png\"" begin
                     fn = tempname() * ".png"
                     open(fn, "w") do s
-                        show(s, MIME"image/png"(), plot)
+                        return show(s, MIME"image/png"(), plot)
                     end
                     bytes = read(fn)
                     @test bytes[1:8] ==
@@ -66,6 +66,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
                     @test occursin("<body", text)
                 end
             end
+            return nothing
         end
     end
 end

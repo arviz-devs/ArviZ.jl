@@ -1,4 +1,4 @@
-import DataFrames
+using DataFrames: DataFrames
 
 @testset "stats" begin
     idata = load_arviz_data("centered_eight")

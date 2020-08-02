@@ -25,7 +25,7 @@ const stats_key_map = merge(turing_key_map, stan_key_map)
 Convert from `MCMCChains` variable values with dimensions `(ndraw, size..., nchain)` to
 ArviZ's expected `(nchain, ndraw, size...)`.
 """
-reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (N, 1, 2:(N-1)...))
+reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (N, 1, 2:(N - 1)...))
 
 headtail(x) = x[1], x[2:end]
 

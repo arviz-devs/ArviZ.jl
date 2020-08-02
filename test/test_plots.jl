@@ -65,11 +65,10 @@ using PyCall, PyPlot
         plot_rank((x = arr1, y = arr2); var_names = ["x", "y"])
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_rank(
-                (x = arr1, y = arr2);
-                var_names = ["x", "y"],
-                backend = :bokeh,
-            ) isa ArviZ.BokehPlot
+            @test isa(
+                plot_rank((x = arr1, y = arr2); var_names = ["x", "y"], backend = :bokeh),
+                ArviZ.BokehPlot,
+            )
         end
     end
 

@@ -21,8 +21,10 @@ struct Dataset
     o::PyObject
 
     function Dataset(o::PyObject)
-        pyisinstance(o, xarray.Dataset) && return new(o)
-        throw(ArgumentError("$o is not an `xarray.Dataset`."))
+        if !pyisinstance(o, xarray.Dataset)
+            throw(ArgumentError("$o is not an `xarray.Dataset`."))
+        end
+        return new(o)
     end
 end
 
@@ -51,6 +53,7 @@ function Base.show(io::IO, data::Dataset)
     out = pycall(pybuiltin("str"), String, data)
     out = replace(out, "<xarray.Dataset>" => "Dataset (xarray.Dataset)")
     print(io, out)
+    return nothing
 end
 function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     obj = data.o
@@ -58,6 +61,7 @@ function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     out = obj._repr_html_()
     out = replace(out, r"<?xarray.Dataset>?" => "Dataset (xarray.Dataset)")
     print(io, out)
+    return nothing
 end
 
 attributes(data::Dataset) = getproperty(PyObject(data), :_attrs)
