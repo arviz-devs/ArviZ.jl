@@ -101,6 +101,7 @@ turing_chns = sample(
     nchains;
     progress = false,
 );
+nothing # hide
 ```
 
 Most ArviZ functions work fine with `Chains` objects from Turing:
