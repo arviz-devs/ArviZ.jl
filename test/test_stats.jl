@@ -1,4 +1,4 @@
-import DataFrames
+using DataFrames: DataFrames
 
 @testset "stats" begin
     idata = load_arviz_data("centered_eight")
@@ -12,7 +12,13 @@ import DataFrames
     @testset "hpd" begin
         rng = Random.MersenneTwister(42)
         x = randn(rng, 100)
-        @test hpd(x) == ArviZ.arviz.hpd(x)
+        @test hpd(x) == ArviZ.arviz.hdi(x)
+    end
+
+    @testset "hdi" begin
+        rng = Random.MersenneTwister(42)
+        x = randn(rng, 100)
+        @test hdi(x) == ArviZ.arviz.hdi(x)
     end
 
     @testset "r2_score" begin

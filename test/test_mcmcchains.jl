@@ -1,4 +1,4 @@
-import MCMCChains
+using MCMCChains: MCMCChains
 using CmdStan
 
 const noncentered_schools_stan_model = """
@@ -80,6 +80,7 @@ function test_chains_data(chns, idata, group, names; coords = Dict(), dims = Dic
         @test size(vars[name]) == (nchains, ndraws, s...)
     end
     @test attributes(ds)["inference_library"] == "MCMCChains"
+    return nothing
 end
 
 @testset "from_mcmcchains" begin

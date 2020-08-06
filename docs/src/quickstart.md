@@ -3,27 +3,6 @@
 !!! note
     This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html).
 
-```@setup quickstart
-using ArviZ, Pkg
-import MCMCChains
-
-using PyCall
-np = pyimport_conda("numpy", "numpy")
-np.seterr(divide="ignore", invalid="ignore")
-
-turing_chns = read(
-    "../src/assets/turing_centered_eight_chains.jls",
-    MCMCChains.Chains,
-)
-
-# use fancy HTML for xarray.Dataset if available
-try
-    ArviZ.xarray.set_options(display_style = "html")
-catch
-    nothing
-end
-```
-
 ```@example quickstart
 using ArviZ
 using PyPlot
@@ -93,7 +72,7 @@ nothing # hide
 
 Now we write and run the model using Turing:
 
-```julia
+```@example quickstart
 using Turing
 
 Turing.@model turing_model(
@@ -113,13 +92,16 @@ param_mod = turing_model(J, y, σ)
 sampler = NUTS(nwarmup, 0.8)
 
 rng = Random.MersenneTwister(5130)
-turing_chns = psample(
+turing_chns = sample(
+    rng,
     param_mod,
     sampler,
+    MCMCThreads(),
     nwarmup + nsamples,
     nchains;
     progress = false,
 );
+nothing # hide
 ```
 
 Most ArviZ functions work fine with `Chains` objects from Turing:

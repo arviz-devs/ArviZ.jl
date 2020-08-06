@@ -48,14 +48,9 @@ using MonteCarloMeasurements: Particles
     end
 
     @testset "show" begin
-        @test startswith(
-            sprint(show, data),
-            """
-            InferenceData with groups:
-            \t> posterior
-            \t> posterior_predictive
-            \t> sample_stats""",
-        )
+        @test startswith(sprint(show, data), "InferenceData with groups:")
+        rest = split(PyObject(data).__str__(), '\n'; limit = 2)[2]
+        @test split(sprint(show, data), '\n'; limit = 2)[2] == rest
     end
 end
 
@@ -173,6 +168,7 @@ end
         data2 = from_netcdf(path)
         @test data2 isa InferenceData
         @test propertynames(data) == propertynames(data2)
+        return nothing
     end
 end
 
