@@ -16,10 +16,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        julia-version: ["1.4", "nightly"]
+        julia-version: ["1.5", "nightly"]
         os: [ubuntu-latest]
         include:
-          - julia-version: "1.4"
+          - julia-version: "1.5"
             arviz_version: "master"
           - julia-version: "nightly"
             arviz_version: "release"
