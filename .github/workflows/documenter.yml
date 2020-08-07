@@ -9,6 +9,7 @@ env:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
   CMDSTAN_VERSION: "2.23.0"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
+  JULIA_NUM_THREADS: 2
 
 jobs:
   docs:
