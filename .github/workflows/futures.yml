@@ -15,6 +15,7 @@ jobs:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.arviz_version }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         julia-version: ["1.5", "nightly"]
         os: [ubuntu-latest]
