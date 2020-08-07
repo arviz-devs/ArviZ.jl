@@ -8,6 +8,7 @@ function initialize_bokeh()
         copy!(bokeh, PyNULL())
         throw(err)
     end
+    return nothing
 end
 
 # install dependencies for saving PNGs if using conda
@@ -20,6 +21,7 @@ function initialize_bokeh_png_deps()
         has_bokeh_png_deps = false
         throw(err)
     end
+    return nothing
 end
 
 load_backend(::Val{:bokeh}) = initialize_bokeh()
@@ -79,6 +81,7 @@ function Base.show(io::IO, ::MIME"image/png", plot::BokehPlot)
     initialize_bokeh_png_deps()
     image = bokeh.io.export.get_screenshot_as_png(plot)
     print(io, image._repr_png_())
+    return nothing
 end
 
 """

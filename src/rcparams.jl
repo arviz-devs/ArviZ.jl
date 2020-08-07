@@ -55,11 +55,11 @@ end
 @inline Base.haskey(r::RcParams, k) = PyObject(r).__contains__(k)
 
 function Base.iterate(r::RcParams, it)
-    try
+    return try
         pair = Pair(py"next"(it)...)
-        return (pair, it)
+        (pair, it)
     catch
-        return nothing
+        nothing
     end
 end
 function Base.iterate(r::RcParams)
@@ -101,7 +101,7 @@ dictionary only is also valid.
 with_rc_context
 
 function with_rc_context(f; kwargs...)
-    @pywith arviz.rc_context(; kwargs...) as _ begin
+    return @pywith arviz.rc_context(; kwargs...) as _ begin
         return f()
     end
 end

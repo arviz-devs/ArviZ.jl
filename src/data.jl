@@ -17,8 +17,10 @@ struct InferenceData
     o::PyObject
 
     function InferenceData(o::PyObject)
-        pyisinstance(o, arviz.InferenceData) && return new(o)
-        throw(ArgumentError("$o is not an `arviz.InferenceData`."))
+        if !pyisinstance(o, arviz.InferenceData)
+            throw(ArgumentError("$o is not an `arviz.InferenceData`."))
+        end
+        return new(o)
     end
 end
 
@@ -51,6 +53,7 @@ function Base.show(io::IO, data::InferenceData)
     out = pycall(pybuiltin("str"), String, data)
     out = replace(out, "Inference data" => "InferenceData")
     print(io, out)
+    return nothing
 end
 
 """

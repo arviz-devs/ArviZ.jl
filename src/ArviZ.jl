@@ -28,7 +28,7 @@ import Base:
     write,
     +
 import Base.Docs: getdoc
-import StatsBase
+using StatsBase: StatsBase
 import StatsBase: summarystats
 import Markdown: @doc_str
 import PyCall: PyObject
@@ -97,9 +97,10 @@ import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 arviz_version() = VersionNumber(arviz.__version__)
 
 function check_version()
-  if arviz_version() < _min_arviz_version
-      @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or greater but found version $(arviz_version()). Please update."
-  end
+    if arviz_version() < _min_arviz_version
+        @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or greater but found version $(arviz_version()). Please update."
+    end
+    return nothing
 end
 
 # Load ArviZ once at precompilation time for docstringS
@@ -127,6 +128,7 @@ function initialize_arviz()
 
     initialize_xarray()
     initialize_numpy()
+    return nothing
 end
 
 function initialize_xarray()
@@ -134,16 +136,19 @@ function initialize_xarray()
     copy!(xarray, pyimport_conda("xarray", "xarray", "conda-forge"))
     pyimport_conda("dask", "dask", "conda-forge")
     pytype_mapping(xarray.Dataset, Dataset)
+    return nothing
 end
 
 function initialize_numpy()
     # Trigger NumPy initialization, see https://github.com/JuliaPy/PyCall.jl/issues/744
     PyObject([true])
+    return nothing
 end
 
 function initialize_pandas()
     ispynull(pandas) || return
     copy!(pandas, pyimport_conda("pandas", "pandas", "conda-forge"))
+    return nothing
 end
 
 function __init__()
@@ -156,6 +161,7 @@ function __init__()
         import .MCMCChains: Chains, sections
         include("mcmcchains.jl")
     end
+    return nothing
 end
 
 include("utils.jl")
