@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+    branches: [master]
+    tags: [v*]
+  pull_request:
+
+env:
+  PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
+  CMDSTAN_VERSION: "2.23.0"
+  CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
+
+jobs:
+  test:
+    name: Julia ${{ matrix.julia-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: [1.0, 1.4, 1.5]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: x64
+      - name: Cache CmdStan
+        id: cache-cmdstan
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CMDSTAN_PATH }}
+          key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
+      - name: Download and build CmdStan
+        if: steps.cache-cmdstan.outputs.cache-hit != 'true'
+        run: |
+          wget -P ${{ env.CMDSTAN_PATH }} https://github.com/stan-dev/cmdstan/releases/download/v${{ env.CMDSTAN_VERSION }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz
+          tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
+          make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
+        shell: bash
+      - uses: julia-actions/julia-buildpkg@latest
+      - name: Install ArviZ dependencies
+        run: |
+          julia --color=yes --project -e 'using Pkg; Pkg.instantiate()'
+          julia --color=yes --project -e 'using ArviZ;
+                                          ArviZ.initialize_arviz();
+                                          ArviZ.initialize_pandas();
+                                          ArviZ.initialize_bokeh()'
+          julia --color=yes --project -e 'using Conda;
+                                          Conda.add("selenium");
+                                          Conda.add("phantomjs")'
+      - uses: julia-actions/julia-runtest@latest
+        env:
+          JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: false
+        if: ${{ matrix.julia-version == '1.5' && matrix.os =='ubuntu-latest' }}

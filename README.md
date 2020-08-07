@@ -1,6 +1,7 @@
 <img src="https://arviz-devs.github.io/ArviZ.jl/dev/assets/logo.png" height=100></img>
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+![CI](https://github.com/arviz-devs/ArviZ.jl/workflows/CI/badge.svg)
 [![Build Status](https://travis-ci.com/arviz-devs/ArviZ.jl.svg?branch=master)](https://travis-ci.com/arviz-devs/ArviZ.jl)
 [![Build Status](https://dev.azure.com/ArviZ/ArviZ/_apis/build/status/arviz-devs.ArviZ.jl?branchName=master)](https://dev.azure.com/ArviZ/ArviZ/_build/latest?definitionId=2&branchName=master)
 [![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
