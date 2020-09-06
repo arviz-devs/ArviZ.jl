@@ -38,7 +38,7 @@ function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
     rng = MersenneTwister(seed)
     nvars = length(names)
     vals = randn(rng, ndraws, nvars, nchains)
-    chns = MCMCChains.Chains(vals, names, Dict(:internals => internal_names); sorted = true)
+    chns = sort(MCMCChains.Chains(vals, names, Dict(:internals => internal_names)))
     return chns
 end
 
@@ -74,6 +74,10 @@ function test_chains_data(chns, idata, group, names; coords = Dict(), dims = Dic
     @test length(sizes) == 2 + length(coords)
     vars = vardict(ds)
     for name in names
+        # `vars`, the value in ArviZ/Python is always String, 
+        # while `names` is String or Symbol which depends on version of MCMCCHains
+        name = string(name)
+
         @test name in keys(vars)
         dim = get(dims, name, [])
         s = (x -> length(get(coords, x, []))).(dim)
@@ -125,13 +129,17 @@ end
         dims = Dict("a" => ["ai", "aj"])
         nchains, ndraws = 4, 20
         chns = makechains(names, ndraws, nchains)
+
+        # String or Symbol, which depends on MCMCChains version
+        ET = eltype(chns.name_map.parameters) 
+
         idata = from_mcmcchains(chns; coords = coords, dims = dims)
         test_chains_data(chns, idata, :posterior, ["a"]; coords = coords, dims = dims)
         arr = vardict(idata.posterior)["a"]
-        @test arr[:, :, 1, 1] == permutedims(chns.value[:, names[1], :], [2, 1])
-        @test arr[:, :, 2, 2] == permutedims(chns.value[:, names[2], :], [2, 1])
-        @test arr[:, :, 2, 1] == permutedims(chns.value[:, names[3], :], [2, 1])
-        @test arr[:, :, 1, 2] == permutedims(chns.value[:, names[4], :], [2, 1])
+        @test arr[:, :, 1, 1] == permutedims(chns.value[:, ET(names[1]), :], [2, 1])
+        @test arr[:, :, 2, 2] == permutedims(chns.value[:, ET(names[2]), :], [2, 1])
+        @test arr[:, :, 2, 1] == permutedims(chns.value[:, ET(names[3]), :], [2, 1])
+        @test arr[:, :, 1, 2] == permutedims(chns.value[:, ET(names[4]), :], [2, 1])
     end
 
     @testset "complete" begin
