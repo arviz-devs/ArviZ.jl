@@ -131,7 +131,7 @@ end
         chns = makechains(names, ndraws, nchains)
 
         # String or Symbol, which depends on MCMCChains version
-        ET = eltype(chns.name_map.parameters) 
+        ET = eltype(chns.name_map.parameters)
 
         idata = from_mcmcchains(chns; coords = coords, dims = dims)
         test_chains_data(chns, idata, :posterior, ["a"]; coords = coords, dims = dims)
