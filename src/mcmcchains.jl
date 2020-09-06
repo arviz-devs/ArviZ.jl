@@ -63,7 +63,8 @@ function section_dict(chns::Chains, section)
     ndraws, _, nchains = size(chns)
     loc_names_old = getfield(chns.name_map, section) # old may be Symbol or String
     loc_names = string.(loc_names_old)
-    loc_str_to_old = Dict(name_str => name_old for (name_str, name_old) in zip(loc_names, loc_names_old))
+    loc_str_to_old =
+        Dict(name_str => name_old for (name_str, name_old) in zip(loc_names, loc_names_old))
     vars_to_locs = varnames_locs_dict(loc_names, loc_str_to_old)
     vars_to_arrays = Dict{String,Array}()
     for (var_name, names_locs) in vars_to_locs
