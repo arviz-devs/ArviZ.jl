@@ -39,14 +39,14 @@ function split_locname(name)
     return name, tuple(loc...)
 end
 
-function varnames_locs_dict(loc_names)
+function varnames_locs_dict(loc_names, loc_str_to_old)
     vars_to_locs = Dict()
     for loc_name in loc_names
         var_name, loc = split_locname(loc_name)
         if var_name ∉ keys(vars_to_locs)
-            vars_to_locs[var_name] = ([loc_name], [loc])
+            vars_to_locs[var_name] = ([loc_str_to_old[loc_name]], [loc])
         else
-            push!(vars_to_locs[var_name][1], loc_name)
+            push!(vars_to_locs[var_name][1], loc_str_to_old[loc_name])
             push!(vars_to_locs[var_name][2], loc)
         end
     end
@@ -61,8 +61,11 @@ attributes_dict(::Nothing) = Dict()
 
 function section_dict(chns::Chains, section)
     ndraws, _, nchains = size(chns)
-    loc_names = string.(getfield(chns.name_map, section))
-    vars_to_locs = varnames_locs_dict(loc_names)
+    loc_names_old = getfield(chns.name_map, section) # old may be Symbol or String
+    loc_names = string.(loc_names_old)
+    loc_str_to_old =
+        Dict(name_str => name_old for (name_str, name_old) in zip(loc_names, loc_names_old))
+    vars_to_locs = varnames_locs_dict(loc_names, loc_str_to_old)
     vars_to_arrays = Dict{String,Array}()
     for (var_name, names_locs) in vars_to_locs
         loc_names, locs = names_locs
