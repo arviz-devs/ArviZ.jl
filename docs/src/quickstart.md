@@ -186,9 +186,7 @@ This can then be included in the `from_mcmcchains` call from above:
 # Convert into format compatible with ArviZ.jl
 using LinearAlgebra
 loglikelihoods_arr = permutedims(cat(values(loglikelihoods)...; dims = 3), (2, 1, 3))
-```
 
-```@example quickstart
 idata = from_mcmcchains(
     turing_chns,
     prior = prior,
