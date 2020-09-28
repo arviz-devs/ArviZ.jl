@@ -162,11 +162,10 @@ gcf()
 ```
 
 ### Additional information in Turing.jl
-Turing.jl is slightly different in the way it handles statistics and other properties, e.g. prior and predictive posterior. Instead of keeping track of such during inference, Turing.jl instead allows the user to compute these as separate, mostly post-processing, steps.
+Turing.jl is slightly different in the way it handles statistics and other properties, e.g. prior and predictive posterior. Instead of keeping track of these during inference, Turing.jl instead allows the user to compute these as separate, mostly post-processing, steps.
 
-To sample from the prior, ones simple calls `sample` but with the `Prior` sampler:
+To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
 ```@example quickstart
-# Sample from prior
 prior = sample(param_mod, Prior(), nsamples)
 ```
 Obtaining the predictive posterior is a matter of first instantiating a "predictive model", i.e. a `Model` but with the observations set to `missing`, and then call `predict` on the predictive model and the inferred posterior:
