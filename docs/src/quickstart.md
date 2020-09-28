@@ -85,7 +85,10 @@ Turing.@model turing_model(
     τ ~ truncated(Cauchy(0, 5), 0, Inf)
     θ = TV(undef, J)
     θ .~ Normal(μ, τ)
-    y ~ MvNormal(θ, σ)
+    for i in eachindex(y)
+        y[i] ~ Normal(θ[i], σ[i])
+    end
+    return y
 end
 
 param_mod = turing_model(J, y, σ)
@@ -121,8 +124,6 @@ ArviZ is built to work with [`InferenceData`](@ref) (a netcdf datastore that loa
 ```@example quickstart
 idata = from_mcmcchains(
     turing_chns,
-#     prior = prior, # hide
-#     posterior_predictive = posterior_predictive, # hide
     coords = Dict("school" => schools),
     dims = Dict(
         "y" => ["school"],
@@ -158,6 +159,47 @@ and examine the energy distribution of the Hamiltonian sampler
 ```@example quickstart
 plot_energy(idata);
 gcf()
+```
+
+### Additional information in Turing.jl
+Turing.jl is slightly different in the way it handles statistics and other properties, e.g. prior and predictive posterior. Instead of keeping track of such during inference, Turing.jl instead allows the user to compute these as separate, mostly post-processing, steps.
+
+To sample from the prior, ones simple calls `sample` but with the `Prior` sampler:
+```@example quickstart
+# Sample from prior
+prior = sample(param_mod, Prior(), nsamples)
+```
+Obtaining the predictive posterior is a matter of first instantiating a "predictive model", i.e. a `Model` but with the observations set to `missing`, and then call `predict` on the predictive model and the inferred posterior:
+```@example quickstart
+# Instantiate the predictive model
+param_mod_predict = turing_model(
+    J, fill(missing, length(y)), σ
+)
+# and then sample!
+posterior_predictive = Turing.predict(param_mod_predict, turing_chns)
+```
+Finally, to extract the elementwise log-likelihoods, a useful want to compute metrics such as [`loo`](@ref),
+```@example quickstart
+loglikelihoods = elementwise_loglikelihoods(param_mod, turing_chns)
+```
+This can then be included in the `from_mcmcchains` call from above:
+```@example quickstart
+# Convert into format compatible with ArviZ.jl
+loglikelihoods_mat = reduce(hcat, values(loglikelihoods))
+
+idata = from_mcmcchains(
+    turing_chns,
+    prior = prior,
+    posterior_predictive = posterior_predictive,
+    coords = Dict("school" => schools),
+    dims = Dict(
+        "y" => ["school"],
+        "σ" => ["school"],
+        "θ" => ["school"],
+    ),
+    library = "Turing",
+    log_likelihood = loglikelihoods_mat
+)
 ```
 
 ## Plotting with CmdStan.jl outputs
