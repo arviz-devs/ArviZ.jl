@@ -162,7 +162,7 @@ gcf()
 ```
 
 ### Additional information in Turing.jl
-Turing.jl is slightly different in the way it handles statistics and other properties, e.g. prior and predictive posterior. Instead of keeping track of these during inference, Turing.jl instead allows the user to compute these as separate, mostly post-processing, steps.
+In the above `from_mcmcchains` call, we did not specify the `prior`, `posterior_predictive`, nor the `log_likelihoods`. This section describes how one would go about obtaining these from the `Model` and `Chains`, which we can then pass to `from_mcmcchains` to construct the [`InferenceData`](@ref).
 
 To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
 ```@example quickstart
