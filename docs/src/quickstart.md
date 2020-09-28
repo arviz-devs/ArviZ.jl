@@ -175,7 +175,7 @@ param_mod_predict = turing_model(
     J, fill(missing, length(y)), σ
 )
 # and then sample!
-posterior_predictive = Turing.predict(param_mod_predict, turing_chns)
+posterior_predictive = predict(param_mod_predict, turing_chns)
 ```
 And to extract the elementwise log-likelihoods, which useful if you want to compute metrics such as [`loo`](@ref),
 ```@example quickstart
@@ -184,8 +184,11 @@ loglikelihoods = elementwise_loglikelihoods(param_mod, turing_chns)
 This can then be included in the `from_mcmcchains` call from above:
 ```@example quickstart
 # Convert into format compatible with ArviZ.jl
-loglikelihoods_mat = reduce(hcat, values(loglikelihoods))
+using LinearAlgebra
+loglikelihoods_arr = permutedims(cat(values(loglikelihoods)...; dims = 3), (2, 1, 3))
+```
 
+```@example quickstart
 idata = from_mcmcchains(
     turing_chns,
     prior = prior,
@@ -197,8 +200,12 @@ idata = from_mcmcchains(
         "θ" => ["school"],
     ),
     library = "Turing",
-    log_likelihood = loglikelihoods_mat
+    log_likelihood = loglikelihoods_arr
 )
+```
+
+```@example quickstart
+loo(idata)
 ```
 
 ## Plotting with CmdStan.jl outputs
