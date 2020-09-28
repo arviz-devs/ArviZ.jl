@@ -177,7 +177,7 @@ param_mod_predict = turing_model(
 # and then sample!
 posterior_predictive = predict(param_mod_predict, turing_chns)
 ```
-And to extract the elementwise log-likelihoods, which useful if you want to compute metrics such as [`loo`](@ref),
+And to extract the elementwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
 ```@example quickstart
 loglikelihoods = elementwise_loglikelihoods(param_mod, turing_chns)
 ```
