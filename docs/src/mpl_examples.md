@@ -124,7 +124,7 @@ gcf()
 See [`plot_energy`](@ref)
 
 
-## ESS Quantile Plot
+## ESS Evolution Plot
 
 ```@example
 using PyPlot
@@ -176,7 +176,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 idata = load_arviz_data("radon")
-plot_ess(idata; var_names = ["sigma_y"], kind = "quantile", color = "C4")
+plot_ess(idata; var_names = ["sigma"], kind = "quantile", color = "C4")
 
 gcf()
 ```
@@ -377,9 +377,8 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 idata = load_arviz_data("radon")
-log_like = transpose(idata.sample_stats.log_likelihood.sel(chain = 0).values)
-log_weights = psislw(-log_like)[1]
-plot_loo_pit(idata; y = "y_like", log_weights = log_weights, ecdf = true, color = "maroon")
+
+plot_loo_pit(idata; y = "y", ecdf = true, color = "maroon")
 
 gcf()
 ```

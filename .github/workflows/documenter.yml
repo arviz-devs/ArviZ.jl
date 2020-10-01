@@ -33,7 +33,7 @@ jobs:
           tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
           make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
         shell: bash
-      - uses: julia-actions/julia-docdeploy@releases/v1
+      - uses: julia-actions/julia-docdeploy@v1
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
