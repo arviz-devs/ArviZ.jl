@@ -52,7 +52,7 @@ using PyCall, PyPlot
         f((x = arr1, y = arr2); var_names = ["x", "y"])
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test f([(x = arr1,), (x = arr2,)]; var_names = ["x"], backend = :bokeh) isa
+            @test f((x = arr1, y = arr2); var_names = ["x", "y"], backend = :bokeh) isa
                   ArviZ.BokehPlot
         end
     end
