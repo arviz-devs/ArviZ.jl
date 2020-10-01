@@ -124,7 +124,7 @@ gcf()
 See [`plot_energy`](@ref)
 
 
-## ESS Quantile Plot
+## ESS Evolution Plot
 
 ```@example
 using PyPlot
