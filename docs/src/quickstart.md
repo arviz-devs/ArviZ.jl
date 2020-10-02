@@ -166,7 +166,7 @@ In the above `from_mcmcchains` call, we did not specify the `prior`, `posterior_
 
 To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
 ```@example quickstart
-prior = sample(param_mod, Prior(), nsamples)
+prior = sample(param_mod, Prior(), nsamples; progress = false)
 ```
 Obtaining the predictive posterior is a matter of first instantiating a "predictive model", i.e. a `Model` but with the observations set to `missing`, and then call `predict` on the predictive model and the inferred posterior:
 ```@example quickstart
