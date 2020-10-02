@@ -18,7 +18,7 @@ ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com
 ```@example quickstart
 using Random
 
-rng = Random.MersenneTwister(42)
+rng = Random.MersenneTwister(37772)
 plot_posterior(randn(rng, 100_000));
 gcf()
 ```
@@ -94,7 +94,7 @@ end
 param_mod = turing_model(J, y, σ)
 sampler = NUTS(nwarmup, 0.8)
 
-rng = Random.MersenneTwister(5130)
+rng = Random.MersenneTwister(16653)
 turing_chns = sample(
     rng,
     param_mod,
@@ -253,7 +253,7 @@ stan_model = Stanmodel(
     num_warmup = nwarmup,
     num_samples = nsamples,
     output_format = :mcmcchains,
-    random = CmdStan.Random(8675309),
+    random = CmdStan.Random(28983),
 )
 _, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
 Base.Filesystem.rm(stan_model.tmpdir; recursive = true, force = true); # hide
