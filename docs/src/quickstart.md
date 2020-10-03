@@ -162,7 +162,7 @@ gcf()
 ```
 
 ### Additional information in Turing.jl
-With a few more steps, we can use Turing to compute additional useful groups to add to the [`InferenceData`].(@ref).
+With a few more steps, we can use Turing to compute additional useful groups to add to the [`InferenceData`](@ref).
 
 To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
 ```@example quickstart
@@ -180,19 +180,20 @@ And to extract the elementwise log-likelihoods, which is useful if you want to c
 ```@example quickstart
 loglikelihoods = Turing.elementwise_loglikelihoods(param_mod, turing_chns)
 ```
-This can then be included in the `from_mcmcchains` call from above:
+This can then be included in the [`from_mcmcchains`](@ref) call from above:
 ```@example quickstart
 # Convert into format compatible with ArviZ.jl
 using LinearAlgebra
 # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
-loglikelihoods_vals = getindex.(Ref(loglikelihoods), string.(keys(posterior_predictive)))
+ynames = string.(keys(posterior_predictive))
+loglikelihoods_vals = getindex.(Ref(loglikelihoods), ynames)
 # Reshape into `(num_chains, num_samples, num_params)`
 loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims = 3), (2, 1, 3))
 
 idata = from_mcmcchains(
     turing_chns,
     posterior_predictive = posterior_predictive,
-    log_likelihood = loglikelihoods_arr,
+    log_likelihood = Dict("y" => loglikelihoods_arr),
     prior = prior,
     prior_predictive = prior_predictive,
     observed_data = Dict("y" => y),
@@ -212,10 +213,12 @@ Then we can for example compute the expected *leave-one-out (LOO)* predictive de
 loo(idata) # higher is better
 ```
 
-If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a `Uniform` distribution. This can be inspected visually:
+If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a uniform distribution.
+This can be inspected visually:
 
 ```@example quickstart
-plot_loo_pit(idata; y = "y", ecdf = true)
+plot_loo_pit(idata; y = "y", ecdf = true);
+gcf()
 ```
 
 ## Plotting with CmdStan.jl outputs
