@@ -171,39 +171,51 @@ prior = sample(param_mod, Prior(), nsamples; progress = false)
 Obtaining the predictive posterior is a matter of first instantiating a "predictive model", i.e. a `Model` but with the observations set to `missing`, and then call `predict` on the predictive model and the inferred posterior:
 ```@example quickstart
 # Instantiate the predictive model
-param_mod_predict = turing_model(
-    J, fill(missing, length(y)), σ
-)
+param_mod_predict = turing_model(J, similar(y, Missing), σ)
 # and then sample!
+prior_predictive = predict(param_mod_predict, prior)
 posterior_predictive = predict(param_mod_predict, turing_chns)
 ```
 And to extract the elementwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
 ```@example quickstart
-loglikelihoods = elementwise_loglikelihoods(param_mod, turing_chns)
+loglikelihoods = Turing.elementwise_loglikelihoods(param_mod, turing_chns)
 ```
 This can then be included in the `from_mcmcchains` call from above:
 ```@example quickstart
 # Convert into format compatible with ArviZ.jl
 using LinearAlgebra
-loglikelihoods_arr = permutedims(cat(values(loglikelihoods)...; dims = 3), (2, 1, 3))
+# Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
+loglikelihoods_vals = getindex.(Ref(loglikelihoods), string.(keys(posterior_predictive)))
+# Reshape into `(num_chains, num_samples, num_params)`
+loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims = 3), (2, 1, 3))
 
 idata = from_mcmcchains(
     turing_chns,
-    prior = prior,
     posterior_predictive = posterior_predictive,
+    log_likelihood = loglikelihoods_arr,
+    prior = prior,
+    prior_predictive = prior_predictive,
+    observed_data = Dict("y" => y),
     coords = Dict("school" => schools),
     dims = Dict(
         "y" => ["school"],
         "σ" => ["school"],
         "θ" => ["school"],
     ),
-    library = "Turing",
-    log_likelihood = loglikelihoods_arr
+    library = "Turing"
 )
 ```
 
+Then we can for example compute the expected *leave-one-out (LOO)* predictive density, which is an estimate of the out-of-distribution predictive fit of the model:
+
 ```@example quickstart
-loo(idata)
+loo(idata) # higher is better
+```
+
+If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a `Uniform` distribution. This can be inspected visually:
+
+```@example quickstart
+plot_loo_pit(idata; y = "y", ecdf = true)
 ```
 
 ## Plotting with CmdStan.jl outputs
