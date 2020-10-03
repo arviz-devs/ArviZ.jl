@@ -182,7 +182,6 @@ loglikelihoods = Turing.elementwise_loglikelihoods(param_mod, turing_chns)
 ```
 This can then be included in the [`from_mcmcchains`](@ref) call from above:
 ```@example quickstart
-# Convert into format compatible with ArviZ.jl
 using LinearAlgebra
 # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
 ynames = string.(keys(posterior_predictive))
