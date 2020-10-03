@@ -186,7 +186,7 @@ using LinearAlgebra
 # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
 ynames = string.(keys(posterior_predictive))
 loglikelihoods_vals = getindex.(Ref(loglikelihoods), ynames)
-# Reshape into `(num_chains, num_samples, num_params)`
+# Reshape into `(nchains, nsamples, size(y)...)`
 loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims = 3), (2, 1, 3))
 
 idata = from_mcmcchains(
