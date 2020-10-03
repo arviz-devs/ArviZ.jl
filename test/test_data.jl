@@ -49,7 +49,7 @@ using MonteCarloMeasurements: Particles
 
     @testset "show" begin
         @testset "$mimetype" for mimetype in ("plain", "html")
-            text = repr(MIME("text/$(mimetype)"), dataset)
+            text = repr(MIME("text/$(mimetype)"), data)
             @test text isa String
             @test occursin("ArviZ.InferenceData", text)
             @test occursin("Dataset (xarray.Dataset)", text)
