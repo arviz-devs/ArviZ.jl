@@ -162,13 +162,13 @@ gcf()
 ```
 
 ### Additional information in Turing.jl
-In the above `from_mcmcchains` call, we did not specify the `prior`, `posterior_predictive`, nor the `log_likelihoods`. This section describes how one would go about obtaining these from the `Model` and `Chains`, which we can then pass to `from_mcmcchains` to construct the [`InferenceData`](@ref).
+With a few more steps, we can use Turing to compute additional useful groups to add to the [`InferenceData`].(@ref).
 
 To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
 ```@example quickstart
 prior = sample(param_mod, Prior(), nsamples; progress = false)
 ```
-Obtaining the predictive posterior is a matter of first instantiating a "predictive model", i.e. a `Model` but with the observations set to `missing`, and then call `predict` on the predictive model and the inferred posterior:
+To draw from the prior and posterior predictive distributions we can instantiate a "predictive model", i.e. a Turing model but with the observations set to `missing`, and then calling `predict` on the predictive model and the previously drawn samples:
 ```@example quickstart
 # Instantiate the predictive model
 param_mod_predict = turing_model(J, similar(y, Missing), σ)
