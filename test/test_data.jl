@@ -48,9 +48,22 @@ using MonteCarloMeasurements: Particles
     end
 
     @testset "show" begin
-        @test startswith(sprint(show, data), "InferenceData with groups:")
-        rest = split(PyObject(data).__str__(), '\n'; limit = 2)[2]
-        @test split(sprint(show, data), '\n'; limit = 2)[2] == rest
+        @testset "plain" begin
+            text = sprint(show, data)
+            @test startswith(text, "InferenceData with groups:")
+            rest = split(PyObject(data).__str__(), '\n'; limit = 2)[2]
+            @test split(text, '\n'; limit = 2)[2] == rest
+        end
+
+        @testset "html" begin
+            text = repr(MIME("text/html"), data)
+            @test text isa String
+            @test !occursin("<xarray.Dataset>", text)
+            @test !occursin("&lt;xarray.Dataset&gt;", text)
+            @test !occursin("arviz.InferenceData", text)
+            @test occursin("Dataset (xarray.Dataset)", text)
+            @test occursin("InferenceData", text)
+        end
     end
 end
 

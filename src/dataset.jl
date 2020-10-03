@@ -56,10 +56,10 @@ function Base.show(io::IO, data::Dataset)
     return nothing
 end
 function Base.show(io::IO, ::MIME"text/html", data::Dataset)
-    obj = data.o
+    obj = PyObject(data)
     (:_repr_html_ in propertynames(obj)) || return show(io, data)
     out = obj._repr_html_()
-    out = replace(out, r"<?xarray.Dataset>?" => "Dataset (xarray.Dataset)")
+    out = replace(out, r"(<|&lt;)?xarray.Dataset(>|&gt;)?" => "Dataset (xarray.Dataset)")
     print(io, out)
     return nothing
 end
