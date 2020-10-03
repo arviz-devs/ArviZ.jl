@@ -32,6 +32,8 @@
         @testset "$mimetype" for mimetype in ("plain", "html")
             text = repr(MIME("text/$(mimetype)"), dataset)
             @test text isa String
+            @test !occursin("<xarray.Dataset>", text)
+            @test !occursin("&lt;xarray.Dataset&gt;", text)
             @test occursin("Dataset (xarray.Dataset)", text)
         end
     end
