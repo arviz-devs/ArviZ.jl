@@ -59,7 +59,7 @@ function Base.show(io::IO, ::MIME"text/html", data::InferenceData)
     obj = PyObject(data)
     (:_repr_html_ in propertynames(obj)) || return show(io, data)
     out = obj._repr_html_()
-    out = replace(out, r"arviz.InferenceData" => "ArviZ.InferenceData")
+    out = replace(out, r"arviz.InferenceData" => "InferenceData")
     out = replace(out, r"(<|&lt;)?xarray.Dataset(>|&gt;)?" => "Dataset (xarray.Dataset)")
     print(io, out)
     return nothing
