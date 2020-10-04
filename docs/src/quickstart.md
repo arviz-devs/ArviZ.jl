@@ -85,7 +85,10 @@ Turing.@model turing_model(
     τ ~ truncated(Cauchy(0, 5), 0, Inf)
     θ = TV(undef, J)
     θ .~ Normal(μ, τ)
-    y ~ MvNormal(θ, σ)
+    for i in eachindex(y)
+        y[i] ~ Normal(θ[i], σ[i])
+    end
+    return y
 end
 
 param_mod = turing_model(J, y, σ)
@@ -121,8 +124,6 @@ ArviZ is built to work with [`InferenceData`](@ref) (a netcdf datastore that loa
 ```@example quickstart
 idata = from_mcmcchains(
     turing_chns,
-#     prior = prior, # hide
-#     posterior_predictive = posterior_predictive, # hide
     coords = Dict("school" => schools),
     dims = Dict(
         "y" => ["school"],
@@ -157,6 +158,65 @@ and examine the energy distribution of the Hamiltonian sampler
 
 ```@example quickstart
 plot_energy(idata);
+gcf()
+```
+
+### Additional information in Turing.jl
+With a few more steps, we can use Turing to compute additional useful groups to add to the [`InferenceData`](@ref).
+
+To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
+```@example quickstart
+prior = sample(param_mod, Prior(), nsamples; progress = false)
+```
+To draw from the prior and posterior predictive distributions we can instantiate a "predictive model", i.e. a Turing model but with the observations set to `missing`, and then calling `predict` on the predictive model and the previously drawn samples:
+```@example quickstart
+# Instantiate the predictive model
+param_mod_predict = turing_model(J, similar(y, Missing), σ)
+# and then sample!
+prior_predictive = predict(param_mod_predict, prior)
+posterior_predictive = predict(param_mod_predict, turing_chns)
+```
+And to extract the elementwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
+```@example quickstart
+loglikelihoods = Turing.elementwise_loglikelihoods(param_mod, turing_chns)
+```
+This can then be included in the [`from_mcmcchains`](@ref) call from above:
+```@example quickstart
+using LinearAlgebra
+# Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
+ynames = string.(keys(posterior_predictive))
+loglikelihoods_vals = getindex.(Ref(loglikelihoods), ynames)
+# Reshape into `(nchains, nsamples, size(y)...)`
+loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims = 3), (2, 1, 3))
+
+idata = from_mcmcchains(
+    turing_chns,
+    posterior_predictive = posterior_predictive,
+    log_likelihood = Dict("y" => loglikelihoods_arr),
+    prior = prior,
+    prior_predictive = prior_predictive,
+    observed_data = Dict("y" => y),
+    coords = Dict("school" => schools),
+    dims = Dict(
+        "y" => ["school"],
+        "σ" => ["school"],
+        "θ" => ["school"],
+    ),
+    library = "Turing"
+)
+```
+
+Then we can for example compute the expected *leave-one-out (LOO)* predictive density, which is an estimate of the out-of-distribution predictive fit of the model:
+
+```@example quickstart
+loo(idata) # higher is better
+```
+
+If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a uniform distribution.
+This can be inspected visually:
+
+```@example quickstart
+plot_loo_pit(idata; y = "y", ecdf = true);
 gcf()
 ```
 
