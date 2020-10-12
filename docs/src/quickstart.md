@@ -176,9 +176,9 @@ param_mod_predict = turing_model(J, similar(y, Missing), σ)
 prior_predictive = predict(param_mod_predict, prior)
 posterior_predictive = predict(param_mod_predict, turing_chns)
 ```
-And to extract the elementwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
+And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
 ```@example quickstart
-loglikelihoods = Turing.elementwise_loglikelihoods(param_mod, turing_chns)
+loglikelihoods = Turing.pointwise_loglikelihoods(param_mod, turing_chns)
 ```
 This can then be included in the [`from_mcmcchains`](@ref) call from above:
 ```@example quickstart
