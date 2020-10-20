@@ -108,13 +108,13 @@ function _import_dependency(modulename, pkgname; channel = nothing)
     return if _using_conda()
         # auto-installing with conda is safe and convenient
         if channel === nothing
-            pyimport_conda(modulename, pkgname_version)
+            pyimport_conda(modulename, pkgname)
         else
-            pyimport_conda(modulename, pkgname_version, channel)
+            pyimport_conda(modulename, pkgname, channel)
         end
     elseif _has_pip() && _isyes(Base.prompt("Try installing $pkgname using pip? [Y/n]"))
         # installing with pip is riskier, so we ask for permission
-        run(`$(PyCall.pyprogramname) -m pip install -- $pkgname_version`)
+        run(`$(PyCall.pyprogramname) -m pip install -- $pkgname`)
         pyimport(modulename)
     else
         error("Dependency $modulename cannot be imported. Install manually to continue.")
