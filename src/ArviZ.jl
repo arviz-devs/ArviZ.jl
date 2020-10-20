@@ -85,12 +85,12 @@ export with_interactive_backend
 ## rcParams
 export rcParams, with_rc_context
 
+const _min_arviz_version = v"0.8.0"
 const arviz = PyNULL()
 const xarray = PyNULL()
 const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
-const _min_arviz_version = v"0.8.0"
 
 include("setup.jl")
 
