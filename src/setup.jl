@@ -2,9 +2,22 @@ import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
 arviz_version() = VersionNumber(arviz.__version__)
 
-function check_arviz_version()
+function check_needs_update(; update = true)
     if arviz_version() < _min_arviz_version
-        @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or greater but found version $(arviz_version()). Please update."
+        @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or " *
+              "greater but found version $(arviz_version())."
+    end
+    return nothing
+end
+
+function check_needs_rebuild()
+    if arviz_version() != _precompile_arviz_version
+        msg = """
+        ArviZ.jl was built using arviz version $(_precompile_arviz_version) but loaded with
+        version $(arviz_version()). Please recompile with `using Pkg; Pkg.build("ArviZ")`
+        and re-launch Julia to continue.
+        """
+        @warn msg
     end
     return nothing
 end
@@ -12,9 +25,8 @@ end
 function initialize_arviz()
     ispynull(arviz) || return
     copy!(arviz, import_arviz())
-    if arviz_version() != _precompile_arviz_version
-        @warn "ArviZ.jl was precompiled using arviz version $(_precompile_version) but loaded with version $(arviz_version()). Please recompile with `using Pkg; Pkg.build('ArviZ')`."
-    end
+    check_needs_update(update = true)
+    check_needs_rebuild()
 
     pytype_mapping(arviz.InferenceData, InferenceData)
 
