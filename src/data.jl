@@ -1,4 +1,4 @@
-const SUPPORTED_GROUPS = map(Symbol, arviz.data.inference_data.SUPPORTED_GROUPS)
+const SUPPORTED_GROUPS = Symbol[]
 
 """
     InferenceData(::PyObject)
