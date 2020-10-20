@@ -3,7 +3,7 @@ const has_bokeh_png_deps = false
 function initialize_bokeh()
     ispynull(bokeh) || return
     try
-        copy!(bokeh, pyimport_conda("bokeh", "bokeh", "conda-forge"))
+        copy!(bokeh, _import_dependency("bokeh", "bokeh"; channel = "conda-forge"))
     catch err
         copy!(bokeh, PyNULL())
         throw(err)
@@ -15,7 +15,7 @@ end
 function initialize_bokeh_png_deps()
     has_bokeh_png_deps && return
     try
-        pyimport_conda("selenium", "selenium", "conda-forge")
+        _import_dependency("selenium", "selenium"; channel = "conda-forge")
         has_bokeh_png_deps = true
     catch err
         has_bokeh_png_deps = false

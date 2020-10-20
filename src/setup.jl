@@ -1,4 +1,4 @@
-import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
+import_arviz() = _import_dependency("arviz", "arviz"; channel = "conda-forge")
 
 arviz_version() = VersionNumber(arviz.__version__)
 
@@ -62,8 +62,8 @@ end
 
 function initialize_xarray()
     ispynull(xarray) || return
-    copy!(xarray, pyimport_conda("xarray", "xarray", "conda-forge"))
-    pyimport_conda("dask", "dask", "conda-forge")
+    copy!(xarray, _import_dependency("xarray", "xarray"; channel = "conda-forge"))
+    _import_dependency("dask", "dask"; channel = "conda-forge")
     pytype_mapping(xarray.Dataset, Dataset)
     return nothing
 end
@@ -76,7 +76,7 @@ end
 
 function initialize_pandas()
     ispynull(pandas) || return
-    copy!(pandas, pyimport_conda("pandas", "pandas", "conda-forge"))
+    copy!(pandas, _import_dependency("pandas", "pandas"; channel = "conda-forge"))
     return nothing
 end
 
