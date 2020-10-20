@@ -93,7 +93,7 @@ include("setup.jl")
 
 # Load ArviZ once at precompilation time for docstringS
 copy!(arviz, import_arviz())
-check_version()
+check_arviz_version()
 const _precompile_arviz_version = arviz_version()
 
 function __init__()

@@ -2,7 +2,7 @@ import_arviz() = pyimport_conda("arviz", "arviz", "conda-forge")
 
 arviz_version() = VersionNumber(arviz.__version__)
 
-function check_version()
+function check_arviz_version()
     if arviz_version() < _min_arviz_version
         @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or greater but found version $(arviz_version()). Please update."
     end
