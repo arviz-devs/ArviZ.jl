@@ -8,10 +8,7 @@ using NamedTupleTools
 using DataFrames
 
 using PyCall
-if PyCall.conda
-    using Conda
-    Conda.add_channel("conda-forge") # try to avoid mixing channels
-end
+using Conda
 using PyPlot
 
 import Base:
