@@ -1,5 +1,5 @@
 using Documenter, ArviZ
-using MCMCChains # make `from_mcmcchains` available for API docs
+using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
 
 makedocs(
     modules = [ArviZ],
