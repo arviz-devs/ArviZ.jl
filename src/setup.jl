@@ -96,7 +96,7 @@ function update_arviz()
     if _has_pip() && _isyes(Base.prompt("Try updating arviz using pip? [Y/n]"))
         # can't specify version lower bound, so update to latest
         try
-            run(`$(PyCall.pyprogramname) -m pip install --upgrade -- arviz`)
+            run(PyCall.python_cmd(`-m pip install --upgrade -- arviz`))
             return true
         catch e
             println(e.msg)
