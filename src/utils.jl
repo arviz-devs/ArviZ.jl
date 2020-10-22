@@ -175,6 +175,10 @@ snakecase(s) = replace(lowercase(s), " " => "_")
 @inline _asarray(x) = [x]
 @inline _asarray(x::AbstractArray) = x
 
+_asstringkeydict(x) = Dict(String(k) => v for (k, v) in pairs(x))
+_asstringkeydict(x::Dict{String}) = x
+_asstringkeydict(::Nothing) = Dict{String,Any}()
+
 function enforce_stat_types(dict)
     return Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
 end

@@ -257,9 +257,8 @@ function from_mcmcchains(
         :predictions_constant_data => predictions_constant_data,
     ]
         group_data === nothing && continue
-        group_dict = convert(Dict, group_data)
         group_dataset =
-            convert_to_constant_dataset(group_dict; library = library, kwargs...)
+            convert_to_constant_dataset(group_data; library = library, kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
