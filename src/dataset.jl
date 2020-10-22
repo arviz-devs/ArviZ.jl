@@ -116,25 +116,27 @@ function convert_to_constant_dataset(
     library = nothing,
     attrs = nothing,
 )
-    obj = convert(Dict, obj)
     base = arviz.data.base
-    coords = coords === nothing ? Dict{String,Vector}() : coords
-    dims = dims === nothing ? Dict{String,Vector{String}}() : dims
 
-    data = Dict{String,Any}()
+    obj = _asstringkeydict(obj)
+    coords = _asstringkeydict(coords)
+    dims = _asstringkeydict(dims)
+    attrs = _asstringkeydict(attrs)
+
+    data = Dict{String,PyObject}()
     for (key, vals) in obj
         vals = _asarray(vals)
         val_dims = get(dims, key, nothing)
         (val_dims, val_coords) =
             base.generate_dims_coords(size(vals), key; dims = val_dims, coords = coords)
-        data[string(key)] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
+        data[key] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
     end
 
     default_attrs = base.make_attrs()
     if library !== nothing
         default_attrs = merge(default_attrs, Dict("inference_library" => string(library)))
     end
-    attrs = attrs === nothing ? default_attrs : merge(default_attrs, attrs)
+    attrs = merge(default_attrs, attrs)
     return Dataset(data_vars = data, coords = coords, attrs = attrs)
 end
 
