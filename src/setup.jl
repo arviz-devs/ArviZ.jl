@@ -127,6 +127,6 @@ _isyes(s) = isempty(s) || lowercase(strip(s)) ∈ ("y", "yes")
 
 _using_conda() = PyCall.conda
 
-_has_pip() = ispynull(pyimport_e("pip"))
+_has_pip() = _has_pymodule("pip")
 
 _has_pymodule(modulename) = !ispynull(pyimport_e(modulename))
