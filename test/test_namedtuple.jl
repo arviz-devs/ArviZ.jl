@@ -202,6 +202,26 @@ end
         sizes = dimsizes(ds)
         @test length(sizes) == 1
         @test "w" in keys(vardict(ds))
+        @test dimdict(ds)["w"] == ("wx",)
+        @test "inference_library" in keys(attributes(ds))
+        @test attributes(ds)["inference_library"] == "MyLib"
+
+        # ensure that dims are matched to named tuple keys
+        # https://github.com/arviz-devs/ArviZ.jl/issues/96
+        idata = from_namedtuple(
+            nt;
+            (group => (w = [1.0, 2.0],),)...,
+            dims = Dict("w" => ["wx"]),
+            coords = Dict("wx" => 1:2),
+            library = "MyLib",
+        )
+        @test idata isa InferenceData
+        @test group in ArviZ.groupnames(idata)
+        ds = getproperty(idata, group)
+        sizes = dimsizes(ds)
+        @test length(sizes) == 1
+        @test "w" in keys(vardict(ds))
+        @test dimdict(ds)["w"] == ("wx",)
         @test "inference_library" in keys(attributes(ds))
         @test attributes(ds)["inference_library"] == "MyLib"
     end
