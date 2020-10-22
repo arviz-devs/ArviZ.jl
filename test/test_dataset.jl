@@ -10,6 +10,24 @@
         @test ArviZ.Dataset(dataset) === dataset
         @test_throws ArgumentError ArviZ.Dataset(py"PyNullObject()")
         @test hash(dataset) == hash(pydataset)
+
+        vars = Dict("x" => ("dimx", randn(3)), ("y" => (("dimy_1", "dimy_2"), randn(3, 2))))
+        coords =
+            Dict("dimx" => [1, 2, 3], "dimy_1" => ["a", "b", "c"], "dimy_2" => ["d", "e"])
+        attrs = Dict("prop1" => 1, "prop2" => "propval")
+        @inferred ArviZ.Dataset(data_vars = vars, coords = coords, attrs = attrs)
+        ds = ArviZ.Dataset(data_vars = vars, coords = coords, attrs = attrs)
+        @test ds isa ArviZ.Dataset
+        vars2, kwargs = ArviZ.dataset_to_dict(ds)
+        for (k, v) in vars
+            @test k ∈ keys(vars2)
+            @test vars2[k] ≈ v[2]
+        end
+        @test kwargs.coords == coords
+        for (k, v) in attrs
+            @test k ∈ keys(kwargs.attrs)
+            @test kwargs.attrs[k] == v
+        end
     end
 
     @testset "properties" begin
