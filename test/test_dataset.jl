@@ -92,6 +92,79 @@ end
     end
 end
 
+@testset "ArviZ.convert_to_constant_dataset" begin
+    @testset "ArviZ.convert_to_constant_dataset(::Dict)" begin
+        data = Dict("x" => randn(4, 5), "y" => ["a", "b", "c"])
+        dataset = ArviZ.convert_to_constant_dataset(data)
+        @test dataset isa ArviZ.Dataset
+        @test "x" ∈ dataset.keys()
+        @test "y" ∈ dataset.keys()
+        @test Set(dataset.coords) == Set(["x_dim_0", "x_dim_1", "y_dim_0"])
+        @test collect(dataset._variables["x"].values) == data["x"]
+        @test collect(dataset._variables["y"].values) == data["y"]
+    end
+
+    @testset "ArviZ.convert_to_constant_dataset(::Dict; kwargs...)" begin
+        data = Dict("x" => randn(4, 5), "y" => ["a", "b", "c"])
+        coords = Dict("xdim1" => 1:4, "xdim2" => 5:9, "ydim1" => ["d", "e", "f"])
+        dims = Dict("x" => ["xdim1", "xdim2"], "y" => ["ydim1"])
+        library = "MyLib"
+        dataset = ArviZ.convert_to_constant_dataset(data)
+        attrs = Dict("prop" => "propval")
+
+        dataset = ArviZ.convert_to_constant_dataset(
+            data;
+            coords = coords,
+            dims = dims,
+            library = library,
+            attrs = attrs,
+        )
+        @test dataset isa ArviZ.Dataset
+        @test "x" ∈ dataset.keys()
+        @test "y" ∈ dataset.keys()
+        @test Set(dataset.coords) == Set(["xdim1", "xdim2", "ydim1"])
+        @test collect(dataset._variables["xdim1"].values) == coords["xdim1"]
+        @test collect(dataset._variables["xdim2"].values) == coords["xdim2"]
+        @test collect(dataset._variables["ydim1"].values) == coords["ydim1"]
+        @test collect(dataset["x"].coords) == ["xdim1", "xdim2"]
+        @test collect(dataset["y"].coords) == ["ydim1"]
+        @test collect(dataset._variables["x"].values) == data["x"]
+        @test collect(dataset._variables["y"].values) == data["y"]
+        @test dataset.attrs["prop"] == attrs["prop"]
+        @test dataset.attrs["inference_library"] == library
+    end
+
+    @testset "ArviZ.convert_to_constant_dataset(::NamedTuple; kwargs...)" begin
+        data = (x = randn(4, 5), y = ["a", "b", "c"])
+        coords = (xdim1 = 1:4, xdim2 = 5:9, ydim1 = ["d", "e", "f"])
+        dims = (x = ["xdim1", "xdim2"], y = ["ydim1"])
+        library = "MyLib"
+        dataset = ArviZ.convert_to_constant_dataset(data)
+        attrs = (prop = "propval",)
+
+        dataset = ArviZ.convert_to_constant_dataset(
+            data;
+            coords = coords,
+            dims = dims,
+            library = library,
+            attrs = attrs,
+        )
+        @test dataset isa ArviZ.Dataset
+        @test "x" ∈ dataset.keys()
+        @test "y" ∈ dataset.keys()
+        @test Set(dataset.coords) == Set(["xdim1", "xdim2", "ydim1"])
+        @test collect(dataset._variables["xdim1"].values) == coords.xdim1
+        @test collect(dataset._variables["xdim2"].values) == coords.xdim2
+        @test collect(dataset._variables["ydim1"].values) == coords.ydim1
+        @test collect(dataset["x"].coords) == ["xdim1", "xdim2"]
+        @test collect(dataset["y"].coords) == ["ydim1"]
+        @test collect(dataset._variables["x"].values) == data.x
+        @test collect(dataset._variables["y"].values) == data.y
+        @test dataset.attrs["prop"] == attrs.prop
+        @test dataset.attrs["inference_library"] == library
+    end
+end
+
 @testset "dict to dataset roundtrip" begin
     rng = MersenneTwister(42)
     J = 8
