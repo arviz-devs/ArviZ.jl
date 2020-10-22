@@ -105,21 +105,21 @@ function update_arviz()
     return false
 end
 
-function _import_dependency(modulename, pkgname; channel = nothing)
-    _has_pymodule(modulename) && return pyimport(modulename)
-    return if _using_conda()
-        # auto-installing with conda is safe and convenient
-        if channel === nothing
+function _import_dependency(modulename, pkgname = modulename; channel = nothing)
+    try
+        return if channel === nothing
             pyimport_conda(modulename, pkgname)
         else
             pyimport_conda(modulename, pkgname, channel)
         end
-    elseif _has_pip() && _isyes(Base.prompt("Try installing $pkgname using pip? [Y/n]"))
-        # installing with pip is riskier, so we ask for permission
-        run(`$(PyCall.pyprogramname) -m pip install -- $pkgname`)
-        pyimport(modulename)
-    else
-        error("Dependency $modulename cannot be imported. Install manually to continue.")
+    catch e
+        if _has_pip() && _isyes(Base.prompt("Try installing $pkgname using pip? [Y/n]"))
+            # installing with pip is riskier, so we ask for permission
+            run(PyCall.python_cmd(`-m pip install -- $pkgname`))
+            return pyimport(modulename)
+        end
+        # PyCall has a nice error message
+        throw(e)
     end
 end
 
