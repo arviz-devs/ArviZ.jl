@@ -65,6 +65,7 @@ end
 function initialize_xarray()
     ispynull(xarray) || return
     copy!(xarray, _import_dependency("xarray", "xarray"; channel = "conda-forge"))
+    _import_dependency("dask", "dask"; channel = "conda-forge")
     pytype_mapping(xarray.Dataset, Dataset)
     return nothing
 end
