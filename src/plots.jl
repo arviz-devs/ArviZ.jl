@@ -1,7 +1,9 @@
 @forwardplotfun plot_autocorr
+@forwardplotfun plot_bpv
 @forwardplotfun plot_compare
 @forwardplotfun plot_density
 @forwardplotfun plot_dist
+@forwardplotfun plot_dist_comparison
 @forwardplotfun plot_elpd
 @forwardplotfun plot_energy
 @forwardplotfun plot_ess
@@ -16,6 +18,7 @@
 @forwardplotfun plot_posterior
 @forwardplotfun plot_ppc
 @forwardplotfun plot_rank
+@forwardplotfun plot_separation
 @forwardplotfun plot_trace
 @forwardplotfun plot_violin
 

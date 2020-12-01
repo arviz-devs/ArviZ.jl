@@ -57,6 +57,25 @@ using PyCall, PyPlot
         end
     end
 
+    @testset "plot_bpv" begin
+        plot_bpv(data)
+        close(gcf())
+        plot_bpv(data; kind = "p_value")
+        close(gcf())
+        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
+            @test plot_bpv(data; backend = :bokeh) isa ArviZ.BokehPlot
+        end
+    end
+
+    @testset "plot_separation" begin
+        data3 = load_arviz_data("classification10d")
+        plot_separation(data3; y = "outcome")
+        close(gcf())
+        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
+            @test plot_separation(data3; y = "outcome", backend = :bokeh) isa ArviZ.BokehPlot
+        end
+    end
+
     @testset "plot_rank" begin
         plot_rank(data; var_names = ["tau", "mu"])
         close(gcf())
@@ -78,6 +97,17 @@ using PyCall, PyPlot
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
             @test plot_compare(df; backend = :bokeh) isa ArviZ.BokehPlot
+        end
+    end
+
+    @testset "plot_dist_compare" begin
+        plot_dist_comparison(data; var_names = ["mu"])
+        close(gcf())
+        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
+            @test_broken isa(
+                plot_dist_comparison(data; var_names = ["mu"], backend = :bokeh),
+                ArviZ.BokehPlot,
+            )
         end
     end
 

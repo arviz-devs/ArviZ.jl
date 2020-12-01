@@ -1,7 +1,7 @@
 # [ArviZ.jl Quickstart](@id quickstart)
 
 !!! note
-    This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/notebooks/Introduction.html).
+    This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/getting_started/Introduction.html).
 
 ```@example quickstart
 using ArviZ

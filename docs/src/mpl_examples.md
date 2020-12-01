@@ -20,6 +20,41 @@ gcf()
 
 See [`plot_autocorr`](@ref)
 
+
+## Bayesian P-Value Posterior Plot
+
+```@example
+using PyPlot
+figure() #hide
+using ArviZ
+
+ArviZ.use_style("arviz-darkgrid")
+
+data = load_arviz_data("regression1d")
+plot_bpv(data)
+
+gcf()
+```
+
+See [`plot_bpv`](@ref)
+
+## Bayesian P-Value with Median T Statistic Posterior Plot
+
+```@example
+using PyPlot
+figure() #hide
+using ArviZ
+
+ArviZ.use_style("arviz-darkgrid")
+
+data = load_arviz_data("regression1d")
+plot_bpv(data; kind = "t_stat", t_stat = "0.5")
+
+gcf()
+```
+
+See [`plot_bpv`](@ref)
+
 ## Compare Plot
 
 ```@example
@@ -630,6 +665,23 @@ gcf()
 ```
 
 See [`plot_rank`](@ref)
+
+## Separation Plot
+
+```@example
+using PyPlot
+figure() #hide
+using ArviZ
+
+ArviZ.use_style("arviz-darkgrid")
+
+data = load_arviz_data("classification10d")
+plot_separation(data; y = "outcome", y_hat = "outcome", figsize = (8, 1))
+
+gcf()
+```
+
+See [`plot_separation`](@ref)
 
 ## Trace Plot
 

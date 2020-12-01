@@ -13,7 +13,7 @@ This documentation will focus on differences between ArviZ.jl and ArviZ, applica
 
 ## [Purpose](@id purpose)
 
-Besides removing the need to explicitly import ArviZ with [PyCall.jl](https://github.com/JuliaPy/PyCall.jl), ArviZ.jl extends ArviZ with functionality for converting Julia types into ArviZ's [`InferenceData`](https://arviz-devs.github.io/arviz/notebooks/XarrayforArviZ.html) format.
+Besides removing the need to explicitly import ArviZ with [PyCall.jl](https://github.com/JuliaPy/PyCall.jl), ArviZ.jl extends ArviZ with functionality for converting Julia types into ArviZ's [`InferenceData`](https://arviz-devs.github.io/arviz/getting_started/XarrayforArviZ.html) format.
 It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) and provides functions that can be overloaded by other packages to enable their types to be used with ArviZ.
 
 ## [Installation](@id installation)
@@ -35,7 +35,7 @@ For specifying other Python versions, see the [PyCall documentation](https://git
 
 ## [Design](@id design)
 
-ArviZ.jl supports all of ArviZ's [API](https://arviz-devs.github.io/arviz/api.html), except for its [Numba functionality](@ref knownissues).
+ArviZ.jl supports all of ArviZ's [API](https://arviz-devs.github.io/arviz/api/index.html), except for its [Numba functionality](@ref knownissues).
 See ArviZ's API documentation for details.
 
 ArviZ.jl wraps ArviZ's API functions and closely follows ArviZ's design.
@@ -49,7 +49,7 @@ Issues and pull requests are welcome.
 
 ## [Differences from ArviZ](@id differences)
 
-In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api.html) are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
+In ArviZ, functions in the [API](https://arviz-devs.github.io/arviz/api/index.html) are usually called with the package name prefix, (e.g. `arviz.plot_posterior`).
 In ArviZ.jl, most of the [same functions](@ref api) are exported and therefore can be called without the prefix (e.g. `plot_posterior`).
 The exception are `from_xyz` converters for packages that have no (known) Julia wrappers.
 These functions are not exported to reduce namespace clutter.

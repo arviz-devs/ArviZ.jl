@@ -34,9 +34,11 @@ import PyCall: PyObject
 
 ## Plots
 export plot_autocorr,
+    plot_bpv,
     plot_compare,
     plot_density,
     plot_dist,
+    plot_dist_comparison,
     plot_elpd,
     plot_energy,
     plot_ess,
@@ -51,6 +53,7 @@ export plot_autocorr,
     plot_posterior,
     plot_ppc,
     plot_rank,
+    plot_separation,
     plot_trace,
     plot_violin
 
@@ -82,7 +85,7 @@ export with_interactive_backend
 ## rcParams
 export rcParams, with_rc_context
 
-const _min_arviz_version = v"0.8.0"
+const _min_arviz_version = v"0.10.0"
 const arviz = PyNULL()
 const xarray = PyNULL()
 const bokeh = PyNULL()
