@@ -24,7 +24,7 @@
 | [`plot_posterior`](@ref)       | Plot Posterior densities in the style of John K.                                         |
 | [`plot_ppc`](@ref)             | Plot for posterior predictive checks.                                                    |
 | [`plot_rank`](@ref)            | Plot rank order statistics of chains.                                                    |
-| [`plot_separation](@ref)       | Separation plot for binary outcome models.                                               |
+| [`plot_separation`](@ref)      | Separation plot for binary outcome models.                                               |
 | [`plot_trace`](@ref)           | Plot distribution (histogram or kernel density estimates) and sampled values.            |
 | [`plot_violin`](@ref)          | Plot posterior of traces as violin plot.                                                 |
 
