@@ -2,28 +2,31 @@
 
 ## [Plots](@id plots-api)
 
-| Name                     | Description                                                                              |
-|:------------------------ |:---------------------------------------------------------------------------------------- |
-| [`plot_autocorr`](@ref)  | Bar plot of the autocorrelation function for a sequence of data.                         |
-| [`plot_compare`](@ref)   | Summary plot for model comparison.                                                       |
-| [`plot_density`](@ref)   | Generate KDE plots for continuous variables and histograms for discrete ones.            |
-| [`plot_dist`](@ref)      | Plot distribution as histogram or kernel density estimates.                              |
-| [`plot_elpd`](@ref)      | Plot a scatter or hexbin matrix of the sampled parameters.                               |
-| [`plot_energy`](@ref)    | Plot energy transition distribution and marginal energy distribution in HMC algorithms.  |
-| [`plot_ess`](@ref)       | Plot quantile, local or evolution of effective sample sizes (ESS).                       |
-| [`plot_forest`](@ref)    | Forest plot to compare HDI intervals from a number of distributions.                     |
-| [`plot_hdi`](@ref)       | Plot HDI intervals for regression data.                                                  |
-| [`plot_kde`](@ref)       | 1D or 2D KDE plot taking into account boundary conditions.                               |
-| [`plot_khat`](@ref)      | Plot Pareto tail indices.                                                                |
-| [`plot_loo_pit`](@ref)   | Plot Leave-One-Out (LOO) probability integral transformation (PIT) predictive checks.    |
-| [`plot_mcse`](@ref)      | Plot quantile, local or evolution of effective sample sizes (ESS).                       |
-| [`plot_pair`](@ref)      | Plot a scatter, kde and/or hexbin matrix with (optional) marginals on the diagonal.      |
-| [`plot_parallel`](@ref)  | Plot parallel coordinates plot showing posterior points with and without divergences.    |
-| [`plot_posterior`](@ref) | Plot Posterior densities in the style of John K.                                         |
-| [`plot_ppc`](@ref)       | Plot for posterior predictive checks.                                                    |
-| [`plot_rank`](@ref)      | Plot rank order statistics of chains.                                                    |
-| [`plot_trace`](@ref)     | Plot distribution (histogram or kernel density estimates) and sampled values.            |
-| [`plot_violin`](@ref)    | Plot posterior of traces as violin plot.                                                 |
+| Name                           | Description                                                                              |
+|:------------------------------ |:---------------------------------------------------------------------------------------- |
+| [`plot_autocorr`](@ref)        | Bar plot of the autocorrelation function for a sequence of data.                         |
+| [`plot_bpv`](@ref)             | Plot Bayesian p-value for observed data and Posterior/Prior predictive.                  |
+| [`plot_compare`](@ref)         | Summary plot for model comparison.                                                       |
+| [`plot_density`](@ref)         | Generate KDE plots for continuous variables and histograms for discrete ones.            |
+| [`plot_dist`](@ref)            | Plot distribution as histogram or kernel density estimates.                              |
+| [`plot_dist_comparison`](@ref) | Plot to compare fitted and unfitted distributions.                                       |
+| [`plot_elpd`](@ref)            | Plot a scatter or hexbin matrix of the sampled parameters.                               |
+| [`plot_energy`](@ref)          | Plot energy transition distribution and marginal energy distribution in HMC algorithms.  |
+| [`plot_ess`](@ref)             | Plot quantile, local or evolution of effective sample sizes (ESS).                       |
+| [`plot_forest`](@ref)          | Forest plot to compare HDI intervals from a number of distributions.                     |
+| [`plot_hdi`](@ref)             | Plot HDI intervals for regression data.                                                  |
+| [`plot_kde`](@ref)             | 1D or 2D KDE plot taking into account boundary conditions.                               |
+| [`plot_khat`](@ref)            | Plot Pareto tail indices.                                                                |
+| [`plot_loo_pit`](@ref)         | Plot Leave-One-Out (LOO) probability integral transformation (PIT) predictive checks.    |
+| [`plot_mcse`](@ref)            | Plot quantile, local or evolution of effective sample sizes (ESS).                       |
+| [`plot_pair`](@ref)            | Plot a scatter, kde and/or hexbin matrix with (optional) marginals on the diagonal.      |
+| [`plot_parallel`](@ref)        | Plot parallel coordinates plot showing posterior points with and without divergences.    |
+| [`plot_posterior`](@ref)       | Plot Posterior densities in the style of John K.                                         |
+| [`plot_ppc`](@ref)             | Plot for posterior predictive checks.                                                    |
+| [`plot_rank`](@ref)            | Plot rank order statistics of chains.                                                    |
+| [`plot_separation](@ref)       | Separation plot for binary outcome models.                                               |
+| [`plot_trace`](@ref)           | Plot distribution (histogram or kernel density estimates) and sampled values.            |
+| [`plot_violin`](@ref)          | Plot posterior of traces as violin plot.                                                 |
 
 ## [Stats](@id stats-api)
 
