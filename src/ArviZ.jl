@@ -34,9 +34,11 @@ import PyCall: PyObject
 
 ## Plots
 export plot_autocorr,
+    plot_bpv,
     plot_compare,
     plot_density,
     plot_dist,
+    plot_dist_comparison,
     plot_elpd,
     plot_energy,
     plot_ess,
@@ -51,6 +53,7 @@ export plot_autocorr,
     plot_posterior,
     plot_ppc,
     plot_rank,
+    plot_separation,
     plot_trace,
     plot_violin
 
