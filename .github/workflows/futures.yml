@@ -17,10 +17,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        julia-version: ["1.5", "nightly"]
+        julia-version: ["1", "nightly"]
         os: [ubuntu-latest]
         include:
-          - julia-version: "1.5"
+          - julia-version: "1"
             arviz_version: "master"
           - julia-version: "nightly"
             arviz_version: "release"
