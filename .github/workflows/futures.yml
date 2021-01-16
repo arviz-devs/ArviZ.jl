@@ -7,7 +7,7 @@ on:
 
 env:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
-  CMDSTAN_VERSION: "2.23.0"
+  CMDSTAN_VERSION: "2.25.0"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
 
 jobs:
@@ -17,10 +17,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        julia-version: ["1.5", "nightly"]
+        julia-version: ["1", "nightly"]
         os: [ubuntu-latest]
         include:
-          - julia-version: "1.5"
+          - julia-version: "1"
             arviz_version: "master"
           - julia-version: "nightly"
             arviz_version: "release"
@@ -30,6 +30,17 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
           arch: x64
+      - name: Cache Julia artifacts
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: ~/.julia/artifacts
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
       - name: Cache CmdStan
         id: cache-cmdstan
         uses: actions/cache@v2

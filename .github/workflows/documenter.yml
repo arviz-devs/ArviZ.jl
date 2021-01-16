@@ -7,7 +7,7 @@ on:
 
 env:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
-  CMDSTAN_VERSION: "2.23.0"
+  CMDSTAN_VERSION: "2.25.0"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
   JULIA_NUM_THREADS: 2
 
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@latest
         with:
-          version: v1.5
+          version: 1
       - name: Cache CmdStan
         id: cache-cmdstan
         uses: actions/cache@v2
