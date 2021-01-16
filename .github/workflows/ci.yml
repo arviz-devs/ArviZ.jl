@@ -27,6 +27,17 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
           arch: x64
+      - name: Cache Julia artifacts
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: ~/.julia/artifacts
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
       - name: Cache CmdStan
         id: cache-cmdstan
         uses: actions/cache@v2
