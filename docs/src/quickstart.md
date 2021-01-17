@@ -1,6 +1,7 @@
 # [ArviZ.jl Quickstart](@id quickstart)
 
 !!! note
+    
     This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/getting_started/Introduction.html).
 
 ```@example quickstart
@@ -31,12 +32,14 @@ Below, we have 10 chains of 50 draws each for four different distributions.
 using Distributions
 
 s = (10, 50)
-plot_forest(Dict(
-    "normal" => randn(rng, s),
-    "gumbel" => rand(rng, Gumbel(), s),
-    "student t" => rand(rng, TDist(6), s),
-    "exponential" => rand(rng, Exponential(), s)
-));
+plot_forest(
+    Dict(
+        "normal" => randn(rng, s),
+        "gumbel" => rand(rng, Gumbel(), s),
+        "student t" => rand(rng, TDist(6), s),
+        "exponential" => rand(rng, Exponential(), s),
+    ),
+);
 gcf()
 ```
 
@@ -63,7 +66,7 @@ schools = [
     "Hotchkiss",
     "Lawrenceville",
     "St. Paul's",
-    "Mt. Hermon"
+    "Mt. Hermon",
 ];
 
 nwarmup, nsamples, nchains = 1000, 1000, 4;
@@ -75,20 +78,17 @@ Now we write and run the model using Turing:
 ```@example quickstart
 using Turing
 
-Turing.@model turing_model(
-    J,
-    y,
-    σ,
-    ::Type{TV} = Vector{Float64},
-) where {TV} = begin
-    μ ~ Normal(0, 5)
-    τ ~ truncated(Cauchy(0, 5), 0, Inf)
-    θ = TV(undef, J)
-    θ .~ Normal(μ, τ)
-    for i in eachindex(y)
-        y[i] ~ Normal(θ[i], σ[i])
+Turing.@model function turing_model(J, y, σ, ::Type{TV}=Vector{Float64}) where {TV}
+    begin
+        μ ~ Normal(0, 5)
+        τ ~ truncated(Cauchy(0, 5), 0, Inf)
+        θ = TV(undef, J)
+        θ .~ Normal(μ, τ)
+        for i in eachindex(y)
+            y[i] ~ Normal(θ[i], σ[i])
+        end
+        return y
     end
-    return y
 end
 
 param_mod = turing_model(J, y, σ)
@@ -96,13 +96,7 @@ sampler = NUTS(nwarmup, 0.8)
 
 rng = Random.MersenneTwister(16653)
 turing_chns = sample(
-    rng,
-    param_mod,
-    sampler,
-    MCMCThreads(),
-    nwarmup + nsamples,
-    nchains;
-    progress = false,
+    rng, param_mod, sampler, MCMCThreads(), nwarmup + nsamples, nchains; progress=false
 );
 nothing # hide
 ```
@@ -110,7 +104,7 @@ nothing # hide
 Most ArviZ functions work fine with `Chains` objects from Turing:
 
 ```@example quickstart
-plot_autocorr(turing_chns; var_names = ["μ", "τ"]);
+plot_autocorr(turing_chns; var_names=["μ", "τ"]);
 gcf()
 ```
 
@@ -123,14 +117,10 @@ ArviZ is built to work with [`InferenceData`](@ref) (a netcdf datastore that loa
 
 ```@example quickstart
 idata = from_mcmcchains(
-    turing_chns,
-    coords = Dict("school" => schools),
-    dims = Dict(
-        "y" => ["school"],
-        "σ" => ["school"],
-        "θ" => ["school"],
-    ),
-    library = "Turing",
+    turing_chns;
+    coords=Dict("school" => schools),
+    dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
+    library="Turing",
 )
 ```
 
@@ -162,13 +152,17 @@ gcf()
 ```
 
 ### Additional information in Turing.jl
+
 With a few more steps, we can use Turing to compute additional useful groups to add to the [`InferenceData`](@ref).
 
 To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
+
 ```@example quickstart
-prior = sample(param_mod, Prior(), nsamples; progress = false)
+prior = sample(param_mod, Prior(), nsamples; progress=false)
 ```
+
 To draw from the prior and posterior predictive distributions we can instantiate a "predictive model", i.e. a Turing model but with the observations set to `missing`, and then calling `predict` on the predictive model and the previously drawn samples:
+
 ```@example quickstart
 # Instantiate the predictive model
 param_mod_predict = turing_model(J, similar(y, Missing), σ)
@@ -176,33 +170,33 @@ param_mod_predict = turing_model(J, similar(y, Missing), σ)
 prior_predictive = predict(param_mod_predict, prior)
 posterior_predictive = predict(param_mod_predict, turing_chns)
 ```
+
 And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
+
 ```@example quickstart
 loglikelihoods = Turing.pointwise_loglikelihoods(param_mod, turing_chns)
 ```
+
 This can then be included in the [`from_mcmcchains`](@ref) call from above:
+
 ```@example quickstart
 using LinearAlgebra
 # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
 ynames = string.(keys(posterior_predictive))
 loglikelihoods_vals = getindex.(Ref(loglikelihoods), ynames)
 # Reshape into `(nchains, nsamples, size(y)...)`
-loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims = 3), (2, 1, 3))
+loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims=3), (2, 1, 3))
 
 idata = from_mcmcchains(
-    turing_chns,
-    posterior_predictive = posterior_predictive,
-    log_likelihood = Dict("y" => loglikelihoods_arr),
-    prior = prior,
-    prior_predictive = prior_predictive,
-    observed_data = Dict("y" => y),
-    coords = Dict("school" => schools),
-    dims = Dict(
-        "y" => ["school"],
-        "σ" => ["school"],
-        "θ" => ["school"],
-    ),
-    library = "Turing"
+    turing_chns;
+    posterior_predictive=posterior_predictive,
+    log_likelihood=Dict("y" => loglikelihoods_arr),
+    prior=prior,
+    prior_predictive=prior_predictive,
+    observed_data=Dict("y" => y),
+    coords=Dict("school" => schools),
+    dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
+    library="Turing",
 )
 ```
 
@@ -216,7 +210,7 @@ If the model is well-calibrated, i.e. it replicates the true generative process 
 This can be inspected visually:
 
 ```@example quickstart
-plot_loo_pit(idata; y = "y", ecdf = true);
+plot_loo_pit(idata; y="y", ecdf=true);
 gcf()
 ```
 
@@ -260,17 +254,17 @@ generated quantities {
 """
 
 schools_dat = Dict("J" => J, "y" => y, "sigma" => σ)
-stan_model = Stanmodel(
-    model = schools_code,
-    name = "schools",
-    nchains = nchains,
-    num_warmup = nwarmup,
-    num_samples = nsamples,
-    output_format = :mcmcchains,
-    random = CmdStan.Random(28983),
+stan_model = Stanmodel(;
+    model=schools_code,
+    name="schools",
+    nchains=nchains,
+    num_warmup=nwarmup,
+    num_samples=nsamples,
+    output_format=:mcmcchains,
+    random=CmdStan.Random(28983),
 )
-_, stan_chns, _ = stan(stan_model, schools_dat, summary = false);
-Base.Filesystem.rm(stan_model.tmpdir; recursive = true, force = true); # hide
+_, stan_chns, _ = stan(stan_model, schools_dat; summary=false);
+Base.Filesystem.rm(stan_model.tmpdir; recursive=true, force=true); # hide
 nothing # hide
 ```
 
@@ -285,11 +279,11 @@ Note that we're using the same [`from_cmdstan`](@ref) function used by ArviZ to 
 ```@example quickstart
 idata = from_cmdstan(
     stan_chns;
-    posterior_predictive = "y_hat",
-    observed_data = Dict("y" => schools_dat["y"]),
-    log_likelihood = "log_lik",
-    coords = Dict("school" => schools),
-    dims = Dict(
+    posterior_predictive="y_hat",
+    observed_data=Dict("y" => schools_dat["y"]),
+    log_likelihood="log_lik",
+    coords=Dict("school" => schools),
+    dims=Dict(
         "y" => ["school"],
         "sigma" => ["school"],
         "theta" => ["school"],
@@ -304,8 +298,8 @@ Here is a plot showing where the Hamiltonian sampler had divergences:
 ```@example quickstart
 plot_pair(
     idata;
-    coords = Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]),
-    divergences = true,
+    coords=Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]),
+    divergences=true,
 );
 gcf()
 ```
@@ -322,13 +316,13 @@ using Soss, NamedTupleTools
 mod = Soss.@model (J, σ) begin
     μ ~ Normal(0, 5)
     τ ~ HalfCauchy(5)
-    θ ~ Normal(μ, τ) |> iid(J)
+    θ ~ iid(J)(Normal(μ, τ))
     y ~ For(1:J) do j
         Normal(θ[j], σ[j])
     end
 end
 
-constant_data = (J = J, σ = σ)
+constant_data = (J=J, σ=σ)
 param_mod = mod(; constant_data...)
 ```
 
@@ -337,10 +331,10 @@ Then we draw from the prior and prior predictive distributions.
 ```@example quickstart
 Random.seed!(5298)
 prior_priorpred = [
-    map(1:nchains*nsamples) do _
+    map(1:(nchains * nsamples)) do _
         draw = rand(param_mod)
         return delete(draw, keys(constant_data))
-    end
+    end,
 ];
 nothing # hide
 ```
@@ -349,7 +343,7 @@ Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/
 
 ```@example quickstart
 post = map(1:nchains) do _
-    dynamicHMC(param_mod, (y = y,), nsamples)
+    dynamicHMC(param_mod, (y=y,), nsamples)
 end;
 nothing # hide
 ```
@@ -372,7 +366,7 @@ Each Soss draw is a `NamedTuple`.
 We can plot the rank order statistics of the posterior to identify poor convergence:
 
 ```@example quickstart
-plot_rank(post; var_names = ["μ", "τ"]);
+plot_rank(post; var_names=["μ", "τ"]);
 gcf()
 ```
 
@@ -381,18 +375,14 @@ Now we combine all of the samples to an `InferenceData`:
 ```@example quickstart
 idata = from_namedtuple(
     post_postpred;
-    posterior_predictive = [:y],
-    prior = prior_priorpred,
-    prior_predictive = [:y],
-    observed_data = (y = y,),
-    constant_data = constant_data,
-    coords = Dict("school" => schools),
-    dims = Dict(
-        "y" => ["school"],
-        "σ" => ["school"],
-        "θ" => ["school"],
-    ),
-    library = Soss,
+    posterior_predictive=[:y],
+    prior=prior_priorpred,
+    prior_predictive=[:y],
+    observed_data=(y=y,),
+    constant_data=constant_data,
+    coords=Dict("school" => schools),
+    dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
+    library=Soss,
 )
 ```
 
@@ -401,8 +391,8 @@ We can compare the prior and posterior predictive distributions:
 ```@example quickstart
 plot_density(
     [idata.posterior_predictive, idata.prior_predictive];
-    data_labels = ["Post-pred", "Prior-pred"],
-    var_names = ["y"],
+    data_labels=["Post-pred", "Prior-pred"],
+    var_names=["y"],
 )
 gcf()
 ```

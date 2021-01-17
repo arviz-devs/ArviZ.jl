@@ -3,8 +3,8 @@
 ArviZ adopts the NumFOCUS Code of Conduct directly. In other words, we
 expect our community to treat others with kindness and understanding.
 
-
 # THE SHORT VERSION
+
 Be kind to others. Do not insult or put down others.
 Behave professionally. Remember that harassment and sexist, racist,
 or exclusionary jokes are not appropriate.
@@ -21,8 +21,8 @@ in any form.
 
 Thank you for helping make this a welcoming, friendly community for all.
 
-
 # How to Submit a Report
+
 If you feel that there has been a Code of Conduct violation an anonymous
 reporting form is available.
 **If you feel your safety is in jeopardy or the situation is an
@@ -43,8 +43,8 @@ You can view the Privacy Policy and Terms of Service for TypeForm here.
 The NumFOCUS Privacy Policy is here:
 https://www.numfocus.org/privacy-policy
 
-
 # Full Code of Conduct
+
 The full text of the NumFOCUS/ArviZ.jl Code of Conduct can be found on
 NumFOCUS's website
 https://numfocus.org/code-of-conduct
