@@ -11,7 +11,7 @@ dimensions of the resulting arrays.
 ```@example
 using ArviZ
 nchains, ndraws = 4, 100
-data = [(x = rand(), y = randn(2), z = randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
+data = [(x=rand(), y=randn(2), z=randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
 stacked_data = ArviZ.stack(data);
 ```
 """

@@ -150,10 +150,10 @@ Compute summary statistics on any object that can be passed to [`convert_to_data
 
 # Keywords
 
-- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices.
-- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
+  - `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices.
+  - `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
     dimensions.
-- `kwargs`: Keyword arguments passed to [`summarystats`](@ref).
+  - `kwargs`: Keyword arguments passed to [`summarystats`](@ref).
 """
 function summary(data; group=:posterior, coords=nothing, dims=nothing, kwargs...)
     dataset = convert_to_dataset(data; group=group, coords=coords, dims=dims)
