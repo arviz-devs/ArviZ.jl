@@ -1,8 +1,8 @@
-import_arviz() = _import_dependency("arviz", "arviz"; channel = "conda-forge")
+import_arviz() = _import_dependency("arviz", "arviz"; channel="conda-forge")
 
 arviz_version() = VersionNumber(arviz.__version__)
 
-function check_needs_update(; update = true)
+function check_needs_update(; update=true)
     if arviz_version() < _min_arviz_version
         @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or " *
               "greater but found version $(arviz_version())."
@@ -39,9 +39,9 @@ function check_needs_rebuild()
 end
 
 function initialize_arviz()
-    ispynull(arviz) || return
+    ispynull(arviz) || return nothing
     copy!(arviz, import_arviz())
-    check_needs_update(update = true)
+    check_needs_update(; update=true)
     check_needs_rebuild()
 
     append!(SUPPORTED_GROUPS, map(Symbol, arviz.data.inference_data.SUPPORTED_GROUPS))
@@ -63,9 +63,9 @@ function initialize_arviz()
 end
 
 function initialize_xarray()
-    ispynull(xarray) || return
-    copy!(xarray, _import_dependency("xarray", "xarray"; channel = "conda-forge"))
-    _import_dependency("dask", "dask"; channel = "conda-forge")
+    ispynull(xarray) || return nothing
+    copy!(xarray, _import_dependency("xarray", "xarray"; channel="conda-forge"))
+    _import_dependency("dask", "dask"; channel="conda-forge")
     pytype_mapping(xarray.Dataset, Dataset)
     return nothing
 end
@@ -77,8 +77,8 @@ function initialize_numpy()
 end
 
 function initialize_pandas()
-    ispynull(pandas) || return
-    copy!(pandas, _import_dependency("pandas", "pandas"; channel = "conda-forge"))
+    ispynull(pandas) || return nothing
+    copy!(pandas, _import_dependency("pandas", "pandas"; channel="conda-forge"))
     return nothing
 end
 
@@ -87,7 +87,7 @@ function update_arviz()
     if _using_conda() && _isyes(Base.prompt("Try updating arviz using conda? [Y/n]"))
         # this syntax isn't officially supported, but it works (for now)
         try
-            Conda.add("arviz>=$_min_arviz_version"; channel = "conda-forge")
+            Conda.add("arviz>=$_min_arviz_version"; channel="conda-forge")
             return true
         catch e
             println(e.msg)
@@ -105,7 +105,7 @@ function update_arviz()
     return false
 end
 
-function _import_dependency(modulename, pkgname = modulename; channel = nothing)
+function _import_dependency(modulename, pkgname=modulename; channel=nothing)
     try
         return if channel === nothing
             pyimport_conda(modulename, pkgname)

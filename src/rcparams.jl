@@ -44,7 +44,11 @@ function Base.setindex!(r::RcParams, v, k)
             if pyisinstance(err, py"ValueError")
                 throw(ErrorException(err.args[1]))
             elseif pyisinstance(err, py"KeyError")
-                throw(KeyError("$(k) is not a valid rc parameter (see keys(rcParams) for a list of valid parameters)"))
+                throw(
+                    KeyError(
+                        "$(k) is not a valid rc parameter (see keys(rcParams) for a list of valid parameters)",
+                    ),
+                )
             end
         end
         throw(e)

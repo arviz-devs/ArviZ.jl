@@ -12,11 +12,12 @@
         @test hash(dataset) == hash(pydataset)
 
         vars = Dict("x" => ("dimx", randn(3)), ("y" => (("dimy_1", "dimy_2"), randn(3, 2))))
-        coords =
-            Dict("dimx" => [1, 2, 3], "dimy_1" => ["a", "b", "c"], "dimy_2" => ["d", "e"])
+        coords = Dict(
+            "dimx" => [1, 2, 3], "dimy_1" => ["a", "b", "c"], "dimy_2" => ["d", "e"]
+        )
         attrs = Dict("prop1" => 1, "prop2" => "propval")
-        @inferred ArviZ.Dataset(data_vars = vars, coords = coords, attrs = attrs)
-        ds = ArviZ.Dataset(data_vars = vars, coords = coords, attrs = attrs)
+        @inferred ArviZ.Dataset(; data_vars=vars, coords=coords, attrs=attrs)
+        ds = ArviZ.Dataset(; data_vars=vars, coords=coords, attrs=attrs)
         @test ds isa ArviZ.Dataset
         vars2, kwargs = ArviZ.dataset_to_dict(ds)
         for (k, v) in vars
@@ -72,13 +73,13 @@ end
         B = Dict("B" => randn(rng, 2, 10, 2))
         dataA = ArviZ.convert_to_dataset(A)
         dataB = ArviZ.convert_to_dataset(B)
-        idata = InferenceData(posterior = dataA, prior = dataB)
+        idata = InferenceData(; posterior=dataA, prior=dataB)
 
         ds1 = ArviZ.convert_to_dataset(idata)
         @test ds1 isa ArviZ.Dataset
         @test "A" ∈ [ds1.keys()...]
 
-        ds2 = ArviZ.convert_to_dataset(idata; group = :prior)
+        ds2 = ArviZ.convert_to_dataset(idata; group=:prior)
         @test ds2 isa ArviZ.Dataset
         @test "B" ∈ [ds2.keys()...]
     end
@@ -113,11 +114,7 @@ end
         attrs = Dict("prop" => "propval")
 
         dataset = ArviZ.convert_to_constant_dataset(
-            data;
-            coords = coords,
-            dims = dims,
-            library = library,
-            attrs = attrs,
+            data; coords=coords, dims=dims, library=library, attrs=attrs
         )
         @test dataset isa ArviZ.Dataset
         @test "x" ∈ dataset.keys()
@@ -135,19 +132,15 @@ end
     end
 
     @testset "ArviZ.convert_to_constant_dataset(::NamedTuple; kwargs...)" begin
-        data = (x = randn(4, 5), y = ["a", "b", "c"])
-        coords = (xdim1 = 1:4, xdim2 = 5:9, ydim1 = ["d", "e", "f"])
-        dims = (x = ["xdim1", "xdim2"], y = ["ydim1"])
+        data = (x=randn(4, 5), y=["a", "b", "c"])
+        coords = (xdim1=1:4, xdim2=5:9, ydim1=["d", "e", "f"])
+        dims = (x=["xdim1", "xdim2"], y=["ydim1"])
         library = "MyLib"
         dataset = ArviZ.convert_to_constant_dataset(data)
-        attrs = (prop = "propval",)
+        attrs = (prop="propval",)
 
         dataset = ArviZ.convert_to_constant_dataset(
-            data;
-            coords = coords,
-            dims = dims,
-            library = library,
-            attrs = attrs,
+            data; coords=coords, dims=dims, library=library, attrs=attrs
         )
         @test dataset isa ArviZ.Dataset
         @test "x" ∈ dataset.keys()
@@ -171,19 +164,14 @@ end
     K = 6
     nchains = 4
     ndraws = 500
-    vars =
-        Dict("a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, J, K))
+    vars = Dict(
+        "a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, J, K)
+    )
     coords = Dict("bi" => 1:J, "bj" => 1:K)
     dims = Dict("b" => ["bi", "bj"])
     attrs = Dict("mykey" => 5)
 
-    ds = ArviZ.dict_to_dataset(
-        vars;
-        library = :MyLib,
-        coords = coords,
-        dims = dims,
-        attrs = attrs,
-    )
+    ds = ArviZ.dict_to_dataset(vars; library=:MyLib, coords=coords, dims=dims, attrs=attrs)
     @test ds isa ArviZ.Dataset
     vars2, kwargs = ArviZ.dataset_to_dict(ds)
     for (k, v) in vars

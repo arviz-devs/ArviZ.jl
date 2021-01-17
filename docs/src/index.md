@@ -19,10 +19,10 @@ It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot
 ## [Installation](@id installation)
 
 To use with the default Python environment, first [install ArviZ](https://github.com/arviz-devs/arviz#installation).
-Then in Julia's REPL run
+From the Julia REPL, type `]` to enter the Pkg REPL mode and run
 
-```julia
-] add ArviZ
+```
+pkg> add ArviZ
 ```
 
 To install ArviZ.jl with its Python dependencies in Julia's private conda environment, in the console run

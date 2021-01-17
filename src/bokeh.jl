@@ -1,9 +1,9 @@
 const has_bokeh_png_deps = false
 
 function initialize_bokeh()
-    ispynull(bokeh) || return
+    ispynull(bokeh) || return nothing
     try
-        copy!(bokeh, _import_dependency("bokeh", "bokeh"; channel = "conda-forge"))
+        copy!(bokeh, _import_dependency("bokeh", "bokeh"; channel="conda-forge"))
     catch err
         copy!(bokeh, PyNULL())
         throw(err)
@@ -13,9 +13,9 @@ end
 
 # install dependencies for saving PNGs if using conda
 function initialize_bokeh_png_deps()
-    has_bokeh_png_deps && return
+    has_bokeh_png_deps && return nothing
     try
-        _import_dependency("selenium", "selenium"; channel = "conda-forge")
+        _import_dependency("selenium", "selenium"; channel="conda-forge")
         has_bokeh_png_deps = true
     catch err
         has_bokeh_png_deps = false
@@ -59,7 +59,7 @@ function Base.getproperty(plot::BokehPlot, name::Symbol)
     return getproperty(o, name)
 end
 
-function render_html(plot::BokehPlot, name = nothing)
+function render_html(plot::BokehPlot, name=nothing)
     obj = PyObject(plot)
     return bokeh.embed.file_html(obj, bokeh.resources.CDN, name)
 end

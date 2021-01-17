@@ -11,7 +11,7 @@ dimensions of the resulting arrays.
 ```@example
 using ArviZ
 nchains, ndraws = 4, 100
-data = [(x = rand(), y = randn(2), z = randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
+data = [(x=rand(), y=randn(2), z=randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
 stacked_data = ArviZ.stack(data);
 ```
 """
@@ -27,7 +27,7 @@ function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     return ret
 end
 function stack(x::AbstractArray{<:NamedTuple{K}}) where {K}
-    length(x) == 0 && return
+    length(x) == 0 && return nothing
     @inbounds x1 = x[1]
     ret = NamedTuple()
     for k in K
@@ -127,7 +127,7 @@ function from_namedtuple(
     sample_stats,
     predictions,
     log_likelihood;
-    library = nothing,
+    library=nothing,
     kwargs...,
 )
     all_idata = InferenceData()
@@ -161,23 +161,23 @@ function from_namedtuple(
     if library !== nothing
         setattribute!(group_dataset, "inference_library", string(library))
     end
-    concat!(all_idata, InferenceData(posterior = group_dataset))
+    concat!(all_idata, InferenceData(; posterior=group_dataset))
 
     return all_idata
 end
 function from_namedtuple(
-    posterior::Union{NamedTuple,Nothing} = nothing;
-    posterior_predictive = nothing,
-    sample_stats = nothing,
-    predictions = nothing,
-    prior = nothing,
-    prior_predictive = nothing,
-    sample_stats_prior = nothing,
-    observed_data = nothing,
-    constant_data = nothing,
-    predictions_constant_data = nothing,
-    log_likelihood = nothing,
-    library = nothing,
+    posterior::Union{NamedTuple,Nothing}=nothing;
+    posterior_predictive=nothing,
+    sample_stats=nothing,
+    predictions=nothing,
+    prior=nothing,
+    prior_predictive=nothing,
+    sample_stats_prior=nothing,
+    observed_data=nothing,
+    constant_data=nothing,
+    predictions_constant_data=nothing,
+    log_likelihood=nothing,
+    library=nothing,
     kwargs...,
 )
     all_idata = from_namedtuple(
@@ -186,16 +186,16 @@ function from_namedtuple(
         sample_stats,
         predictions,
         log_likelihood;
-        library = library,
+        library=library,
         kwargs...,
     )
 
     if any(x -> x !== nothing, [prior, prior_predictive, sample_stats_prior])
         pre_prior_idata = convert_to_inference_data(
             prior;
-            posterior_predictive = prior_predictive,
-            sample_stats = sample_stats_prior,
-            library = library,
+            posterior_predictive=prior_predictive,
+            sample_stats=sample_stats_prior,
+            library=library,
             kwargs...,
         )
         prior_idata = rekey(
@@ -216,8 +216,7 @@ function from_namedtuple(
     ]
         group_data === nothing && continue
         group_dict = convert(Dict, group_data)
-        group_dataset =
-            convert_to_constant_dataset(group_dict; library = library, kwargs...)
+        group_dataset = convert_to_constant_dataset(group_dict; library=library, kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
@@ -250,8 +249,7 @@ function convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...
     return from_namedtuple(data; kwargs...)
 end
 function convert_to_inference_data(
-    data::AbstractVector{<:AbstractVector{<:NamedTuple}};
-    kwargs...,
+    data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...
 )
     return from_namedtuple(data; kwargs...)
 end

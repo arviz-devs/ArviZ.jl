@@ -9,7 +9,7 @@ using MonteCarloMeasurements: Particles
         @test PyObject(InferenceData(pydata)) === pydata
         @test InferenceData(data) === data
         @test_throws ArgumentError InferenceData(py"PyNullObject()")
-        data2 = InferenceData(; posterior = data.posterior)
+        data2 = InferenceData(; posterior=data.posterior)
         @test data2 isa InferenceData
         @test :posterior in propertynames(data2)
         @test hash(data) == hash(pydata)
@@ -18,14 +18,14 @@ using MonteCarloMeasurements: Particles
     @testset "properties" begin
         @test :posterior in propertynames(data)
         @test length(propertynames(data)) > 1
-        data3 = InferenceData(; posterior = data.posterior, prior = data.prior)
+        data3 = InferenceData(; posterior=data.posterior, prior=data.prior)
         @test :prior in propertynames(data3)
         delete!(data3, :prior)
         @test :prior ∉ propertynames(data3)
     end
 
     @testset "groups" begin
-        data4 = InferenceData(posterior = data.posterior)
+        data4 = InferenceData(; posterior=data.posterior)
         @test ArviZ.groupnames(data4) == [:posterior]
         g = ArviZ.groups(data4)
         @test g isa Dict
@@ -51,8 +51,8 @@ using MonteCarloMeasurements: Particles
         @testset "plain" begin
             text = sprint(show, data)
             @test startswith(text, "InferenceData with groups:")
-            rest = split(PyObject(data).__str__(), '\n'; limit = 2)[2]
-            @test split(text, '\n'; limit = 2)[2] == rest
+            rest = split(PyObject(data).__str__(), '\n'; limit=2)[2]
+            @test split(text, '\n'; limit=2)[2] == rest
         end
 
         @testset "html" begin
@@ -69,40 +69,39 @@ end
 
 @testset "+(::InferenceData, ::InferenceData)" begin
     rng = MersenneTwister(42)
-    idata1 = from_dict(
-        posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2)),
+    idata1 = from_dict(;
+        posterior=Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
     )
-    idata2 =
-        from_dict(prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2)))
+    idata2 = from_dict(;
+        prior=Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2))
+    )
 
     new_idata = idata1 + idata2
     @test new_idata isa InferenceData
     @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]),
-        new_idata,
+        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), new_idata
     ) == []
 end
 
 @testset "concat" begin
     rng = MersenneTwister(42)
-    idata1 = from_dict(
-        posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2)),
+    idata1 = from_dict(;
+        posterior=Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
     )
-    idata2 =
-        from_dict(prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2)))
+    idata2 = from_dict(;
+        prior=Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2))
+    )
 
     new_idata = concat(idata1, idata2)
     @test new_idata isa InferenceData
     @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]),
-        new_idata,
+        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), new_idata
     ) == []
 
     new_idata = concat!(idata1, idata2)
     @test new_idata === idata1
     @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]),
-        idata1,
+        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), idata1
     ) == []
 
     idata3 = concat!()
@@ -113,8 +112,7 @@ end
     new_idata = concat!(idata4, idata1)
     @test new_idata === idata4
     @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]),
-        idata4,
+        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), idata4
     ) == []
 end
 
@@ -164,13 +162,12 @@ end
     posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
     prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2))
 
-    idata = from_dict(posterior; prior = prior)
+    idata = from_dict(posterior; prior=prior)
     @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]),
-        idata,
+        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), idata
     ) == []
 
-    idata2 = from_dict(; prior = prior)
+    idata2 = from_dict(; prior=prior)
     @test check_multiple_attrs(Dict(:prior => ["C", "D"]), idata2) == []
 end
 

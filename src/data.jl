@@ -87,7 +87,7 @@ Base.isempty(data::InferenceData) = isempty(groupnames(data))
 
 convert_to_inference_data(::Nothing; kwargs...) = InferenceData()
 
-function convert_to_dataset(data::InferenceData; group = :posterior, kwargs...)
+function convert_to_dataset(data::InferenceData; group=:posterior, kwargs...)
     group = Symbol(group)
     dataset = getproperty(data, group)
     return dataset
@@ -109,19 +109,13 @@ end
 
 # A more flexible form of `from_dict`
 # Internally calls `dict_to_dataset`
-function _from_dict(
-    posterior = nothing;
-    attrs = Dict(),
-    coords = nothing,
-    dims = nothing,
-    dicts...,
-)
-    dicts = (posterior = posterior, dicts...)
+function _from_dict(posterior=nothing; attrs=Dict(), coords=nothing, dims=nothing, dicts...)
+    dicts = (posterior=posterior, dicts...)
 
     datasets = []
     for (name, dict) in pairs(dicts)
         (dict === nothing || isempty(dict)) && continue
-        dataset = dict_to_dataset(dict; attrs = attrs, coords = coords, dims = dims)
+        dataset = dict_to_dataset(dict; attrs=attrs, coords=coords, dims=dims)
         push!(datasets, name => dataset)
     end
 
@@ -132,7 +126,7 @@ end
 @doc forwarddoc(:concat) concat
 
 function concat(data::InferenceData...; kwargs...)
-    return arviz.concat(data...; inplace = false, kwargs...)
+    return arviz.concat(data...; inplace=false, kwargs...)
 end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
@@ -146,7 +140,7 @@ In-place version of `concat`, where `data1` is modified to contain the concatena
 concat!
 
 function concat!(data::InferenceData, other_data::InferenceData...; kwargs...)
-    arviz.concat(data, other_data...; inplace = true, kwargs...)
+    arviz.concat(data, other_data...; inplace=true, kwargs...)
     return data
 end
 concat!(; kwargs...) = InferenceData()
@@ -162,7 +156,7 @@ function rekey(data::InferenceData, keymap)
     return concat(data_new...)
 end
 
-function reorder_groups!(data::InferenceData; group_order = SUPPORTED_GROUPS)
+function reorder_groups!(data::InferenceData; group_order=SUPPORTED_GROUPS)
     group_order = map(Symbol, group_order)
     names = groupnames(data)
     sorted_names = filter(n -> n ∈ names, group_order)

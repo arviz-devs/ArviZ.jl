@@ -18,9 +18,10 @@ end
 Convert `MonteCarloMeasurements.AbstractParticles` to an [`InferenceData`](@ref).
 
 `obj` may have the following types:
-- `::AbstractParticles`: Univariate draws from a single chain.
-- `::AbstractVector{<:AbstractParticles}`: Univariate draws from a vector of chains.
-- `::AbstractVector{<:AbstractArray{<:AbstractParticles}}`: Multivariate draws from a vector
+
+  - `::AbstractParticles`: Univariate draws from a single chain.
+  - `::AbstractVector{<:AbstractParticles}`: Univariate draws from a vector of chains.
+  - `::AbstractVector{<:AbstractArray{<:AbstractParticles}}`: Multivariate draws from a vector
     of chains.
 """
 function convert_to_inference_data(obj::AbstractParticles; kwargs...)
@@ -30,8 +31,7 @@ function convert_to_inference_data(obj::AbstractVector{<:AbstractParticles}; kwa
     return convert_to_inference_data(stack(stack.(obj)); kwargs...)
 end
 function convert_to_inference_data(
-    obj::AbstractVector{<:AbstractArray{<:AbstractParticles}};
-    kwargs...,
+    obj::AbstractVector{<:AbstractArray{<:AbstractParticles}}; kwargs...
 )
     return convert_to_inference_data(stack(stack.(obj)); kwargs...)
 end
