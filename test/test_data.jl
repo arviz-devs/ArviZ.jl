@@ -147,12 +147,12 @@ end
     end
 
     @testset "convert_to_inference_data(::Vector{Particles})" begin
-        p = [Particles(randn(rng, 10)) for _ in 1:4]
+        p = [Particles(randn(rng, 10)) for _ = 1:4]
         idata5 = convert_to_inference_data(p)
         @test check_multiple_attrs(Dict(:posterior => ["x"]), idata5) == []
     end
     @testset "convert_to_inference_data(::Vector{Array{Particles}})" begin
-        p = [Particles(randn(rng, 10, 3)) for _ in 1:4]
+        p = [Particles(randn(rng, 10, 3)) for _ = 1:4]
         idata6 = convert_to_inference_data(p)
         @test check_multiple_attrs(Dict(:posterior => ["x"]), idata6) == []
     end

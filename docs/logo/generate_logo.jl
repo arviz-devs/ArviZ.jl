@@ -54,7 +54,7 @@ logotext = text(
 )
 
 # Add Julia dots
-for i in 1:3
+for i = 1:3
     scatter(dot_coords[i, :]...; s = dot_radius, zorder = 2, color = dot_colors[i])
 end
 

@@ -43,7 +43,7 @@ function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
 end
 
 function makechains(nvars::Int, args...; kwargs...)
-    names = ["var$(i)" for i in 1:nvars]
+    names = ["var$(i)" for i = 1:nvars]
     return makechains(names, args...; kwargs...)
 end
 
@@ -59,7 +59,7 @@ function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
     )
     rc, chns, cnames = stan(stan_model, data, proj_dir, summary = false)
     outfiles = []
-    for i in 1:chains
+    for i = 1:chains
         push!(outfiles, "$(proj_dir)/tmp/$(model_name)_samples_$(i).csv")
     end
     return (model = stan_model, files = outfiles, chains = chns)
@@ -219,7 +219,7 @@ end
         vals = randn(rng, ndraws, nvars, nchains)
         vals = Array{Union{Float64,Missing},3}(vals)
         vals[1, 1, 1] = missing
-        names = ["var$(i)" for i in 1:nvars]
+        names = ["var$(i)" for i = 1:nvars]
         chns = MCMCChains.Chains(vals, names)
         @test Missing <: eltype(chns.value)
         idata = from_mcmcchains(chns)

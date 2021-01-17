@@ -22,7 +22,7 @@ stack(x::NamedTuple) = (; (k => stack(v) for (k, v) in pairs(x))...)
 function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     ret = Array{T}(undef, (size(x)..., size(x[1])...))
     @simd for k in keys(x)
-        @inbounds setindex!(ret, x[k], k, (Colon() for _ in 1:N)...)
+        @inbounds setindex!(ret, x[k], k, (Colon() for _ = 1:N)...)
     end
     return ret
 end

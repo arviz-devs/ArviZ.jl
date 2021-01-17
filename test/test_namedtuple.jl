@@ -39,18 +39,18 @@ end
         "NamedTuple" =>
             (; (k => randn(rng, nchains, ndraws, v...) for (k, v) in pairs(sizes))...),
         "Vector{NamedTuple}" => [
-            (; (k => randn(rng, ndraws, v...) for (k, v) in pairs(sizes))...)
-            for _ in 1:nchains
+            (; (k => randn(rng, ndraws, v...) for (k, v) in pairs(sizes))...) for
+            _ = 1:nchains
         ],
         "Matrix{NamedTuple}" => [
-            (; (k => randn(rng, v...) for (k, v) in pairs(sizes))...)
-            for _ in 1:nchains, _ in 1:ndraws
+            (; (k => randn(rng, v...) for (k, v) in pairs(sizes))...) for
+            _ = 1:nchains, _ = 1:ndraws
         ],
         "Vector{Vector{NamedTuple}}" => [
-            [(; (k => randn(rng, v...) for (k, v) in pairs(sizes))...) for _ in 1:ndraws] for _ in 1:nchains
+            [(; (k => randn(rng, v...) for (k, v) in pairs(sizes))...) for _ = 1:ndraws] for _ = 1:nchains
         ],
         "Vector{NamedTuple} particles" => [
-            (; (k => Particles(randn(rng, ndraws, v...)) for (k, v) in pairs(sizes))...) for _ in 1:nchains
+            (; (k => Particles(randn(rng, ndraws, v...)) for (k, v) in pairs(sizes))...) for _ = 1:nchains
         ],
     ]
 
