@@ -6,8 +6,8 @@ jobs:
   VersionVigilante:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v1.0.0
+      - uses: julia-actions/setup-julia@latest
       - name: VersionVigilante.main
         id: versionvigilante_main
         run: |
@@ -16,7 +16,7 @@ jobs:
       - name: ✅ Un-Labeller (if success)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'success') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@v3
+        uses: actions/github-script@0.3.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -24,7 +24,7 @@ jobs:
       - name: ❌ Labeller (if failure)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'failure') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@v3
+        uses: actions/github-script@0.3.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
