@@ -14,7 +14,7 @@ class PyNullObject(object):
        pass
 """
 
-function create_model(seed = 10)
+function create_model(seed=10)
     rng = MersenneTwister(seed)
     J = 8
     nchains = 4
@@ -48,21 +48,21 @@ function create_model(seed = 10)
         "energy" => randn(rng, nchains, ndraws),
         "diverging" => Int.(randn(rng, nchains, ndraws) .> 0.95),
     )
-    model = from_dict(
-        posterior = posterior,
-        posterior_predictive = posterior_predictive,
-        sample_stats = sample_stats,
-        prior = prior,
-        prior_predictive = prior_predictive,
-        sample_stats_prior = sample_stats_prior,
-        observed_data = Dict("y" => data["y"]),
-        dims = Dict("y" => ["obs_dim"], "log_likelihood" => ["obs_dim"]),
-        coords = Dict("obs_dim" => 1:J),
+    model = from_dict(;
+        posterior=posterior,
+        posterior_predictive=posterior_predictive,
+        sample_stats=sample_stats,
+        prior=prior,
+        prior_predictive=prior_predictive,
+        sample_stats_prior=sample_stats_prior,
+        observed_data=Dict("y" => data["y"]),
+        dims=Dict("y" => ["obs_dim"], "log_likelihood" => ["obs_dim"]),
+        coords=Dict("obs_dim" => 1:J),
     )
     return model
 end
 
-models() = (model_1 = create_model(10), model_2 = create_model(11))
+models() = (model_1=create_model(10), model_2=create_model(11))
 
 function noncentered_schools_data()
     return Dict(

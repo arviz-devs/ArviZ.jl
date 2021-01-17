@@ -17,7 +17,7 @@ plot_trace(idata) # inline
 """
 with_interactive_backend
 
-function with_interactive_backend(f; backend = nothing)
+function with_interactive_backend(f; backend=nothing)
     oldisint = PyPlot.isinteractive()
     oldgui = pygui()
     backend === nothing || pygui(Symbol(backend))
@@ -90,17 +90,19 @@ and returned from `f`.
 """
 macro forwardfun(f)
     fdoc = forwarddoc(f)
-    return esc(quote
-        @doc $fdoc $f
+    return esc(
+        quote
+            @doc $fdoc $f
 
-        function $(f)(args...; kwargs...)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
-            result = arviz.$(f)(args...; kwargs...)
-            return convert_result($(f), result)
-        end
+            function $(f)(args...; kwargs...)
+                args, kwargs = convert_arguments($(f), args...; kwargs...)
+                result = arviz.$(f)(args...; kwargs...)
+                return convert_result($(f), result)
+            end
 
-        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-    end)
+            Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+        end,
+    )
 end
 
 """
@@ -115,23 +117,25 @@ and returned from `f`.
 """
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
-    return esc(quote
-        @doc $fdoc $f
+    return esc(
+        quote
+            @doc $fdoc $f
 
-        function $(f)(args...; backend = nothing, kwargs...)
-            if backend === nothing
-                backend = get(rcParams, "plot.backend", nothing)
+            function $(f)(args...; backend=nothing, kwargs...)
+                if backend === nothing
+                    backend = get(rcParams, "plot.backend", nothing)
+                end
+                backend = Symbol(backend)
+                backend_val = Val(backend)
+                load_backend(backend_val)
+                args, kwargs = convert_arguments($(f), args...; kwargs...)
+                result = arviz.$(f)(args...; kwargs..., backend=backend)
+                return convert_result($(f), result, backend_val)
             end
-            backend = Symbol(backend)
-            backend_val = Val(backend)
-            load_backend(backend_val)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
-            result = arviz.$(f)(args...; kwargs..., backend = backend)
-            return convert_result($(f), result, backend_val)
-        end
 
-        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-    end)
+            Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+        end,
+    )
 end
 
 # Replace `missing` values with `NaN` and do type inference on the result
@@ -192,7 +196,7 @@ Convert a Python `pandas.DataFrame` or `pandas.Series` into a `DataFrames.DataFr
 If `index_name` is not `nothing`, the index is converted into a column with `index_name`.
 Otherwise, it is discarded.
 """
-function todataframes(::Val{:DataFrame}, df::PyObject; index_name = nothing)
+function todataframes(::Val{:DataFrame}, df::PyObject; index_name=nothing)
     initialize_pandas()
     col_vals = map(df.columns) do name
         series = py"$(df)[$(name)]"
@@ -229,13 +233,13 @@ Convert a `DataFrames.DataFrame` to the specified pandas type.
 If `index_name` is not `nothing`, the corresponding column is made the index of the
 returned dataframe.
 """
-function topandas(::Val{:DataFrame}, df; index_name = nothing)
+function topandas(::Val{:DataFrame}, df; index_name=nothing)
     initialize_pandas()
     df = DataFrames.DataFrame(df)
     colnames = names(df)
     rowvals = map(Array, eachrow(df))
-    pdf = pandas.DataFrame(rowvals; columns = colnames)
-    index_name !== nothing && pdf.set_index(index_name; inplace = true)
+    pdf = pandas.DataFrame(rowvals; columns=colnames)
+    index_name !== nothing && pdf.set_index(index_name; inplace=true)
     return pdf
 end
 function topandas(::Val{:Series}, df)

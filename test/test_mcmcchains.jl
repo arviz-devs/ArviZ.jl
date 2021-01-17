@@ -33,8 +33,7 @@ const noncentered_schools_stan_model = """
     }
 """
 
-
-function makechains(names, ndraws, nchains; seed = 42, internal_names = [])
+function makechains(names, ndraws, nchains; seed=42, internal_names=[])
     rng = MersenneTwister(seed)
     nvars = length(names)
     vals = randn(rng, ndraws, nvars, nchains)
@@ -47,25 +46,25 @@ function makechains(nvars::Int, args...; kwargs...)
     return makechains(names, args...; kwargs...)
 end
 
-function cmdstan_noncentered_schools(data, draws, chains; proj_dir = pwd())
+function cmdstan_noncentered_schools(data, draws, chains; proj_dir=pwd())
     model_name = "school8"
-    stan_model = Stanmodel(
-        name = model_name,
-        model = noncentered_schools_stan_model,
-        nchains = chains,
-        num_warmup = draws,
-        num_samples = draws;
-        output_format = :mcmcchains,
+    stan_model = Stanmodel(;
+        name=model_name,
+        model=noncentered_schools_stan_model,
+        nchains=chains,
+        num_warmup=draws,
+        num_samples=draws,
+        output_format=:mcmcchains,
     )
-    rc, chns, cnames = stan(stan_model, data, proj_dir, summary = false)
+    rc, chns, cnames = stan(stan_model, data, proj_dir; summary=false)
     outfiles = []
     for i in 1:chains
         push!(outfiles, "$(proj_dir)/tmp/$(model_name)_samples_$(i).csv")
     end
-    return (model = stan_model, files = outfiles, chains = chns)
+    return (model=stan_model, files=outfiles, chains=chns)
 end
 
-function test_chains_data(chns, idata, group, names; coords = Dict(), dims = Dict())
+function test_chains_data(chns, idata, group, names; coords=Dict(), dims=Dict())
     ndraws, nvars, nchains = size(chns)
     @test idata isa InferenceData
     @test group in propertynames(idata)
@@ -98,14 +97,14 @@ end
     @testset "prior" begin
         nvars, nchains, ndraws = 2, 4, 20
         chns = makechains(nvars, ndraws, nchains)
-        idata = from_mcmcchains(prior = chns)
+        idata = from_mcmcchains(; prior=chns)
         test_chains_data(chns, idata, :prior, names(chns))
     end
 
     @testset "posterior + prior" begin
         nvars, nchains, ndraws = 2, 4, 20
         chns = makechains(nvars, ndraws, nchains)
-        idata = from_mcmcchains(chns; prior = chns)
+        idata = from_mcmcchains(chns; prior=chns)
         test_chains_data(chns, idata, :posterior, names(chns))
         test_chains_data(chns, idata, :prior, names(chns))
     end
@@ -116,8 +115,8 @@ end
         dims = Dict("a" => ["ai"], "b" => ["bi"])
         nchains, ndraws = 4, 20
         chns = makechains(names, ndraws, nchains)
-        idata = from_mcmcchains(chns; coords = coords, dims = dims)
-        test_chains_data(chns, idata, :posterior, ["a", "b"]; coords = coords, dims = dims)
+        idata = from_mcmcchains(chns; coords=coords, dims=dims)
+        test_chains_data(chns, idata, :posterior, ["a", "b"]; coords=coords, dims=dims)
         vardims = dimdict(idata.posterior)
         @test vardims["a"] == ("chain", "draw", "ai")
         @test vardims["b"] == ("chain", "draw", "bi")
@@ -133,8 +132,8 @@ end
         # String or Symbol, which depends on MCMCChains version
         ET = eltype(chns.name_map.parameters)
 
-        idata = from_mcmcchains(chns; coords = coords, dims = dims)
-        test_chains_data(chns, idata, :posterior, ["a"]; coords = coords, dims = dims)
+        idata = from_mcmcchains(chns; coords=coords, dims=dims)
+        test_chains_data(chns, idata, :posterior, ["a"]; coords=coords, dims=dims)
         arr = vardict(idata.posterior)["a"]
         @test arr[:, :, 1, 1] == permutedims(chns.value[:, ET(names[1]), :], [2, 1])
         @test arr[:, :, 2, 2] == permutedims(chns.value[:, ET(names[2]), :], [2, 1])
@@ -161,18 +160,18 @@ end
             log_likelihood
         ]
         prior_names = [prior; prior_predictive; sample_stats]
-        chns = makechains(post_names, ndraws, nchains; internal_names = ["stat"])
-        chns2 = makechains(prior_names, ndraws, nchains; internal_names = ["stat"])
+        chns = makechains(post_names, ndraws, nchains; internal_names=["stat"])
+        chns2 = makechains(prior_names, ndraws, nchains; internal_names=["stat"])
         idata = from_mcmcchains(
             chns;
-            posterior_predictive = "ahat",
-            predictions = "zhat",
-            prior = chns2,
-            prior_predictive = "ahat",
-            observed_data = observed_data,
-            constant_data = constant_data,
-            predictions_constant_data = predictions_constant_data,
-            log_likelihood = "log_lik",
+            posterior_predictive="ahat",
+            predictions="zhat",
+            prior=chns2,
+            prior_predictive="ahat",
+            observed_data=observed_data,
+            constant_data=constant_data,
+            predictions_constant_data=predictions_constant_data,
+            log_likelihood="log_lik",
         )
         for group in (
             :posterior,
@@ -231,7 +230,7 @@ end
     @testset "info -> attributes" begin
         nvars, nchains, ndraws = 2, 4, 20
         chns = makechains(nvars, ndraws, nchains)
-        idata = from_mcmcchains(chns; library = "MyLib")
+        idata = from_mcmcchains(chns; library="MyLib")
         attrs = idata.posterior.attrs
         @test attrs isa Dict
         @test attrs["inference_library"] == "MyLib"
@@ -241,7 +240,7 @@ end
 @testset "convert_to_dataset(::MCMCChains.Chains)" begin
     nvars, nchains, ndraws = 2, 4, 20
     chns = makechains(nvars, ndraws, nchains)
-    ds = ArviZ.convert_to_dataset(chns; library = "MyLib")
+    ds = ArviZ.convert_to_dataset(chns; library="MyLib")
     @test ds isa ArviZ.Dataset
     attrs = ds.attrs
     @test "inference_library" ∈ keys(attrs)
@@ -251,10 +250,10 @@ end
 @testset "convert_to_inference_data(::MCMCChains.Chains)" begin
     nvars, nchains, ndraws = 2, 4, 20
     chns = makechains(nvars, ndraws, nchains)
-    idata = convert_to_inference_data(chns; group = :posterior)
+    idata = convert_to_inference_data(chns; group=:posterior)
     @test idata isa InferenceData
     @test :posterior in propertynames(idata)
-    idata = convert_to_inference_data(chns; group = :prior)
+    idata = convert_to_inference_data(chns; group=:prior)
     @test idata isa InferenceData
     @test :prior in propertynames(idata)
 end
@@ -291,21 +290,21 @@ if VERSION.minor > 0
         )
         idata1 = from_cmdstan(
             output.chains;
-            posterior_predictive = posterior_predictive,
-            log_likelihood = log_likelihood,
-            prior = output.chains,
-            prior_predictive = prior_predictive,
-            coords = coords,
-            dims = dims,
+            posterior_predictive=posterior_predictive,
+            log_likelihood=log_likelihood,
+            prior=output.chains,
+            prior_predictive=prior_predictive,
+            coords=coords,
+            dims=dims,
         )
         idata2 = from_cmdstan(
             output.files;
-            posterior_predictive = posterior_predictive,
-            log_likelihood = log_likelihood,
-            prior = output.files,
-            prior_predictive = prior_predictive,
-            coords = coords,
-            dims = dims,
+            posterior_predictive=posterior_predictive,
+            log_likelihood=log_likelihood,
+            prior=output.files,
+            prior_predictive=prior_predictive,
+            coords=coords,
+            dims=dims,
         )
         @testset "idata.$(group)" for group in Symbol.(idata2._groups)
             ds1 = getproperty(idata1, group)
@@ -321,6 +320,6 @@ if VERSION.minor > 0
         end
 
         # cleanup
-        Base.Filesystem.rm(output.model.tmpdir; recursive = true, force = true)
+        Base.Filesystem.rm(output.model.tmpdir; recursive=true, force=true)
     end
 end

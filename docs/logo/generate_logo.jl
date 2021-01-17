@@ -12,7 +12,7 @@ dot_radius = 120
 
 # Setup
 bbox = matplotlib.transforms.Bbox([0.75 0.5; 5.4 2.2])
-save_kwargs = (dpi = 300, bbox_inches = bbox, transparent = true)
+save_kwargs = (dpi=300, bbox_inches=bbox, transparent=true)
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", dist_colors)
 
 axis("off")
@@ -20,42 +20,42 @@ ylim(0, 5.5)
 xlim(0, 0.9)
 
 # Draw distribution
-x = range(0, 1; length = 200)
+x = range(0, 1; length=200)
 pdfx = pdf.(Beta(2, 5), x)
 
 path = matplotlib.path.Path([x pdfx])
-patch = matplotlib.patches.PathPatch(path; facecolor = "none", alpha = 0)
+patch = matplotlib.patches.PathPatch(path; facecolor="none", alpha=0)
 gca().add_patch(patch)
 
 imshow(
     [1 0 0; 1 1 0];
-    cmap = cmap,
-    interpolation = "bicubic",
-    origin = "lower",
-    extent = [0, 1, 0.0, 5],
-    aspect = "auto",
-    clip_path = patch,
-    clip_on = true,
-    zorder = 0,
+    cmap=cmap,
+    interpolation="bicubic",
+    origin="lower",
+    extent=[0, 1, 0.0, 5],
+    aspect="auto",
+    clip_path=patch,
+    clip_on=true,
+    zorder=0,
 )
 
 # Save text-free logo
 savefig("$(prefix)_notext.png"; save_kwargs...)
 
 # Add text
-logotext = text(
-    x = 0.04,
-    y = -0.01,
-    s = "ArviZ",
-    clip_on = true,
-    fontdict = Dict("name" => "ubuntu mono", "fontsize" => 62),
-    color = "w",
-    zorder = 1,
+logotext = text(;
+    x=0.04,
+    y=-0.01,
+    s="ArviZ",
+    clip_on=true,
+    fontdict=Dict("name" => "ubuntu mono", "fontsize" => 62),
+    color="w",
+    zorder=1,
 )
 
 # Add Julia dots
 for i in 1:3
-    scatter(dot_coords[i, :]...; s = dot_radius, zorder = 2, color = dot_colors[i])
+    scatter(dot_coords[i, :]...; s=dot_radius, zorder=2, color=dot_colors[i])
 end
 
 # Save logo

@@ -82,9 +82,9 @@ corresponding `group`.
 """
 convert_to_dataset
 
-function convert_to_dataset(obj; group = :posterior, kwargs...)
+function convert_to_dataset(obj; group=:posterior, kwargs...)
     group = Symbol(group)
-    idata = convert_to_inference_data(obj; group = group, kwargs...)
+    idata = convert_to_inference_data(obj; group=group, kwargs...)
     dataset = getproperty(idata, group)
     return dataset
 end
@@ -110,11 +110,7 @@ the number of chains and draws.
 convert_to_constant_dataset
 
 function convert_to_constant_dataset(
-    obj;
-    coords = nothing,
-    dims = nothing,
-    library = nothing,
-    attrs = nothing,
+    obj; coords=nothing, dims=nothing, library=nothing, attrs=nothing
 )
     base = arviz.data.base
 
@@ -127,9 +123,10 @@ function convert_to_constant_dataset(
     for (key, vals) in obj
         vals = _asarray(vals)
         val_dims = get(dims, key, nothing)
-        (val_dims, val_coords) =
-            base.generate_dims_coords(size(vals), key; dims = val_dims, coords = coords)
-        data[key] = xarray.DataArray(vals; dims = val_dims, coords = val_coords)
+        (val_dims, val_coords) = base.generate_dims_coords(
+            size(vals), key; dims=val_dims, coords=coords
+        )
+        data[key] = xarray.DataArray(vals; dims=val_dims, coords=val_coords)
     end
 
     default_attrs = base.make_attrs()
@@ -137,7 +134,7 @@ function convert_to_constant_dataset(
         default_attrs = merge(default_attrs, Dict("inference_library" => string(library)))
     end
     attrs = merge(default_attrs, attrs)
-    return Dataset(data_vars = data, coords = coords, attrs = attrs)
+    return Dataset(; data_vars=data, coords=coords, attrs=attrs)
 end
 
 @doc doc"""
@@ -164,12 +161,12 @@ ArviZ.dict_to_dataset(Dict("x" => randn(4, 100), "y" => randn(4, 100)))
 """
 dict_to_dataset
 
-function dict_to_dataset(data; library = nothing, attrs = nothing, kwargs...)
+function dict_to_dataset(data; library=nothing, attrs=nothing, kwargs...)
     if library !== nothing
         ldict = Dict("inference_library" => string(library))
         attrs = (attrs === nothing ? ldict : merge(attrs, ldict))
     end
-    return arviz.dict_to_dataset(data; attrs = attrs, kwargs...)
+    return arviz.dict_to_dataset(data; attrs=attrs, kwargs...)
 end
 
 @doc doc"""
@@ -200,5 +197,5 @@ function dataset_to_dict(ds::Dataset)
         end
     end
 
-    return data, (attrs = attrs, coords = coords, dims = dims)
+    return data, (attrs=attrs, coords=coords, dims=dims)
 end

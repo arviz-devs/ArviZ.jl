@@ -33,7 +33,7 @@
     @testset "with_rc_context" begin
         def_backend = rcParams["plot.backend"]
         rcParams["plot.backend"] = "matplotlib"
-        with_rc_context(rc = Dict("plot.backend" => "bokeh")) do
+        with_rc_context(; rc=Dict("plot.backend" => "bokeh")) do
             @test rcParams["plot.backend"] == "bokeh"
             return nothing
         end

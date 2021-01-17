@@ -30,8 +30,7 @@ function convert_to_inference_data(obj::AbstractVector{<:AbstractParticles}; kwa
     return convert_to_inference_data(stack(stack.(obj)); kwargs...)
 end
 function convert_to_inference_data(
-    obj::AbstractVector{<:AbstractArray{<:AbstractParticles}};
-    kwargs...,
+    obj::AbstractVector{<:AbstractArray{<:AbstractParticles}}; kwargs...
 )
     return convert_to_inference_data(stack(stack.(obj)); kwargs...)
 end

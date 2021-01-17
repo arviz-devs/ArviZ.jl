@@ -49,14 +49,11 @@ pandas = ArviZ.pandas
             index = ["d", "e"]
             rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
             df = DataFrames.DataFrame([
-                :i => ["d", "e"],
-                :a => [1.0, 4.0],
-                :b => [2.0, 5.0],
-                :c => [3.0, 6.0],
+                :i => ["d", "e"], :a => [1.0, 4.0], :b => [2.0, 5.0], :c => [3.0, 6.0]
             ])
-            pdf = ArviZ.topandas(Val(:DataFrame), df; index_name = :i)
+            pdf = ArviZ.topandas(Val(:DataFrame), df; index_name=:i)
             @test pyisinstance(pdf, pandas.DataFrame)
-            pdf_exp = pandas.DataFrame(rowvals; columns = colnames, index = index)
+            pdf_exp = pandas.DataFrame(rowvals; columns=colnames, index=index)
             @test py"($(pdf) == $(pdf_exp)).all().all()"
         end
 
@@ -84,16 +81,13 @@ pandas = ArviZ.pandas
             colnames = [:a, :b, :c]
             index = ["d", "e"]
             rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
-            pdf = pandas.DataFrame(rowvals; columns = colnames, index = index)
-            df = ArviZ.todataframes(pdf; index_name = :i)
+            pdf = pandas.DataFrame(rowvals; columns=colnames, index=index)
+            df = ArviZ.todataframes(pdf; index_name=:i)
             @test df isa DataFrames.DataFrame
             @test df == DataFrames.DataFrame([
-                :i => ["d", "e"],
-                :a => [1.0, 4.0],
-                :b => [2.0, 5.0],
-                :c => [3.0, 6.0],
+                :i => ["d", "e"], :a => [1.0, 4.0], :b => [2.0, 5.0], :c => [3.0, 6.0]
             ])
-            @test df == ArviZ.todataframes(pdf; index_name = :i)
+            @test df == ArviZ.todataframes(pdf; index_name=:i)
         end
 
         @testset "pandas.Series -> DataFrames.DataFrame" begin

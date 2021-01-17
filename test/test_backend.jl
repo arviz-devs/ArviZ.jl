@@ -6,7 +6,7 @@ using PyCall
     backend = get(ArviZ.rcParams, "plot.backend", nothing)
     @test backend in ["matplotlib", nothing]
     @test plot_trace(idata) isa Array{PyObject}
-    @test plot_trace(idata; backend = nothing) isa Array{PyObject}
+    @test plot_trace(idata; backend=nothing) isa Array{PyObject}
 end
 
 if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
@@ -19,12 +19,12 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
     @testset "bokeh backend" begin
         idata = load_arviz_data("centered_eight")
 
-        with_rc_context(rc = Dict("plot.backend" => "bokeh")) do
+        with_rc_context(; rc=Dict("plot.backend" => "bokeh")) do
             backend = get(ArviZ.rcParams, "plot.backend", nothing)
             @test backend == "bokeh"
 
             @test plot_trace(idata) isa ArviZ.BokehPlot
-            @test plot_trace(idata; backend = "matplotlib") isa Array{PyObject}
+            @test plot_trace(idata; backend="matplotlib") isa Array{PyObject}
 
             @testset "ArviZ.BokehPlot" begin
                 plot = plot_trace(idata)
