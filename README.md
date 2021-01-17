@@ -21,8 +21,8 @@ Additional information can be found in the [Contributing Readme](https://github.
 
 ## Code of Conduct
 
-ArviZ wishes to maintain a positive community. Additional details
-can be found in the [Code of Conduct](https://github.com/arviz-devs/ArviZ.jl/blob/master/CODE_OF_CONDUCT.md)
+ArviZ wishes to maintain a positive community.
+Additional details can be found in the [Code of Conduct](https://github.com/arviz-devs/ArviZ.jl/blob/master/CODE_OF_CONDUCT.md)
 
 ## Sponsors
 
