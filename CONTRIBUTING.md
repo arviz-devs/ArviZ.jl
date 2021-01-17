@@ -48,7 +48,7 @@ functions as [ArviZ](https://arviz-devs.github.io).
 ### Code Formatting
 For code generally follow the
 [Julia style guide](https://docs.julialang.org/en/v1/manual/style-guide/index.html)
-and the [Blue Style Guide](https://github.com/invenia/BlueStyle), the latter
+and the [BlueStyle Guide](https://github.com/invenia/BlueStyle), the latter
 taking precedence.
 
 Before submission, final formatting should be done with
@@ -58,7 +58,7 @@ For more detailed steps on a typical development workflow see the
 
 ### Docstring formatting
 Functions intended for use by a user must be documented and should follow the
-[Blue documentation guide](https://github.com/invenia/BlueStyle#documentation)
+[BlueStyle documentation guide](https://github.com/invenia/BlueStyle#documentation)
 Please reasonably document any additions or changes to the codebase,
 when in doubt, add a docstring.
 
@@ -125,15 +125,14 @@ We recommend that your contribution complies with the following guidelines befor
 
 * Documentation and high-coverage tests are necessary for enhancements to be accepted.
 
-* Documentation follows Blue style guide
+* Documentation follows BlueStyle guide
 
 * Code coverage **cannot** decrease. Coverage is automatically checked on all pull requests
 
-* Your code has been formatted with [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) with default settings. From the REPL:
-
-  ```julia
-  julia> using JuliaFormatter
-  julia> format("src/")
-  ```
+* Your code has been formatted with [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) with BlueStyle.
+_From the ArviZ.jl repo_, execute
+```bash
+$ julia -e 'using Pkg; Pkg.add("JuliaFormatter"); using JuliaFormatter; format(".")'
+```
 
 #### This guide was derived from the [ArviZ guidelines for contributing](https://github.com/arviz-devs/arviz/blob/master/CONTRIBUTING.md)
