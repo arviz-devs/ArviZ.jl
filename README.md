@@ -2,7 +2,7 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![CI](https://github.com/arviz-devs/ArviZ.jl/workflows/CI/badge.svg)
-[![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=master)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=master)
+[![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=main)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=main)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://arviz-devs.github.io/ArviZ.jl/stable)
 [![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://arviz-devs.github.io/ArviZ.jl/dev)
@@ -17,12 +17,12 @@ See the [documentation](https://arviz-devs.github.io/ArviZ.jl/stable) for detail
 ## Contributions
 
 ArviZ is a community project and welcomes contributions.
-Additional information can be found in the [Contributing Readme](https://github.com/arviz-devs/ArviZ.jl/blob/master/CONTRIBUTING.md)
+Additional information can be found in the [Contributing Readme](https://github.com/arviz-devs/ArviZ.jl/blob/main/CONTRIBUTING.md)
 
 ## Code of Conduct
 
 ArviZ wishes to maintain a positive community.
-Additional details can be found in the [Code of Conduct](https://github.com/arviz-devs/ArviZ.jl/blob/master/CODE_OF_CONDUCT.md)
+Additional details can be found in the [Code of Conduct](https://github.com/arviz-devs/ArviZ.jl/blob/main/CODE_OF_CONDUCT.md)
 
 ## Sponsors
 
