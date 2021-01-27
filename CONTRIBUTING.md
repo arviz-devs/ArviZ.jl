@@ -70,7 +70,7 @@ Please reasonably document any additions or changes to the codebase, when in dou
     ```
     
     Always use a ``feature`` branch.
-    It's good practice to never routinely work on the ``master`` branch of any repository.
+    It's good practice to never routinely work on the ``main`` branch of any repository.
  4. Package dependencies are in ``Project.toml``.
     To set up a development environment, from the Julia REPL, type `]` to enter the Pkg REPL mode and run
     
@@ -90,7 +90,7 @@ Please reasonably document any additions or changes to the codebase, when in dou
     
     ```bash
     $ git fetch upstream
-    $ git rebase upstream/master
+    $ git rebase upstream/main
     ```
     
     Then push the changes to your GitHub account with:
@@ -124,4 +124,4 @@ $ julia -e 'using Pkg; Pkg.add("JuliaFormatter");
             using JuliaFormatter; format(".")'
 ```
 
-#### This guide was derived from the [ArviZ guidelines for contributing](https://github.com/arviz-devs/arviz/blob/master/CONTRIBUTING.md)
+#### This guide was derived from the [ArviZ guidelines for contributing](https://github.com/arviz-devs/arviz/blob/main/CONTRIBUTING.md)
