@@ -16,7 +16,7 @@ jobs:
       - name: ✅ Un-Labeller (if success)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'success') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@v3
+        uses: actions/github-script@0.3.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -24,7 +24,7 @@ jobs:
       - name: ❌ Labeller (if failure)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'failure') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@v3
+        uses: actions/github-script@0.3.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
