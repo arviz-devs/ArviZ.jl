@@ -43,12 +43,12 @@
 
 ## [Diagnostics](@id diagnostics-api)
 
-| Name             | Description                                                              |
-|:---------------- |:------------------------------------------------------------------------ |
-| [`bfmi`](@ref)   | Calculate the estimated Bayesian fraction of missing information (BFMI). |
-| [`ess`](@ref)    | Calculate estimate of the effective sample size (ESS).                   |
-| [`rhat`](@ref)   | Compute estimate of rank normalized split-$\hat{R}$ for a set of traces. |
-| [`mcse`](@ref)   | Calculate Markov Chain Standard Error statistic (MCSE).                  |
+| Name           | Description                                                              |
+|:-------------- |:------------------------------------------------------------------------ |
+| [`bfmi`](@ref) | Calculate the estimated Bayesian fraction of missing information (BFMI). |
+| [`ess`](@ref)  | Calculate estimate of the effective sample size (ESS).                   |
+| [`rhat`](@ref) | Compute estimate of rank normalized split-$\hat{R}$ for a set of traces. |
+| [`mcse`](@ref) | Calculate Markov Chain Standard Error statistic (MCSE).                  |
 
 ## [Stats utils](@id statsutils-api)
 
