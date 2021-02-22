@@ -9,13 +9,13 @@ const turing_key_map = Dict(
     "tree_depth" => "depth",
 )
 const stan_key_map = Dict(
-    "accept_stat__" => "accept_stat",
+    "accept_stat__" => "acceptance_rate",
     "divergent__" => "diverging",
     "energy__" => "energy",
     "lp__" => "lp",
-    "n_leapfrog__" => "n_leapfrog",
-    "stepsize__" => "stepsize",
-    "treedepth__" => "treedepth",
+    "n_leapfrog__" => "n_steps",
+    "stepsize__" => "step_size",
+    "treedepth__" => "tree_depth",
 )
 const stats_key_map = merge(turing_key_map, stan_key_map)
 
