@@ -1,21 +1,19 @@
 const turing_key_map = Dict(
-    "acceptance_rate" => "mean_tree_accept",
     "hamiltonian_energy" => "energy",
     "hamiltonian_energy_error" => "energy_error",
     "is_adapt" => "tune",
     "max_hamiltonian_energy_error" => "max_energy_error",
-    "n_steps" => "tree_size",
+    "nom_step_size" => "step_size_nom",
     "numerical_error" => "diverging",
-    "tree_depth" => "depth",
 )
 const stan_key_map = Dict(
-    "accept_stat__" => "accept_stat",
+    "accept_stat__" => "acceptance_rate",
     "divergent__" => "diverging",
     "energy__" => "energy",
     "lp__" => "lp",
-    "n_leapfrog__" => "n_leapfrog",
-    "stepsize__" => "stepsize",
-    "treedepth__" => "treedepth",
+    "n_leapfrog__" => "n_steps",
+    "stepsize__" => "step_size",
+    "treedepth__" => "tree_depth",
 )
 const stats_key_map = merge(turing_key_map, stan_key_map)
 
