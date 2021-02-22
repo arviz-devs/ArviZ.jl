@@ -22,7 +22,6 @@
 @forwardplotfun plot_trace
 @forwardplotfun plot_violin
 
-@deprecate plot_hpd(args...; kwargs...) plot_hdi(args...; kwargs...)
 @deprecate plot_joint(args...; kwargs...) plot_pair(args...; kwargs...)
 
 function convert_arguments(::typeof(plot_compare), df, args...; kwargs...)

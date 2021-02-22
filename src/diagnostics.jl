@@ -1,6 +1,5 @@
 @forwardfun bfmi
 @forwardfun ess
-@forwardfun geweke
 @forwardfun mcse
 @forwardfun rhat
 

@@ -9,12 +9,6 @@ using DataFrames: DataFrames
         @test df isa DataFrames.DataFrame
     end
 
-    @testset "hpd" begin
-        rng = Random.MersenneTwister(42)
-        x = randn(rng, 100)
-        @test hpd(x) == ArviZ.arviz.hdi(x)
-    end
-
     @testset "hdi" begin
         rng = Random.MersenneTwister(42)
         x = randn(rng, 100)
@@ -63,9 +57,10 @@ using DataFrames: DataFrames
         @test :variable in propertynames(summarystats(idata; fmt="wide"))
         @test "a" ∈ s.variable
         @test "b" ∉ s.variable
-        @test "b[0,0]" ∉ s.variable
-        @test "b[1,1]" ∈ s.variable
-        @test "b[0,0]" ∈ summarystats(idata; index_origin=0).variable
+        @test "b[0,0]" ∉ s.variable && "b[0, 0]" ∉ s.variable
+        @test "b[1,1]" ∈ s.variable || "b[1, 1]" ∈ s.variable
+        var_summary = summarystats(idata; index_origin=0).variable
+        @test "b[0,0]" ∈ var_summary || "b[0, 0]" ∈ var_summary
 
         s2 = summarystats(idata; fmt="long")
         @test s2 isa DataFrames.DataFrame
