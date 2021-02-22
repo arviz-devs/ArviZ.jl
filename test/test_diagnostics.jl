@@ -30,10 +30,4 @@
         @test rhat((x=arr,)) isa ArviZ.Dataset
         @test rhat((x=arr,)).x.values == ArviZ.arviz.rhat(Dict(:x => arr)).x.values
     end
-
-    @testset "geweke" begin
-        rng = Random.MersenneTwister(42)
-        arr = randn(rng, 1000)
-        @test geweke(arr, 0.1, 0.5, 10) == ArviZ.arviz.geweke(arr, 0.1, 0.5, 10)
-    end
 end

@@ -9,12 +9,6 @@ using DataFrames: DataFrames
         @test df isa DataFrames.DataFrame
     end
 
-    @testset "hpd" begin
-        rng = Random.MersenneTwister(42)
-        x = randn(rng, 100)
-        @test hpd(x) == ArviZ.arviz.hdi(x)
-    end
-
     @testset "hdi" begin
         rng = Random.MersenneTwister(42)
         x = randn(rng, 100)

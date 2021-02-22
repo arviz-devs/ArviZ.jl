@@ -116,14 +116,14 @@ using PyCall, PyPlot
         end
     end
 
-    @testset "$f" for f in (plot_hpd, plot_hdi)
+    @testset "plot_hdi" begin
         x_data = randn(rng, 100)
         y_data = 2 .+ x_data .* 0.5
         y_data_rep = 0.5 .* randn(rng, 200, 100) .+ transpose(y_data)
-        f(x_data, y_data_rep)
+        plot_hdi(x_data, y_data_rep)
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test f(x_data, y_data_rep; backend=:bokeh) isa ArviZ.BokehPlot
+            @test plot_hdi(x_data, y_data_rep; backend=:bokeh) isa ArviZ.BokehPlot
         end
     end
 

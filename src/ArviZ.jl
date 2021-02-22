@@ -61,7 +61,7 @@ export plot_autocorr,
 export summarystats, compare, hdi, loo, loo_pit, psislw, r2_score, waic
 
 ## Diagnostics
-export bfmi, geweke, ess, rhat, mcse
+export bfmi, ess, rhat, mcse
 
 ## Stats utils
 export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
