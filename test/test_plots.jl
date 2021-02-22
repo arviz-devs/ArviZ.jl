@@ -116,7 +116,7 @@ using PyCall, PyPlot
         end
     end
 
-    @testset "plot_hdi"
+    @testset "plot_hdi" begin
         x_data = randn(rng, 100)
         y_data = 2 .+ x_data .* 0.5
         y_data_rep = 0.5 .* randn(rng, 200, 100) .+ transpose(y_data)
