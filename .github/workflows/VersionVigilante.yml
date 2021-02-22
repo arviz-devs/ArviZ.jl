@@ -12,11 +12,11 @@ jobs:
         id: versionvigilante_main
         run: |
           julia -e 'using Pkg; Pkg.add("VersionVigilante")'
-          julia -e 'using VersionVigilante; VersionVigilante.main("https://github.com/${{ github.repository }}")'
+          julia -e 'using VersionVigilante; VersionVigilante.main("https://github.com/${{ github.repository }}"; master_branch="main")'
       - name: ✅ Un-Labeller (if success)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'success') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@v3
+        uses: actions/github-script@0.3.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -24,7 +24,7 @@ jobs:
       - name: ❌ Labeller (if failure)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'failure') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@v3
+        uses: actions/github-script@0.3.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
