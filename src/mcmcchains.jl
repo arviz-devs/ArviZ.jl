@@ -1,12 +1,9 @@
 const turing_key_map = Dict(
-    "acceptance_rate" => "mean_tree_accept",
     "hamiltonian_energy" => "energy",
     "hamiltonian_energy_error" => "energy_error",
     "is_adapt" => "tune",
     "max_hamiltonian_energy_error" => "max_energy_error",
-    "n_steps" => "tree_size",
     "numerical_error" => "diverging",
-    "tree_depth" => "depth",
 )
 const stan_key_map = Dict(
     "accept_stat__" => "acceptance_rate",
