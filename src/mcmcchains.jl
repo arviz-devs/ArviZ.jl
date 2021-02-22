@@ -3,8 +3,8 @@ const turing_key_map = Dict(
     "hamiltonian_energy_error" => "energy_error",
     "is_adapt" => "tune",
     "max_hamiltonian_energy_error" => "max_energy_error",
-    "numerical_error" => "diverging",
     "nom_step_size" => "step_size_nom",
+    "numerical_error" => "diverging",
 )
 const stan_key_map = Dict(
     "accept_stat__" => "acceptance_rate",
