@@ -19,8 +19,6 @@ const sample_stats_types = Dict(
 @forwardfun r2_score
 @forwardfun waic
 
-@deprecate hpd(args...; kwargs...) hdi(args...; kwargs...)
-
 for f in (:loo, :waic)
     @eval begin
         function convert_arguments(::typeof($(f)), data, args...; kwargs...)
