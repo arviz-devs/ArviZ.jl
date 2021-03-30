@@ -78,16 +78,12 @@ Now we write and run the model using Turing:
 ```@example quickstart
 using Turing
 
-Turing.@model function turing_model(J, y, σ, ::Type{TV}=Vector{Float64}) where {TV}
-    begin
-        μ ~ Normal(0, 5)
-        τ ~ truncated(Cauchy(0, 5), 0, Inf)
-        θ = TV(undef, J)
-        θ .~ Normal(μ, τ)
-        for i in eachindex(y)
-            y[i] ~ Normal(θ[i], σ[i])
-        end
-        return y
+Turing.@model function turing_model(J, y, σ)
+    μ ~ Normal(0, 5)
+    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    θ ~ filldist(Normal(μ, τ), J)
+    for i in eachindex(y)
+        y[i] ~ Normal(θ[i], σ[i])
     end
 end
 
