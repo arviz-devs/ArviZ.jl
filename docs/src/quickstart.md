@@ -78,16 +78,16 @@ Now we write and run the model using Turing:
 ```@example quickstart
 using Turing
 
-Turing.@model function turing_model(J, y, σ)
+Turing.@model function turing_model(y, σ, J = length(y))
     μ ~ Normal(0, 5)
     τ ~ truncated(Cauchy(0, 5), 0, Inf)
     θ ~ filldist(Normal(μ, τ), J)
-    for i in eachindex(y)
+    for i in 1:J
         y[i] ~ Normal(θ[i], σ[i])
     end
 end
 
-param_mod = turing_model(J, y, σ)
+param_mod = turing_model(y, σ)
 sampler = NUTS(nwarmup, 0.8)
 
 rng = Random.MersenneTwister(16653)
@@ -161,7 +161,7 @@ To draw from the prior and posterior predictive distributions we can instantiate
 
 ```@example quickstart
 # Instantiate the predictive model
-param_mod_predict = turing_model(J, similar(y, Missing), σ)
+param_mod_predict = turing_model(similar(y, Missing), σ)
 # and then sample!
 prior_predictive = predict(param_mod_predict, prior)
 posterior_predictive = predict(param_mod_predict, turing_chns)
