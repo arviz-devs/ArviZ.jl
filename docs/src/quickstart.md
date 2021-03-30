@@ -92,7 +92,7 @@ sampler = NUTS(nwarmup, 0.8)
 
 rng = Random.MersenneTwister(16653)
 turing_chns = sample(
-    rng, param_mod, sampler, MCMCThreads(), nwarmup + nsamples, nchains; progress=false
+    rng, param_mod, sampler, MCMCThreads(), nsamples, nchains; progress=false
 );
 nothing # hide
 ```
