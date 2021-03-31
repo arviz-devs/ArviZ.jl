@@ -78,7 +78,7 @@ Now we write and run the model using Turing:
 ```@example quickstart
 using Turing
 
-Turing.@model function turing_model(y, σ, J = length(y))
+Turing.@model function turing_model(y, σ, J=length(y))
     μ ~ Normal(0, 5)
     τ ~ truncated(Cauchy(0, 5), 0, Inf)
     θ ~ filldist(Normal(μ, τ), J)
