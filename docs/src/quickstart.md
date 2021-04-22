@@ -34,10 +34,10 @@ using Distributions
 s = (10, 50)
 plot_forest(
     Dict(
-        "normal" => randn(s),
-        "gumbel" => rand(Gumbel(), s),
-        "student t" => rand(TDist(6), s),
-        "exponential" => rand(Exponential(), s),
+        "normal" => randn(rng, s),
+        "gumbel" => rand(rng, Gumbel(), s),
+        "student t" => rand(rng, TDist(6), s),
+        "exponential" => rand(rng, Exponential(), s),
     ),
 );
 gcf()
