@@ -4,7 +4,7 @@
     
     This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/getting_started/Introduction.html).
 
-```@example quickstart
+```@example gettingstarted
 using ArviZ
 using PyPlot
 
@@ -16,7 +16,7 @@ ArviZ.use_style("arviz-darkgrid")
 
 ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com/StanJulia/CmdStan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 
-```@example quickstart
+```@example gettingstarted
 using Random
 
 rng = Random.MersenneTwister(37772)
@@ -28,22 +28,27 @@ Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of
 Each row of an array is treated as an independent series of draws from the variable, called a _chain_.
 Below, we have 10 chains of 50 draws each for four different distributions.
 
-```@example quickstart
+```@example gettingstarted
 using Distributions
 
 s = (10, 50)
 plot_forest(
     Dict(
-        "normal" => randn(rng, s),
-        "gumbel" => rand(rng, Gumbel(), s),
-        "student t" => rand(rng, TDist(6), s),
-        "exponential" => rand(rng, Exponential(), s),
+        "normal" => randn(s),
+        "gumbel" => rand(Gumbel(), s),
+        "student t" => rand(TDist(6), s),
+        "exponential" => rand(Exponential(), s),
     ),
 );
 gcf()
 ```
 
 ## Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl
+
+```@setup turing
+using PyPlot, Random, ArviZ 
+ArviZ.use_style("arviz-darkgrid")
+```
 
 ArviZ is designed to work well with high dimensional, labelled data.
 Consider the [eight schools model](https://statmodeling.stat.columbia.edu/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/), which roughly tries to measure the effectiveness of SAT classes at eight different schools.
@@ -54,7 +59,7 @@ Additionally, a centered parameterization causes [divergences](https://mc-stan.o
 
 First we create our data and set some sampling parameters.
 
-```@example quickstart
+```@example turing
 J = 8
 y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
 σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
@@ -75,7 +80,7 @@ nothing # hide
 
 Now we write and run the model using Turing:
 
-```@example quickstart
+```@example turing
 using Turing
 
 Turing.@model function turing_model(y, σ, J=length(y))
@@ -99,7 +104,7 @@ nothing # hide
 
 Most ArviZ functions work fine with `Chains` objects from Turing:
 
-```@example quickstart
+```@example turing
 plot_autocorr(turing_chns; var_names=["μ", "τ"]);
 gcf()
 ```
@@ -111,7 +116,7 @@ Note we are also giving some information about labelling.
 
 ArviZ is built to work with [`InferenceData`](@ref) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
 
-```@example quickstart
+```@example turing
 idata = from_mcmcchains(
     turing_chns;
     coords=Dict("school" => schools),
@@ -123,26 +128,26 @@ idata = from_mcmcchains(
 Each group is an [`ArviZ.Dataset`](@ref) (a thinly wrapped `xarray.Dataset`).
 We can view a summary of the dataset.
 
-```@example quickstart
+```@example turing
 idata.posterior
 ```
 
 Here is a plot of the trace. Note the intelligent labels.
 
-```@example quickstart
+```@example turing
 plot_trace(idata);
 gcf()
 ```
 
 We can also generate summary stats
 
-```@example quickstart
+```@example turing
 summarystats(idata)
 ```
 
 and examine the energy distribution of the Hamiltonian sampler
 
-```@example quickstart
+```@example turing
 plot_energy(idata);
 gcf()
 ```
@@ -153,13 +158,13 @@ With a few more steps, we can use Turing to compute additional useful groups to 
 
 To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
 
-```@example quickstart
+```@example turing
 prior = sample(param_mod, Prior(), nsamples; progress=false)
 ```
 
 To draw from the prior and posterior predictive distributions we can instantiate a "predictive model", i.e. a Turing model but with the observations set to `missing`, and then calling `predict` on the predictive model and the previously drawn samples:
 
-```@example quickstart
+```@example turing
 # Instantiate the predictive model
 param_mod_predict = turing_model(similar(y, Missing), σ)
 # and then sample!
@@ -169,13 +174,13 @@ posterior_predictive = predict(param_mod_predict, turing_chns)
 
 And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
 
-```@example quickstart
+```@example turing
 loglikelihoods = Turing.pointwise_loglikelihoods(param_mod, turing_chns)
 ```
 
 This can then be included in the [`from_mcmcchains`](@ref) call from above:
 
-```@example quickstart
+```@example turing
 using LinearAlgebra
 # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
 ynames = string.(keys(posterior_predictive))
@@ -198,25 +203,45 @@ idata = from_mcmcchains(
 
 Then we can for example compute the expected *leave-one-out (LOO)* predictive density, which is an estimate of the out-of-distribution predictive fit of the model:
 
-```@example quickstart
+```@example turing
 loo(idata) # higher is better
 ```
 
 If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a uniform distribution.
 This can be inspected visually:
 
-```@example quickstart
+```@example turing
 plot_loo_pit(idata; y="y", ecdf=true);
 gcf()
 ```
 
 ## Plotting with CmdStan.jl outputs
 
+```@setup cmdstan
+using PyPlot, ArviZ 
+ArviZ.use_style("arviz-darkgrid")
+
+J = 8
+y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
+σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+schools = [
+    "Choate",
+    "Deerfield",
+    "Phillips Andover",
+    "Phillips Exeter",
+    "Hotchkiss",
+    "Lawrenceville",
+    "St. Paul's",
+    "Mt. Hermon",
+];
+nwarmup, nsamples, nchains = 1000, 1000, 4
+```
+
 CmdStan.jl and StanSample.jl also default to producing `Chains` outputs, and we can easily plot these chains.
 
 Here is the same centered eight schools model:
 
-```@example quickstart
+```@example cmdstan
 using CmdStan, MCMCChains
 
 schools_code = """
@@ -264,7 +289,7 @@ Base.Filesystem.rm(stan_model.tmpdir; recursive=true, force=true); # hide
 nothing # hide
 ```
 
-```@example quickstart
+```@example cmdstan
 plot_density(stan_chns; var_names=["mu", "tau"]);
 gcf()
 ```
@@ -272,7 +297,7 @@ gcf()
 Again, converting to `InferenceData`, we can get much richer labelling and mixing of data.
 Note that we're using the same [`from_cmdstan`](@ref) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to [`from_mcmcchains`](@ref).
 
-```@example quickstart
+```@example cmdstan
 idata = from_cmdstan(
     stan_chns;
     posterior_predictive="y_hat",
@@ -291,7 +316,7 @@ idata = from_cmdstan(
 
 Here is a plot showing where the Hamiltonian sampler had divergences:
 
-```@example quickstart
+```@example cmdstan
 plot_pair(
     idata;
     coords=Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]),
@@ -302,11 +327,31 @@ gcf()
 
 ## Plotting with Soss.jl outputs
 
+```@setup soss
+using PyPlot, ArviZ, Random
+ArviZ.use_style("arviz-darkgrid")
+
+J = 8
+y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
+σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+schools = [
+    "Choate",
+    "Deerfield",
+    "Phillips Andover",
+    "Phillips Exeter",
+    "Hotchkiss",
+    "Lawrenceville",
+    "St. Paul's",
+    "Mt. Hermon",
+];
+nwarmup, nsamples, nchains = 1000, 1000, 4
+```
+
 With Soss, we can define our model for the posterior and easily use it to draw samples from the prior, prior predictive, posterior, and posterior predictive distributions.
 
 First we define our model:
 
-```@example quickstart
+```@example soss
 using Soss, NamedTupleTools
 
 mod = Soss.@model (J, σ) begin
@@ -324,7 +369,7 @@ param_mod = mod(; constant_data...)
 
 Then we draw from the prior and prior predictive distributions.
 
-```@example quickstart
+```@example soss
 Random.seed!(5298)
 prior_priorpred = [
     map(1:(nchains * nsamples)) do _
@@ -337,7 +382,7 @@ nothing # hide
 
 Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/DynamicHMC.jl).
 
-```@example quickstart
+```@example soss
 post = map(1:nchains) do _
     dynamicHMC(param_mod, (y=y,), nsamples)
 end;
@@ -346,7 +391,7 @@ nothing # hide
 
 Finally, we update the posterior samples with draws from the posterior predictive distribution.
 
-```@example quickstart
+```@example soss
 pred = predictive(mod, :μ, :τ, :θ)
 post_postpred = map(post) do post_draws
     map(post_draws) do post_draw
@@ -361,14 +406,14 @@ nothing # hide
 Each Soss draw is a `NamedTuple`.
 We can plot the rank order statistics of the posterior to identify poor convergence:
 
-```@example quickstart
+```@example soss
 plot_rank(post; var_names=["μ", "τ"]);
 gcf()
 ```
 
 Now we combine all of the samples to an `InferenceData`:
 
-```@example quickstart
+```@example soss
 idata = from_namedtuple(
     post_postpred;
     posterior_predictive=[:y],
@@ -384,7 +429,7 @@ idata = from_namedtuple(
 
 We can compare the prior and posterior predictive distributions:
 
-```@example quickstart
+```@example soss
 plot_density(
     [idata.posterior_predictive, idata.prior_predictive];
     data_labels=["Post-pred", "Prior-pred"],
@@ -395,12 +440,12 @@ gcf()
 
 ## Environment
 
-```@example quickstart
+```@example
 using Pkg
 Pkg.status()
 ```
 
-```@example quickstart
+```@example
 using InteractiveUtils
 versioninfo()
 ```
