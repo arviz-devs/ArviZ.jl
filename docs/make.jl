@@ -20,6 +20,7 @@ makedocs(;
         canonical="stable",
     ),
     linkcheck=true,
+    analytics="G-W1G68W77YV",
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", push_preview=true)
