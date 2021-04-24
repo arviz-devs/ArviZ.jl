@@ -175,7 +175,9 @@ posterior_predictive = predict(param_mod_predict, turing_chns)
 And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
 
 ```@example turing
-loglikelihoods = Turing.pointwise_loglikelihoods(param_mod, MCMCChains.get_sections(turing_chns, :parameters))
+loglikelihoods = Turing.pointwise_loglikelihoods(
+    param_mod, MCMCChains.get_sections(turing_chns, :parameters)
+)
 ```
 
 This can then be included in the [`from_mcmcchains`](@ref) call from above:
