@@ -145,6 +145,16 @@ replacemissing(x::AbstractArray{<:AbstractArray}) = map(replacemissing, x)
 @inline replacemissing(x::Missing) = NaN
 @inline replacemissing(x::Number) = x
 
+flatten(x) = x
+flatten(x::AbstractArray{T}) where {T<:Number} = convert(Array, x)
+function flatten(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
+    ret = Array{T}(undef, (size(x)..., size(x[1])...))
+    for k in keys(x)
+        setindex!(ret, x[k], k, (Colon() for _ in 1:N)...)
+    end
+    return ret
+end
+
 # Convert python types to Julia types if possible
 @inline frompytype(x) = x
 @inline frompytype(x::PyObject) = PyAny(x)

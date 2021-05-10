@@ -1,7 +1,7 @@
 """
-    stack(x::NamedTuple) -> NamedTuple
-    stack(x::AbstractArray{NamedTuple}) -> NamedTuple
-    stack(x::AbstractArray{AbstractArray{<:NamedTuple}}) -> NamedTuple
+    namedtuple_of_arrays(x::NamedTuple) -> NamedTuple
+    namedtuple_of_arrays(x::AbstractArray{NamedTuple}) -> NamedTuple
+    namedtuple_of_arrays(x::AbstractArray{AbstractArray{<:NamedTuple}}) -> NamedTuple
 
 Given a container of `NamedTuple`s, concatenate them, using the container dimensions as the
 dimensions of the resulting arrays.
@@ -12,27 +12,16 @@ dimensions of the resulting arrays.
 using ArviZ
 nchains, ndraws = 4, 100
 data = [(x=rand(), y=randn(2), z=randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
-stacked_data = ArviZ.stack(data);
+ntarray = ArviZ.namedtuple_of_arrays(data);
 ```
 """
-stack(x) = x
-stack(x::AbstractArray{T}) where {T<:Number} = Array(x)
-stack(x::AbstractArray) = stack(stack.(x))
-stack(x::NamedTuple) = (; (k => stack(v) for (k, v) in pairs(x))...)
-function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
-    ret = Array{T}(undef, (size(x)..., size(x[1])...))
-    @simd for k in keys(x)
-        @inbounds setindex!(ret, x[k], k, (Colon() for _ in 1:N)...)
-    end
-    return ret
-end
-function stack(x::AbstractArray{<:NamedTuple{K}}) where {K}
-    length(x) == 0 && return nothing
-    @inbounds x1 = x[1]
+namedtuple_of_arrays(x::NamedTuple) = map(flatten, x)
+namedtuple_of_arrays(x::AbstractArray) = namedtuple_of_arrays(namedtuple_of_arrays.(x))
+function namedtuple_of_arrays(x::AbstractArray{<:NamedTuple{K}}) where {K}
     ret = NamedTuple()
     for k in K
-        v = replacemissing.(stack.(getproperty.(x, k)))
-        ret = merge(ret, (k => stack(v),))
+        v = flatten.(getproperty.(x, k))
+        ret = merge(ret, (k => flatten(v),))
     end
     return ret
 end
@@ -223,13 +212,13 @@ function from_namedtuple(
     return all_idata
 end
 function from_namedtuple(data::AbstractVector{<:NamedTuple}; kwargs...)
-    return from_namedtuple(stack(data); kwargs...)
+    return from_namedtuple(namedtuple_of_arrays(data); kwargs...)
 end
 function from_namedtuple(data::AbstractMatrix{<:NamedTuple}; kwargs...)
-    return from_namedtuple(stack(data); kwargs...)
+    return from_namedtuple(namedtuple_of_arrays(data); kwargs...)
 end
 function from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...)
-    return from_namedtuple(stack(data); kwargs...)
+    return from_namedtuple(namedtuple_of_arrays(data); kwargs...)
 end
 
 """
