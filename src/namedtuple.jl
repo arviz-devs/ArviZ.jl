@@ -31,7 +31,7 @@ end
     from_namedtuple(posterior::Vector{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Vector{Vector{<:NamedTuple}}; kwargs...) -> InferenceData
-    from_mcmcchains(
+    from_namedtuple(
         posterior::NamedTuple,
         sample_stats::Any,
         posterior_predictive::Any,
