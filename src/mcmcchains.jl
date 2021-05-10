@@ -72,8 +72,8 @@ function section_dict(chns::Chains, section)
         ndim = length(max_loc)
         sizes = tuple(max_loc...)
 
-        oldarr = reshape_values(replacemissing(Array(chns.value[:, loc_names, :])))
-        if ndim == 0
+        oldarr = reshape_values(replacemissing(convert(Array, chns.value[:, loc_names, :])))
+        if iszero(ndim)
             arr = dropdims(oldarr; dims=3)
         else
             arr = Array{Union{typeof(NaN),eltype(oldarr)}}(undef, nchains, ndraws, sizes...)
