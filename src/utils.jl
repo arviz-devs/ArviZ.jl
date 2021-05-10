@@ -142,7 +142,7 @@ end
 replacemissing(x) = map(identity, replace(x, missing => NaN))
 replacemissing(x::AbstractArray{<:AbstractArray}) = map(replacemissing, x)
 @inline replacemissing(x::AbstractArray{<:Real}) = x
-@inline replacemissing(x::Missing) = NaN
+@inline replacemissing(::Missing) = NaN
 @inline replacemissing(x::Number) = x
 
 """
@@ -152,7 +152,7 @@ If `x` is an array of arrays, flatten into a single array whose dimensions are o
 dimensions of the outermost container first and innermost container last.
 """
 flatten(x) = x
-flatten(x::AbstractArray{T}) where {T<:Number} = convert(Array, x)
+flatten(x::AbstractArray{<:Number}) = convert(Array, x)
 function flatten(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
     ret = Array{T}(undef, (size(x)..., size(x[1])...))
     for k in keys(x)
