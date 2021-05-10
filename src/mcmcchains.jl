@@ -106,7 +106,7 @@ Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
 """
 function convert_to_inference_data(chns::Chains; group=:posterior, kwargs...)
     group = Symbol(group)
-    group == :posterior && return from_mcmcchains(chns; kwargs...)
+    group === :posterior && return from_mcmcchains(chns; kwargs...)
     return from_mcmcchains(; group => chns)
 end
 
