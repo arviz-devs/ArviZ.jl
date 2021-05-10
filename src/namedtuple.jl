@@ -18,12 +18,10 @@ ntarray = ArviZ.namedtuple_of_arrays(data);
 namedtuple_of_arrays(x::NamedTuple) = map(flatten, x)
 namedtuple_of_arrays(x::AbstractArray) = namedtuple_of_arrays(namedtuple_of_arrays.(x))
 function namedtuple_of_arrays(x::AbstractArray{<:NamedTuple{K}}) where {K}
-    ret = NamedTuple()
-    for k in K
+    return mapreduce(merge, K) do k
         v = flatten.(getproperty.(x, k))
-        ret = merge(ret, (k => flatten(v),))
+        return (; k => flatten(v))
     end
-    return ret
 end
 
 @doc doc"""
