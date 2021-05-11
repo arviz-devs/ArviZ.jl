@@ -75,8 +75,8 @@ whose first dimensions correspond to the dimensions of the containers.
      to use this argument as a dictionary whose keys are observed variable names and whose
      values are log likelihood arrays.
 - `library=nothing`: Name of library that generated the draws
-- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
+- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
+- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
      dimensions
 
 # Returns

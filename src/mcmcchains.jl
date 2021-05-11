@@ -148,8 +148,8 @@ as it can be passed to [`convert_to_inference_data`](@ref).
      values are log likelihood arrays.
 - `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
 - `library=MCMCChains`: Name of library that generated the chains
-- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
+- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
+- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
     dimensions
 
 # Returns
