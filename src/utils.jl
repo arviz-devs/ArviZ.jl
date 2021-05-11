@@ -1,5 +1,5 @@
-const sample_stats_types = Dict(
     "mean_tree_accept" => Float64,
+const sample_stats_eltypes = Dict(
     "energy" => Float64,
     "energy_error" => Float64,
     "max_energy_error" => Float64,
