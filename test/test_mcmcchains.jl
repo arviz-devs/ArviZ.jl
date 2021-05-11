@@ -272,7 +272,7 @@ end
     @test ArviZ.summary(chn) !== nothing
 end
 
-VERSION.minor > 0 && @testset "from_cmdstan" begin
+VERSION > v"1.0" && @testset "from_cmdstan" begin
     data = noncentered_schools_data()
     mktempdir() do path
         output = cmdstan_noncentered_schools(data, 500, 4; tmpdir=path)
