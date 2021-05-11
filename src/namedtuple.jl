@@ -118,7 +118,11 @@ function from_namedtuple(
     kwargs...,
 )
     all_idata = InferenceData()
-    post_dict = posterior === nothing ? nothing : convert(Dict, posterior)
+    if posterior === nothing
+        post_dict = nothing
+    else
+        post_dict = convert(Dict, namedtuple_of_arrays(posterior))
+    end
     for (group, group_data) in [
         :posterior_predictive => posterior_predictive,
         :sample_stats => sample_stats,

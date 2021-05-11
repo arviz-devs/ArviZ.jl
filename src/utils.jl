@@ -218,7 +218,7 @@ function convert_to_eltypes(data::Dict, data_eltypes)
 end
 function convert_to_eltypes(data::NamedTuple, data_eltypes)
     return NamedTuple(
-        k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in data
+        k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in pairs(data)
     )
 end
 

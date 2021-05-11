@@ -109,4 +109,22 @@ pandas = ArviZ.pandas
         ArviZ.use_style("arviz-darkgrid")
         ArviZ.use_style("default")
     end
+
+    @testset "convert_to_eltypes" begin
+        data1 = Dict("x" => rand((0, 1), 10), "y" => rand(10))
+        data1_format = ArviZ.convert_to_eltypes(data1, Dict("x" => Bool))
+        keys(data1) == keys(data1_format)
+        @test data1_format["x"] == data1["x"]
+        @test eltype(data1_format["x"]) === Bool
+        @test data1_format["y"] == data1["y"]
+        @test eltype(data1_format["y"]) === eltype(data1["y"])
+
+        data2 = (x=rand(1:3, 10), y=randn(10))
+        data2_format = ArviZ.convert_to_eltypes(data2, (; x=Int))
+        propertynames(data2) == propertynames(data2_format)
+        @test data2_format.x == data2.x
+        @test eltype(data2_format.x) === Int
+        @test data2_format.y == data2.y
+        @test eltype(data2_format.y) === eltype(data2.y)
+    end
 end
