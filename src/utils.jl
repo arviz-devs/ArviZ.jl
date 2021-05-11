@@ -211,8 +211,15 @@ snakecase(s) = replace(lowercase(s), " " => "_")
 _asstringkeydict(x) = Dict(String(k) => v for (k, v) in pairs(x))
 _asstringkeydict(x::Dict{String}) = x
 
-function enforce_stat_types(dict)
-    return Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
+enforce_stat_eltypes(stats) = convert_to_eltypes(stats, sample_stats_eltypes)
+
+function convert_to_eltypes(data::Dict, data_eltypes)
+    return Dict(k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in data)
+end
+function convert_to_eltypes(data::NamedTuple, data_eltypes)
+    return NamedTuple(
+        k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in data
+    )
 end
 
 """

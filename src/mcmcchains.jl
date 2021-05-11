@@ -176,7 +176,7 @@ function from_mcmcchains(
         stats_dict = nothing
     else
         stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
-        stats_dict = enforce_stat_types(stats_dict)
+        stats_dict = enforce_stat_eltypes(stats_dict)
     end
 
     all_idata = InferenceData()
