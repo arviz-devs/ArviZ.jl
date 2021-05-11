@@ -151,6 +151,8 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 - `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
 - `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
     dimensions
+- `eltypes::Dict{String,DataType}=Dict()`: Apply eltypes to specific variables. This is used
+    to assign discrete eltypes to discrete variables.
 
 # Returns
 
@@ -164,6 +166,7 @@ function from_mcmcchains(
     predictions,
     log_likelihood;
     library=MCMCChains,
+    eltypes=Dict(),
     kwargs...,
 )
     kwargs = convert(Dict, merge((; dims=Dict()), kwargs))
@@ -175,9 +178,10 @@ function from_mcmcchains(
         post_dict = nothing
         stats_dict = nothing
     else
-        post_dict = chains_to_dict(posterior)
+        post_dict = convert_to_eltypes(chains_to_dict(posterior), eltypes)
         stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
         stats_dict = enforce_stat_eltypes(stats_dict)
+        stats_dict = convert_to_eltypes(stats_dict, Dict("is_accept" => Bool))
     end
 
     all_idata = InferenceData()
@@ -196,7 +200,11 @@ function from_mcmcchains(
         if group_data isa Union{AbstractVector{String},NTuple{N,String} where {N}}
             group_data = popsubdict!(post_dict, group_data)
         end
-        group_dataset = convert_to_dataset(group_data; library=library, kwargs...)
+        group_dataset = if group_data isa Chains
+            convert_to_dataset(group_data; library=library, eltypes=eltypes, kwargs...)
+        else
+            convert_to_dataset(group_data; library=library, kwargs...)
+        end
         setattribute!(group_dataset, "inference_library", library)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
@@ -223,6 +231,7 @@ function from_mcmcchains(
     predictions_constant_data=nothing,
     log_likelihood=nothing,
     library=MCMCChains,
+    eltypes=Dict(),
     kwargs...,
 )
     kwargs = convert(Dict, merge((; dims=Dict(), coords=Dict()), kwargs))
@@ -233,12 +242,17 @@ function from_mcmcchains(
         predictions,
         log_likelihood;
         library=library,
+        eltypes=eltypes,
         kwargs...,
     )
 
     if prior !== nothing
         pre_prior_idata = convert_to_inference_data(
-            prior; posterior_predictive=prior_predictive, library=library, kwargs...
+            prior;
+            posterior_predictive=prior_predictive,
+            library=library,
+            eltypes=eltypes,
+            kwargs...,
         )
         prior_idata = rekey(
             pre_prior_idata,
@@ -257,6 +271,7 @@ function from_mcmcchains(
         :predictions_constant_data => predictions_constant_data,
     ]
         group_data === nothing && continue
+        group_data = convert_to_eltypes(group_data, eltypes)
         group_dataset = convert_to_constant_dataset(group_data; library=library, kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
