@@ -173,9 +173,10 @@ end
 
 @testset "netcdf roundtrip" begin
     data = load_arviz_data("centered_eight")
-    mktemp() do path, _
-        to_netcdf(data, path)
-        data2 = from_netcdf(path)
+    mktempdir() do path
+        filename = joinpath(path, "tmp.nc")
+        to_netcdf(data, filename)
+        data2 = from_netcdf(filename)
         @test data2 isa InferenceData
         @test propertynames(data) == propertynames(data2)
         return nothing
