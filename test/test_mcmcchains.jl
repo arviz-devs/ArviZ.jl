@@ -33,10 +33,13 @@ const noncentered_schools_stan_model = """
     }
 """
 
-function makechains(names, ndraws, nchains; seed=42, internal_names=[])
+function makechains(
+    names, ndraws, nchains, domains=[Float64 for _ in names]; seed=42, internal_names=[]
+)
     rng = MersenneTwister(seed)
     nvars = length(names)
-    vals = randn(rng, ndraws, nvars, nchains)
+    var_vals = [rand(rng, domain, ndraws, nchains) for domain in domains]
+    vals = permutedims(cat(var_vals...; dims=3), (1, 3, 2))
     chns = sort(MCMCChains.Chains(vals, names, Dict(:internals => internal_names)))
     return chns
 end
@@ -62,7 +65,7 @@ function cmdstan_noncentered_schools(data, draws, chains; tmpdir=joinpath(pwd(),
     return (model=stan_model, files=outfiles, chains=chns)
 end
 
-function test_chains_data(chns, idata, group, names; coords=Dict(), dims=Dict())
+function test_chains_data(chns, idata, group, names=names(chns); coords=Dict(), dims=Dict())
     ndraws, nvars, nchains = size(chns)
     @test idata isa InferenceData
     @test group in propertynames(idata)
@@ -72,7 +75,7 @@ function test_chains_data(chns, idata, group, names; coords=Dict(), dims=Dict())
     vars = vardict(ds)
     for name in names
         # `vars`, the value in ArviZ/Python is always String, 
-        # while `names` is String or Symbol which depends on version of MCMCCHains
+        # while `names` is String or Symbol which depends on version of MCMCChains
         name = string(name)
 
         @test name in keys(vars)
@@ -137,6 +140,43 @@ end
         @test arr[:, :, 2, 2] == permutedims(chns.value[:, ET(names[2]), :], [2, 1])
         @test arr[:, :, 2, 1] == permutedims(chns.value[:, ET(names[3]), :], [2, 1])
         @test arr[:, :, 1, 2] == permutedims(chns.value[:, ET(names[4]), :], [2, 1])
+    end
+
+    @testset "specify eltypes" begin
+        # https://github.com/arviz-devs/ArviZ.jl/issues/125
+        nchains, ndraws = 4, 20
+        names = ["x", "y", "z"]
+        domains = [Float64, (0, 1), 1:3]
+        post = makechains(names, ndraws, nchains, domains)
+        prior = makechains(names, ndraws, nchains, domains)
+        post_pred = makechains(["d"], ndraws, nchains, [(0, 1)])
+        idata = from_mcmcchains(
+            post;
+            prior=prior,
+            posterior_predictive=post_pred,
+            eltypes=Dict("y" => Bool, "z" => Int, "d" => Bool),
+        )
+        test_chains_data(post, idata, :posterior)
+        test_chains_data(prior, idata, :prior)
+        test_chains_data(post_pred, idata, :posterior_predictive)
+        @test eltype(idata.posterior[:y].values) <: Bool
+        @test eltype(idata.posterior[:z].values) <: Int64
+        @test eltype(idata.prior[:y].values) <: Bool
+        @test eltype(idata.prior[:z].values) <: Int64
+        @test eltype(idata.posterior_predictive[:d].values) <: Bool
+
+        idata2 = from_mcmcchains(
+            post;
+            prior=prior,
+            posterior_predictive=["y"],
+            eltypes=Dict("y" => Bool, "z" => Int),
+        )
+        test_chains_data(post, idata2, :posterior, ["x", "z"])
+        test_chains_data(prior, idata2, :prior)
+        @test eltype(idata2.posterior[:z].values) <: Int64
+        @test eltype(idata2.prior[:y].values) <: Bool
+        @test eltype(idata2.prior[:z].values) <: Int64
+        @test eltype(idata2.posterior_predictive[:y].values) <: Bool
     end
 
     @testset "complete" begin
