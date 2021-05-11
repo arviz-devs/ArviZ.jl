@@ -1,14 +1,14 @@
-    "mean_tree_accept" => Float64,
 const sample_stats_eltypes = Dict(
+    "lp" => Float64,
+    "step_size" => Float64,
+    "step_size_nom" => Float64,
+    "tree_depth" => Int,
+    "n_steps" => Int,
+    "diverging" => Bool,
     "energy" => Float64,
     "energy_error" => Float64,
     "max_energy_error" => Float64,
-    "step_size" => Float64,
-    "step_size_bar" => Float64,
-    "tree_size" => Int,
-    "depth" => Int,
-    "tune" => Bool,
-    "diverging" => Bool,
+    "int_time" => Float64,
 )
 
 @doc doc"""
