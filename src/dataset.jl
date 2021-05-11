@@ -112,7 +112,7 @@ the number of chains and draws.
 convert_to_constant_dataset
 
 function convert_to_constant_dataset(
-    obj; coords=nothing, dims=nothing, library=nothing, attrs=nothing
+    obj; coords=Dict(), dims=Dict(), library=nothing, attrs=Dict()
 )
     base = arviz.data.base
 

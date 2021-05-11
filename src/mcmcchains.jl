@@ -55,7 +55,6 @@ function attributes_dict(chns::Chains)
     info = delete(chns.info, :hashedsummary)
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
-attributes_dict(::Nothing) = Dict()
 
 function section_dict(chns::Chains, section)
     ndraws, _, nchains = size(chns)
@@ -95,7 +94,6 @@ function chains_to_dict(
     removekeys!(chns_dict, ignore)
     return rekey_fun(chns_dict)
 end
-chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
     convert_to_inference_data(obj::Chains; group = :posterior, kwargs...) -> InferenceData
@@ -168,14 +166,18 @@ function from_mcmcchains(
     library=MCMCChains,
     kwargs...,
 )
-    kwargs = convert(Dict, merge((; dims=nothing), kwargs))
+    kwargs = convert(Dict, merge((; dims=Dict()), kwargs))
     library = string(library)
     rekey_fun = d -> rekey(d, stats_key_map)
 
     # Convert chains to dicts
-    post_dict = chains_to_dict(posterior)
-    stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
-    stats_dict = enforce_stat_types(stats_dict)
+    if posterior === nothing
+        post_dict = nothing
+        stats_dict = nothing
+    else
+        stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
+        stats_dict = enforce_stat_types(stats_dict)
+    end
 
     all_idata = InferenceData()
     for (group, group_data) in [
@@ -193,14 +195,16 @@ function from_mcmcchains(
         if group_data isa Union{AbstractVector{String},NTuple{N,String} where {N}}
             group_data = popsubdict!(post_dict, group_data)
         end
-        group_dataset = convert_to_dataset(group_data; library=library, kwargs...)
+        group_dataset = convert_to_dataset(
+            group_data; library=library, eltypes=eltypes, kwargs...
+        )
         setattribute!(group_dataset, "inference_library", library)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
-    attrs = attributes_dict(posterior)
-    attrs = merge(attrs, Dict("inference_library" => library))
-    kwargs = convert(Dict, merge((; attrs=attrs, dims=nothing), kwargs))
+    attrs_library = Dict("inference_library" => library)
+    attrs = posterior === nothing ? attrs_library : merge(attributes_dict(posterior), attrs_library)
+    kwargs = convert(Dict, merge((; attrs=attrs, dims=Dict()), kwargs))
     post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
     concat!(all_idata, post_idata)
     return all_idata
@@ -218,7 +222,7 @@ function from_mcmcchains(
     library=MCMCChains,
     kwargs...,
 )
-    kwargs = convert(Dict, merge((; dims=nothing, coords=nothing), kwargs))
+    kwargs = convert(Dict, merge((; dims=Dict(), coords=Dict()), kwargs))
 
     all_idata = from_mcmcchains(
         posterior,
