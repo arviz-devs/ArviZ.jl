@@ -33,10 +33,13 @@ const noncentered_schools_stan_model = """
     }
 """
 
-function makechains(names, ndraws, nchains; seed=42, internal_names=[])
+function makechains(
+    names, ndraws, nchains, domains=[Float64 for _ in names]; seed=42, internal_names=[]
+)
     rng = MersenneTwister(seed)
     nvars = length(names)
-    vals = randn(rng, ndraws, nvars, nchains)
+    var_vals = [rand(rng, domain, ndraws, nchains) for domain in domains]
+    vals = permutedims(cat(var_vals...; dims=3), (1, 3, 2))
     chns = sort(MCMCChains.Chains(vals, names, Dict(:internals => internal_names)))
     return chns
 end
@@ -62,7 +65,7 @@ function cmdstan_noncentered_schools(data, draws, chains; tmpdir=joinpath(pwd(),
     return (model=stan_model, files=outfiles, chains=chns)
 end
 
-function test_chains_data(chns, idata, group, names; coords=Dict(), dims=Dict())
+function test_chains_data(chns, idata, group, names=names(chns); coords=Dict(), dims=Dict())
     ndraws, nvars, nchains = size(chns)
     @test idata isa InferenceData
     @test group in propertynames(idata)
@@ -72,7 +75,7 @@ function test_chains_data(chns, idata, group, names; coords=Dict(), dims=Dict())
     vars = vardict(ds)
     for name in names
         # `vars`, the value in ArviZ/Python is always String, 
-        # while `names` is String or Symbol which depends on version of MCMCCHains
+        # while `names` is String or Symbol which depends on version of MCMCChains
         name = string(name)
 
         @test name in keys(vars)
