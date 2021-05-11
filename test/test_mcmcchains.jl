@@ -142,6 +142,43 @@ end
         @test arr[:, :, 1, 2] == permutedims(chns.value[:, ET(names[4]), :], [2, 1])
     end
 
+    @testset "specify eltypes" begin
+        # https://github.com/arviz-devs/ArviZ.jl/issues/125
+        nchains, ndraws = 4, 20
+        names = ["x", "y", "z"]
+        domains = [Float64, (0, 1), 1:3]
+        post = makechains(names, ndraws, nchains, domains)
+        prior = makechains(names, ndraws, nchains, domains)
+        post_pred = makechains(["d"], ndraws, nchains, [(0, 1)])
+        idata = from_mcmcchains(
+            post;
+            prior=prior,
+            posterior_predictive=post_pred,
+            eltypes=Dict("y" => Bool, "z" => Int, "d" => Bool),
+        )
+        test_chains_data(post, idata, :posterior)
+        test_chains_data(prior, idata, :prior)
+        test_chains_data(post_pred, idata, :posterior_predictive)
+        @test eltype(idata.posterior[:y].values) <: Bool
+        @test eltype(idata.posterior[:z].values) <: Int64
+        @test eltype(idata.prior[:y].values) <: Bool
+        @test eltype(idata.prior[:z].values) <: Int64
+        @test eltype(idata.posterior_predictive[:d].values) <: Bool
+
+        idata2 = from_mcmcchains(
+            post;
+            prior=prior,
+            posterior_predictive=["y"],
+            eltypes=Dict("y" => Bool, "z" => Int),
+        )
+        test_chains_data(post, idata2, :posterior, ["x", "z"])
+        test_chains_data(prior, idata2, :prior)
+        @test eltype(idata2.posterior[:z].values) <: Int64
+        @test eltype(idata2.prior[:y].values) <: Bool
+        @test eltype(idata2.prior[:z].values) <: Int64
+        @test eltype(idata2.posterior_predictive[:y].values) <: Bool
+    end
+
     @testset "complete" begin
         nchains, ndraws = 4, 20
         nobs = 10
