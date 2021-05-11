@@ -124,6 +124,7 @@ function _import_dependency(modulename, pkgname=modulename; channel=nothing)
 end
 
 _isyes(s) = isempty(s) || lowercase(strip(s)) ∈ ("y", "yes")
+_isyes(::Nothing) = true
 
 _using_conda() = PyCall.conda
 
