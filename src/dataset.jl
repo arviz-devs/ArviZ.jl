@@ -1,6 +1,6 @@
 """
     Dataset(::PyObject)
-    Dataset(; data_vars = nothing, coords = nothing, attrs = nothing)
+    Dataset(; data_vars = nothing, coords = Dict(), attrs = Dict())
 
 Loose wrapper around `xarray.Dataset`, mostly used for dispatch.
 
@@ -112,7 +112,7 @@ the number of chains and draws.
 convert_to_constant_dataset
 
 function convert_to_constant_dataset(
-    obj; coords=nothing, dims=nothing, library=nothing, attrs=nothing
+    obj; coords=Dict(), dims=Dict(), library=nothing, attrs=Dict()
 )
     base = arviz.data.base
 
@@ -163,10 +163,9 @@ ArviZ.dict_to_dataset(Dict("x" => randn(4, 100), "y" => randn(4, 100)))
 """
 dict_to_dataset
 
-function dict_to_dataset(data; library=nothing, attrs=nothing, kwargs...)
+function dict_to_dataset(data; library=nothing, attrs=Dict(), kwargs...)
     if library !== nothing
-        ldict = Dict("inference_library" => string(library))
-        attrs = (attrs === nothing ? ldict : merge(attrs, ldict))
+        attrs = merge(attrs, Dict("inference_library" => string(library)))
     end
     return arviz.dict_to_dataset(data; attrs=attrs, kwargs...)
 end

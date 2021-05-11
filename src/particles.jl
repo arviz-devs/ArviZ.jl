@@ -1,6 +1,6 @@
-stack(x::AbstractParticles) = Array(x)
-function stack(v::AbstractArray{<:AbstractParticles})
-    m = reduce(hcat, stack.(v))
+flatten(x::AbstractParticles) = Array(x)
+function flatten(v::AbstractArray{<:AbstractParticles})
+    m = reduce(hcat, flatten.(v))
     return Array(reshape(m, size(m, 1), size(v)...))
 end
 
@@ -28,10 +28,10 @@ function convert_to_inference_data(obj::AbstractParticles; kwargs...)
     return convert_to_inference_data([obj]; kwargs...)
 end
 function convert_to_inference_data(obj::AbstractVector{<:AbstractParticles}; kwargs...)
-    return convert_to_inference_data(stack(stack.(obj)); kwargs...)
+    return convert_to_inference_data(flatten(flatten.(obj)); kwargs...)
 end
 function convert_to_inference_data(
     obj::AbstractVector{<:AbstractArray{<:AbstractParticles}}; kwargs...
 )
-    return convert_to_inference_data(stack(stack.(obj)); kwargs...)
+    return convert_to_inference_data(flatten(flatten.(obj)); kwargs...)
 end

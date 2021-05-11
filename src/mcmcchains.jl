@@ -31,7 +31,7 @@ function split_locname(name)
     name = replace(name, r"[\[,]" => '.')
     name = replace(name, ']' => "")
     name, loc = headtail(split(name, '.'))
-    length(loc) == 0 && return name, ()
+    isempty(loc) && return name, ()
     loc = tryparse.(Int, loc)
     Nothing <: eltype(loc) && return name, ()
     return name, tuple(loc...)
@@ -55,7 +55,6 @@ function attributes_dict(chns::Chains)
     info = delete(chns.info, :hashedsummary)
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
-attributes_dict(::Nothing) = Dict()
 
 function section_dict(chns::Chains, section)
     ndraws, _, nchains = size(chns)
@@ -68,12 +67,12 @@ function section_dict(chns::Chains, section)
     vars_to_arrays = Dict{String,Array}()
     for (var_name, names_locs) in vars_to_locs
         loc_names, locs = names_locs
-        max_loc = maximum(hcat([[loc...] for loc in locs]...); dims=2)
+        max_loc = maximum(reduce(hcat, [loc...] for loc in locs); dims=2)
         ndim = length(max_loc)
         sizes = tuple(max_loc...)
 
-        oldarr = reshape_values(replacemissing(Array(chns.value[:, loc_names, :])))
-        if ndim == 0
+        oldarr = reshape_values(replacemissing(convert(Array, chns.value[:, loc_names, :])))
+        if iszero(ndim)
             arr = dropdims(oldarr; dims=3)
         else
             arr = Array{Union{typeof(NaN),eltype(oldarr)}}(undef, nchains, ndraws, sizes...)
@@ -95,7 +94,6 @@ function chains_to_dict(
     removekeys!(chns_dict, ignore)
     return rekey_fun(chns_dict)
 end
-chains_to_dict(::Nothing; kwargs...) = nothing
 
 """
     convert_to_inference_data(obj::Chains; group = :posterior, kwargs...) -> InferenceData
@@ -106,7 +104,7 @@ Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
 """
 function convert_to_inference_data(chns::Chains; group=:posterior, kwargs...)
     group = Symbol(group)
-    group == :posterior && return from_mcmcchains(chns; kwargs...)
+    group === :posterior && return from_mcmcchains(chns; kwargs...)
     return from_mcmcchains(; group => chns)
 end
 
@@ -150,8 +148,8 @@ as it can be passed to [`convert_to_inference_data`](@ref).
      values are log likelihood arrays.
 - `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
 - `library=MCMCChains`: Name of library that generated the chains
-- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
+- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
+- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
     dimensions
 
 # Returns
@@ -168,14 +166,19 @@ function from_mcmcchains(
     library=MCMCChains,
     kwargs...,
 )
-    kwargs = convert(Dict, merge((; dims=nothing), kwargs))
+    kwargs = convert(Dict, merge((; dims=Dict()), kwargs))
     library = string(library)
     rekey_fun = d -> rekey(d, stats_key_map)
 
     # Convert chains to dicts
-    post_dict = chains_to_dict(posterior)
-    stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
-    stats_dict = enforce_stat_types(stats_dict)
+    if posterior === nothing
+        post_dict = nothing
+        stats_dict = nothing
+    else
+        post_dict = chains_to_dict(posterior)
+        stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
+        stats_dict = enforce_stat_eltypes(stats_dict)
+    end
 
     all_idata = InferenceData()
     for (group, group_data) in [
@@ -198,9 +201,13 @@ function from_mcmcchains(
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
-    attrs = attributes_dict(posterior)
-    attrs = merge(attrs, Dict("inference_library" => library))
-    kwargs = convert(Dict, merge((; attrs=attrs, dims=nothing), kwargs))
+    attrs_library = Dict("inference_library" => library)
+    if posterior === nothing
+        attrs = attrs_library
+    else
+        attrs = merge(attributes_dict(posterior), attrs_library)
+    end
+    kwargs = convert(Dict, merge((; attrs=attrs, dims=Dict()), kwargs))
     post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
     concat!(all_idata, post_idata)
     return all_idata
@@ -218,7 +225,7 @@ function from_mcmcchains(
     library=MCMCChains,
     kwargs...,
 )
-    kwargs = convert(Dict, merge((; dims=nothing, coords=nothing), kwargs))
+    kwargs = convert(Dict, merge((; dims=Dict(), coords=Dict()), kwargs))
 
     all_idata = from_mcmcchains(
         posterior,

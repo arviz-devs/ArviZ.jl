@@ -1,7 +1,7 @@
 """
-    stack(x::NamedTuple) -> NamedTuple
-    stack(x::AbstractArray{NamedTuple}) -> NamedTuple
-    stack(x::AbstractArray{AbstractArray{<:NamedTuple}}) -> NamedTuple
+    namedtuple_of_arrays(x::NamedTuple) -> NamedTuple
+    namedtuple_of_arrays(x::AbstractArray{NamedTuple}) -> NamedTuple
+    namedtuple_of_arrays(x::AbstractArray{AbstractArray{<:NamedTuple}}) -> NamedTuple
 
 Given a container of `NamedTuple`s, concatenate them, using the container dimensions as the
 dimensions of the resulting arrays.
@@ -12,29 +12,16 @@ dimensions of the resulting arrays.
 using ArviZ
 nchains, ndraws = 4, 100
 data = [(x=rand(), y=randn(2), z=randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
-stacked_data = ArviZ.stack(data);
+ntarray = ArviZ.namedtuple_of_arrays(data);
 ```
 """
-stack(x) = x
-stack(x::AbstractArray{T}) where {T<:Number} = Array(x)
-stack(x::AbstractArray) = stack(stack.(x))
-stack(x::NamedTuple) = (; (k => stack(v) for (k, v) in pairs(x))...)
-function stack(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
-    ret = Array{T}(undef, (size(x)..., size(x[1])...))
-    @simd for k in keys(x)
-        @inbounds setindex!(ret, x[k], k, (Colon() for _ in 1:N)...)
+namedtuple_of_arrays(x::NamedTuple) = map(flatten, x)
+namedtuple_of_arrays(x::AbstractArray) = namedtuple_of_arrays(namedtuple_of_arrays.(x))
+function namedtuple_of_arrays(x::AbstractArray{<:NamedTuple{K}}) where {K}
+    return mapreduce(merge, K) do k
+        v = flatten.(getproperty.(x, k))
+        return (; k => flatten(v))
     end
-    return ret
-end
-function stack(x::AbstractArray{<:NamedTuple{K}}) where {K}
-    length(x) == 0 && return nothing
-    @inbounds x1 = x[1]
-    ret = NamedTuple()
-    for k in K
-        v = replacemissing.(stack.(getproperty.(x, k)))
-        ret = merge(ret, (k => stack(v),))
-    end
-    return ret
 end
 
 @doc doc"""
@@ -42,7 +29,7 @@ end
     from_namedtuple(posterior::Vector{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Vector{Vector{<:NamedTuple}}; kwargs...) -> InferenceData
-    from_mcmcchains(
+    from_namedtuple(
         posterior::NamedTuple,
         sample_stats::Any,
         posterior_predictive::Any,
@@ -88,8 +75,8 @@ whose first dimensions correspond to the dimensions of the containers.
      to use this argument as a dictionary whose keys are observed variable names and whose
      values are log likelihood arrays.
 - `library=nothing`: Name of library that generated the draws
-- `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
+- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
+- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
      dimensions
 
 # Returns
@@ -131,7 +118,11 @@ function from_namedtuple(
     kwargs...,
 )
     all_idata = InferenceData()
-    post_dict = posterior === nothing ? nothing : convert(Dict, posterior)
+    if posterior === nothing
+        post_dict = nothing
+    else
+        post_dict = convert(Dict, namedtuple_of_arrays(posterior))
+    end
     for (group, group_data) in [
         :posterior_predictive => posterior_predictive,
         :sample_stats => sample_stats,
@@ -223,13 +214,13 @@ function from_namedtuple(
     return all_idata
 end
 function from_namedtuple(data::AbstractVector{<:NamedTuple}; kwargs...)
-    return from_namedtuple(stack(data); kwargs...)
+    return from_namedtuple(namedtuple_of_arrays(data); kwargs...)
 end
 function from_namedtuple(data::AbstractMatrix{<:NamedTuple}; kwargs...)
-    return from_namedtuple(stack(data); kwargs...)
+    return from_namedtuple(namedtuple_of_arrays(data); kwargs...)
 end
 function from_namedtuple(data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...)
-    return from_namedtuple(stack(data); kwargs...)
+    return from_namedtuple(namedtuple_of_arrays(data); kwargs...)
 end
 
 """

@@ -1,3 +1,16 @@
+const sample_stats_eltypes = Dict(
+    "lp" => Float64,
+    "step_size" => Float64,
+    "step_size_nom" => Float64,
+    "tree_depth" => Int,
+    "n_steps" => Int,
+    "diverging" => Bool,
+    "energy" => Float64,
+    "energy_error" => Float64,
+    "max_energy_error" => Float64,
+    "int_time" => Float64,
+)
+
 @doc doc"""
     with_interactive_backend(f; backend::Symbol = nothing)
 
@@ -142,8 +155,24 @@ end
 replacemissing(x) = map(identity, replace(x, missing => NaN))
 replacemissing(x::AbstractArray{<:AbstractArray}) = map(replacemissing, x)
 @inline replacemissing(x::AbstractArray{<:Real}) = x
-@inline replacemissing(x::Missing) = NaN
+@inline replacemissing(::Missing) = NaN
 @inline replacemissing(x::Number) = x
+
+"""
+    flatten(x)
+
+If `x` is an array of arrays, flatten into a single array whose dimensions are ordered with
+dimensions of the outermost container first and innermost container last.
+"""
+flatten(x) = x
+flatten(x::AbstractArray{<:Number}) = convert(Array, x)
+function flatten(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
+    ret = Array{T}(undef, (size(x)..., size(x[1])...))
+    for k in keys(x)
+        setindex!(ret, x[k], k, (Colon() for _ in 1:N)...)
+    end
+    return ret
+end
 
 # Convert python types to Julia types if possible
 @inline frompytype(x) = x
@@ -181,12 +210,17 @@ snakecase(s) = replace(lowercase(s), " " => "_")
 
 _asstringkeydict(x) = Dict(String(k) => v for (k, v) in pairs(x))
 _asstringkeydict(x::Dict{String}) = x
-_asstringkeydict(::Nothing) = Dict{String,Any}()
 
-function enforce_stat_types(dict)
-    return Dict(k => get(sample_stats_types, k, eltype(v)).(v) for (k, v) in dict)
+enforce_stat_eltypes(stats) = convert_to_eltypes(stats, sample_stats_eltypes)
+
+function convert_to_eltypes(data::Dict, data_eltypes)
+    return Dict(k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in data)
 end
-enforce_stat_types(::Nothing) = nothing
+function convert_to_eltypes(data::NamedTuple, data_eltypes)
+    return NamedTuple(
+        k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in pairs(data)
+    )
+end
 
 """
     todataframes(df; index_name = nothing) -> DataFrames.DataFrame
