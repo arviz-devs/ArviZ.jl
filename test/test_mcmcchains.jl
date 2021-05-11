@@ -46,7 +46,7 @@ function makechains(nvars::Int, args...; kwargs...)
     return makechains(names, args...; kwargs...)
 end
 
-function cmdstan_noncentered_schools(data, draws, chains; proj_dir=pwd())
+function cmdstan_noncentered_schools(data, draws, chains; tmpdir=joinpath(pwd(), "tmp"))
     model_name = "school8"
     stan_model = Stanmodel(;
         name=model_name,
@@ -55,12 +55,10 @@ function cmdstan_noncentered_schools(data, draws, chains; proj_dir=pwd())
         num_warmup=draws,
         num_samples=draws,
         output_format=:mcmcchains,
+        tmpdir=tmpdir,
     )
-    rc, chns, cnames = stan(stan_model, data, proj_dir; summary=false)
-    outfiles = []
-    for i in 1:chains
-        push!(outfiles, "$(proj_dir)/tmp/$(model_name)_samples_$(i).csv")
-    end
+    rc, chns, cnames = stan(stan_model, data; summary=false)
+    outfiles = ["$(tmpdir)/$(model_name)_samples_$(i).csv" for i in 1:chains]
     return (model=stan_model, files=outfiles, chains=chns)
 end
 
@@ -274,10 +272,10 @@ end
     @test ArviZ.summary(chn) !== nothing
 end
 
-if VERSION.minor > 0
-    @testset "from_cmdstan" begin
-        data = noncentered_schools_data()
-        output = cmdstan_noncentered_schools(data, 500, 4)
+VERSION.minor > 0 && @testset "from_cmdstan" begin
+    data = noncentered_schools_data()
+    mktempdir() do path
+        output = cmdstan_noncentered_schools(data, 500, 4; tmpdir=path)
         posterior_predictive = prior_predictive = ["y_hat"]
         log_likelihood = "log_lik"
         coords = Dict("school" => 1:8)
@@ -318,8 +316,5 @@ if VERSION.minor > 0
                 end
             end
         end
-
-        # cleanup
-        Base.Filesystem.rm(output.model.tmpdir; recursive=true, force=true)
     end
 end
