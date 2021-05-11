@@ -1,16 +1,3 @@
-const sample_stats_types = Dict(
-    "mean_tree_accept" => Float64,
-    "energy" => Float64,
-    "energy_error" => Float64,
-    "max_energy_error" => Float64,
-    "step_size" => Float64,
-    "step_size_bar" => Float64,
-    "tree_size" => Int,
-    "depth" => Int,
-    "tune" => Bool,
-    "diverging" => Bool,
-)
-
 @forwardfun compare
 @forwardfun hdi
 @forwardfun loo
