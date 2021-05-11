@@ -175,6 +175,7 @@ function from_mcmcchains(
         post_dict = nothing
         stats_dict = nothing
     else
+        post_dict = chains_to_dict(posterior)
         stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
         stats_dict = enforce_stat_eltypes(stats_dict)
     end
@@ -195,9 +196,7 @@ function from_mcmcchains(
         if group_data isa Union{AbstractVector{String},NTuple{N,String} where {N}}
             group_data = popsubdict!(post_dict, group_data)
         end
-        group_dataset = convert_to_dataset(
-            group_data; library=library, eltypes=eltypes, kwargs...
-        )
+        group_dataset = convert_to_dataset(group_data; library=library, kwargs...)
         setattribute!(group_dataset, "inference_library", library)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
@@ -239,11 +238,7 @@ function from_mcmcchains(
 
     if prior !== nothing
         pre_prior_idata = convert_to_inference_data(
-            prior;
-            posterior_predictive=prior_predictive,
-            library=library,
-            eltypes=eltypes,
-            kwargs...,
+            prior; posterior_predictive=prior_predictive, library=library, kwargs...
         )
         prior_idata = rekey(
             pre_prior_idata,
