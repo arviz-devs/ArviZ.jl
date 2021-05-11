@@ -203,7 +203,11 @@ function from_mcmcchains(
     end
 
     attrs_library = Dict("inference_library" => library)
-    attrs = posterior === nothing ? attrs_library : merge(attributes_dict(posterior), attrs_library)
+    if posterior === nothing
+        attrs = attrs_library
+    else
+        attrs = merge(attributes_dict(posterior), attrs_library)
+    end
     kwargs = convert(Dict, merge((; attrs=attrs, dims=Dict()), kwargs))
     post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
     concat!(all_idata, post_idata)
@@ -235,7 +239,11 @@ function from_mcmcchains(
 
     if prior !== nothing
         pre_prior_idata = convert_to_inference_data(
-            prior; posterior_predictive=prior_predictive, library=library, kwargs...
+            prior;
+            posterior_predictive=prior_predictive,
+            library=library,
+            eltypes=eltypes,
+            kwargs...,
         )
         prior_idata = rekey(
             pre_prior_idata,
