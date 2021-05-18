@@ -76,6 +76,7 @@ export InferenceData,
     from_dict,
     from_cmdstan,
     from_mcmcchains,
+    from_samplechains,
     concat,
     concat!
 
