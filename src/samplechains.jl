@@ -14,32 +14,6 @@ function namedtuple_of_arrays(multichain::SampleChains.MultiChain)
     return namedtuple_of_arrays(map(namedtuple_of_arrays, chains))
 end
 
-function from_samplechains(
-    posterior=nothing;
-    prior=nothing,
-    sample_stats=nothing,
-    sample_stats_prior=nothing,
-    library=:SampleChains,
-    kwargs...,
-)
-    if sample_stats === nothing &&
-       posterior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
-        sample_stats = _samplechains_info(posterior)
-    end
-    if sample_stats_prior === nothing &&
-       prior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
-        sample_stats_prior = _samplechains_info(prior)
-    end
-    return from_namedtuple(
-        posterior;
-        prior=prior,
-        sample_stats=sample_stats,
-        sample_stats_prior=sample_stats_prior,
-        library=library,
-        kwargs...,
-    )
-end
-
 # info(::AbstractChain) is only required to return an AbstractVector, which is not enough
 # information for us to convert it
 # see https://github.com/arviz-devs/ArviZ.jl/issues/124
@@ -70,6 +44,32 @@ end
             @debug "Skipped SampleChainsDynamicHMC info entries: $skipped_info."
         return tree_stats
     end
+end
+
+function from_samplechains(
+    posterior=nothing;
+    prior=nothing,
+    sample_stats=nothing,
+    sample_stats_prior=nothing,
+    library=:SampleChains,
+    kwargs...,
+)
+    if sample_stats === nothing &&
+       posterior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
+        sample_stats = _samplechains_info(posterior)
+    end
+    if sample_stats_prior === nothing &&
+       prior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
+        sample_stats_prior = _samplechains_info(prior)
+    end
+    return from_namedtuple(
+        posterior;
+        prior=prior,
+        sample_stats=sample_stats,
+        sample_stats_prior=sample_stats_prior,
+        library=library,
+        kwargs...,
+    )
 end
 
 """
