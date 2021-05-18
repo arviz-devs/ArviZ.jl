@@ -46,6 +46,21 @@ end
     end
 end
 
+"""
+    from_samplechains(
+        posterior=nothing;
+        prior=nothing,
+        library=:SampleChains,
+        kwargs...,
+    ) -> InferenceData
+
+Convert SampleChains samples to an `InferenceData`.
+
+Either `posterior` or `prior` may be a `SampleChains.AbstractChain` or
+`SampleChains.MultiChain` object.
+
+For descriptions of remaining `kwargs`, see [`from_namedtuple`](@ref).
+"""
 function from_samplechains(
     posterior=nothing;
     prior=nothing,
@@ -73,7 +88,16 @@ function from_samplechains(
 end
 
 """
-    convert_to_inference_data(obj::SampleChains.AbstractChain; group = :posterior, kwargs...) -> InferenceData
+    convert_to_inference_data(
+        obj::SampleChains.AbstractChain;
+        group=:posterior,
+        kwargs...,
+    ) -> InferenceData
+    convert_to_inference_data(
+        obj::SampleChains.AbstractChain;
+        group=:posterior,
+        kwargs...,
+    ) -> InferenceData
 
 Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group`.
 
