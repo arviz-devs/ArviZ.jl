@@ -1,27 +1,54 @@
 using .SampleChains: SampleChains
+using .SampleChains.TupleVectors: TupleVector
 
 # TODO: supported samples with a nested structure
 
-function from_samplechains(posterior::SampleChains.AbstractChain; kwargs...)
-    return from_samplechains(SampleChains.MultiChain(posterior); kwargs...)
+function namedtuple_of_arrays(x::TupleVector{<:NamedTuple{K}}) where {K}
+    return NamedTuple{K}(getproperty.(Ref(x), K))
+end
+function namedtuple_of_arrays(chain::SampleChains.AbstractChain)
+    return namedtuple_of_arrays(SampleChains.samples(chain))
+end
+function namedtuple_of_arrays(multichain::SampleChains.MultiChain)
+    chains = SampleChains.getchains(multichain)
+    return namedtuple_of_arrays(map(namedtuple_of_arrays, chains))
 end
 
-function from_samplechains(posterior::SampleChains.MultiChain; kwargs...)
-    chains = SampleChains.getchains(posterior)
-    # TODO: overload namedtuple_of_arrays for AbstractChain to be more efficient
-    post_data = map(namedtuple_of_arrays, chains)
-    stats_data = map(_samplechains_info, chains)
-    if all(isnothing, stats_data)
-        return convert_to_inference_data(post_data; kwargs...)
-    else
-        return convert_to_inference_data(post_data; sample_stats=stats_data, kwargs...)
+function from_samplechains(
+    posterior=nothing;
+    prior=nothing,
+    sample_stats=nothing,
+    sample_stats_prior=nothing,
+    library=:SampleChains,
+    kwargs...,
+)
+    if sample_stats === nothing &&
+       posterior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
+        sample_stats = _samplechains_info(posterior)
     end
+    if sample_stats_prior === nothing &&
+       prior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
+        sample_stats_prior = _samplechains_info(prior)
+    end
+    return from_namedtuple(
+        posterior;
+        prior=prior,
+        sample_stats=sample_stats,
+        sample_stats_prior=sample_stats_prior,
+        library=library,
+        kwargs...,
+    )
 end
 
 # info(::AbstractChain) is only required to return an AbstractVector, which is not enough
 # information for us to convert it
 # see https://github.com/arviz-devs/ArviZ.jl/issues/124
 _samplechains_info(::SampleChains.AbstractChain) = nothing
+function _samplechains_info(multichain::SampleChains.MultiChain)
+    stats = map(_samplechains_info, SampleChains.getchains(multichain))
+    all(isnothing, stats) && return nothing
+    return namedtuple_of_arrays(stats)
+end
 
 @require SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4" begin
     using .SampleChainsDynamicHMC: SampleChainsDynamicHMC
