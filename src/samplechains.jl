@@ -77,7 +77,7 @@ end
 
 Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group`.
 
-Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
+Remaining `kwargs` are forwarded to [`from_samplechains`](@ref).
 """
 function convert_to_inference_data(
     chain::T; group=:posterior, kwargs...
