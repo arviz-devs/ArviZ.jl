@@ -84,5 +84,5 @@ function convert_to_inference_data(
 ) where {T<:Union{SampleChains.AbstractChain,SampleChains.MultiChain}}
     group = Symbol(group)
     group === :posterior && return from_samplechains(chain; kwargs...)
-    return from_samplechains(; group => chain)
+    return from_samplechains(; group => chain, kwargs...)
 end
