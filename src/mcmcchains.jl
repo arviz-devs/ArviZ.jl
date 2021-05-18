@@ -109,10 +109,10 @@ function convert_to_inference_data(chns::Chains; group=:posterior, kwargs...)
 end
 
 @doc doc"""
-    from_mcmcchains(posterior::Chains; kwargs...) -> InferenceData
+    from_mcmcchains(posterior::MCMCChains.Chains; kwargs...) -> InferenceData
     from_mcmcchains(; kwargs...) -> InferenceData
     from_mcmcchains(
-        posterior::Chains,
+        posterior::MCMCChains.Chains,
         posterior_predictive::Any,
         predictions::Any,
         log_likelihood::Any;
@@ -126,7 +126,7 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 
 # Arguments
 
-- `posterior::Chains`: Draws from the posterior
+- `posterior::MCMCChains.Chains`: Draws from the posterior
 
 # Keywords
 
