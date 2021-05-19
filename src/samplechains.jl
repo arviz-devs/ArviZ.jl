@@ -4,7 +4,7 @@ using .SampleChains.TupleVectors: TupleVector
 # TODO: supported samples with a nested structure
 
 function namedtuple_of_arrays(x::TupleVector{<:NamedTuple{K}}) where {K}
-    return NamedTuple{K}(getproperty.(Ref(x), K))
+    return NamedTuple(k => flatten(getproperty(x, k)) for k in K)
 end
 function namedtuple_of_arrays(chain::SampleChains.AbstractChain)
     return namedtuple_of_arrays(SampleChains.samples(chain))
