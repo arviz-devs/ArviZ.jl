@@ -355,6 +355,7 @@ First we define our model:
 
 ```@example soss
 using Soss
+using Soss.MeasureTheory
 
 mod = Soss.@model (J, σ) begin
     μ ~ Normal(μ=0, σ=5)
@@ -366,33 +367,33 @@ mod = Soss.@model (J, σ) begin
 end
 
 constant_data = (J=J, σ=σ)
+observed_data = (y=y,)
 param_mod = mod(; constant_data...)
 ```
 
 Then we draw from the prior and prior predictive distributions.
 
 ```@example soss
-Random.seed!(5298)
-prior_priorpred = map(_ -> rand(rng, param_mod, nsamples), 1:nchains)
+rng = Random.seed!(5298)
+prior_priorpred = map(_ -> rand(rng, param_mod, nsamples), 1:nchains);
 nothing # hide
 ```
 
 Soss returns predictive samples in a `TupleVector`, which is an efficient way of storing a vector of `NamedTuple`s.
-Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/DynamicHMC.jl).
+Next, we draw from the posterior using [SampleChainsDynamicHMC.jl](https://github.com/cscherrer/SampleChainsDynamicHMC.jl).
 
 ```@example soss
-using SampleChainsDynamicHMC
-post = sample(rng, DynamicHMCChain, param_mod | (y=y,), nsamples, nchains)
-nothing # hide
+using SampleChainsDynamicHMC: getchains, DynamicHMCChain
+post = Soss.sample(rng, DynamicHMCChain, param_mod | observed_data, nsamples, nchains)
 ```
 
 Soss returns posterior samples in a `SampleChains.AbstractChain` or, for multiple chains, in a `SampleChains.MultiChain`.
 Finally, we update the posterior samples with draws from the posterior predictive distribution.
 
 ```@example soss
-pred = predictive(mod, :μ, :τ, :θ)
-postpred = map(SampleChains.getchains(post)) do chain
-    map(draw -> rand(rng, pred(; constant_data..., draw...)), chain)
+mod_pred = Soss.predictive(mod, :μ, :τ, :θ)
+postpred = map(getchains(post)) do chain
+    map(draw -> rand(rng, mod_pred(; constant_data..., draw...)), chain)
 end;
 nothing # hide
 ```
@@ -412,7 +413,7 @@ idata = from_samplechains(
     posterior_predictive=postpred,
     prior=prior_priorpred,
     prior_predictive=[:y],
-    observed_data=(y=y,),
+    observed_data=observed_data,
     constant_data=constant_data,
     coords=Dict("school" => schools),
     dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
