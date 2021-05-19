@@ -119,8 +119,8 @@ function convert_to_inference_data(
     T<:Union{
         SampleChains.AbstractChain,
         SampleChains.MultiChain,
-        AbstractVector{SampleChains.AbstractChain},
-        Tuple{Vararg{SampleChains.AbstractChain}},
+        AbstractVector{<:SampleChains.AbstractChain},
+        Tuple{Vararg{<:SampleChains.AbstractChain}},
     },
 }
     group = Symbol(group)
