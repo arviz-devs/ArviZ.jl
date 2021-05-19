@@ -2,6 +2,7 @@ __precompile__()
 module ArviZ
 
 using Base: @__doc__
+using Random
 using Requires
 using REPL
 using NamedTupleTools
@@ -76,6 +77,7 @@ export InferenceData,
     from_dict,
     from_cmdstan,
     from_mcmcchains,
+    from_turing,
     concat,
     concat!
 
@@ -108,6 +110,10 @@ function __init__()
     @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin
         import .MCMCChains: Chains, sections
         include("mcmcchains.jl")
+    end
+    @require Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0" begin
+        import .Turing: Turing
+        include("turing.jl")
     end
     return nothing
 end
