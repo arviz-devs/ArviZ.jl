@@ -11,8 +11,8 @@ function test_namedtuple_data(
     vars = vardict(ds)
     for name in string.(names)
         @test name in keys(vars)
-        dim = get(dims, name, [])
-        s = (x -> length(get(coords, x, []))).(dim)
+        dim = get(dims, name, get(dims, Symbol(name), []))
+        s = (x -> length(get(coords, x, get(coords, Symbol(x), [])))).(dim)
         @test size(vars[name]) == (nchains, ndraws, s...)
     end
     @test "inference_library" in keys(attributes(ds))
