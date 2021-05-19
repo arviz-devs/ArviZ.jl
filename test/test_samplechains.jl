@@ -1,5 +1,7 @@
 using SampleChains: SampleChains
 using SampleChains.TupleVectors: TupleVectors
+using SampleChainsDynamicHMC: SampleChainsDynamicHMC
+using SampleChainsDynamicHMC.TransformVariables
 
 # minimal AbstractChain implementation
 struct TestChain{T} <: SampleChains.AbstractChain{T}
@@ -8,6 +10,17 @@ struct TestChain{T} <: SampleChains.AbstractChain{T}
 end
 SampleChains.samples(chain::TestChain) = getfield(chain, :samples)
 SampleChains.info(chain::TestChain) = getfield(chain, :info)
+
+function samplechains_dynamichmc_sample(nchains, ndraws)
+    # example from SampleChainsDynamicHMC tests
+    function ℓ(nt)
+        z = nt.x / nt.σ
+        return -z^2 - nt.σ - log(nt.σ)
+    end
+    t = as((x=asℝ, σ=asℝ₊))
+    chain = SampleChains.initialize!(nchains, SampleChainsDynamicHMC.DynamicHMCChain, ℓ, t)
+    return SampleChains.drawsamples!(chain, ndraws)
+end
 
 @testset "SampleChains" begin
     @testset "TestChain with $nchains chains" for nchains in (1, 4)
@@ -61,5 +74,25 @@ SampleChains.info(chain::TestChain) = getfield(chain, :info)
                 end
             end
         end
+    end
+    @testset "SampleChainsDynamicHMC" begin
+        expected_stats_vars = (
+            :acceptance_rate, :n_steps, :diverging, :lp, :tree_depth, :turning
+        )
+
+        multichain = samplechains_dynamichmc_sample(4, 10)
+        idata = convert_to_inference_data(multichain)
+        @test sort([:posterior, :sample_stats]) == ArviZ.groupnames(idata)
+        stats_vars = setdiff(map(Symbol, idata.sample_stats.variables), (:chain, :draw))
+        missing_vars = setdiff(expected_stats_vars, stats_vars)
+        @test isempty(missing_vars)
+
+        idata = convert_to_inference_data(multichain; group=:prior)
+        @test sort([:prior, :sample_stats_prior]) == ArviZ.groupnames(idata)
+        stats_vars = setdiff(
+            map(Symbol, idata.sample_stats_prior.variables), (:chain, :draw)
+        )
+        missing_vars = setdiff(expected_stats_vars, stats_vars)
+        @test isempty(missing_vars)
     end
 end

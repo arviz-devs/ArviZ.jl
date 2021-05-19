@@ -34,7 +34,8 @@ MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e"
+SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["CmdStan", "MCMCChains", "MonteCarloMeasurements", "Random", "SampleChains", "Test"]
+test = ["CmdStan", "MCMCChains", "MonteCarloMeasurements", "Random", "SampleChains", "SampleChainsDynamicHMC", "Test"]
