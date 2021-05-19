@@ -8,10 +8,11 @@ MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 NamedTupleTools = "d9ec5142-1e00-5aa0-9d6a-321866360f50"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4"
 Soss = "8ce77f84-9b61-11e8-39ff-d17a774bf41c"
 Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 
 [compat]
 MCMCChains = "3.0, 4.0"
-Soss = "0.11, 0.12, 0.13, 0.14"
+Soss = "0.19"
 Turing = "0.15"
