@@ -360,7 +360,7 @@ using Soss.MeasureTheory
 mod = Soss.@model (J, σ) begin
     μ ~ Normal(μ=0, σ=5)
     τ ~ HalfCauchy(σ=5)
-    θ ~ iid(J)(Normal(μ=μ, σ=τ))
+    θ ~ Normal(μ=μ, σ=τ) |> iid(J)
     y ~ For(1:J) do j
         Normal(μ=θ[j], σ=σ[j])
     end
