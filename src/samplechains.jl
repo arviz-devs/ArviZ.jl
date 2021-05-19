@@ -14,6 +14,16 @@ function namedtuple_of_arrays(multichain::SampleChains.MultiChain)
     return namedtuple_of_arrays(map(namedtuple_of_arrays, chains))
 end
 
+_maybe_multichain(x) = x
+_maybe_multichain(x::SampleChains.MultiChain) = x
+_maybe_multichain(x::SampleChains.AbstractChain) = SampleChains.MultiChain(x)
+function _maybe_multichain(x::AbstractVector{<:SampleChains.AbstractChain})
+    return SampleChains.MultiChain(x)
+end
+function _maybe_multichain(x::Tuple{Vararg{<:SampleChains.AbstractChain}})
+    return SampleChains.MultiChain(x...)
+end
+
 # info(::AbstractChain) is only required to return an AbstractVector, which is not enough
 # information for us to convert it
 # see https://github.com/arviz-devs/ArviZ.jl/issues/124
@@ -69,17 +79,17 @@ function from_samplechains(
     library=:SampleChains,
     kwargs...,
 )
-    if sample_stats === nothing &&
-       posterior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
-        sample_stats = _samplechains_info(posterior)
+    posterior_mc = _maybe_multichain(posterior)
+    prior_mc = _maybe_multichain(prior)
+    if sample_stats === nothing && posterior_mc isa SampleChains.MultiChain
+        sample_stats = _samplechains_info(posterior_mc)
     end
-    if sample_stats_prior === nothing &&
-       prior isa Union{SampleChains.AbstractChain,SampleChains.MultiChain}
-        sample_stats_prior = _samplechains_info(prior)
+    if sample_stats === nothing && prior_mc isa SampleChains.MultiChain
+        sample_stats_prior = _samplechains_info(prior_mc)
     end
     return from_namedtuple(
-        posterior;
-        prior=prior,
+        posterior_mc;
+        prior=prior_mc,
         sample_stats=sample_stats,
         sample_stats_prior=sample_stats_prior,
         library=library,
@@ -105,7 +115,14 @@ Remaining `kwargs` are forwarded to [`from_samplechains`](@ref).
 """
 function convert_to_inference_data(
     chain::T; group=:posterior, kwargs...
-) where {T<:Union{SampleChains.AbstractChain,SampleChains.MultiChain}}
+) where {
+    T<:Union{
+        SampleChains.AbstractChain,
+        SampleChains.MultiChain,
+        AbstractVector{SampleChains.AbstractChain},
+        Tuple{Vararg{SampleChains.AbstractChain}},
+    },
+}
     group = Symbol(group)
     group === :posterior && return from_samplechains(chain; kwargs...)
     return from_samplechains(; group => chain, kwargs...)
