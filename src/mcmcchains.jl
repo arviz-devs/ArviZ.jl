@@ -172,7 +172,6 @@ function from_mcmcchains(
     kwargs...,
 )
     kwargs = convert(Dict, merge((; dims=Dict()), kwargs))
-    library = string(library)
     rekey_fun = d -> rekey(d, stats_key_map)
 
     # Convert chains to dicts
@@ -203,23 +202,18 @@ function from_mcmcchains(
             group_data = popsubdict!(post_dict, group_data)
         end
         group_dataset = if group_data isa Chains
-            convert_to_dataset(group_data; library=library, eltypes=eltypes, kwargs...)
+            convert_to_dataset(group_data; eltypes=eltypes, kwargs...)
         else
-            convert_to_dataset(group_data; library=library, kwargs...)
+            convert_to_dataset(group_data; kwargs...)
         end
-        setattribute!(group_dataset, "inference_library", library)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
-    attrs_library = Dict("inference_library" => library)
-    if posterior === nothing
-        attrs = attrs_library
-    else
-        attrs = merge(attributes_dict(posterior), attrs_library)
-    end
+    attrs = posterior === nothing ? Dict() : attributes_dict(posterior)
     kwargs = convert(Dict, merge((; attrs=attrs, dims=Dict()), kwargs))
     post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
     concat!(all_idata, post_idata)
+    _add_library_attributes!(all_idata, library)
     return all_idata
 end
 function from_mcmcchains(
@@ -243,18 +237,13 @@ function from_mcmcchains(
         posterior_predictive,
         predictions,
         log_likelihood;
-        library=library,
         eltypes=eltypes,
         kwargs...,
     )
 
     if prior !== nothing
         pre_prior_idata = convert_to_inference_data(
-            prior;
-            posterior_predictive=prior_predictive,
-            library=library,
-            eltypes=eltypes,
-            kwargs...,
+            prior; posterior_predictive=prior_predictive, eltypes=eltypes, kwargs...
         )
         prior_idata = rekey(
             pre_prior_idata,
@@ -274,10 +263,10 @@ function from_mcmcchains(
     ]
         group_data === nothing && continue
         group_data = convert_to_eltypes(group_data, eltypes)
-        group_dataset = convert_to_constant_dataset(group_data; library=library, kwargs...)
+        group_dataset = convert_to_constant_dataset(group_data; kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
-
+    _add_library_attributes!(all_idata, library)
     return all_idata
 end
 

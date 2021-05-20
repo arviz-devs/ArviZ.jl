@@ -73,6 +73,9 @@ function from_turing(
     log_likelihood=true,
     kwargs...,
 )
+    kwargs = Dict{Symbol,Any}(kwargs)
+    kwargs[:library] = Turing
+
     groups = Dict{Symbol,Any}(
         :observed_data => observed_data,
         :constant_data => constant_data,
@@ -88,13 +91,13 @@ function from_turing(
         end
     end
 
-    model === nothing && return from_mcmcchains(chns; groups..., library=Turing, kwargs...)
+    model === nothing && return from_mcmcchains(chns; groups..., kwargs...)
     if :prior in groups_to_generate
         groups[:prior] = _sample_prior(rng, model, nchains, ndraws)
     end
 
     if groups[:observed_data] === nothing
-        return from_mcmcchains(chns; groups..., library=Turing, kwargs...)
+        return from_mcmcchains(chns; groups..., kwargs...)
     end
 
     observed_data = groups[:observed_data]
@@ -139,12 +142,7 @@ function from_turing(
     idata = from_mcmcchains(chns; groups..., kwargs...)
 
     # add model name to generated InferenceData groups
-    for name in groupnames(idata)
-        name in (:observed_data,) && continue
-        ds = getproperty(idata, name)
-        setattribute!(ds, :model_name, nameof(model))
-        setattribute!(ds, :inference_library, :Turing)
-    end
+    setattribute!(idata, :model_name, nameof(model))
     return idata
 end
 
