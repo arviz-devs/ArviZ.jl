@@ -155,7 +155,7 @@ end
 function _build_predictive_model(model::Turing.DynamicPPL.Model, data_keys)
     var_names = filter(in(data_keys), keys(model.args))
     return Turing.DynamicPPL.Model{var_names}(
-        model.name, model.f, model.args, model.defaults
+        model.name, model.f, deepcopy(model.args), deepcopy(model.defaults)
     )
 end
 
