@@ -7,6 +7,7 @@ using Requires
 using REPL
 using NamedTupleTools
 using DataFrames
+using PkgVersion: PkgVersion
 
 using PyCall
 using Conda

@@ -172,3 +172,13 @@ function setattribute!(data::InferenceData, key, value)
     end
     return data
 end
+
+_add_library_attributes!(data, ::Nothing) = ds
+function _add_library_attributes!(data, library)
+    setattribute!(data, :inference_library, string(library))
+    if library isa Module
+        lib_version = string(PkgVersion.Version(library))
+        setattribute!(data, :inference_library_version, lib_version)
+    end
+    return data
+end
