@@ -65,7 +65,6 @@ function from_turing(
     rng::AbstractRNG=Random.default_rng(),
     nchains=ndraws = chns isa Turing.MCMCChains.Chains ? last(size(chns)) : 1,
     ndraws=chns isa Turing.MCMCChains.Chains ? first(size(chns)) : 1_000,
-    library=Turing,
     observed_data=true,
     constant_data=true,
     posterior_predictive=true,
@@ -89,13 +88,13 @@ function from_turing(
         end
     end
 
-    model === nothing && return from_mcmcchains(chns; library=library, groups..., kwargs...)
+    model === nothing && return from_mcmcchains(chns; groups..., library=Turing, kwargs...)
     if :prior in groups_to_generate
         groups[:prior] = _sample_prior(rng, model, nchains, ndraws)
     end
 
     if groups[:observed_data] === nothing
-        return from_mcmcchains(chns; library=library, groups..., kwargs...)
+        return from_mcmcchains(chns; groups..., library=Turing, kwargs...)
     end
 
     observed_data = groups[:observed_data]
@@ -137,13 +136,14 @@ function from_turing(
         end
     end
 
-    idata = from_mcmcchains(chns; library=library, groups..., kwargs...)
+    idata = from_mcmcchains(chns; groups..., kwargs...)
 
     # add model name to generated InferenceData groups
     for name in groupnames(idata)
         name in (:observed_data,) && continue
         ds = getproperty(idata, name)
         setattribute!(ds, :model_name, nameof(model))
+        setattribute!(ds, :inference_library, :Turing)
     end
     return idata
 end

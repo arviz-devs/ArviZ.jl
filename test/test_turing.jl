@@ -46,6 +46,7 @@ using Random
     idata5 = from_turing(
         chn; model=model, observed_data=observed_data, nchains=3, ndraws=100
     )
+    @test idata5.posterior.inference_library == "Turing"
     @test sort(groupnames(idata5)) == sort([
         :posterior,
         :posterior_predictive,
