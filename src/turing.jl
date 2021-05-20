@@ -82,5 +82,13 @@ function from_turing(
         end
     end
 
-    return from_mcmcchains(chns; library=Turing, groups..., kwargs...)
+    idata = from_mcmcchains(chns; library=library, groups..., kwargs...)
+
+    # add model name to generated InferenceData groups
+    for name in groupnames(idata)
+        name in (:observed_data,) && continue
+        ds = getproperty(idata, name)
+        setattribute!(ds, :model_name, nameof(model))
+    end
+    return idata
 end
