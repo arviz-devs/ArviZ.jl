@@ -124,6 +124,8 @@ Convert data in an `MCMCChains.Chains` format into an [`InferenceData`](@ref).
 Any keyword argument below without an an explicitly annotated type above is allowed, so long
 as it can be passed to [`convert_to_inference_data`](@ref).
 
+For chains data from Turing, see [`from_turing`](@ref) for more options.
+
 # Arguments
 
 - `posterior::Chains`: Draws from the posterior
