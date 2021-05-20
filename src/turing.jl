@@ -17,14 +17,14 @@ group data or set it to `false`.
 # Keywords
 
 - `model::Turing.DynamicPPL.Model`: A Turing model conditioned on observed and
-constant data. `constant_data` must be provided for the model to be used.
+     constant data. `constant_data` must be provided for the model to be used.
 - `rng::AbstractRNG=Random.default_rng()`: a random number generator used for
-sampling from the prior, posterior predictive and prior predictive
-distributions.
+     sampling from the prior, posterior predictive and prior predictive
+     distributions.
 - `nchains::Int`: Number of chains for prior samples, defaulting to the number
-of chains in the posterior, if provided, else 1.
+     of chains in the posterior, if provided, else 1.
 - `ndraws::Int`: Number of draws per chain for prior samples, defaulting to the
-number of draws per chain in the posterior, if provided, else 1,000.
+     number of draws per chain in the posterior, if provided, else 1,000.
 - `kwargs`: For remaining keywords, see [`from_mcmcchains`](@ref).
 
 # Examples
