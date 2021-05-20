@@ -1,7 +1,7 @@
 function from_turing(
     chns=nothing;
     model::Union{Nothing,Turing.DynamicPPL.Model}=nothing,
-    rng=Random.default_rng(),
+    rng::AbstractRNG=Random.default_rng(),
     nchains=ndraws = chns isa Turing.MCMCChains.Chains ? last(size(chns)) : 1,
     ndraws=chns isa Turing.MCMCChains.Chains ? first(size(chns)) : 1_000,
     library=Turing,
