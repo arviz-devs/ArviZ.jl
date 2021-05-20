@@ -23,13 +23,7 @@ function from_turing(
     )
     model === nothing && return from_mcmcchains(chns; library=library, groups..., kwargs...)
     if groups[:prior] === nothing
-        groups[:prior] = reduce(
-            Turing.chainscat,
-            map(
-                _ -> Turing.sample(rng, model, Turing.Prior(), ndraws; progress=false),
-                1:nchains,
-            ),
-        )
+        groups[:prior] = Turing.sample(rng, model, Turing.Prior(), Turing.MCMCThreads(), ndraws, nchains; progress=false)
     end
 
     groups[:observed_data] === nothing &&
@@ -47,10 +41,7 @@ function from_turing(
     end
 
     # Instantiate the predictive model
-    args_pred = NamedTuple(
-        k => k in data_var_names ? similar(v, Missing) : v for (k, v) in pairs(model.args)
-    )
-    model_predict = Turing.DynamicPPL.Model(model.name, model.f, args_pred, model.defaults)
+model_predict = Turing.DynamicPPL.Model{data_var_names}(model.name, model.f, args_pred, model.defaults)
 
     # and then sample!
     if groups[:prior_predictive] === nothing && groups[:prior] isa Turing.MCMCChains.Chains
