@@ -27,12 +27,14 @@ using Random
     idata1 = from_turing(chn)
     @test sort(groupnames(idata1)) == [:posterior, :sample_stats]
     @test idata1.posterior.inference_library == "Turing"
+    VersionNumber(idata1.posterior.inference_library_version)
 
     idata2 = from_turing(; model=model)
     @test sort(groupnames(idata2)) == [:prior, :sample_stats_prior]
     @test length(idata2.prior.chain.values) == 1
     @test length(idata2.prior.draw.values) == 1_000
-    @test idata1.posterior.inference_library == "Turing"
+    @test idata2.prior.inference_library == "Turing"
+    VersionNumber(idata2.prior.inference_library_version)
 
     idata3 = from_turing(chn; model=model)
     @test sort(groupnames(idata3)) ==
@@ -47,6 +49,8 @@ using Random
         chn; model=model, observed_data=observed_data, nchains=3, ndraws=100
     )
     @test idata5.posterior.inference_library == "Turing"
+    VersionNumber(idata5.posterior.inference_library_version)
+
     @test sort(groupnames(idata5)) == sort([
         :posterior,
         :posterior_predictive,
