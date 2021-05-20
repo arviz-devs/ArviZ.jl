@@ -1,3 +1,63 @@
+"""
+    from_turing([posterior::Chains]; kwargs...) -> InferenceData
+
+Convert data from Turing into an [`InferenceData`](@ref).
+
+This permits passing a Turing `Model` and a random number generator to
+`model` and `rng` keywords to automatically generate groups. By default,
+if `posterior`, `observed_data`, and `model` are provided, then the 
+`prior`, `prior_predictive`, `posterior_predictive`, and `log_likelihood`
+groups are automatically generated. To avoid generating a group, provide
+group data or set it to `false`.
+
+# Arguments
+
+- `posterior::Chains`: Draws from the posterior
+
+# Keywords
+
+- `model::Turing.DynamicPPL.Model`: A Turing model conditioned on observed and
+constant data. `constant_data` must be provided for the model to be used.
+- `rng::AbstractRNG=Random.default_rng()`: a random number generator used for
+sampling from the prior, posterior predictive and prior predictive
+distributions.
+- `nchains::Int`: Number of chains for prior samples, defaulting to the number
+of chains in the posterior, if provided, else 1.
+- `ndraws::Int`: Number of draws per chain for prior samples, defaulting to the
+number of draws per chain in the posterior, if provided, else 1,000.
+- `kwargs`: For remaining keywords, see [`from_mcmcchains`](@ref).
+
+# Examples
+
+```jldoctest
+julia> using Turing, Random
+
+julia> rng = Random.seed!(42);
+
+julia> @model function demo(xs, y)
+           s ~ InverseGamma(2, 3)
+           m ~ Normal(0, √s)
+           for i in eachindex(xs)
+               xs[i] ~ Normal(m, √s)
+           end
+           y ~ Normal(m, √s)
+       end;
+
+julia> observed_data = (xs=[0.87, 0.08, 0.53], y=-0.85);
+
+julia> model = demo(observed_data...);
+
+julia> chn = sample(rng, model, NUTS(), 1_000; progress=false);
+
+julia> from_turing(chn; model=model, rng=rng, observed_data=observed_data, prior=false)
+InferenceData with groups:
+	> posterior
+	> posterior_predictive
+	> log_likelihood
+	> sample_stats
+	> observed_data
+```
+"""
 function from_turing(
     chns=nothing;
     model::Union{Nothing,Turing.DynamicPPL.Model}=nothing,
