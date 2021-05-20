@@ -5,12 +5,12 @@ function from_turing(
     nchains=ndraws = chns isa Turing.MCMCChains.Chains ? last(size(chns)) : 1,
     ndraws=chns isa Turing.MCMCChains.Chains ? first(size(chns)) : 1_000,
     library=Turing,
-    observed_data=nothing,
-    constant_data=nothing,
-    posterior_predictive=nothing,
-    prior=nothing,
-    prior_predictive=nothing,
-    log_likelihood=nothing,
+    observed_data=true,
+    constant_data=true,
+    posterior_predictive=true,
+    prior=true,
+    prior_predictive=true,
+    log_likelihood=true,
     kwargs...,
 )
     groups = Dict{Symbol,Any}(
@@ -21,8 +21,15 @@ function from_turing(
         :prior_predictive => prior_predictive,
         :log_likelihood => log_likelihood,
     )
+    groups_to_generate = Set(k for (k, v) in groups if v === true)
+    for (name, value) in groups
+        if value isa Bool
+            groups[name] = nothing
+        end
+    end
+
     model === nothing && return from_mcmcchains(chns; library=library, groups..., kwargs...)
-    if groups[:prior] === nothing
+    if :prior in groups_to_generate
         groups[:prior] = Turing.sample(
             rng,
             model,
@@ -43,7 +50,7 @@ function from_turing(
         observed_data isa Dict ? Symbol.(keys(observed_data)) : propertynames(observed_data)
     )
 
-    if groups[:constant_data] === nothing
+    if :constant_data in groups_to_generate
         groups[:constant_data] = NamedTuple(
             filter(p -> first(p) ∉ observed_data_keys, pairs(model.args))
         )
@@ -56,29 +63,36 @@ function from_turing(
     )
 
     # and then sample!
-    if groups[:prior_predictive] === nothing && groups[:prior] isa Turing.MCMCChains.Chains
-        groups[:prior_predictive] = Turing.predict(rng, model_predict, groups[:prior])
+    if :prior_predictive in groups_to_generate
+        if groups[:prior] isa Turing.MCMCChains.Chains
+            groups[:prior_predictive] = Turing.predict(rng, model_predict, groups[:prior])
+        elseif groups[:prior] !== nothing
+            @warn "Could not generate group :prior_predictive because group :prior was not an MCMCChains.Chains."
+        end
     end
 
-    if chns isa Turing.MCMCChains.Chains
-        if groups[:posterior_predictive] === nothing && chns isa Turing.MCMCChains.Chains
+    if :posterior_predictive in groups_to_generate
+        if chns isa Turing.MCMCChains.Chains
             groups[:posterior_predictive] = Turing.predict(rng, model_predict, chns)
+        elseif chns !== nothing
+            @warn "Could not generate group :posterior_predictive because group :posterior was not an MCMCChains.Chains."
         end
+    end
 
-        if groups[:log_likelihood] === nothing &&
-           groups[:posterior_predictive] isa MCMCChains.Chains
-            loglikelihoods = Turing.pointwise_loglikelihoods(
-                model, Turing.MCMCChains.get_sections(chns, :parameters)
-            )
-
+    if :log_likelihood in groups_to_generate
+        if chns isa Turing.MCMCChains.Chains
+            chains_only_params = Turing.MCMCChains.get_sections(chns, :parameters)
+            loglikelihoods = Turing.pointwise_loglikelihoods(model, chains_only_params)
+            pred_names = sort(collect(keys(loglikelihoods)); by=split_locname)
+            loglikelihoods_vals = getindex.(Ref(loglikelihoods), pred_names)
             # Bundle loglikelihoods into a `Chains` object so we can reuse our own variable
             # name parsing
-            pred_names = string.(keys(groups[:posterior_predictive]))
-            loglikelihoods_vals = getindex.(Ref(loglikelihoods), pred_names)
             loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims=3), (1, 3, 2))
             groups[:log_likelihood] = Turing.MCMCChains.Chains(
                 loglikelihoods_arr, pred_names
             )
+        elseif chns !== nothing
+            @warn "Could not generate log_likelihood because posterior must be an MCMCChains.Chains."
         end
     end
 
