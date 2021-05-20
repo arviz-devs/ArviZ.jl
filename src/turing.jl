@@ -1,6 +1,6 @@
 function from_turing(
     chns=nothing;
-    model=nothing,
+    model::Union{Nothing,Turing.DynamicPPL.Model}=nothing,
     rng=Random.default_rng(),
     nchains=ndraws = chns isa Turing.MCMCChains.Chains ? last(size(chns)) : 1,
     ndraws=chns isa Turing.MCMCChains.Chains ? first(size(chns)) : 1_000,
