@@ -30,18 +30,21 @@ function from_turing(
         return from_mcmcchains(chns; library=library, groups..., kwargs...)
 
     observed_data = groups[:observed_data]
-    data_var_names = Set(
+    observed_data_keys = Set(
         observed_data isa Dict ? Symbol.(keys(observed_data)) : propertynames(observed_data)
     )
 
     if groups[:constant_data] === nothing
         groups[:constant_data] = NamedTuple(
-            filter(p -> first(p) ∉ data_var_names, pairs(model.args))
+            filter(p -> first(p) ∉ observed_data_keys, pairs(model.args))
         )
     end
 
     # Instantiate the predictive model
-model_predict = Turing.DynamicPPL.Model{data_var_names}(model.name, model.f, args_pred, model.defaults)
+    data_var_names = filter(in(observed_data_keys), keys(model.args))
+    model_predict = Turing.DynamicPPL.Model{data_var_names}(
+        model.name, model.f, model.args, model.defaults
+    )
 
     # and then sample!
     if groups[:prior_predictive] === nothing && groups[:prior] isa Turing.MCMCChains.Chains
