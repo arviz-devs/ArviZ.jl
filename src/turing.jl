@@ -1,4 +1,4 @@
-"""
+@doc doc"""
     from_turing([posterior::Chains]; kwargs...) -> InferenceData
 
 Convert data from Turing into an [`InferenceData`](@ref).
@@ -91,15 +91,7 @@ function from_turing(
 
     model === nothing && return from_mcmcchains(chns; library=library, groups..., kwargs...)
     if :prior in groups_to_generate
-        groups[:prior] = Turing.sample(
-            rng,
-            model,
-            Turing.Prior(),
-            Turing.MCMCThreads(),
-            ndraws,
-            nchains;
-            progress=false,
-        )
+        groups[:prior] = _sample_prior(rng, model, nchains, ndraws)
     end
 
     if groups[:observed_data] === nothing
@@ -112,21 +104,16 @@ function from_turing(
     )
 
     if :constant_data in groups_to_generate
-        groups[:constant_data] = NamedTuple(
+        groups[:constant_data] = Dict(
             filter(p -> first(p) ∉ observed_data_keys, pairs(model.args))
         )
     end
 
-    # Instantiate the predictive model
-    data_var_names = filter(in(observed_data_keys), keys(model.args))
-    model_predict = Turing.DynamicPPL.Model{data_var_names}(
-        model.name, model.f, model.args, model.defaults
-    )
-
-    # and then sample!
     if :prior_predictive in groups_to_generate
         if groups[:prior] isa Turing.MCMCChains.Chains
-            groups[:prior_predictive] = Turing.predict(rng, model_predict, groups[:prior])
+            groups[:prior_predictive] = _sample_predictive(
+                rng, model, groups[:prior], observed_data_keys
+            )
         elseif groups[:prior] !== nothing
             @warn "Could not generate group :prior_predictive because group :prior was not an MCMCChains.Chains."
         end
@@ -134,7 +121,9 @@ function from_turing(
 
     if :posterior_predictive in groups_to_generate
         if chns isa Turing.MCMCChains.Chains
-            groups[:posterior_predictive] = Turing.predict(rng, model_predict, chns)
+            groups[:posterior_predictive] = _sample_predictive(
+                rng, model, chns, observed_data_keys
+            )
         elseif chns !== nothing
             @warn "Could not generate group :posterior_predictive because group :posterior was not an MCMCChains.Chains."
         end
@@ -142,16 +131,7 @@ function from_turing(
 
     if :log_likelihood in groups_to_generate
         if chns isa Turing.MCMCChains.Chains
-            chains_only_params = Turing.MCMCChains.get_sections(chns, :parameters)
-            loglikelihoods = Turing.pointwise_loglikelihoods(model, chains_only_params)
-            pred_names = sort(collect(keys(loglikelihoods)); by=split_locname)
-            loglikelihoods_vals = getindex.(Ref(loglikelihoods), pred_names)
-            # Bundle loglikelihoods into a `Chains` object so we can reuse our own variable
-            # name parsing
-            loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims=3), (1, 3, 2))
-            groups[:log_likelihood] = Turing.MCMCChains.Chains(
-                loglikelihoods_arr, pred_names
-            )
+            groups[:log_likelihood] = _compute_log_likelihood(model, chns)
         elseif chns !== nothing
             @warn "Could not generate log_likelihood because posterior must be an MCMCChains.Chains."
         end
@@ -166,4 +146,37 @@ function from_turing(
         setattribute!(ds, :model_name, nameof(model))
     end
     return idata
+end
+
+function _sample_prior(rng::AbstractRNG, model::Turing.DynamicPPL.Model, nchains, ndraws)
+    return Turing.sample(
+        rng, model, Turing.Prior(), Turing.MCMCThreads(), ndraws, nchains; progress=false
+    )
+end
+
+function _build_predictive_model(model::Turing.DynamicPPL.Model, data_keys)
+    var_names = filter(in(data_keys), keys(model.args))
+    return Turing.DynamicPPL.Model{var_names}(
+        model.name, model.f, model.args, model.defaults
+    )
+end
+
+function _sample_predictive(
+    rng::AbstractRNG, model::Turing.DynamicPPL.Model, chns, data_keys
+)
+    model_predict = _build_predictive_model(model, data_keys)
+    return Turing.predict(rng, model_predict, chns)
+end
+
+function _compute_log_likelihood(
+    model::Turing.DynamicPPL.Model, chns::Turing.MCMCChains.Chains
+)
+    chains_only_params = Turing.MCMCChains.get_sections(chns, :parameters)
+    loglikelihoods = Turing.pointwise_loglikelihoods(model, chains_only_params)
+    pred_names = sort(collect(keys(loglikelihoods)); by=split_locname)
+    loglikelihoods_vals = getindex.(Ref(loglikelihoods), pred_names)
+    # Bundle loglikelihoods into a `Chains` object so we can reuse our own variable
+    # name parsing
+    loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims=3), (1, 3, 2))
+    return Turing.MCMCChains.Chains(loglikelihoods_arr, pred_names)
 end
