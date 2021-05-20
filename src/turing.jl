@@ -30,7 +30,7 @@ number of draws per chain in the posterior, if provided, else 1,000.
 # Examples
 
 ```jldoctest
-julia> using Turing, Random
+julia> using Turing, Random, ArviZ
 
 julia> rng = Random.seed!(42);
 
@@ -47,7 +47,7 @@ julia> observed_data = (xs=[0.87, 0.08, 0.53], y=-0.85);
 
 julia> model = demo(observed_data...);
 
-julia> chn = sample(rng, model, NUTS(), 1_000; progress=false);
+julia> chn = sample(rng, model, MH(), 1_000; progress=false);
 
 julia> from_turing(chn; model=model, rng=rng, observed_data=observed_data, prior=false)
 InferenceData with groups:
