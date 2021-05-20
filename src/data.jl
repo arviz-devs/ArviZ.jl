@@ -165,3 +165,10 @@ function reorder_groups!(data::InferenceData; group_order=SUPPORTED_GROUPS)
     setproperty!(obj, :_groups, string.([sorted_names; other_names]))
     return data
 end
+
+function setattribute!(data::InferenceData, key, value)
+    for (_, group) in groups(data)
+        setattribute!(group, key, value)
+    end
+    return data
+end
