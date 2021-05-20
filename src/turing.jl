@@ -23,11 +23,20 @@ function from_turing(
     )
     model === nothing && return from_mcmcchains(chns; library=library, groups..., kwargs...)
     if groups[:prior] === nothing
-        groups[:prior] = Turing.sample(rng, model, Turing.Prior(), Turing.MCMCThreads(), ndraws, nchains; progress=false)
+        groups[:prior] = Turing.sample(
+            rng,
+            model,
+            Turing.Prior(),
+            Turing.MCMCThreads(),
+            ndraws,
+            nchains;
+            progress=false,
+        )
     end
 
-    groups[:observed_data] === nothing &&
+    if groups[:observed_data] === nothing
         return from_mcmcchains(chns; library=library, groups..., kwargs...)
+    end
 
     observed_data = groups[:observed_data]
     observed_data_keys = Set(
