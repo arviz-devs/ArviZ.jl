@@ -173,7 +173,7 @@ function setattribute!(data::InferenceData, key, value)
     return data
 end
 
-_add_library_attributes!(data, ::Nothing) = ds
+_add_library_attributes!(data, ::Nothing) = data
 function _add_library_attributes!(data, library)
     setattribute!(data, :inference_library, string(library))
     if library isa Module
