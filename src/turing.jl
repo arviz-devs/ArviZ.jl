@@ -34,10 +34,10 @@ julia> using Turing, Random
 
 julia> rng = Random.seed!(42);
 
-julia> @model function demo(xs, y)
+julia> @model function demo(xs, y, n=length(xs))
            s ~ InverseGamma(2, 3)
            m ~ Normal(0, √s)
-           for i in eachindex(xs)
+           for i in 1:n
                xs[i] ~ Normal(m, √s)
            end
            y ~ Normal(m, √s)
@@ -56,6 +56,7 @@ InferenceData with groups:
 	> log_likelihood
 	> sample_stats
 	> observed_data
+	> constant_data
 ```
 """
 function from_turing(
