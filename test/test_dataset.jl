@@ -47,6 +47,22 @@
         @test convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0]) isa ArviZ.Dataset
     end
 
+    @testset "attributes" begin
+        attrs = dataset.attrs
+        attrs2 = ArviZ.attributes(dataset)
+        @test attrs == attrs2
+        ArviZ.setattribute!(dataset, "tmp1", 3)
+        ArviZ.setattribute!(dataset, :tmp2, 4)
+        attrs3 = ArviZ.attributes(dataset)
+        @test Pair("tmp1", 3) ∈ attrs3
+        @test Pair("tmp2", 4) ∈ attrs3
+        ArviZ.deleteattribute!(dataset, :tmp1)
+        ArviZ.deleteattribute!(dataset, "tmp2")
+        attrs4 = ArviZ.attributes(dataset)
+        @test "tmp1" ∉ keys(attrs4)
+        @test "tmp2" ∉ keys(attrs4)
+    end
+
     @testset "show(::ArviZ.Dataset)" begin
         @testset "$mimetype" for mimetype in ("plain", "html")
             text = repr(MIME("text/$(mimetype)"), dataset)
