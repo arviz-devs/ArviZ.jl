@@ -96,18 +96,21 @@ function from_turing(
         groups[:prior] = _sample_prior(rng, model, nchains, ndraws)
     end
 
-    if groups[:observed_data] === nothing
-        return from_mcmcchains(chns; groups..., kwargs...)
+    if :observed_data ∈ groups_to_generate
+        groups[:observed_data] = _get_observed_data(
+            model, chns isa Turing.MCMCChains.Chains ? chns : groups[:prior]
+        )
     end
 
     observed_data = groups[:observed_data]
-    observed_data_keys = Set(
-        observed_data isa Dict ? Symbol.(keys(observed_data)) : propertynames(observed_data)
-    )
+    if observed_data === nothing
+        return from_mcmcchains(chns; groups..., kwargs...)
+    end
+    observed_data_keys = Set(Symbol.(keys(observed_data)))
 
     if :constant_data in groups_to_generate
         groups[:constant_data] = Dict(
-            filter(p -> first(p) ∉ observed_data_keys, pairs(model.args))
+            filter(∉(observed_data_keys) ∘ first, pairs(model.args))
         )
     end
 
@@ -117,7 +120,7 @@ function from_turing(
                 rng, model, groups[:prior], observed_data_keys
             )
         elseif groups[:prior] !== nothing
-            @warn "Could not generate group :prior_predictive because group :prior was not an MCMCChains.Chains."
+            @warn "Could not generate group :prior_predictive because group :prior is not an MCMCChains.Chains."
         end
     end
 
@@ -127,7 +130,7 @@ function from_turing(
                 rng, model, chns, observed_data_keys
             )
         elseif chns !== nothing
-            @warn "Could not generate group :posterior_predictive because group :posterior was not an MCMCChains.Chains."
+            @warn "Could not generate group :posterior_predictive because group :posterior is not an MCMCChains.Chains."
         end
     end
 
@@ -135,7 +138,7 @@ function from_turing(
         if chns isa Turing.MCMCChains.Chains
             groups[:log_likelihood] = _compute_log_likelihood(model, chns)
         elseif chns !== nothing
-            @warn "Could not generate log_likelihood because posterior must be an MCMCChains.Chains."
+            @warn "Could not generate group :log_likelihood because group :posterior is not an MCMCChains.Chains."
         end
     end
 
@@ -177,4 +180,24 @@ function _compute_log_likelihood(
     # name parsing
     loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims=3), (1, 3, 2))
     return Turing.MCMCChains.Chains(loglikelihoods_arr, pred_names)
+end
+
+function _get_observed_data(model::Turing.DynamicPPL.Model, chns)
+    # use likelihood to find nmes of data variables
+    if chns isa Turing.MCMCChains.Chains
+        chns_small = chns[1, :, 1]
+    else
+        chns_small = _sample_prior(Random.MersenneTwister(0), model, 1, 1)
+    end
+    log_like = _compute_log_likelihood(model, chns_small)
+    obs_data_keys = keys(Turing.MCMCChains.get_params(log_like))
+    # get values of data variables stored in model
+    args = model.args
+    args_obs_data_keys = filter(in(keys(args)), obs_data_keys)
+    if args_obs_data_keys != obs_data_keys
+        @warn "Failed to extract group :observed_data from model. Expected keys " *
+              "$(obs_data_keys) but only found keys $(keys(obs_data)) in model arguments."
+        return nothing
+    end
+    return NamedTuple{args_obs_data_keys}(getproperty.(Ref(args), args_obs_data_keys))
 end
