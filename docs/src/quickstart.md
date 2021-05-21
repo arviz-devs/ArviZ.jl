@@ -161,7 +161,6 @@ ArviZ includes a Turing-specific converter [`from_turing`](@ref) that, given a m
 idata = from_turing(
     turing_chns;
     model=param_mod,
-    observed_data=Dict("y" => y),
     rng=rng,
     coords=Dict("school" => schools),
     dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
