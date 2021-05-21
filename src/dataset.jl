@@ -69,7 +69,14 @@ end
 attributes(data::Dataset) = getproperty(PyObject(data), :_attrs)
 
 function setattribute!(data::Dataset, key, value)
-    attrs = merge(attributes(data), Dict(key => value))
+    attrs = merge(attributes(data), Dict(string(key) => value))
+    setproperty!(PyObject(data), :_attrs, attrs)
+    return attrs
+end
+
+function deleteattribute!(data::Dataset, key)
+    attrs = attributes(data)
+    delete!(attrs, string(key))
     setproperty!(PyObject(data), :_attrs, attrs)
     return attrs
 end
@@ -132,11 +139,10 @@ function convert_to_constant_dataset(
     end
 
     default_attrs = base.make_attrs()
-    if library !== nothing
-        default_attrs = merge(default_attrs, Dict("inference_library" => string(library)))
-    end
     attrs = merge(default_attrs, attrs)
-    return Dataset(; data_vars=data, coords=coords, attrs=attrs)
+    ds =  Dataset(; data_vars=data, coords=coords, attrs=attrs)
+    _add_library_attributes!(ds, library)
+    return ds
 end
 
 @doc doc"""
@@ -164,10 +170,9 @@ ArviZ.dict_to_dataset(Dict("x" => randn(4, 100), "y" => randn(4, 100)))
 dict_to_dataset
 
 function dict_to_dataset(data; library=nothing, attrs=Dict(), kwargs...)
-    if library !== nothing
-        attrs = merge(attrs, Dict("inference_library" => string(library)))
-    end
-    return arviz.dict_to_dataset(data; attrs=attrs, kwargs...)
+    ds = arviz.dict_to_dataset(data; attrs=attrs, kwargs...)
+    _add_library_attributes!(ds, library)
+    return ds
 end
 
 @doc doc"""
