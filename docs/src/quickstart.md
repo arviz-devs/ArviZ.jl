@@ -409,7 +409,7 @@ gcf()
 
 ```@example
 using Pkg
-Text(sprint(io -> Pkg.status(io=io)))
+Text(sprint(io -> Pkg.status(; io=io)))
 ```
 
 ```@example

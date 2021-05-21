@@ -140,7 +140,7 @@ function convert_to_constant_dataset(
 
     default_attrs = base.make_attrs()
     attrs = merge(default_attrs, attrs)
-    ds =  Dataset(; data_vars=data, coords=coords, attrs=attrs)
+    ds = Dataset(; data_vars=data, coords=coords, attrs=attrs)
     _add_library_attributes!(ds, library)
     return ds
 end
