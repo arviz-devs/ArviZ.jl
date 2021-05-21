@@ -5,10 +5,9 @@ Convert data from Turing into an [`InferenceData`](@ref).
 
 This permits passing a Turing `Model` and a random number generator to
 `model` and `rng` keywords to automatically generate groups. By default,
-if `posterior`, `observed_data`, and `model` are provided, then the 
-`prior`, `prior_predictive`, `posterior_predictive`, and `log_likelihood`
-groups are automatically generated. To avoid generating a group, provide
-group data or set it to `false`.
+if `posterior` and `model` are provided, then all remaining groups are
+automatically generated. To avoid generating a group, provide group data
+or set it to `false`.
 
 # Arguments
 
@@ -17,7 +16,7 @@ group data or set it to `false`.
 # Keywords
 
 - `model::Turing.DynamicPPL.Model`: A Turing model conditioned on observed and
-     constant data. `constant_data` must be provided for the model to be used.
+     constant data.
 - `rng::AbstractRNG=Random.default_rng()`: a random number generator used for
      sampling from the prior, posterior predictive and prior predictive
      distributions.
@@ -43,13 +42,11 @@ julia> @model function demo(xs, y, n=length(xs))
            y ~ Normal(m, √s)
        end;
 
-julia> observed_data = (xs=[0.87, 0.08, 0.53], y=-0.85);
+julia> model = demo(randn(3), randn());
 
-julia> model = demo(observed_data...);
+julia> chn = sample(rng, model, MH(), 100; progress=false);
 
-julia> chn = sample(rng, model, MH(), 1_000; progress=false);
-
-julia> from_turing(chn; model=model, rng=rng, observed_data=observed_data, prior=false)
+julia> idata = from_turing(chn; model=model, rng=rng, prior=false)
 InferenceData with groups:
 	> posterior
 	> posterior_predictive
