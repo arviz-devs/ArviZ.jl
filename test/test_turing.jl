@@ -36,7 +36,7 @@ using Random
     @test idata2.prior.inference_library == "Turing"
     VersionNumber(idata2.prior.inference_library_version)
 
-    idata3 = from_turing(chn; model=model)
+    idata3 = from_turing(chn; model=model, observed_data=false)
     @test sort(groupnames(idata3)) ==
           sort([:posterior, :sample_stats, :prior, :sample_stats_prior])
     @test length(idata3.prior.chain.values) == nchains
