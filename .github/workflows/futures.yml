@@ -74,7 +74,7 @@ jobs:
           ArviZ.initialize_pandas()
           ArviZ.initialize_bokeh()
           Conda.add(["selenium", "phantomjs"])
-        shell: julia --color=yes {0}
+        shell: julia --color=yes --project {0}
       - uses: julia-actions/julia-runtest@latest
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
