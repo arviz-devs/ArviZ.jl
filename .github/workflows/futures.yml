@@ -61,20 +61,25 @@ jobs:
       - name: "Install arviz#main"
         if: matrix.arviz_version == 'main' && github.event_name != 'create' && !startsWith(github.ref, 'refs/tags/v')
         run: |
-          julia --color=yes -e 'using Pkg;
-                                Pkg.add("PyCall");
-                                using PyCall;
-                                run(PyCall.python_cmd(`-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`))';
+          using Pkg
+          Pkg.add("PyCall")
+          using PyCall
+          run(
+              PyCall.python_cmd(
+                  `-m pip install git+https://github.com/pydata/xarray git+https://github.com/arviz-devs/arviz`,
+              ),
+          )
+        shell: julia --color=yes {0}
       - name: Install ArviZ dependencies
         run: |
-          julia --color=yes --project -e 'using Pkg; Pkg.instantiate()'
-          julia --color=yes --project -e 'using ArviZ;
-                                          ArviZ.initialize_arviz();
-                                          ArviZ.initialize_pandas();
-                                          ArviZ.initialize_bokeh()'
-          julia --color=yes --project -e 'using Conda;
-                                          Conda.add("selenium");
-                                          Conda.add("phantomjs")'
+          using Pkg
+          Pkg.instantiate()
+          using ArviZ, Conda
+          ArviZ.initialize_arviz()
+          ArviZ.initialize_pandas()
+          ArviZ.initialize_bokeh()
+          Conda.add(["selenium", "phantomjs"])
+        shell: julia --color=yes --project {0}
       - uses: julia-actions/julia-runtest@latest
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
