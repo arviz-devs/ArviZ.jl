@@ -1,6 +1,10 @@
 using ArviZ
 using Test
 
+function     foo_misformatted(x)    
+return x
+end  
+
 @testset "ArviZ" begin
     include("helpers.jl")
     include("test_rcparams.jl")
