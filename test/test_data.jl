@@ -32,6 +32,17 @@ using MonteCarloMeasurements: Particles
         @test :posterior in keys(g)
     end
 
+    @testset "attributes" begin
+        ArviZ.setattribute!(data, "tmp", 3)
+        for (_, group) in ArviZ.groups(data)
+            @test Pair("tmp", 3) ∈ ArviZ.attributes(group)
+        end
+        ArviZ.deleteattribute!(data, "tmp")
+        for (_, group) in ArviZ.groups(data)
+            @test "tmp" ∉ keys(ArviZ.attributes(group))
+        end
+    end
+
     @testset "isempty" begin
         @test !isempty(data)
         @test isempty(InferenceData())
@@ -64,6 +75,24 @@ using MonteCarloMeasurements: Particles
             @test occursin("Dataset (xarray.Dataset)", text)
             @test occursin("InferenceData", text)
         end
+    end
+end
+
+@testset "add library attributes" begin
+    idata = load_arviz_data("centered_eight")
+    ArviZ.deleteattribute!(idata, :inference_library)
+    ArviZ.setattribute!(idata, :inference_library_version, "3.0.0")
+    @test ArviZ._add_library_attributes!(idata, nothing) === idata
+    ArviZ._add_library_attributes!(idata, "MyLib")
+    for (_, group) in ArviZ.groups(idata)
+        @test Pair("inference_library", "MyLib") ∈ ArviZ.attributes(group)
+        @test "inference_library_version" ∉ keys(ArviZ.attributes(group))
+    end
+    ArviZ._add_library_attributes!(idata, ArviZ)
+    arviz_version = string(ArviZ.PkgVersion.Version(ArviZ))
+    for (_, group) in ArviZ.groups(idata)
+        @test Pair("inference_library", "ArviZ") ∈ ArviZ.attributes(group)
+        @test Pair("inference_library_version", arviz_version) ∈ ArviZ.attributes(group)
     end
 end
 

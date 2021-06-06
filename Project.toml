@@ -1,16 +1,18 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.5.4"
+version = "0.5.5"
 
 [deps]
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
 NamedTupleTools = "d9ec5142-1e00-5aa0-9d6a-321866360f50"
+PkgVersion = "eebad327-c553-4316-9ea0-9fa01ccd7688"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
@@ -21,10 +23,12 @@ DataFrames = "0.20, 0.21, 0.22, 1.0"
 MCMCChains = "0.3.15, 0.4, 1.0, 2.0, 3.0, 4.0"
 MonteCarloMeasurements = "0.6.4, 0.7, 0.8"
 NamedTupleTools = "0.11.0, 0.12, 0.13"
+PkgVersion = "0.1"
 PyCall = "1.91.2"
 PyPlot = "2.8.2"
 Requires = "0.5.2, 1.0"
 StatsBase = "0.32, 0.33"
+Turing = "0.15"
 julia = "^1"
 
 [extras]
@@ -33,6 +37,7 @@ MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 
 [targets]
-test = ["CmdStan", "MCMCChains", "MonteCarloMeasurements", "Random", "Test"]
+test = ["CmdStan", "MCMCChains", "MonteCarloMeasurements", "Random", "Test", "Turing"]

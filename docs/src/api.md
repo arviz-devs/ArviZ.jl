@@ -71,6 +71,7 @@
 | [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`. |
 | [`from_dict`](@ref)                 | Convert `Dict` data into an `InferenceData`.       |
 | [`from_cmdstan`](@ref)              | Convert CmdStan data into an `InferenceData`.      |
+| [`from_turing`](@ref)               | Convert data from Turing into an `InferenceData`.  |
 | [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`. |
 | [`concat`](@ref)                    | Concatenate `InferenceData` objects.               |
 | [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.      |

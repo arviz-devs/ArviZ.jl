@@ -213,12 +213,17 @@ _asstringkeydict(x::Dict{String}) = x
 
 enforce_stat_eltypes(stats) = convert_to_eltypes(stats, sample_stats_eltypes)
 
+_convert_to_eltype(v::AbstractArray, T) = convert(Array{T}, v)
+_convert_to_eltype(v, T) = convert(T, v)
 function convert_to_eltypes(data::Dict, data_eltypes)
-    return Dict(k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in data)
+    return Dict(
+        k => _convert_to_eltype(v, get(data_eltypes, k, eltype(v))) for (k, v) in data
+    )
 end
 function convert_to_eltypes(data::NamedTuple, data_eltypes)
     return NamedTuple(
-        k => convert(Array{get(data_eltypes, k, eltype(v))}, v) for (k, v) in pairs(data)
+        k => _convert_to_eltype(v, get(data_eltypes, k, eltype(v))) for
+        (k, v) in pairs(data)
     )
 end
 

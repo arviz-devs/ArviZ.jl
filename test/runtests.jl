@@ -13,4 +13,5 @@ using Test
     include("test_plots.jl")
     include("test_namedtuple.jl")
     include("test_mcmcchains.jl")
+    include("test_turing.jl")
 end

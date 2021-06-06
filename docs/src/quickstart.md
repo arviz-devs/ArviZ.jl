@@ -121,7 +121,7 @@ idata = from_mcmcchains(
     turing_chns;
     coords=Dict("school" => schools),
     dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
-    library="Turing",
+    library=Turing,
 )
 ```
 
@@ -154,52 +154,16 @@ gcf()
 
 ### Additional information in Turing.jl
 
-With a few more steps, we can use Turing to compute additional useful groups to add to the [`InferenceData`](@ref).
-
-To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
-
-```@example turing
-prior = sample(param_mod, Prior(), nsamples; progress=false)
-```
-
-To draw from the prior and posterior predictive distributions we can instantiate a "predictive model", i.e. a Turing model but with the observations set to `missing`, and then calling `predict` on the predictive model and the previously drawn samples:
+We would like to compute additional useful groups to add to the [`InferenceData`](@ref).
+ArviZ includes a Turing-specific converter [`from_turing`](@ref) that, given a model, posterior samples, and data, can add the missing groups:
 
 ```@example turing
-# Instantiate the predictive model
-param_mod_predict = turing_model(similar(y, Missing), σ)
-# and then sample!
-prior_predictive = predict(param_mod_predict, prior)
-posterior_predictive = predict(param_mod_predict, turing_chns)
-```
-
-And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
-
-```@example turing
-loglikelihoods = Turing.pointwise_loglikelihoods(
-    param_mod, MCMCChains.get_sections(turing_chns, :parameters)
-)
-```
-
-This can then be included in the [`from_mcmcchains`](@ref) call from above:
-
-```@example turing
-using LinearAlgebra
-# Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
-ynames = string.(keys(posterior_predictive))
-loglikelihoods_vals = getindex.(Ref(loglikelihoods), ynames)
-# Reshape into `(nchains, nsamples, size(y)...)`
-loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims=3), (2, 1, 3))
-
-idata = from_mcmcchains(
+idata = from_turing(
     turing_chns;
-    posterior_predictive=posterior_predictive,
-    log_likelihood=Dict("y" => loglikelihoods_arr),
-    prior=prior,
-    prior_predictive=prior_predictive,
-    observed_data=Dict("y" => y),
+    model=param_mod,
+    rng=rng,
     coords=Dict("school" => schools),
     dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
-    library="Turing",
 )
 ```
 
@@ -444,7 +408,7 @@ gcf()
 
 ```@example
 using Pkg
-Pkg.status()
+Text(sprint(io -> Pkg.status(; io=io)))
 ```
 
 ```@example

@@ -165,3 +165,29 @@ function reorder_groups!(data::InferenceData; group_order=SUPPORTED_GROUPS)
     setproperty!(obj, :_groups, string.([sorted_names; other_names]))
     return data
 end
+
+function setattribute!(data::InferenceData, key, value)
+    for (_, group) in groups(data)
+        setattribute!(group, key, value)
+    end
+    return data
+end
+
+function deleteattribute!(data::InferenceData, key)
+    for (_, group) in groups(data)
+        deleteattribute!(group, key)
+    end
+    return data
+end
+
+_add_library_attributes!(data, ::Nothing) = data
+function _add_library_attributes!(data, library)
+    setattribute!(data, :inference_library, string(library))
+    if library isa Module
+        lib_version = string(PkgVersion.Version(library))
+        setattribute!(data, :inference_library_version, lib_version)
+    else
+        deleteattribute!(data, :inference_library_version)
+    end
+    return data
+end

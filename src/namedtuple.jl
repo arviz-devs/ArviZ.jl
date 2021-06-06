@@ -140,20 +140,14 @@ function from_namedtuple(
             isempty(group_data) && continue
         end
         group_dataset = convert_to_dataset(group_data; kwargs...)
-        if library !== nothing
-            setattribute!(group_dataset, "inference_library", string(library))
-        end
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
     (post_dict === nothing || isempty(post_dict)) && return all_idata
 
     group_dataset = convert_to_dataset(post_dict; kwargs...)
-    if library !== nothing
-        setattribute!(group_dataset, "inference_library", string(library))
-    end
     concat!(all_idata, InferenceData(; posterior=group_dataset))
-
+    _add_library_attributes!(all_idata, library)
     return all_idata
 end
 function from_namedtuple(
@@ -177,7 +171,6 @@ function from_namedtuple(
         sample_stats,
         predictions,
         log_likelihood;
-        library=library,
         kwargs...,
     )
 
@@ -186,7 +179,6 @@ function from_namedtuple(
             prior;
             posterior_predictive=prior_predictive,
             sample_stats=sample_stats_prior,
-            library=library,
             kwargs...,
         )
         prior_idata = rekey(
@@ -207,10 +199,10 @@ function from_namedtuple(
     ]
         group_data === nothing && continue
         group_dict = convert(Dict, group_data)
-        group_dataset = convert_to_constant_dataset(group_dict; library=library, kwargs...)
+        group_dataset = convert_to_constant_dataset(group_dict; kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
-
+    _add_library_attributes!(all_idata, library)
     return all_idata
 end
 function from_namedtuple(data::AbstractVector{<:NamedTuple}; kwargs...)
