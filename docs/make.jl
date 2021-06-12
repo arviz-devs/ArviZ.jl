@@ -14,11 +14,12 @@ end
 
 const DOCS_PATH = @__DIR__
 const SRC_PATH = joinpath(DOCS_PATH, "src")
+const ASSETS_PATH = joinpath(SRC_PATH, "assets")
 const NB_PATH = joinpath(DOCS_PATH, "notebooks")
 
 # build Pluto notebooks
 notebooks = [
-    joinpath(NB_PATH, "quickstart.jl") => joinpath(SRC_PATH, "quickstart_notebook.html")
+    joinpath(NB_PATH, "quickstart.jl") => joinpath(ASSETS_PATH, "quickstart_notebook.html")
 ]
 map(notebooks) do (nbpath, htmlpath)
     build_notebook(nbpath, htmlpath)
