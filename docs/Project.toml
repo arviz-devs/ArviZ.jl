@@ -9,3 +9,4 @@ PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 
 [compat]
 MCMCChains = "3.0, 4.0"
+Pluto = "0.14"
