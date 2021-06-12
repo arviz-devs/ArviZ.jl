@@ -12,8 +12,8 @@ end
 
 # ╔═╡ 467c2d13-6bfe-4feb-9626-fb14796168aa
 begin
-	using ArviZ, CmdStan, Distributions, LinearAlgebra, MCMCChains
-	using NamedTupleTools, PyPlot, Random, Soss, Turing
+    using ArviZ, CmdStan, Distributions, LinearAlgebra, MCMCChains
+    using NamedTupleTools, PyPlot, Random, Soss, Turing
 end
 
 # ╔═╡ d2eedd48-48c6-4fcd-b179-6be7fe68d3d6
