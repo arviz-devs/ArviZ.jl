@@ -8,5 +8,5 @@
     Note that because some of the packages used here are heavy, it may take a few minutes to become fully interactive.
 
 ```@raw html
-<iframe src="/assets/quickstart_notebook.html" width="100%" style="height: 2000px"></iframe>
+<iframe src="quickstart_notebook.html" width="100%" style="height: 2000px"></iframe>
 ```
