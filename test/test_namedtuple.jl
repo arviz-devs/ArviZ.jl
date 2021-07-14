@@ -1,25 +1,5 @@
 using MonteCarloMeasurements: Particles
 
-function test_namedtuple_data(
-    idata, group, names, nchains, ndraws; library="MyLib", coords=Dict(), dims=Dict()
-)
-    @test idata isa InferenceData
-    @test group in ArviZ.groupnames(idata)
-    ds = getproperty(idata, group)
-    sizes = dimsizes(ds)
-    @test length(sizes) == 2 + length(coords)
-    vars = vardict(ds)
-    for name in string.(names)
-        @test name in keys(vars)
-        dim = get(dims, name, get(dims, Symbol(name), []))
-        s = (x -> length(get(coords, x, get(coords, Symbol(x), [])))).(dim)
-        @test size(vars[name]) == (nchains, ndraws, s...)
-    end
-    @test "inference_library" in keys(attributes(ds))
-    @test attributes(ds)["inference_library"] == library
-    return nothing
-end
-
 @testset "from_namedtuple" begin
     rng = MersenneTwister(42)
 
