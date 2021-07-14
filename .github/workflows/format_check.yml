@@ -10,29 +10,25 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        julia-version: [1]
-        julia-arch: [x86]
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: julia-actions/setup-julia@latest
         with:
-          version: ${{ matrix.julia-version }}
+          version: 1
       - uses: actions/checkout@v1
-      - name: Install JuliaFormatter and format
+      - name: Install JuliaFormatter
         run: |
-          julia  -e 'using Pkg; Pkg.add("JuliaFormatter")'
-          julia  -e 'using JuliaFormatter; format(".", verbose=true)'
-      - name: Format check
+          using Pkg
+          Pkg.add("JuliaFormatter")
+        shell: julia --color=yes {0}
+      - name: Format code
         run: |
-          julia -e '
-          out = Cmd(`git diff --name-only`) |> read |> String
-          if out == ""
-              exit(0)
-          else
-              @error "Some files have not been formatted !!!"
-              write(stdout, out)
-              exit(1)
-          end'
+          using JuliaFormatter
+          format("."; verbose=true)
+        shell: julia --color=yes {0}
+      - name: Suggest formatting changes
+        uses: reviewdog/action-suggester@v1
+        if: github.event_name == 'pull_request'
+        with:
+          tool_name: JuliaFormatter
+          fail_on_error: true
