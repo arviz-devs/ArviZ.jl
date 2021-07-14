@@ -18,8 +18,8 @@ function samplechains_dynamichmc_sample(nchains, ndraws)
         return -z^2 - nt.σ - log(nt.σ)
     end
     t = as((x=asℝ, σ=asℝ₊))
-    chain = SampleChains.initialize!(nchains, SampleChainsDynamicHMC.DynamicHMCChain, ℓ, t)
-    return SampleChains.drawsamples!(chain, ndraws)
+    chain = SampleChains.newchain(nchains, SampleChainsDynamicHMC.dynamichmc(), ℓ, t)
+    return SampleChains.sample!(chain, ndraws)
 end
 
 @testset "SampleChains" begin
