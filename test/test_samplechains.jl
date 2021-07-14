@@ -77,7 +77,7 @@ end
     end
     @testset "SampleChainsDynamicHMC" begin
         expected_stats_vars = (
-            :acceptance_rate, :n_steps, :diverging, :lp, :tree_depth, :turning
+            :acceptance_rate, :n_steps, :diverging, :energy, :tree_depth, :turning
         )
 
         multichain = samplechains_dynamichmc_sample(4, 10)
