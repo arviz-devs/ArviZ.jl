@@ -60,7 +60,7 @@ end
     from_samplechains(
         posterior=nothing;
         prior=nothing,
-        library=:SampleChains,
+        library=SampleChains,
         kwargs...,
     ) -> InferenceData
 
@@ -76,7 +76,7 @@ function from_samplechains(
     prior=nothing,
     sample_stats=nothing,
     sample_stats_prior=nothing,
-    library=:SampleChains,
+    library=SampleChains,
     kwargs...,
 )
     posterior_mc = _maybe_multichain(posterior)
