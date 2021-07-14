@@ -41,7 +41,7 @@ end
         info = SampleChains.info(chain)
         termination = info.termination
         tree_stats = (
-            lp=info.π,
+            energy=info.π,
             tree_depth=info.depth,
             acceptance_rate=info.acceptance_rate,
             n_steps=info.steps,
