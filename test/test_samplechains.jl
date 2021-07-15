@@ -12,14 +12,16 @@ SampleChains.samples(chain::TestChain) = getfield(chain, :samples)
 SampleChains.info(chain::TestChain) = getfield(chain, :info)
 
 function samplechains_dynamichmc_sample(nchains, ndraws)
-    # example from SampleChainsDynamicHMC tests
+    # μ ~ Normal(0, 1) |> iid(2, 3), σ ~ HalfNormal(0, 1), y[i] ~ Normal(μ[i], σ)
+    y = [0.74  0.15  -1.08; -0.42  1.08  -0.52]
     function ℓ(nt)
-        z = nt.x / nt.σ
-        return -z^2 - nt.σ - log(nt.σ)
+        μ = nt.μ
+        σ = nt.σ
+        return -(sum(abs2, μ) + σ^2 + sum((y .- μ).^2) / σ^2) / 2 - length(y) * log(σ)
     end
-    t = as((x=asℝ, σ=asℝ₊))
+    t = as((μ=as(Array, 2, 3), σ=asℝ₊))
     chain = SampleChains.newchain(nchains, SampleChainsDynamicHMC.dynamichmc(), ℓ, t)
-    return SampleChains.sample!(chain, ndraws)
+    return SampleChains.sample!(chain, ndraws - 1)
 end
 
 @testset "SampleChains" begin
@@ -86,6 +88,10 @@ end
         stats_vars = setdiff(map(Symbol, idata.sample_stats.variables), (:chain, :draw))
         missing_vars = setdiff(expected_stats_vars, stats_vars)
         @test isempty(missing_vars)
+        post_vars = setdiff(map(Symbol, idata.posterior.variables), (:chain, :draw))
+        @test issubset((:μ, :σ), post_vars)
+        @test size(idata.posterior.μ.values) == (4, 10, 2, 3)
+        @test size(idata.posterior.σ.values) == (4, 10)
 
         idata = convert_to_inference_data(multichain; group=:prior)
         @test sort([:prior, :sample_stats_prior]) == ArviZ.groupnames(idata)
