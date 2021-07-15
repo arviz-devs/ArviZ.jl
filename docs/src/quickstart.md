@@ -355,7 +355,7 @@ First we define our model:
 
 ```@example soss
 using Soss
-using Soss.MeasureTheory
+using Soss.MeasureTheory: HalfCauchy, Normal
 
 mod = Soss.@model (J, σ) begin
     μ ~ Normal(μ=0, σ=5)
@@ -383,8 +383,8 @@ Soss returns predictive samples in a `TupleVector`, which is an efficient way of
 Next, we draw from the posterior using [SampleChainsDynamicHMC.jl](https://github.com/cscherrer/SampleChainsDynamicHMC.jl).
 
 ```@example soss
-using SampleChainsDynamicHMC: getchains, DynamicHMCChain
-post = Soss.sample(rng, DynamicHMCChain, param_mod | observed_data, nsamples, nchains)
+using SampleChainsDynamicHMC: dynamichmc
+post = Soss.sample(rng, param_mod | observed_data, dynamichmc(), nsamples, nchains)
 ```
 
 Soss returns posterior samples in a `SampleChains.AbstractChain` or, for multiple chains, in a `SampleChains.MultiChain`.
