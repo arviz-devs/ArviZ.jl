@@ -383,7 +383,7 @@ Soss returns predictive samples in a `TupleVector`, which is an efficient way of
 Next, we draw from the posterior using [SampleChainsDynamicHMC.jl](https://github.com/cscherrer/SampleChainsDynamicHMC.jl).
 
 ```@example soss
-using SampleChainsDynamicHMC: dynamichmc
+using SampleChainsDynamicHMC: getchains, dynamichmc
 post = Soss.sample(rng, param_mod | observed_data, dynamichmc(), nsamples, nchains)
 ```
 
