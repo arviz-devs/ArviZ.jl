@@ -375,7 +375,7 @@ Then we draw from the prior and prior predictive distributions.
 
 ```@example soss
 rng = Random.seed!(5298)
-prior_priorpred = map(_ -> rand(rng, param_mod, nsamples), 1:nchains);
+prior_priorpred = [rand(rng, param_mod, nsamples) for _ in 1:nchains];
 nothing # hide
 ```
 
@@ -393,7 +393,7 @@ Finally, we update the posterior samples with draws from the posterior predictiv
 ```@example soss
 mod_pred = Soss.predictive(mod, :μ, :τ, :θ)
 postpred = map(getchains(post)) do chain
-    map(draw -> rand(rng, mod_pred(; constant_data..., draw...)), chain)
+    [rand(rng, mod_pred(; constant_data..., draw...)) for draw in chain]
 end;
 nothing # hide
 ```
