@@ -13,11 +13,11 @@ SampleChains.info(chain::TestChain) = getfield(chain, :info)
 
 function samplechains_dynamichmc_sample(nchains, ndraws)
     # μ ~ Normal(0, 1) |> iid(2, 3), σ ~ HalfNormal(0, 1), y[i] ~ Normal(μ[i], σ)
-    y = [0.74  0.15  -1.08; -0.42  1.08  -0.52]
+    y = [0.74 0.15 -1.08; -0.42 1.08 -0.52]
     function ℓ(nt)
         μ = nt.μ
         σ = nt.σ
-        return -(sum(abs2, μ) + σ^2 + sum((y .- μ).^2) / σ^2) / 2 - length(y) * log(σ)
+        return -(sum(abs2, μ) + σ^2 + sum((y .- μ) .^ 2) / σ^2) / 2 - length(y) * log(σ)
     end
     t = as((μ=as(Array, 2, 3), σ=asℝ₊))
     chain = SampleChains.newchain(nchains, SampleChainsDynamicHMC.dynamichmc(), ℓ, t)
