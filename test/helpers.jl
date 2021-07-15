@@ -94,3 +94,23 @@ convertindex(x::AbstractArray) = x
 convertindex(o::PyObject) = o.array.values
 vardict(ds) = Dict(k => convertindex(v._data) for (k, v) in ds._variables)
 dimdict(ds) = Dict(k => v._dims for (k, v) in ds._variables)
+
+function test_namedtuple_data(
+    idata, group, names, nchains, ndraws; library="MyLib", coords=Dict(), dims=Dict()
+)
+    @test idata isa InferenceData
+    @test group in ArviZ.groupnames(idata)
+    ds = getproperty(idata, group)
+    sizes = dimsizes(ds)
+    @test length(sizes) == 2 + length(coords)
+    vars = vardict(ds)
+    for name in string.(names)
+        @test name in keys(vars)
+        dim = get(dims, name, get(dims, Symbol(name), []))
+        s = (x -> length(get(coords, x, get(coords, Symbol(x), [])))).(dim)
+        @test size(vars[name]) == (nchains, ndraws, s...)
+    end
+    @test "inference_library" in keys(attributes(ds))
+    @test attributes(ds)["inference_library"] == library
+    return nothing
+end

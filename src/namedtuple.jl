@@ -232,15 +232,17 @@ end
 Convert `obj` to an [`InferenceData`](@ref). See [`from_namedtuple`](@ref) for a description
 of `obj` possibilities and `kwargs`.
 """
-convert_to_inference_data(data::NamedTuple; kwargs...) = from_namedtuple(data; kwargs...)
-function convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...)
-    return from_namedtuple(data; kwargs...)
-end
-function convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...)
-    return from_namedtuple(data; kwargs...)
-end
 function convert_to_inference_data(
-    data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...
-)
-    return from_namedtuple(data; kwargs...)
+    data::T; group=:posterior, kwargs...
+) where {
+    T<:Union{
+        NamedTuple,
+        AbstractVector{<:NamedTuple},
+        AbstractMatrix{<:NamedTuple},
+        AbstractVector{<:AbstractVector{<:NamedTuple}},
+    },
+}
+    group = Symbol(group)
+    group === :posterior && return from_namedtuple(data; kwargs...)
+    return from_namedtuple(; group => data, kwargs...)
 end

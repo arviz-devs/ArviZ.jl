@@ -354,58 +354,50 @@ With Soss, we can define our model for the posterior and easily use it to draw s
 First we define our model:
 
 ```@example soss
-using Soss, NamedTupleTools
+using Soss
+using Soss.MeasureTheory: HalfCauchy, Normal
 
 mod = Soss.@model (J, σ) begin
-    μ ~ Normal(0, 5)
-    τ ~ HalfCauchy(5)
-    θ ~ iid(J)(Normal(μ, τ))
+    μ ~ Normal(μ=0, σ=5)
+    τ ~ HalfCauchy(σ=5)
+    θ ~ Normal(μ=μ, σ=τ) |> iid(J)
     y ~ For(1:J) do j
-        Normal(θ[j], σ[j])
+        Normal(μ=θ[j], σ=σ[j])
     end
 end
 
 constant_data = (J=J, σ=σ)
+observed_data = (y=y,)
 param_mod = mod(; constant_data...)
 ```
 
 Then we draw from the prior and prior predictive distributions.
 
 ```@example soss
-Random.seed!(5298)
-prior_priorpred = [
-    map(1:(nchains * nsamples)) do _
-        draw = rand(param_mod)
-        return delete(draw, keys(constant_data))
-    end,
-];
+rng = Random.seed!(5298)
+prior_priorpred = [rand(rng, param_mod, nsamples) for _ in 1:nchains];
 nothing # hide
 ```
 
-Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/DynamicHMC.jl).
+Soss returns predictive samples in a `TupleVector`, which is an efficient way of storing a vector of `NamedTuple`s.
+Next, we draw from the posterior using [SampleChainsDynamicHMC.jl](https://github.com/cscherrer/SampleChainsDynamicHMC.jl).
 
 ```@example soss
-post = map(1:nchains) do _
-    dynamicHMC(param_mod, (y=y,), nsamples)
-end;
-nothing # hide
+using SampleChainsDynamicHMC: getchains, dynamichmc
+post = Soss.sample(rng, param_mod | observed_data, dynamichmc(), nsamples, nchains)
 ```
 
+Soss returns posterior samples in a `SampleChains.AbstractChain` or, for multiple chains, in a `SampleChains.MultiChain`.
 Finally, we update the posterior samples with draws from the posterior predictive distribution.
 
 ```@example soss
-pred = predictive(mod, :μ, :τ, :θ)
-post_postpred = map(post) do post_draws
-    map(post_draws) do post_draw
-        pred_draw = rand(pred(post_draw))
-        pred_draw = delete(pred_draw, keys(constant_data))
-        return merge(pred_draw, post_draw)
-    end
+mod_pred = Soss.predictive(mod, :μ, :τ, :θ)
+postpred = map(getchains(post)) do chain
+    [rand(rng, mod_pred(; constant_data..., draw...)) for draw in chain]
 end;
 nothing # hide
 ```
 
-Each Soss draw is a `NamedTuple`.
 We can plot the rank order statistics of the posterior to identify poor convergence:
 
 ```@example soss
@@ -416,12 +408,12 @@ gcf()
 Now we combine all of the samples to an `InferenceData`:
 
 ```@example soss
-idata = from_namedtuple(
-    post_postpred;
-    posterior_predictive=[:y],
+idata = from_samplechains(
+    post;
+    posterior_predictive=postpred,
     prior=prior_priorpred,
     prior_predictive=[:y],
-    observed_data=(y=y,),
+    observed_data=observed_data,
     constant_data=constant_data,
     coords=Dict("school" => schools),
     dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),

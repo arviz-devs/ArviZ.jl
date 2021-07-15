@@ -12,5 +12,6 @@ using Test
     include("test_stats.jl")
     include("test_plots.jl")
     include("test_namedtuple.jl")
+    include("test_samplechains.jl")
     include("test_mcmcchains.jl")
 end
