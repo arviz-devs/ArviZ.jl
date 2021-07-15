@@ -358,11 +358,11 @@ using Soss
 using Soss.MeasureTheory: HalfCauchy, Normal
 
 mod = Soss.@model (J, σ) begin
-    μ ~ Normal(μ=0, σ=5)
-    τ ~ HalfCauchy(σ=5)
-    θ ~ Normal(μ=μ, σ=τ) |> iid(J)
+    μ ~ Normal(0, 5)
+    τ ~ HalfCauchy(5)
+    θ ~ Normal(μ, τ) |> iid(J)
     y ~ For(1:J) do j
-        Normal(μ=θ[j], σ=σ[j])
+        Normal(θ[j], σ[j])
     end
 end
 
