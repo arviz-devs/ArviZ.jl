@@ -76,6 +76,7 @@ export InferenceData,
     from_dict,
     from_cmdstan,
     from_mcmcchains,
+    from_samplechains,
     concat,
     concat!
 
@@ -104,6 +105,9 @@ function __init__()
     @require MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca" begin
         import .MonteCarloMeasurements: AbstractParticles
         include("particles.jl")
+    end
+    @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
+        include("samplechains.jl")
     end
     @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin
         import .MCMCChains: Chains, sections
