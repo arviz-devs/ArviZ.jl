@@ -20,10 +20,10 @@ const stats_key_map = merge(turing_key_map, stan_key_map)
 """
     reshape_values(x::AbstractArray) -> AbstractArray
 
-Convert from `MCMCChains` variable values with dimensions `(ndraw, size..., nchain)` to
+Convert from `MCMCChains` variable values with dimensions `(ndraw, nchain, size...)` to
 ArviZ's expected `(nchain, ndraw, size...)`.
 """
-reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (N, 1, 2:(N - 1)...))
+reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (2, 1, (3:N)...))
 
 headtail(x) = x[1], x[2:end]
 
@@ -75,8 +75,8 @@ function section_dict(chns::Chains, section)
         loc_names, locs = names_locs
         sizes = reduce((a, b) -> max.(a, b), locs)
         ndim = length(sizes)
-
-        oldarr = reshape_values(replacemissing(convert(Array, chns.value[:, loc_names, :])))
+        var_views = (@view(chns.value[:, n, :]) for n in loc_names)
+        oldarr = reshape_values(replacemissing(convert(Array, cat(var_views...; dims=3))))
         if iszero(ndim)
             arr = dropdims(oldarr; dims=3)
         else
