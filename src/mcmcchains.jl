@@ -48,6 +48,12 @@ function varnames_locs_dict(loc_names, loc_str_to_old)
             push!(vars_to_locs[var_name][2], loc)
         end
     end
+    # ensure that elements are ordered in the same order as they would be iterated
+    for loc_name_locs in values(vars_to_locs)
+        perm = sortperm(loc_name_locs[2]; by=CartesianIndex)
+        permute!(loc_name_locs[1], perm)
+        permute!(loc_name_locs[2], perm)
+    end
     return vars_to_locs
 end
 
