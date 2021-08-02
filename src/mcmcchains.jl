@@ -67,9 +67,8 @@ function section_dict(chns::Chains, section)
     vars_to_arrays = Dict{String,Array}()
     for (var_name, names_locs) in vars_to_locs
         loc_names, locs = names_locs
-        max_loc = maximum(reduce(hcat, [loc...] for loc in locs); dims=2)
-        ndim = length(max_loc)
-        sizes = tuple(max_loc...)
+        sizes = reduce((a, b) -> max.(a, b), locs)
+        ndim = length(sizes)
 
         oldarr = reshape_values(replacemissing(convert(Array, chns.value[:, loc_names, :])))
         if iszero(ndim)
