@@ -1,5 +1,6 @@
 using MCMCChains: MCMCChains
 using CmdStan
+using StatsBase: mean
 
 const noncentered_schools_stan_model = """
     data {
@@ -310,6 +311,23 @@ end
     chn = MCMCChains.Chains(val)  # According to version, this may introduce String or Symbol name
 
     @test ArviZ.summary(chn) !== nothing
+end
+
+# https://github.com/arviz-devs/ArviZ.jl/issues/138
+@testset "Chains with unordered variables" begin
+    n_iter = 500
+    n_name = 4
+    n_chain = 2
+
+    vals = randn(n_iter, n_name, n_chain)
+    names = Symbol.(["x[2,2]", "x[2,1]", "x[1,1]", "x[1,2]"])
+    ordered_names = Symbol.(["x[1,1]", "x[2,1]", "x[1,2]", "x[2,2]"])
+    chn = MCMCChains.Chains(vals, names)
+    idata = from_mcmcchains(chn)
+
+    means = dropdims(mean(idata.posterior.x.values; dims=(1, 2)); dims=(1, 2))
+    means_exp = reshape(map(name -> mean(chn[name]), ordered_names), 2, 2)
+    @test means ≈ means_exp
 end
 
 VERSION > v"1.0" && @testset "from_cmdstan" begin
