@@ -20,10 +20,10 @@ const stats_key_map = merge(turing_key_map, stan_key_map)
 """
     reshape_values(x::AbstractArray) -> AbstractArray
 
-Convert from `MCMCChains` variable values with dimensions `(ndraw, size..., nchain)` to
+Convert from `MCMCChains` variable values with dimensions `(ndraw, nchain, size...)` to
 ArviZ's expected `(nchain, ndraw, size...)`.
 """
-reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (N, 1, 2:(N - 1)...))
+reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (2, 1, (3:N)...))
 
 headtail(x) = x[1], x[2:end]
 
@@ -48,6 +48,12 @@ function varnames_locs_dict(loc_names, loc_str_to_old)
             push!(vars_to_locs[var_name][2], loc)
         end
     end
+    # ensure that elements are ordered in the same order as they would be iterated
+    for loc_name_locs in values(vars_to_locs)
+        perm = sortperm(loc_name_locs[2]; by=CartesianIndex)
+        permute!(loc_name_locs[1], perm)
+        permute!(loc_name_locs[2], perm)
+    end
     return vars_to_locs
 end
 
@@ -67,11 +73,10 @@ function section_dict(chns::Chains, section)
     vars_to_arrays = Dict{String,Array}()
     for (var_name, names_locs) in vars_to_locs
         loc_names, locs = names_locs
-        max_loc = maximum(reduce(hcat, [loc...] for loc in locs); dims=2)
-        ndim = length(max_loc)
-        sizes = tuple(max_loc...)
-
-        oldarr = reshape_values(replacemissing(convert(Array, chns.value[:, loc_names, :])))
+        sizes = reduce((a, b) -> max.(a, b), locs)
+        ndim = length(sizes)
+        var_views = (@view(chns.value[:, n, :]) for n in loc_names)
+        oldarr = reshape_values(replacemissing(convert(Array, cat(var_views...; dims=3))))
         if iszero(ndim)
             arr = dropdims(oldarr; dims=3)
         else
