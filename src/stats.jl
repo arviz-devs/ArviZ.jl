@@ -114,7 +114,7 @@ function StatsBase.summarystats(data::InferenceData; group=:posterior, kwargs...
     return summarystats(dataset; kwargs...)
 end
 function StatsBase.summarystats(data::Dataset; fmt=:wide, kwargs...)
-    s = arviz.summary(data; fmt=fmt, index_origin=index_origin,kwargs...)
+    s = arviz.summary(data; fmt=fmt, kwargs...)
     s isa Dataset && return s
     index_name = Symbol(fmt) == :long ? :statistic : :variable
     return todataframes(s; index_name=index_name)
