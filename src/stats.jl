@@ -58,8 +58,6 @@ Compute summary statistics on `data`.
 - `hdi_prob::Real=0.94`: HDI interval to compute. This is only meaningful when `stat_funcs`
     is `nothing`.
 - `order::String="C"`: If `fmt` is "wide", use either "C" or "F" unpacking order.
-- `index_origin::Int=1`: If `fmt` is "wide", select 𝑛-based indexing for multivariate
-    parameters.
 - `skipna::Bool=false`: If `true`, ignores `NaN` values when computing the summary
     statistics. It does not affect the behaviour of the functions passed to `stat_funcs`.
 - `coords::Dict{String,Vector}=Dict()`: Coordinates specification to be used if the `fmt`
@@ -115,8 +113,8 @@ function StatsBase.summarystats(data::InferenceData; group=:posterior, kwargs...
     dataset = getproperty(data, Symbol(group))
     return summarystats(dataset; kwargs...)
 end
-function StatsBase.summarystats(data::Dataset; index_origin=1, fmt=:wide, kwargs...)
-    s = arviz.summary(data; index_origin=index_origin, fmt=fmt, kwargs...)
+function StatsBase.summarystats(data::Dataset; fmt=:wide, kwargs...)
+    s = arviz.summary(data; fmt=fmt, kwargs...)
     s isa Dataset && return s
     index_name = Symbol(fmt) == :long ? :statistic : :variable
     return todataframes(s; index_name=index_name)
