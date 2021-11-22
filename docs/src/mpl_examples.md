@@ -410,7 +410,7 @@ plot_loo_pit(idata; y="y", ecdf=true, color="maroon")
 gcf()
 ```
 
-See [`psislw`](@ref), [`plot_loo_pit`](@ref)
+See [`psis`](@ref), [`plot_loo_pit`](@ref)
 
 ## LOO-PIT Overlay Plot
 
