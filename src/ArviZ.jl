@@ -59,7 +59,7 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
-export summarystats, compare, hdi, loo, loo_pit, psislw, r2_score, waic
+export summarystats, compare, hdi, loo, loo_pit, psis, psis!, r2_score, waic
 
 ## Diagnostics
 export bfmi, ess, rhat, mcse
