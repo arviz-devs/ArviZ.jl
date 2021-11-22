@@ -30,6 +30,25 @@ using DataFrames: DataFrames
         @test all(df == ArviZ.todataframes(ArviZ.arviz.loo(idata)))
     end
 
+    @testset "psislw" begin
+        @testset for sz in ((1000,), (10, 1000))
+            logw = randn(sz)
+            logw_smoothed, k = psislw(copy(logw), 0.9)
+
+            # check against PSIS.jl
+            result = psis(copy(logw), 0.9)
+            @test exp.(logw_smoothed) ≈ result.weights
+            @test k ≈ result.pareto_shape
+
+            # check against Python ArviZ
+            # NOTE: currently these implementations disagree
+            # see https://github.com/arviz-devs/arviz/issues/1941
+            logw_smoothed2, k2 = ArviZ.arviz.psislw(copy(logw), 0.9)
+            @test_broken logw_smoothed ≈ logw_smoothed2
+            @test_broken k ≈ k2
+        end
+    end
+
     @testset "waic" begin
         df = waic(idata)
         @test df isa DataFrames.DataFrame

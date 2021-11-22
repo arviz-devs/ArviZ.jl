@@ -70,9 +70,9 @@ end
                 end
                 @testset for var_name in propertynames(multichain)
                     @test getproperty(getproperty(idata, group), var_name).values ==
-                          getproperty(getproperty(idata_nt, group), var_name).values
+                        getproperty(getproperty(idata_nt, group), var_name).values
                     @test getproperty(getproperty(idata, group), var_name).values ==
-                          getproperty(getproperty(idata_conv, group), var_name).values
+                        getproperty(getproperty(idata_conv, group), var_name).values
                 end
             end
         end
