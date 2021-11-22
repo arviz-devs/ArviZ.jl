@@ -31,7 +31,7 @@ using DataFrames: DataFrames
     end
 
     @testset "psislw" begin
-        @testset for sz in ((1000, ), (10, 1000))
+        @testset for sz in ((1000,), (10, 1000))
             logw = randn(sz)
             logw_smoothed, k = psislw(copy(logw), 0.9)
 

@@ -41,7 +41,7 @@ Pareto smoothed importance sampling (PSIS).
   - `kss`: Pareto tail indices
 """
 function psislw(logw, reff=1)
-    @warn "`psislw(logw[, reff])` is deprecated, use `psis(logw[, reff])`" maxlog=1
+    @warn "`psislw(logw[, reff])` is deprecated, use `psis(logw[, reff])`" maxlog = 1
     result = psis(logw, reff)
     log_weights = result.log_weights
     d = ndims(log_weights)
