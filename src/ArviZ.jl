@@ -10,6 +10,7 @@ using DataFrames
 using PyCall
 using Conda
 using PyPlot
+using PSIS: psis, psis!
 
 import Base:
     convert,
