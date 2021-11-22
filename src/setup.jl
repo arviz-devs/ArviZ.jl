@@ -5,7 +5,7 @@ arviz_version() = VersionNumber(arviz.__version__)
 function check_needs_update(; update=true)
     if arviz_version() < _min_arviz_version
         @warn "ArviZ.jl only officially supports arviz version $(_min_arviz_version) or " *
-              "greater but found version $(arviz_version())."
+            "greater but found version $(arviz_version())."
         if update
             if update_arviz()
                 # yay, but we still already imported the old version
