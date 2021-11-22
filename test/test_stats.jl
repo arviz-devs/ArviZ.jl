@@ -41,8 +41,8 @@ using DataFrames: DataFrames
             @test k ≈ result.pareto_shape
 
             # check against Python ArviZ
-            # NOTE: currently these implementations disagree because Python ArviZ computes
-            # sigma after regularizing k, while loo and PSIS.jl do it before.
+            # NOTE: currently these implementations disagree
+            # see https://github.com/arviz-devs/arviz/issues/1941
             logw_smoothed2, k2 = ArviZ.arviz.psislw(copy(logw), 0.9)
             @test_broken logw_smoothed ≈ logw_smoothed2
             @test_broken k ≈ k2
