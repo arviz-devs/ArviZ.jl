@@ -10,7 +10,7 @@ using DataFrames
 using PyCall
 using Conda
 using PyPlot
-using PSIS: psis, psis!
+using PSIS: PSISResult, psis, psis!
 
 import Base:
     convert,
@@ -59,7 +59,8 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
-export summarystats, compare, hdi, loo, loo_pit, psis, psis!, r2_score, waic
+export PSISResult, psis, psis!, psislw
+export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 
 ## Diagnostics
 export bfmi, ess, rhat, mcse
