@@ -11,6 +11,7 @@ using PyCall
 using Conda
 using PyPlot
 using PSIS: PSISResult, psis, psis!
+using LogExpFunctions: logsumexp
 
 import Base:
     convert,

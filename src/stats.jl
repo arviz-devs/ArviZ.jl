@@ -40,7 +40,17 @@ Pareto smoothed importance sampling (PSIS).
   - `lw_out`: Smoothed log weights
   - `kss`: Pareto tail indices
 """
-psislw
+function psislw(logw, reff=1)
+    @warn "`psislw(logw, reff)` is deprecated, use `psis(logw, reff)`" 
+    result = psis(logw, reff)
+    log_weights = result.log_weights
+    d = ndims(log_weights)
+    dims = d == 1 ? Colon() : ntuple(Base.Fix1(+, 1), d - 1)
+    log_norm_exp = logsumexp(log_weights; dims=dims)
+    log_weights .-= log_norm_exp
+    return log_weights, result.pareto_shape
+end
+    
 @deprecate psislw(logw, reff) psis(logw, reff; normalize=true)
 @deprecate psislw(logw) psis(logw; normalize=true)
 
