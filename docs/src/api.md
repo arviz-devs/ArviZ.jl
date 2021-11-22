@@ -40,7 +40,7 @@
 | [`psislw`](@ref)       | Pareto smoothed importance sampling (PSIS). (deprecated)                  |
 | [`psis`](@ref)         | Pareto smoothed importance sampling (PSIS).                               |
 | [`psis!`](@ref)        | Pareto smoothed importance sampling (PSIS) in-place.                      |
-| [`PSISResult](@ref)    | Container for results of Pareto smoothed importance sampling.             |
+| [`PSISResult`](@ref)    | Container for results of Pareto smoothed importance sampling.            |
 | [`r2_score`](@ref)     | $R^2$ for Bayesian regression models.                                     |
 | [`waic`](@ref)         | Calculate the widely available information criterion (WAIC).              |
 
