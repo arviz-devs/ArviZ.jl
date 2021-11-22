@@ -2,7 +2,6 @@
 @forwardfun hdi
 @forwardfun loo
 @forwardfun loo_pit
-@forwardfun psislw
 @forwardfun r2_score
 @forwardfun waic
 
@@ -21,6 +20,29 @@ convert_result(::typeof(r2_score), result) = todataframes(result)
 function convert_result(::typeof(compare), result)
     return todataframes(result; index_name=:name)
 end
+
+"""
+    psislw(log_weights, reff=1.0) -> (lw_out, kss)
+
+Pareto smoothed importance sampling (PSIS).
+
+!!! note
+    
+    This function is deprecated and is just a thin wrapper around [`psis`](@ref).
+
+# Arguments
+
+  - `log_weights`: Array of size `(nobs, ndraws)`
+  - `reff`: relative MCMC efficiency, `ess / n`
+
+# Returns
+
+  - `lw_out`: Smoothed log weights
+  - `kss`: Pareto tail indices
+"""
+psislw
+@deprecate psislw(logw, reff) psis(logw, reff; normalize=true)
+@deprecate psislw(logw) psis(logw; normalize=true)
 
 @doc doc"""
     summarystats(
