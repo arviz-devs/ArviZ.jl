@@ -10,7 +10,7 @@ using DataFrames
 using PyCall
 using Conda
 using PyPlot
-using PSIS: PSISResult, psis, psis!
+using PSIS: PSIS, PSISResult, psis, psis!
 using LogExpFunctions: logsumexp
 
 import Base:
@@ -60,7 +60,7 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
-export PSISResult, psis, psis!, psislw
+export PSIS, PSISResult, psis, psis!, psislw
 export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 
 ## Diagnostics
