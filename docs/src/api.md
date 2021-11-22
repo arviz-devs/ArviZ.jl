@@ -30,18 +30,19 @@
 
 ## [Stats](@id stats-api)
 
-| Name                           | Description                                                               |
-|:------------------------------ |:------------------------------------------------------------------------- |
-| [`summarystats`](@ref)         | Compute summary statistics on an `InferenceData`                          |
-| [`compare`](@ref)              | Compare models based on WAIC or LOO cross-validation.                     |
-| [`hdi`](@ref)                  | Calculate highest density interval (HDI) of array for given probability.  |
-| [`loo`](@ref)                  | Pareto-smoothed importance sampling leave-one-out (LOO) cross-validation. |
-| [`loo_pit`](@ref)              | Compute leave-one-out probability integral transform (PIT) values.        |
-| [`psislw`](@ref)               | Pareto smoothed importance sampling (PSIS) (deprecated).                  |
-| [`psis`](@ref)/[`psis!`](@ref) | Pareto smoothed importance sampling (PSIS).                               |
-| [`psis`](@ref)                 | Pareto smoothed importance sampling (PSIS) in-place.                      |
-| [`r2_score`](@ref)             | $R^2$ for Bayesian regression models.                                     |
-| [`waic`](@ref)                 | Calculate the widely available information criterion (WAIC).              |
+| Name                   | Description                                                               |
+|:---------------------- |:------------------------------------------------------------------------- |
+| [`summarystats`](@ref) | Compute summary statistics on an `InferenceData`                          |
+| [`compare`](@ref)      | Compare models based on WAIC or LOO cross-validation.                     |
+| [`hdi`](@ref)          | Calculate highest density interval (HDI) of array for given probability.  |
+| [`loo`](@ref)          | Pareto-smoothed importance sampling leave-one-out (LOO) cross-validation. |
+| [`loo_pit`](@ref)      | Compute leave-one-out probability integral transform (PIT) values.        |
+| [`psislw`](@ref)       | Pareto smoothed importance sampling (PSIS). (deprecated)                  |
+| [`psis`](@ref)         | Pareto smoothed importance sampling (PSIS).                               |
+| [`psis!`](@ref)        | Pareto smoothed importance sampling (PSIS) in-place.                      |
+| [`PSISResult](@ref)    | Container for results of Pareto smoothed importance sampling.             |
+| [`r2_score`](@ref)     | $R^2$ for Bayesian regression models.                                     |
+| [`waic`](@ref)         | Calculate the widely available information criterion (WAIC).              |
 
 ## [Diagnostics](@id diagnostics-api)
 
