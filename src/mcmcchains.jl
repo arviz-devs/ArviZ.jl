@@ -268,6 +268,14 @@ function from_mcmcchains(
             ),
         )
         concat!(all_idata, prior_idata)
+    elseif prior_predictive !== nothing
+        pre_prior_predictive_idata = convert_to_inference_data(
+            prior_predictive; eltypes=eltypes, kwargs...
+        )
+        concat!(
+            all_idata,
+            InferenceData(; prior_predictive=pre_prior_predictive_idata.posterior),
+        )
     end
 
     for (group, group_data) in [
