@@ -1,0 +1,21 @@
+[deps]
+CmdStan = "5.2.3, 6.0"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+MCMCChains = "0.3.15, 0.4, 1.0, 2.0, 3.0, 4.0, 5.0"
+MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e"
+SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+CmdStan = "5.2.3, 6.0"
+DataFrames = "0.20, 0.21, 0.22, 1.0"
+MCMCChains = "0.3.15, 0.4, 1.0, 2.0, 3.0, 4.0, 5.0"
+MonteCarloMeasurements = "0.6.4, 0.7, 0.8, 1"
+PyCall = "1.91.2"
+PyPlot = "2.8.2"
+SampleChains = "0.5"
+SampleChainsDynamicHMC = "0.3"
