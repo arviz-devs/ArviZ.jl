@@ -76,7 +76,11 @@ function section_dict(chns::Chains, section)
         sizes = reduce((a, b) -> max.(a, b), locs)
         ndim = length(sizes)
         var_views = (@view(chns.value[:, n, :]) for n in loc_names)
-        oldarr = reshape_values(replacemissing(convert(Array, cat(var_views...; dims=3))))
+        oldarr = let init = first(var_views)
+            # Splatting can result in `StackOverflowError`, so we use `reduce` with `cat` instead.
+            arr = reduce((x, y) -> cat(x, y; dims=3), Iterators.drop(var_views, 1); init=reshape(init, size(init)..., 1))
+            reshape_values(replacemissing(convert(Array, arr)))
+        end
         if iszero(ndim)
             arr = dropdims(oldarr; dims=3)
         else
