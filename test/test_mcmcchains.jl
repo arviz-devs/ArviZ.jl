@@ -284,6 +284,12 @@ end
         @test attrs isa Dict
         @test attrs["inference_library"] == "MyLib"
     end
+
+    @testset "large number of variables" begin
+        num_vars = 1_000;
+        chn = Chains(randn(100, num_vars, 1), [Symbol("x[$i]") for i = 1:num_vars])
+        @test haskey(from_mcmcchains(chn).posterior, :x)
+    end
 end
 
 @testset "convert_to_dataset(::MCMCChains.Chains)" begin
