@@ -1,7 +1,7 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.5.11"
+version = "0.5.12"
 
 [deps]
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
@@ -21,7 +21,7 @@ Conda = "1.0"
 DataFrames = "0.20, 0.21, 0.22, 1.0"
 LogExpFunctions = "0.2.0, 0.3"
 NamedTupleTools = "0.11.0, 0.12, 0.13"
-PSIS = "0.2"
+PSIS = "0.2, 0.3"
 PyCall = "1.91.2"
 PyPlot = "2.8.2"
 Requires = "0.5.2, 1.0"
