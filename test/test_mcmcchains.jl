@@ -287,7 +287,7 @@ end
 
     @testset "large number of variables" begin
         num_vars = 1_000;
-        chn = Chains(randn(100, num_vars, 1), [Symbol("x[$i]") for i = 1:num_vars])
+        chn = MCMCChains.Chains(randn(100, num_vars, 1), [Symbol("x[$i]") for i = 1:num_vars])
         @test haskey(from_mcmcchains(chn).posterior, :x)
     end
 end
