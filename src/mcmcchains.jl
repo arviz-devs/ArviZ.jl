@@ -79,7 +79,11 @@ function section_dict(chns::Chains, section)
         oldarr = let init = first(var_views)
             # Splatting can be _very_ slow when `length(var_views)` is high,
             # sometimes even resulting in `StackOverflowError`. Hence we use `reduce` with `cat` instead.
-            arr = reduce((x, y) -> cat(x, y; dims=3), Iterators.drop(var_views, 1); init=reshape(init, size(init)..., 1))
+            arr = reduce(
+                (x, y) -> cat(x, y; dims=3),
+                Iterators.drop(var_views, 1);
+                init=reshape(init, size(init)..., 1),
+            )
             reshape_values(replacemissing(convert(Array, arr)))
         end
         if iszero(ndim)
