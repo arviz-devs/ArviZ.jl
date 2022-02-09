@@ -17,14 +17,6 @@ const stan_key_map = Dict(
 )
 const stats_key_map = merge(turing_key_map, stan_key_map)
 
-"""
-    reshape_values(x::AbstractArray) -> AbstractArray
-
-Convert from `MCMCChains` variable values with dimensions `(ndraw, nchain, size...)` to
-ArviZ's expected `(nchain, ndraw, size...)`.
-"""
-reshape_values(x::AbstractArray{T,N}) where {T,N} = permutedims(x, (2, 1, (3:N)...))
-
 headtail(x) = x[1], x[2:end]
 
 function split_locname(name)
@@ -75,24 +67,16 @@ function section_dict(chns::Chains, section)
         loc_names, locs = names_locs
         sizes = reduce((a, b) -> max.(a, b), locs)
         ndim = length(sizes)
-        var_views = (@view(chns.value[:, n, :]) for n in loc_names)
-        oldarr = let init = first(var_views)
-            # Splatting can be _very_ slow when `length(var_views)` is high,
-            # sometimes even resulting in `StackOverflowError`. Hence we use `reduce` with `cat` instead.
-            arr = reduce(
-                (x, y) -> cat(x, y; dims=3),
-                Iterators.drop(var_views, 1);
-                init=reshape(init, size(init)..., 1),
-            )
-            reshape_values(replacemissing(convert(Array, arr)))
-        end
+        # NOTE: slicing specific entries from AxisArrays does not preserve order
+        # https://github.com/JuliaArrays/AxisArrays.jl/issues/182
+        oldarr = replacemissing(permutedims(chns.value[:, loc_names, :], (3, 1, 2)))
         if iszero(ndim)
             arr = dropdims(oldarr; dims=3)
         else
             arr = Array{Union{typeof(NaN),eltype(oldarr)}}(undef, nchains, ndraws, sizes...)
             fill!(arr, NaN)
-            for i in eachindex(locs)
-                arr[:, :, locs[i]...] = oldarr[:, :, i]
+            for i in eachindex(locs, loc_names)
+                arr[:, :, locs[i]...] = oldarr[:, :, loc_names[i]]
             end
         end
         vars_to_arrays[var_name] = arr
