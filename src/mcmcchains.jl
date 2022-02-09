@@ -76,7 +76,7 @@ function section_dict(chns::Chains, section)
             arr = Array{Union{typeof(NaN),eltype(oldarr)}}(undef, nchains, ndraws, sizes...)
             fill!(arr, NaN)
             for i in eachindex(locs, loc_names)
-                arr[:, :, locs[i]...] = oldarr[:, :, loc_names[i]]
+                @views arr[:, :, locs[i]...] = oldarr[:, :, loc_names[i]]
             end
         end
         vars_to_arrays[var_name] = arr
