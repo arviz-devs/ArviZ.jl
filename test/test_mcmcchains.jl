@@ -291,6 +291,12 @@ end
             randn(100, num_vars, 1), [Symbol("x[$i]") for i in 1:num_vars]
         )
         @test hasproperty(from_mcmcchains(chn).posterior, :x)
+
+        num_vars = 100
+        chn = MCMCChains.Chains(
+            randn(100, num_vars^2, 1), [Symbol("x[$i, $j]") for i = 1:num_vars, j = 1:num_vars]
+        )
+        @test hasproperty(from_mcmcchains(chn).posterior, :x)
     end
 end
 
