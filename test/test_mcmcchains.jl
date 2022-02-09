@@ -285,6 +285,7 @@ end
         @test attrs["inference_library"] == "MyLib"
     end
 
+    # https://github.com/arviz-devs/ArviZ.jl/issues/140
     @testset "large number of variables" begin
         num_vars = 1_000
         chn = MCMCChains.Chains(
