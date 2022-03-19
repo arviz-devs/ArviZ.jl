@@ -3,13 +3,12 @@ using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
 using SampleChains: SampleChains # make `from_samplechains` available for API docs
 using PlutoStaticHTML: PlutoStaticHTML
 
-const REL_NB_PATH = "notebooks"
-const NB_PATH = joinpath(@__DIR__, "src", "notebooks")
+const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
 
 # generate markdown from Pluto notebooks
 output_format = PlutoStaticHTML.documenter_output
 build_opts = PlutoStaticHTML.BuildOptions(
-    NB_PATH; previous_dir=NB_PATH, output_format=output_format
+    DOCS_SRC_PATH; previous_dir=DOCS_SRC_PATH, output_format=output_format
 )
 PlutoStaticHTML.build_notebooks(build_opts)
 
@@ -18,7 +17,7 @@ makedocs(;
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",
-        "Quickstart" => joinpath(REL_NB_PATH, "quickstart.md"),
+        "Quickstart" => "quickstart.md",
         "API" => "api.md",
         "Example Gallery" =>
             ["Matplotlib" => "mpl_examples.md", "Bokeh" => "bokeh_examples.md"],
