@@ -8,7 +8,9 @@ const NB_PATH = joinpath(@__DIR__, "src", "notebooks")
 
 # generate markdown from Pluto notebooks
 output_format = PlutoStaticHTML.documenter_output
-build_opts = PlutoStaticHTML.BuildOptions(NB_PATH; previous_dir=NB_PATH, output_format=output_format)
+build_opts = PlutoStaticHTML.BuildOptions(
+    NB_PATH; previous_dir=NB_PATH, output_format=output_format
+)
 PlutoStaticHTML.build_notebooks(build_opts)
 
 makedocs(;
