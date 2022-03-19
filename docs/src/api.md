@@ -37,7 +37,10 @@
 | [`hdi`](@ref)          | Calculate highest density interval (HDI) of array for given probability.  |
 | [`loo`](@ref)          | Pareto-smoothed importance sampling leave-one-out (LOO) cross-validation. |
 | [`loo_pit`](@ref)      | Compute leave-one-out probability integral transform (PIT) values.        |
-| [`psislw`](@ref)       | Pareto smoothed importance sampling (PSIS).                               |
+| [`psislw`](@ref)       | Pareto smoothed importance sampling (PSIS). (deprecated)                  |
+| [`psis`](@ref)         | Pareto smoothed importance sampling (PSIS).                               |
+| [`psis!`](@ref)        | Pareto smoothed importance sampling (PSIS) in-place.                      |
+| [`PSISResult`](@ref)    | Container for results of Pareto smoothed importance sampling.            |
 | [`r2_score`](@ref)     | $R^2$ for Bayesian regression models.                                     |
 | [`waic`](@ref)         | Calculate the widely available information criterion (WAIC).              |
 
@@ -61,19 +64,20 @@
 
 ## [Data](@id data-api)
 
-| Name                                | Description                                        |
-|:----------------------------------- |:-------------------------------------------------- |
-| [`InferenceData`](@ref)             | Container for inference data storage using xarray. |
-| [`convert_to_inference_data`](@ref) | Convert a supported object to an `InferenceData`.  |
-| [`load_arviz_data`](@ref)           | Load a local or remote pre-made dataset.           |
-| [`to_netcdf`](@ref)                 | Save dataset as a netcdf file.                     |
-| [`from_netcdf`](@ref)               | Load netcdf file back into an `InferenceData`.     |
-| [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`. |
-| [`from_dict`](@ref)                 | Convert `Dict` data into an `InferenceData`.       |
-| [`from_cmdstan`](@ref)              | Convert CmdStan data into an `InferenceData`.      |
-| [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`. |
-| [`concat`](@ref)                    | Concatenate `InferenceData` objects.               |
-| [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.      |
+| Name                                | Description                                          |
+|:----------------------------------- |:---------------------------------------------------- |
+| [`InferenceData`](@ref)             | Container for inference data storage using xarray.   |
+| [`convert_to_inference_data`](@ref) | Convert a supported object to an `InferenceData`.    |
+| [`load_arviz_data`](@ref)           | Load a local or remote pre-made dataset.             |
+| [`to_netcdf`](@ref)                 | Save dataset as a netcdf file.                       |
+| [`from_netcdf`](@ref)               | Load netcdf file back into an `InferenceData`.       |
+| [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`.   |
+| [`from_dict`](@ref)                 | Convert `Dict` data into an `InferenceData`.         |
+| [`from_cmdstan`](@ref)              | Convert CmdStan data into an `InferenceData`.        |
+| [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`.   |
+| [`from_samplechains`](@ref)         | Convert `SampleChains` data into an `InferenceData`. |
+| [`concat`](@ref)                    | Concatenate `InferenceData` objects.                 |
+| [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.        |
 
 ## [Utils](@id utils-api)
 

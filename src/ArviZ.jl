@@ -4,12 +4,13 @@ module ArviZ
 using Base: @__doc__
 using Requires
 using REPL
-using NamedTupleTools
 using DataFrames
 
 using PyCall
 using Conda
 using PyPlot
+using PSIS: PSIS, PSISResult, psis, psis!
+using LogExpFunctions: logsumexp
 
 import Base:
     convert,
@@ -58,7 +59,8 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
-export summarystats, compare, hdi, loo, loo_pit, psislw, r2_score, waic
+export PSIS, PSISResult, psis, psis!, psislw
+export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 
 ## Diagnostics
 export bfmi, ess, rhat, mcse
@@ -76,6 +78,7 @@ export InferenceData,
     from_dict,
     from_cmdstan,
     from_mcmcchains,
+    from_samplechains,
     concat,
     concat!
 
@@ -85,7 +88,7 @@ export with_interactive_backend
 ## rcParams
 export rcParams, with_rc_context
 
-const _min_arviz_version = v"0.11.0"
+const _min_arviz_version = v"0.11.3"
 const arviz = PyNULL()
 const xarray = PyNULL()
 const bokeh = PyNULL()
@@ -104,6 +107,9 @@ function __init__()
     @require MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca" begin
         import .MonteCarloMeasurements: AbstractParticles
         include("particles.jl")
+    end
+    @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
+        include("samplechains.jl")
     end
     @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin
         import .MCMCChains: Chains, sections

@@ -1,7 +1,7 @@
 <img src="https://arviz-devs.github.io/ArviZ.jl/dev/assets/logo.png" height=100></img>
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-![CI](https://github.com/arviz-devs/ArviZ.jl/workflows/CI/badge.svg)
+[![CI](https://github.com/arviz-devs/ArviZ.jl/workflows/CI/badge.svg)](https://github.com/arviz-devs/ArviZ.jl/actions/workflows/ci.yml?query=branch%3Amain)
 [![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=main)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=main)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://arviz-devs.github.io/ArviZ.jl/stable)
@@ -26,4 +26,4 @@ Additional details can be found in the [Code of Conduct](https://github.com/arvi
 
 ## Sponsors
 
-[![NumFOCUS](https://i0.wp.com/numfocus.org/wp-content/uploads/2019/06/AffiliatedProject.png)](https://numfocus.org)
+[![NumFOCUS](https://www.numfocus.org/wp-content/uploads/2017/07/NumFocus_LRG.png)](https://numfocus.org)

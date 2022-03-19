@@ -30,6 +30,29 @@ using DataFrames: DataFrames
         @test all(df == ArviZ.todataframes(ArviZ.arviz.loo(idata)))
     end
 
+    @testset "psislw" begin
+        @testset for sz in ((1000,), (10, 1000))
+            logw = randn(sz)
+            logw_smoothed, k = psislw(copy(logw), 0.9)
+
+            # check against PSIS.jl
+            result = psis(copy(logw), 0.9)
+            @test exp.(logw_smoothed) ≈ result.weights
+            @test k ≈ result.pareto_shape
+
+            # check against Python ArviZ
+            logw_smoothed2, k2 = ArviZ.arviz.psislw(copy(logw), 0.9)
+            # NOTE: currently the smoothed weights disagree, while the shapes agree
+            # see https://github.com/arviz-devs/arviz/issues/1941
+            @test_broken logw_smoothed ≈ logw_smoothed2
+            if length(sz) == 1
+                @test k ≈ k2[] # k2 is a 0-dimensional array
+            else
+                @test k ≈ k2
+            end
+        end
+    end
+
     @testset "waic" begin
         df = waic(idata)
         @test df isa DataFrames.DataFrame
@@ -57,10 +80,8 @@ using DataFrames: DataFrames
         @test :variable in propertynames(summarystats(idata; fmt="wide"))
         @test "a" ∈ s.variable
         @test "b" ∉ s.variable
-        @test "b[0,0]" ∉ s.variable && "b[0, 0]" ∉ s.variable
-        @test "b[1,1]" ∈ s.variable || "b[1, 1]" ∈ s.variable
-        var_summary = summarystats(idata; index_origin=0).variable
-        @test "b[0,0]" ∈ var_summary || "b[0, 0]" ∈ var_summary
+        @test "b[0, 0]" ∉ s.variable
+        @test "b[1, 1]" ∈ s.variable
 
         s2 = summarystats(idata; fmt="long")
         @test s2 isa DataFrames.DataFrame

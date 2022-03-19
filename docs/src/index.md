@@ -39,7 +39,7 @@ ArviZ.jl supports all of ArviZ's [API](https://arviz-devs.github.io/arviz/api/in
 See ArviZ's API documentation for details.
 
 ArviZ.jl wraps ArviZ's API functions and closely follows ArviZ's design.
-It also supports conversion of [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s `Chains` as returned by [Turing.jl](https://turing.ml), [CmdStan.jl](https://github.com/StanJulia/CmdStan.jl), [StanSample.jl](https://github.com/StanJulia/StanSample.jl), and others into ArviZ's `InferenceData` format.
+It also supports conversion of [MCMCChains.jl](https://github.com/TuringLang/MCMCChains.jl)'s `Chains` as returned by [Turing.jl](https://turing.ml), [CmdStan.jl](https://github.com/StanJulia/CmdStan.jl), [StanSample.jl](https://github.com/StanJulia/StanSample.jl), and others into ArviZ's `InferenceData` format and of [SampleChains.jl](https://github.com/cscherrer/SampleChains.jl)'s `AbstractChain`s and `MultiChain` as returned by [Soss.jl](https://github.com/cscherrer/Soss.jl).
 See [Quickstart](@ref quickstart) for examples.
 
 The package is intended to be used with [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl).

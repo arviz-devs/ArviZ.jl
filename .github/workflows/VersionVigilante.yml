@@ -22,16 +22,26 @@ jobs:
       - name: ✅ Un-Labeller (if success)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'success') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@0.3.0
+        uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.issues.removeLabel({...context.issue, name: 'needs version bump'})
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'needs version bump'
+            })
       - name: ❌ Labeller (if failure)
         if: (steps.versionvigilante_main.outputs.compare_versions == 'failure') && (success() || failure())
         continue-on-error: true
-        uses: actions/github-script@0.3.0
+        uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.issues.addLabels({...context.issue, labels: ['needs version bump']})
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['needs version bump']
+            })

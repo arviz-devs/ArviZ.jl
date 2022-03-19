@@ -250,6 +250,17 @@ end
         @test "z" ∈ keys(dimdict(idata.predictions_constant_data))
     end
 
+    # https://github.com/arviz-devs/ArviZ.jl/issues/146
+    @testset "prior predictive w/o prior" begin
+        nvars, nchains, ndraws = 2, 4, 20
+        chns = makechains(nvars, ndraws, nchains)
+        prior_predictive = randn(nchains, ndraws, 1)
+        idata = from_mcmcchains(chns; prior_predictive=prior_predictive)
+        test_chains_data(chns, idata, :posterior, names(chns))
+        @test :prior_predictive ∈ ArviZ.groupnames(idata)
+        @test idata.prior_predictive.x.values ≈ prior_predictive
+    end
+
     @testset "missing -> NaN" begin
         rng = MersenneTwister(42)
         nvars, nchains, ndraws = 2, 4, 20
@@ -272,6 +283,22 @@ end
         attrs = idata.posterior.attrs
         @test attrs isa Dict
         @test attrs["inference_library"] == "MyLib"
+    end
+
+    # https://github.com/arviz-devs/ArviZ.jl/issues/140
+    @testset "large number of variables" begin
+        num_vars = 1_000
+        chn = MCMCChains.Chains(
+            randn(100, num_vars, 1), [Symbol("x[$i]") for i in 1:num_vars]
+        )
+        @test hasproperty(from_mcmcchains(chn).posterior, :x)
+
+        num_vars = 100
+        chn = MCMCChains.Chains(
+            randn(100, num_vars^2, 1),
+            [Symbol("x[$i,$j]") for i in 1:num_vars for j in 1:num_vars],
+        )
+        @test hasproperty(from_mcmcchains(chn).posterior, :x)
     end
 end
 

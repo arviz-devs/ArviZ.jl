@@ -121,7 +121,7 @@ function from_namedtuple(
     if posterior === nothing
         post_dict = nothing
     else
-        post_dict = convert(Dict, namedtuple_of_arrays(posterior))
+        post_dict = Dict(pairs(namedtuple_of_arrays(posterior)))
     end
     for (group, group_data) in [
         :posterior_predictive => posterior_predictive,
@@ -206,7 +206,7 @@ function from_namedtuple(
         :predictions_constant_data => predictions_constant_data,
     ]
         group_data === nothing && continue
-        group_dict = convert(Dict, group_data)
+        group_dict = Dict(pairs(group_data))
         group_dataset = convert_to_constant_dataset(group_dict; library=library, kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
@@ -232,15 +232,17 @@ end
 Convert `obj` to an [`InferenceData`](@ref). See [`from_namedtuple`](@ref) for a description
 of `obj` possibilities and `kwargs`.
 """
-convert_to_inference_data(data::NamedTuple; kwargs...) = from_namedtuple(data; kwargs...)
-function convert_to_inference_data(data::AbstractVector{<:NamedTuple}; kwargs...)
-    return from_namedtuple(data; kwargs...)
-end
-function convert_to_inference_data(data::AbstractMatrix{<:NamedTuple}; kwargs...)
-    return from_namedtuple(data; kwargs...)
-end
 function convert_to_inference_data(
-    data::AbstractVector{<:AbstractVector{<:NamedTuple}}; kwargs...
-)
-    return from_namedtuple(data; kwargs...)
+    data::T; group=:posterior, kwargs...
+) where {
+    T<:Union{
+        NamedTuple,
+        AbstractVector{<:NamedTuple},
+        AbstractMatrix{<:NamedTuple},
+        AbstractVector{<:AbstractVector{<:NamedTuple}},
+    },
+}
+    group = Symbol(group)
+    group === :posterior && return from_namedtuple(data; kwargs...)
+    return from_namedtuple(; group => data, kwargs...)
 end

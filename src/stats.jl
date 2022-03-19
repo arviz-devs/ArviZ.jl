@@ -2,7 +2,6 @@
 @forwardfun hdi
 @forwardfun loo
 @forwardfun loo_pit
-@forwardfun psislw
 @forwardfun r2_score
 @forwardfun waic
 
@@ -20,6 +19,36 @@ convert_result(::typeof(waic), result) = todataframes(result)
 convert_result(::typeof(r2_score), result) = todataframes(result)
 function convert_result(::typeof(compare), result)
     return todataframes(result; index_name=:name)
+end
+
+"""
+    psislw(log_weights, reff=1.0) -> (lw_out, kss)
+
+Pareto smoothed importance sampling (PSIS).
+
+!!! note
+    
+    This function is deprecated and is just a thin wrapper around [`psis`](@ref).
+
+# Arguments
+
+  - `log_weights`: Array of size `(nobs, ndraws)`
+  - `reff`: relative MCMC efficiency, `ess / n`
+
+# Returns
+
+  - `lw_out`: Smoothed log weights
+  - `kss`: Pareto tail indices
+"""
+function psislw(logw, reff=1)
+    @warn "`psislw(logw[, reff])` is deprecated, use `psis(logw[, reff])`" maxlog = 1
+    result = psis(logw, reff)
+    log_weights = result.log_weights
+    d = ndims(log_weights)
+    dims = d == 1 ? Colon() : ntuple(Base.Fix1(+, 1), d - 1)
+    log_norm_exp = logsumexp(log_weights; dims=dims)
+    log_weights .-= log_norm_exp
+    return log_weights, result.pareto_shape
 end
 
 @doc doc"""
@@ -58,8 +87,6 @@ Compute summary statistics on `data`.
 - `hdi_prob::Real=0.94`: HDI interval to compute. This is only meaningful when `stat_funcs`
     is `nothing`.
 - `order::String="C"`: If `fmt` is "wide", use either "C" or "F" unpacking order.
-- `index_origin::Int=1`: If `fmt` is "wide", select 𝑛-based indexing for multivariate
-    parameters.
 - `skipna::Bool=false`: If `true`, ignores `NaN` values when computing the summary
     statistics. It does not affect the behaviour of the functions passed to `stat_funcs`.
 - `coords::Dict{String,Vector}=Dict()`: Coordinates specification to be used if the `fmt`
@@ -115,8 +142,8 @@ function StatsBase.summarystats(data::InferenceData; group=:posterior, kwargs...
     dataset = getproperty(data, Symbol(group))
     return summarystats(dataset; kwargs...)
 end
-function StatsBase.summarystats(data::Dataset; index_origin=1, fmt=:wide, kwargs...)
-    s = arviz.summary(data; index_origin=index_origin, fmt=fmt, kwargs...)
+function StatsBase.summarystats(data::Dataset; fmt=:wide, kwargs...)
+    s = arviz.summary(data; fmt=fmt, kwargs...)
     s isa Dataset && return s
     index_name = Symbol(fmt) == :long ? :statistic : :variable
     return todataframes(s; index_name=index_name)
