@@ -42,7 +42,10 @@ ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com
 rng1 = Random.MersenneTwister(37772);
 
 # ╔═╡ 401e9b91-0bca-4369-8d36-3d9f0b3ad60b
-plot_posterior(randn(rng1, 100_000)); gcf()
+begin
+    plot_posterior(randn(rng1, 100_000))
+    gcf()
+end
 
 # ╔═╡ 2c718ea5-2800-4df6-b62c-e0a9e440a1c3
 md"""
@@ -119,10 +122,12 @@ rng2 = Random.MersenneTwister(16653);
 
 # ╔═╡ 85bbcba7-c0f9-4c86-9cdf-a27055d3d448
 begin
-	param_mod_turing = model_turing(y, σ)
+    param_mod_turing = model_turing(y, σ)
     sampler = NUTS(ndraws_warmup, 0.8)
 
-    turing_chns = Turing.sample(rng2, model_turing(y, σ), sampler, MCMCThreads(), ndraws, nchains)
+    turing_chns = Turing.sample(
+        rng2, model_turing(y, σ), sampler, MCMCThreads(), ndraws, nchains
+    )
 end;
 
 # ╔═╡ bd4ab044-51ce-4af9-83b2-bd8fc827f810
@@ -131,7 +136,10 @@ Most ArviZ functions work fine with `Chains` objects from Turing:
 """
 
 # ╔═╡ 500f4e0d-0a36-4b5c-8900-667560fbf1d4
-plot_autocorr(turing_chns; var_names=["μ", "τ"]); gcf()
+begin
+    plot_autocorr(turing_chns; var_names=["μ", "τ"])
+    gcf()
+end
 
 # ╔═╡ 1129ad94-f65a-4332-b354-21bcf7e53541
 md"""
@@ -166,7 +174,10 @@ Here is a plot of the trace. Note the intelligent labels.
 """
 
 # ╔═╡ 14046b83-9c0a-4d33-ae4e-36c7d6f1b2e6
-plot_trace(idata_turing_post); gcf()
+begin
+    plot_trace(idata_turing_post)
+    gcf()
+end
 
 # ╔═╡ 737f319c-1ddd-45f2-8d10-aaecdc1334be
 md"We can also generate summary stats..."
@@ -178,7 +189,10 @@ summarystats(idata_turing_post)
 md"...and examine the energy distribution of the Hamiltonian sampler."
 
 # ╔═╡ 6e8343c8-bee3-4e1d-82d6-1885bfd1dbec
-plot_energy(idata_turing_post); gcf()
+begin
+    plot_energy(idata_turing_post)
+    gcf()
+end
 
 # ╔═╡ cba6f6c9-82c4-4957-acc3-36e9f1c95d76
 md"""
@@ -254,7 +268,10 @@ This can be inspected visually:
 """
 
 # ╔═╡ 05c9be29-7758-4324-971c-5579f99aaf9d
-plot_loo_pit(idata_turing; y="y", ecdf=true); gcf()
+begin
+    plot_loo_pit(idata_turing; y="y", ecdf=true)
+    gcf()
+end
 
 # ╔═╡ 98acc304-22e3-4e6b-a2f4-d22f6847145b
 md"""
@@ -315,7 +332,10 @@ begin
 end;
 
 # ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
-plot_density(stan_chns; var_names=["mu", "tau"]); gcf()
+begin
+    plot_density(stan_chns; var_names=["mu", "tau"])
+    gcf()
+end
 
 # ╔═╡ ffc7730c-d861-48e8-b173-b03e0542f32b
 md"""
@@ -368,14 +388,12 @@ constant_data = (J=J, σ=σ);
 observed_data = (y=y,);
 
 # ╔═╡ 9daec35c-3d6e-443c-87f9-213d51964f75
-model_soss = let
-    Soss.@model (J, σ) begin
-        μ ~ Soss.Normal(; μ=0, σ=5)
-        τ ~ HalfCauchy(; σ=5)
-        θ ~ Soss.Normal(; μ=μ, σ=τ) |> iid(J)
-        y ~ For(1:J) do j
-            Soss.Normal(; μ=θ[j], σ=σ[j])
-        end
+model_soss = Soss.@model (J, σ) begin
+    μ ~ Soss.Normal(; μ=0, σ=5)
+    τ ~ HalfCauchy(; σ=5)
+    θ ~ Soss.Normal(; μ=μ, σ=τ) |> iid(J)
+    y ~ For(1:J) do j
+        Soss.Normal(; μ=θ[j], σ=σ[j])
     end
 end;
 
@@ -417,7 +435,10 @@ We can plot the rank order statistics of the posterior to identify poor converge
 """
 
 # ╔═╡ eac7b059-129d-472b-a69e-b1611c7cc703
-plot_rank(post; var_names=["μ", "τ"]); gcf()
+begin
+    plot_rank(post; var_names=["μ", "τ"])
+    gcf()
+end
 
 # ╔═╡ 17d9fff5-d8f6-42c5-8cd1-70ecb34084c7
 md"Now we combine all of the samples to an `InferenceData`:"

@@ -2,5 +2,7 @@
 *.jl.*.cov
 *.jl.mem
 /deps/deps.jl
+/docs/src/notebooks/*.md
+/docs/src/notebooks/*.log
 /docs/build
 .DS_Store
