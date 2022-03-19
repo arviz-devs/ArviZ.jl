@@ -6,9 +6,9 @@ using InteractiveUtils
 
 # ╔═╡ 467c2d13-6bfe-4feb-9626-fb14796168aa
 begin
-	using ArviZ, CmdStan, Distributions, LinearAlgebra, MCMCChains, PyPlot, Random, Soss, Turing
-	using Soss.MeasureTheory: HalfCauchy
-	using SampleChainsDynamicHMC: getchains, dynamichmc
+    using ArviZ, CmdStan, Distributions, LinearAlgebra, PyPlot, Random, Soss, Turing
+    using Soss.MeasureTheory: HalfCauchy
+    using SampleChainsDynamicHMC: getchains, dynamichmc
 end
 
 # ╔═╡ 4d0e37f3-85f5-4ad8-bbba-8e5a3288f48b
@@ -122,7 +122,9 @@ begin
     param_mod_turing = model_turing(y, σ)
     sampler = NUTS(ndraws_warmup, 0.8)
 
-    turing_chns = Turing.sample(rng2, param_mod_turing, sampler, MCMCThreads(), ndraws, nchains)
+    turing_chns = Turing.sample(
+        rng2, param_mod_turing, sampler, MCMCThreads(), ndraws, nchains
+    )
 end;
 
 # ╔═╡ bd4ab044-51ce-4af9-83b2-bd8fc827f810
@@ -384,14 +386,14 @@ observed_data = (y=y,)
 
 # ╔═╡ 9daec35c-3d6e-443c-87f9-213d51964f75
 model_soss = let
-	Soss.@model (J, σ) begin
-	    μ ~ Soss.Normal(μ=0, σ=5)
-	    τ ~ HalfCauchy(σ=5)
-	    θ ~ Soss.Normal(μ=μ, σ=τ) |> iid(J)
-	    y ~ For(1:J) do j
-	        Soss.Normal(μ=θ[j], σ=σ[j])
-	    end
-	end
+    Soss.@model (J, σ) begin
+        μ ~ Soss.Normal(; μ=0, σ=5)
+        τ ~ HalfCauchy(; σ=5)
+        θ ~ Soss.Normal(; μ=μ, σ=τ) |> iid(J)
+        y ~ For(1:J) do j
+            Soss.Normal(; μ=θ[j], σ=σ[j])
+        end
+    end
 end
 
 # ╔═╡ 6a78e4a8-86c4-4438-b9bb-7c433d2bc8c8
@@ -404,8 +406,8 @@ md"Then we draw from the prior and prior predictive distributions."
 rng3 = MersenneTwister(5298)
 
 # ╔═╡ d385ceea-beb5-4ec7-b50d-be691266440b
-prior_priorpred = let Normal=Soss.Normal
-	[rand(rng3, param_mod_soss, ndraws) for _ in 1:nchains]
+prior_priorpred = let Normal = Soss.Normal
+    [rand(rng3, param_mod_soss, ndraws) for _ in 1:nchains]
 end
 
 # ╔═╡ 152822f9-20f7-4fe9-ad9f-bae31945e981
@@ -419,10 +421,10 @@ md"Finally, we update the posterior samples with draws from the posterior predic
 
 # ╔═╡ 0219a0d0-13ce-43d0-a048-8e95e55500db
 postpred = let
-	mod_pred = Soss.predictive(model_soss, :μ, :τ, :θ)
-	map(getchains(post)) do chain
-	    [rand(rng3, mod_pred(; constant_data..., draw...)) for draw in chain]
-	end
+    mod_pred = Soss.predictive(model_soss, :μ, :τ, :θ)
+    map(getchains(post)) do chain
+        [rand(rng3, mod_pred(; constant_data..., draw...)) for draw in chain]
+    end
 end
 
 # ╔═╡ 500c4b4d-25eb-4f27-8e8b-7287bfeddf92
