@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.18.4
+# v0.18.2
 
 using Markdown
 using InteractiveUtils
@@ -11,11 +11,14 @@ begin
     using SampleChainsDynamicHMC: getchains, dynamichmc
 end
 
-# ╔═╡ 4d0e37f3-85f5-4ad8-bbba-8e5a3288f48b
-begin
-    using PlutoUI
-    PlutoUI.TableOfContents()
-end
+# ╔═╡ a23dfd65-50a8-4872-8c41-661e96585aca
+md"""
+# [ArviZ.jl Quickstart](#quickstart)
+
+!!! note
+    
+    This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/getting_started/Introduction.html).
+"""
 
 # ╔═╡ d2eedd48-48c6-4fcd-b179-6be7fe68d3d6
 md"""
@@ -36,13 +39,10 @@ ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com
 """
 
 # ╔═╡ efb3f0af-9fac-48d8-bbb2-2dd6ebd5e4f6
-rng1 = Random.MersenneTwister(37772)
+rng1 = Random.MersenneTwister(37772);
 
 # ╔═╡ 401e9b91-0bca-4369-8d36-3d9f0b3ad60b
-begin
-    plot_posterior(randn(rng1, 100_000))
-    gcf()
-end
+plot_posterior(randn(rng1, 100_000)); gcf()
 
 # ╔═╡ 2c718ea5-2800-4df6-b62c-e0a9e440a1c3
 md"""
@@ -52,7 +52,7 @@ Below, we have 10 chains of 50 draws each for four different distributions.
 """
 
 # ╔═╡ 49f19c17-ac1d-46b5-a655-4376b7713244
-begin
+let
     s = (10, 50)
     plot_forest(
         Dict(
@@ -115,16 +115,14 @@ Turing.@model function model_turing(y, σ, J=length(y))
 end
 
 # ╔═╡ 86cb5e19-49e4-4e5e-8b89-e76936932055
-rng2 = Random.MersenneTwister(16653)
+rng2 = Random.MersenneTwister(16653);
 
 # ╔═╡ 85bbcba7-c0f9-4c86-9cdf-a27055d3d448
 begin
-    param_mod_turing = model_turing(y, σ)
+	param_mod_turing = model_turing(y, σ)
     sampler = NUTS(ndraws_warmup, 0.8)
 
-    turing_chns = Turing.sample(
-        rng2, param_mod_turing, sampler, MCMCThreads(), ndraws, nchains
-    )
+    turing_chns = Turing.sample(rng2, model_turing(y, σ), sampler, MCMCThreads(), ndraws, nchains)
 end;
 
 # ╔═╡ bd4ab044-51ce-4af9-83b2-bd8fc827f810
@@ -133,10 +131,7 @@ Most ArviZ functions work fine with `Chains` objects from Turing:
 """
 
 # ╔═╡ 500f4e0d-0a36-4b5c-8900-667560fbf1d4
-begin
-    plot_autocorr(turing_chns; var_names=["μ", "τ"])
-    gcf()
-end
+plot_autocorr(turing_chns; var_names=["μ", "τ"]); gcf()
 
 # ╔═╡ 1129ad94-f65a-4332-b354-21bcf7e53541
 md"""
@@ -145,7 +140,7 @@ md"""
 For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert `Chains` objects to xarray datasets.
 Note we are also giving some information about labelling.
 
-ArviZ is built to work with [`InferenceData`](@ref) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
+ArviZ is built to work with [`InferenceData`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.InferenceData) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
 """
 
 # ╔═╡ 803efdd8-656e-4e37-ba36-81195d064972
@@ -158,7 +153,7 @@ idata_turing_post = from_mcmcchains(
 
 # ╔═╡ 79f342c8-0738-432b-bfd7-2da25e50fa91
 md"""
-Each group is an [`ArviZ.Dataset`](@ref) (a thinly wrapped `xarray.Dataset`).
+Each group is an [`ArviZ.Dataset`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.Dataset) (a thinly wrapped `xarray.Dataset`).
 We can view a summary of the dataset.
 """
 
@@ -171,10 +166,7 @@ Here is a plot of the trace. Note the intelligent labels.
 """
 
 # ╔═╡ 14046b83-9c0a-4d33-ae4e-36c7d6f1b2e6
-begin
-    plot_trace(idata_turing_post)
-    gcf()
-end
+plot_trace(idata_turing_post); gcf()
 
 # ╔═╡ 737f319c-1ddd-45f2-8d10-aaecdc1334be
 md"We can also generate summary stats..."
@@ -186,16 +178,13 @@ summarystats(idata_turing_post)
 md"...and examine the energy distribution of the Hamiltonian sampler."
 
 # ╔═╡ 6e8343c8-bee3-4e1d-82d6-1885bfd1dbec
-begin
-    plot_energy(idata_turing_post)
-    gcf()
-end
+plot_energy(idata_turing_post); gcf()
 
 # ╔═╡ cba6f6c9-82c4-4957-acc3-36e9f1c95d76
 md"""
 ### Additional information in Turing.jl
 
-With a few more steps, we can use Turing to compute additional useful groups to add to the [`InferenceData`](@ref).
+With a few more steps, we can use Turing to compute additional useful groups to add to the `InferenceData`.
 
 To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
 """
@@ -219,11 +208,11 @@ end;
 
 # ╔═╡ 4d2fdcbe-c1d4-43b6-b382-f2e956b952a1
 md"""
-And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
+And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.loo),
 """
 
 # ╔═╡ 5a075722-232f-40fc-a499-8dc5b0c2424a
-begin
+loglikelihoods = let
     loglikelihoods = Turing.pointwise_loglikelihoods(
         param_mod_turing, MCMCChains.get_sections(turing_chns, :parameters)
     )
@@ -231,17 +220,17 @@ begin
     ynames = string.(keys(posterior_predictive))
     loglikelihoods_vals = getindex.(Ref(loglikelihoods), ynames)
     # Reshape into `(nchains, ndraws, size(y)...)`
-    loglikelihoods_arr = permutedims(cat(loglikelihoods_vals...; dims=3), (2, 1, 3))
+    Dict("y" => permutedims(cat(loglikelihoods_vals...; dims=3), (2, 1, 3)))
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
-md"This can then be included in the [`from_mcmcchains`](@ref) call from above:"
+md"This can then be included in the [`from_mcmcchains`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.from_mcmcchains) call from above:"
 
 # ╔═╡ b38c7a43-f00c-43c0-aa6b-9c581d6d0c73
 idata_turing = from_mcmcchains(
     turing_chns;
     posterior_predictive=posterior_predictive,
-    log_likelihood=Dict("y" => loglikelihoods_arr),
+    log_likelihood=loglikelihoods,
     prior=prior,
     prior_predictive=prior_predictive,
     observed_data=Dict("y" => y),
@@ -265,10 +254,7 @@ This can be inspected visually:
 """
 
 # ╔═╡ 05c9be29-7758-4324-971c-5579f99aaf9d
-begin
-    plot_loo_pit(idata_turing; y="y", ecdf=true)
-    gcf()
-end
+plot_loo_pit(idata_turing; y="y", ecdf=true); gcf()
 
 # ╔═╡ 98acc304-22e3-4e6b-a2f4-d22f6847145b
 md"""
@@ -329,15 +315,12 @@ begin
 end;
 
 # ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
-begin
-    plot_density(stan_chns; var_names=["mu", "tau"])
-    gcf()
-end
+plot_density(stan_chns; var_names=["mu", "tau"]); gcf()
 
 # ╔═╡ ffc7730c-d861-48e8-b173-b03e0542f32b
 md"""
 Again, converting to `InferenceData`, we can get much richer labelling and mixing of data.
-Note that we're using the same [`from_cmdstan`](@ref) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to [`from_mcmcchains`](@ref).
+Note that we're using the same [`from_cmdstan`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.from_cmdstan) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to `from_mcmcchains`.
 """
 
 # ╔═╡ 020cbdc0-a0a2-4d20-838f-c99b541d5832
@@ -379,10 +362,10 @@ First we define our model:
 """
 
 # ╔═╡ 14408abe-a16f-4cc0-a6f3-0bb2645653b7
-constant_data = (J=J, σ=σ)
+constant_data = (J=J, σ=σ);
 
 # ╔═╡ 446341da-902e-474b-b6dc-b085ef74a99b
-observed_data = (y=y,)
+observed_data = (y=y,);
 
 # ╔═╡ 9daec35c-3d6e-443c-87f9-213d51964f75
 model_soss = let
@@ -394,7 +377,7 @@ model_soss = let
             Soss.Normal(; μ=θ[j], σ=σ[j])
         end
     end
-end
+end;
 
 # ╔═╡ 6a78e4a8-86c4-4438-b9bb-7c433d2bc8c8
 param_mod_soss = model_soss(; constant_data...)
@@ -403,7 +386,7 @@ param_mod_soss = model_soss(; constant_data...)
 md"Then we draw from the prior and prior predictive distributions."
 
 # ╔═╡ bfdfdff7-6551-4dd7-a7c8-69f8b57272ec
-rng3 = MersenneTwister(5298)
+rng3 = MersenneTwister(5298);
 
 # ╔═╡ d385ceea-beb5-4ec7-b50d-be691266440b
 prior_priorpred = let Normal = Soss.Normal
@@ -434,10 +417,7 @@ We can plot the rank order statistics of the posterior to identify poor converge
 """
 
 # ╔═╡ eac7b059-129d-472b-a69e-b1611c7cc703
-begin
-    plot_rank(post; var_names=["μ", "τ"])
-    gcf()
-end
+plot_rank(post; var_names=["μ", "τ"]); gcf()
 
 # ╔═╡ 17d9fff5-d8f6-42c5-8cd1-70ecb34084c7
 md"Now we combine all of the samples to an `InferenceData`:"
@@ -475,7 +455,6 @@ ArviZ = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 CmdStan = "593b3428-ca2f-500c-ae53-031589ec8ddd"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4"
@@ -486,7 +465,6 @@ Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 ArviZ = "~0.5.14"
 CmdStan = "~6.6.0"
 Distributions = "~0.25.52"
-PlutoUI = "~0.7.37"
 PyPlot = "~2.10.0"
 SampleChainsDynamicHMC = "~0.3.4"
 Soss = "~0.20.9"
@@ -522,12 +500,6 @@ deps = ["AbstractMCMC", "DensityInterface", "Setfield", "SparseArrays"]
 git-tree-sha1 = "6320752437e9fbf49639a410017d862ad64415a5"
 uuid = "7a57a42e-76ec-4ea3-a279-07e840d6d9cf"
 version = "0.5.2"
-
-[[deps.AbstractPlutoDingetjes]]
-deps = ["Pkg"]
-git-tree-sha1 = "8eaf9f1b4921132a4cff3f36a1d9ba923b14a481"
-uuid = "6e696c72-6542-2067-7265-42206c756150"
-version = "1.1.4"
 
 [[deps.AbstractTrees]]
 git-tree-sha1 = "03e0550477d86222521d254b741d470ba17ea0b5"
@@ -967,23 +939,6 @@ deps = ["DualNumbers", "LinearAlgebra", "SpecialFunctions", "Test"]
 git-tree-sha1 = "65e4589030ef3c44d3b90bdc5aac462b4bb05567"
 uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 version = "0.3.8"
-
-[[deps.Hyperscript]]
-deps = ["Test"]
-git-tree-sha1 = "8d511d5b81240fc8e6802386302675bdf47737b9"
-uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
-version = "0.0.4"
-
-[[deps.HypertextLiteral]]
-git-tree-sha1 = "2b078b5a615c6c0396c77810d92ee8c6f470d238"
-uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
-version = "0.9.3"
-
-[[deps.IOCapture]]
-deps = ["Logging", "Random"]
-git-tree-sha1 = "f7be53659ab06ddc986428d3a9dcc95f6fa6705a"
-uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
-version = "0.2.2"
 
 [[deps.IRTools]]
 deps = ["InteractiveUtils", "MacroTools", "Test"]
@@ -1450,12 +1405,6 @@ version = "0.4.11"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-
-[[deps.PlutoUI]]
-deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "Markdown", "Random", "Reexport", "UUIDs"]
-git-tree-sha1 = "bf0a1121af131d9974241ba53f601211e9303a9e"
-uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.37"
 
 [[deps.Polynomials]]
 deps = ["Intervals", "LinearAlgebra", "MutableArithmetics", "RecipesBase"]
@@ -1945,6 +1894,7 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 """
 
 # ╔═╡ Cell order:
+# ╟─a23dfd65-50a8-4872-8c41-661e96585aca
 # ╟─d2eedd48-48c6-4fcd-b179-6be7fe68d3d6
 # ╠═467c2d13-6bfe-4feb-9626-fb14796168aa
 # ╠═06b00794-e97f-472b-b526-efe4815103f8
@@ -2008,6 +1958,5 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═ddb1373a-f180-4efc-9193-905d03be4d8a
 # ╟─bfa2c30f-f50c-45de-bd2a-da199ce67cfb
 # ╠═e56ee0c8-bc4a-4b37-bfcc-9ca1c440c1f3
-# ╟─4d0e37f3-85f5-4ad8-bbba-8e5a3288f48b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
