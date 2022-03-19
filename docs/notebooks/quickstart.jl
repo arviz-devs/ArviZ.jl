@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.18.2
+# v0.18.4
 
 using Markdown
 using InteractiveUtils
@@ -475,7 +475,6 @@ ArviZ = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 CmdStan = "593b3428-ca2f-500c-ae53-031589ec8ddd"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -487,7 +486,6 @@ Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 ArviZ = "~0.5.14"
 CmdStan = "~6.6.0"
 Distributions = "~0.25.52"
-MCMCChains = "~5.1.0"
 PlutoUI = "~0.7.37"
 PyPlot = "~2.10.0"
 SampleChainsDynamicHMC = "~0.3.4"
