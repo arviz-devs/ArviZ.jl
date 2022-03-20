@@ -78,7 +78,7 @@ for f in (:plot_density, :plot_forest, :plot_rank)
             ::typeof($(f)), data, args...; transform=identity, group=:posterior, kwargs...
         )
             tdata = transform(data)
-            dataset = convert_to_dataset(tdata; group=group)
+            dataset = convert_to_dataset(tdata; group)
             return tuple(dataset, args...), kwargs
         end
     end
@@ -96,7 +96,7 @@ for f in (:plot_density, :plot_forest)
         )
             tdata = transform(data)
             datasets = map(tdata) do datum
-                return convert_to_dataset(datum; group=group)
+                return convert_to_dataset(datum; group)
             end
             return tuple(datasets, args...), kwargs
         end
@@ -109,7 +109,7 @@ for f in (:plot_density, :plot_forest)
             kwargs...,
         )
             tdata = transform(data)
-            dataset = convert_to_dataset(tdata; group=group)
+            dataset = convert_to_dataset(tdata; group)
             return tuple(dataset, args...), kwargs
         end
     end

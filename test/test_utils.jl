@@ -45,7 +45,7 @@ pandas = ArviZ.pandas
 
     @testset "topandas" begin
         @testset "DataFrames.DataFrame -> pandas.DataFrame" begin
-            colnames = [:a, :b, :c]
+            columns = [:a, :b, :c]
             index = ["d", "e"]
             rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
             df = DataFrames.DataFrame([
@@ -53,7 +53,7 @@ pandas = ArviZ.pandas
             ])
             pdf = ArviZ.topandas(Val(:DataFrame), df; index_name=:i)
             @test pyisinstance(pdf, pandas.DataFrame)
-            pdf_exp = pandas.DataFrame(rowvals; columns=colnames, index=index)
+            pdf_exp = pandas.DataFrame(rowvals; columns, index)
             @test py"($(pdf) == $(pdf_exp)).all().all()"
         end
 
@@ -78,10 +78,10 @@ pandas = ArviZ.pandas
 
     @testset "todataframes" begin
         @testset "pandas.DataFrame -> DataFrames.DataFrame" begin
-            colnames = [:a, :b, :c]
+            columns = [:a, :b, :c]
             index = ["d", "e"]
             rowvals = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
-            pdf = pandas.DataFrame(rowvals; columns=colnames, index=index)
+            pdf = pandas.DataFrame(rowvals; columns, index)
             df = ArviZ.todataframes(pdf; index_name=:i)
             @test df isa DataFrames.DataFrame
             @test df == DataFrames.DataFrame([

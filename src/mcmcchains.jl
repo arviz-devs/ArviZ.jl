@@ -177,7 +177,7 @@ function from_mcmcchains(
         stats_dict = nothing
     else
         post_dict = convert_to_eltypes(chains_to_dict(posterior), eltypes)
-        stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun=rekey_fun)
+        stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun)
         stats_dict = enforce_stat_eltypes(stats_dict)
         stats_dict = convert_to_eltypes(stats_dict, Dict("is_accept" => Bool))
     end
@@ -199,9 +199,9 @@ function from_mcmcchains(
             group_data = popsubdict!(post_dict, group_data)
         end
         group_dataset = if group_data isa Chains
-            convert_to_dataset(group_data; library=library, eltypes=eltypes, kwargs...)
+            convert_to_dataset(group_data; library, eltypes, kwargs...)
         else
-            convert_to_dataset(group_data; library=library, kwargs...)
+            convert_to_dataset(group_data; library, kwargs...)
         end
         setattribute!(group_dataset, "inference_library", library)
         concat!(all_idata, InferenceData(; group => group_dataset))
@@ -213,7 +213,7 @@ function from_mcmcchains(
     else
         attrs = merge(attributes_dict(posterior), attrs_library)
     end
-    kwargs = Dict(pairs(merge((; attrs=attrs, dims=Dict()), kwargs)))
+    kwargs = Dict(pairs(merge((; attrs, dims=Dict()), kwargs)))
     post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
     concat!(all_idata, post_idata)
     return all_idata
@@ -246,11 +246,7 @@ function from_mcmcchains(
 
     if prior !== nothing
         pre_prior_idata = convert_to_inference_data(
-            prior;
-            posterior_predictive=prior_predictive,
-            library=library,
-            eltypes=eltypes,
-            kwargs...,
+            prior; posterior_predictive=prior_predictive, library, eltypes, kwargs...
         )
         prior_idata = rekey(
             pre_prior_idata,
@@ -263,7 +259,7 @@ function from_mcmcchains(
         concat!(all_idata, prior_idata)
     elseif prior_predictive !== nothing
         pre_prior_predictive_idata = convert_to_inference_data(
-            prior_predictive; eltypes=eltypes, kwargs...
+            prior_predictive; eltypes, kwargs...
         )
         concat!(
             all_idata,
@@ -278,7 +274,7 @@ function from_mcmcchains(
     ]
         group_data === nothing && continue
         group_data = convert_to_eltypes(group_data, eltypes)
-        group_dataset = convert_to_constant_dataset(group_data; library=library, kwargs...)
+        group_dataset = convert_to_constant_dataset(group_data; library, kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 

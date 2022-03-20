@@ -88,12 +88,7 @@ function from_samplechains(
         sample_stats_prior = _samplechains_info(prior_mc)
     end
     return from_namedtuple(
-        posterior_mc;
-        prior=prior_mc,
-        sample_stats=sample_stats,
-        sample_stats_prior=sample_stats_prior,
-        library=library,
-        kwargs...,
+        posterior_mc; prior=prior_mc, sample_stats, sample_stats_prior, library, kwargs...
     )
 end
 

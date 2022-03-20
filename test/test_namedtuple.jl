@@ -28,28 +28,14 @@ using MonteCarloMeasurements: Particles
     ]
 
     @testset "posterior::$(type)" for (type, nt) in nts
-        idata1 = from_namedtuple(nt; dims=dims, coords=coords, library="MyLib")
+        idata1 = from_namedtuple(nt; dims, coords, library="MyLib")
         test_namedtuple_data(
-            idata1,
-            :posterior,
-            keys(sizes),
-            nchains,
-            ndraws;
-            library="MyLib",
-            coords=coords,
-            dims=dims,
+            idata1, :posterior, keys(sizes), nchains, ndraws; library="MyLib", coords, dims
         )
 
-        idata2 = convert_to_inference_data(nt; dims=dims, coords=coords, library="MyLib")
+        idata2 = convert_to_inference_data(nt; dims, coords, library="MyLib")
         test_namedtuple_data(
-            idata2,
-            :posterior,
-            keys(sizes),
-            nchains,
-            ndraws;
-            library="MyLib",
-            coords=coords,
-            dims=dims,
+            idata2, :posterior, keys(sizes), nchains, ndraws; library="MyLib", coords, dims
         )
     end
 
@@ -58,7 +44,7 @@ using MonteCarloMeasurements: Particles
     ]
         @testset "::$(type)" for (type, nt) in nts
             idata1 = convert_to_inference_data(
-                nt; (group => nt,)..., dims=dims, coords=coords, library="MyLib"
+                nt; (group => nt,)..., dims, coords, library="MyLib"
             )
             test_namedtuple_data(
                 idata1,
@@ -67,32 +53,18 @@ using MonteCarloMeasurements: Particles
                 nchains,
                 ndraws;
                 library="MyLib",
-                coords=coords,
-                dims=dims,
+                coords,
+                dims,
             )
             test_namedtuple_data(
-                idata1,
-                group,
-                keys(sizes),
-                nchains,
-                ndraws;
-                library="MyLib",
-                coords=coords,
-                dims=dims,
+                idata1, group, keys(sizes), nchains, ndraws; library="MyLib", coords, dims
             )
 
             idata2 = convert_to_inference_data(
-                nt; (group => keys(sizes),)..., dims=dims, coords=coords, library="MyLib"
+                nt; (group => keys(sizes),)..., dims, coords, library="MyLib"
             )
             test_namedtuple_data(
-                idata2,
-                group,
-                keys(sizes),
-                nchains,
-                ndraws;
-                library="MyLib",
-                coords=coords,
-                dims=dims,
+                idata2, group, keys(sizes), nchains, ndraws; library="MyLib", coords, dims
             )
         end
     end
@@ -100,45 +72,20 @@ using MonteCarloMeasurements: Particles
     @testset "$(group)" for group in [:prior_predictive, :sample_stats_prior]
         @testset "::$(type)" for (type, nt) in nts
             idata1 = from_namedtuple(;
-                prior=nt, (group => nt,)..., dims=dims, coords=coords, library="MyLib"
+                prior=nt, (group => nt,)..., dims, coords, library="MyLib"
             )
             test_namedtuple_data(
-                idata1,
-                :prior,
-                keys(sizes),
-                nchains,
-                ndraws;
-                library="MyLib",
-                coords=coords,
-                dims=dims,
+                idata1, :prior, keys(sizes), nchains, ndraws; library="MyLib", coords, dims
             )
             test_namedtuple_data(
-                idata1,
-                group,
-                keys(sizes),
-                nchains,
-                ndraws;
-                library="MyLib",
-                coords=coords,
-                dims=dims,
+                idata1, group, keys(sizes), nchains, ndraws; library="MyLib", coords, dims
             )
 
             idata2 = from_namedtuple(;
-                prior=nt,
-                (group => keys(sizes),)...,
-                dims=dims,
-                coords=coords,
-                library="MyLib",
+                prior=nt, (group => keys(sizes),)..., dims, coords, library="MyLib"
             )
             test_namedtuple_data(
-                idata2,
-                group,
-                keys(sizes),
-                nchains,
-                ndraws;
-                library="MyLib",
-                coords=coords,
-                dims=dims,
+                idata2, group, keys(sizes), nchains, ndraws; library="MyLib", coords, dims
             )
         end
     end

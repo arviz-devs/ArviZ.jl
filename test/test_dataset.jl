@@ -16,8 +16,8 @@
             "dimx" => [1, 2, 3], "dimy_1" => ["a", "b", "c"], "dimy_2" => ["d", "e"]
         )
         attrs = Dict("prop1" => 1, "prop2" => "propval")
-        @inferred ArviZ.Dataset(; data_vars=vars, coords=coords, attrs=attrs)
-        ds = ArviZ.Dataset(; data_vars=vars, coords=coords, attrs=attrs)
+        @inferred ArviZ.Dataset(; data_vars=vars, coords, attrs)
+        ds = ArviZ.Dataset(; data_vars=vars, coords, attrs)
         @test ds isa ArviZ.Dataset
         vars2, kwargs = ArviZ.dataset_to_dict(ds)
         for (k, v) in vars
@@ -113,9 +113,7 @@ end
         dataset = ArviZ.convert_to_constant_dataset(data)
         attrs = Dict("prop" => "propval")
 
-        dataset = ArviZ.convert_to_constant_dataset(
-            data; coords=coords, dims=dims, library=library, attrs=attrs
-        )
+        dataset = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
         @test dataset isa ArviZ.Dataset
         @test "x" ∈ dataset.keys()
         @test "y" ∈ dataset.keys()
@@ -139,9 +137,7 @@ end
         dataset = ArviZ.convert_to_constant_dataset(data)
         attrs = (prop="propval",)
 
-        dataset = ArviZ.convert_to_constant_dataset(
-            data; coords=coords, dims=dims, library=library, attrs=attrs
-        )
+        dataset = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
         @test dataset isa ArviZ.Dataset
         @test "x" ∈ dataset.keys()
         @test "y" ∈ dataset.keys()
@@ -171,7 +167,7 @@ end
     dims = Dict("b" => ["bi", "bj"])
     attrs = Dict("mykey" => 5)
 
-    ds = ArviZ.dict_to_dataset(vars; library=:MyLib, coords=coords, dims=dims, attrs=attrs)
+    ds = ArviZ.dict_to_dataset(vars; library=:MyLib, coords, dims, attrs)
     @test ds isa ArviZ.Dataset
     vars2, kwargs = ArviZ.dataset_to_dict(ds)
     for (k, v) in vars
