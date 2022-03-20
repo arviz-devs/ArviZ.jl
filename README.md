@@ -26,4 +26,4 @@ Additional details can be found in the [Code of Conduct](https://github.com/arvi
 
 ## Sponsors
 
-[![NumFOCUS](https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/sphinx/NumFocus.png)](https://numfocus.org)
+[<img src="https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/sphinx/NumFocus.png" height=100></img>](https://numfocus.org)
