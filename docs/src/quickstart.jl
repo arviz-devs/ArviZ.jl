@@ -491,7 +491,7 @@ end
 md"## [Environment](#environment)"
 
 # ╔═╡ fd84237a-7a19-4bbb-a702-faa31075ecbc
-with_terminal(Pkg.status)
+with_terminal(Pkg.status; color=false)
 
 # ╔═╡ ad29b7f3-6f5e-4b04-bf70-2308a7d110c0
 with_terminal(versioninfo)
