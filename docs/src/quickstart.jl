@@ -22,7 +22,7 @@ md"""
 
 # ╔═╡ d2eedd48-48c6-4fcd-b179-6be7fe68d3d6
 md"""
-## Setup
+## [Setup](#setup)
 
 Here we add the necessary packages for this notebook and load a few we will use throughout.
 """
@@ -33,7 +33,7 @@ ArviZ.use_style("arviz-darkgrid")
 
 # ╔═╡ 5acbfd9a-cfea-4c3c-a3f0-1744eb7e4e27
 md"""
-## Get started with plotting
+## [Get started with plotting](#Get-started-with-plotting)
 
 ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com/StanJulia/CmdStan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 """
@@ -70,7 +70,7 @@ end
 
 # ╔═╡ a9789109-2b90-40f7-926c-e7c87025d15f
 md"""
-## Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl
+## [Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl](#Plotting-with-MCMCChains.jl's-Chains-objects-produced-by-Turing.jl)
 
 ArviZ is designed to work well with high dimensional, labelled data.
 Consider the [eight schools model](https://statmodeling.stat.columbia.edu/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/), which roughly tries to measure the effectiveness of SAT classes at eight different schools.
@@ -275,7 +275,7 @@ end
 
 # ╔═╡ 98acc304-22e3-4e6b-a2f4-d22f6847145b
 md"""
-## Plotting with CmdStan.jl outputs
+## [Plotting with CmdStan.jl outputs](#Plotting-with-CmdStan.jl-outputs)
 
 CmdStan.jl and StanSample.jl also default to producing `Chains` outputs, and we can easily plot these chains.
 
@@ -374,7 +374,7 @@ end
 
 # ╔═╡ 2674d532-a337-471e-8ba7-02b430f49f12
 md"""
-## Plotting with Soss.jl outputs
+## [Plotting with Soss.jl outputs](#Plotting-with-Soss.jl-outputs)
 
 With Soss, we can define our model for the posterior and easily use it to draw samples from the prior, prior predictive, posterior, and posterior predictive distributions.
 
@@ -1954,14 +1954,14 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═f552b5b5-9744-41df-af90-46405367ea0b
 # ╟─9d3673f5-b57b-432e-944a-70b23643128a
 # ╠═05c9be29-7758-4324-971c-5579f99aaf9d
-# ╟─98acc304-22e3-4e6b-a2f4-d22f6847145b
+# ╠═98acc304-22e3-4e6b-a2f4-d22f6847145b
 # ╠═b46af168-1ce3-4058-a014-b66c645a6e0d
 # ╠═ab145e41-b230-4cad-bef5-f31e0e0770d4
 # ╟─ffc7730c-d861-48e8-b173-b03e0542f32b
 # ╠═020cbdc0-a0a2-4d20-838f-c99b541d5832
 # ╟─e44b260c-9d2f-43f8-a64b-04245a0a5658
 # ╠═5070bbbc-68d2-49b8-bd91-456dc0da4573
-# ╟─2674d532-a337-471e-8ba7-02b430f49f12
+# ╠═2674d532-a337-471e-8ba7-02b430f49f12
 # ╠═14408abe-a16f-4cc0-a6f3-0bb2645653b7
 # ╠═446341da-902e-474b-b6dc-b085ef74a99b
 # ╠═9daec35c-3d6e-443c-87f9-213d51964f75
