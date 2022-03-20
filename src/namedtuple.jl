@@ -121,7 +121,7 @@ function from_namedtuple(
     if posterior === nothing
         post_dict = nothing
     else
-        post_dict = convert(Dict, namedtuple_of_arrays(posterior))
+        post_dict = Dict(pairs(namedtuple_of_arrays(posterior)))
     end
     for (group, group_data) in [
         :posterior_predictive => posterior_predictive,
@@ -206,7 +206,7 @@ function from_namedtuple(
         :predictions_constant_data => predictions_constant_data,
     ]
         group_data === nothing && continue
-        group_dict = convert(Dict, group_data)
+        group_dict = Dict(pairs(group_data))
         group_dataset = convert_to_constant_dataset(group_dict; library=library, kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end

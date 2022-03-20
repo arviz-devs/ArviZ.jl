@@ -4,7 +4,6 @@ module ArviZ
 using Base: @__doc__
 using Requires
 using REPL
-using NamedTupleTools
 using DataFrames
 
 using PyCall

@@ -50,7 +50,7 @@ function varnames_locs_dict(loc_names, loc_str_to_old)
 end
 
 function attributes_dict(chns::Chains)
-    info = delete(chns.info, :hashedsummary)
+    info = Base.structdiff(chns.info, NamedTuple{(:hashedsummary,)})
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
 
@@ -167,7 +167,7 @@ function from_mcmcchains(
     eltypes=Dict(),
     kwargs...,
 )
-    kwargs = convert(Dict, merge((; dims=Dict()), kwargs))
+    kwargs = Dict(pairs(merge((; dims=Dict()), kwargs)))
     library = string(library)
     rekey_fun = d -> rekey(d, stats_key_map)
 
@@ -213,7 +213,7 @@ function from_mcmcchains(
     else
         attrs = merge(attributes_dict(posterior), attrs_library)
     end
-    kwargs = convert(Dict, merge((; attrs=attrs, dims=Dict()), kwargs))
+    kwargs = Dict(pairs(merge((; attrs=attrs, dims=Dict()), kwargs)))
     post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
     concat!(all_idata, post_idata)
     return all_idata
@@ -232,7 +232,7 @@ function from_mcmcchains(
     eltypes=Dict(),
     kwargs...,
 )
-    kwargs = convert(Dict, merge((; dims=Dict(), coords=Dict()), kwargs))
+    kwargs = Dict(pairs(merge((; dims=Dict(), coords=Dict()), kwargs)))
 
     all_idata = from_mcmcchains(
         posterior,
