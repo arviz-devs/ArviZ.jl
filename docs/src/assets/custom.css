@@ -34,7 +34,7 @@ html.theme--documenter-dark .content h4 a {
 
 .admonition.note p {
     padding: 1em 1.25em;
-    padding-top: inherit;
+    padding-top: 0.75em;
 }
 
 .admonition.note > .admonition-title {
