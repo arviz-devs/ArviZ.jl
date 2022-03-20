@@ -1,4 +1,4 @@
-using Documenter, ArviZ
+using Documenter, Downloads, ArviZ
 using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
 using SampleChains: SampleChains # make `from_samplechains` available for API docs
 
@@ -7,7 +7,9 @@ const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz_gov
 
 function download_asset(remote_fn, fn=remote_fn)
     mkpath(ASSETS_DIR)
-    return download(joinpath(ARVIZ_ASSETS_URL, remote_fn), joinpath(ASSETS_DIR, fn))
+    return Downloads.download(
+        joinpath(ARVIZ_ASSETS_URL, remote_fn), joinpath(ASSETS_DIR, fn); verbose=true
+    )
 end
 
 makedocs(;
