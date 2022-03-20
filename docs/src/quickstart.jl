@@ -4,8 +4,8 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 56a39a90-0594-48f4-ba04-f7b612019cd1
-using Pkg, PlutoUI, InteractiveUtils
+# ╔═╡ 2c0f3d74-8b1e-4648-b0fa-f8050035b0fd
+using Pkg, InteractiveUtils
 
 # ╔═╡ ac57d957-0bdd-457a-ac15-9a4f94f0c785
 # Remove this cell to use release versions of dependencies 
@@ -25,6 +25,9 @@ begin
     using Soss.MeasureTheory: HalfCauchy
     using SampleChainsDynamicHMC: getchains, dynamichmc
 end
+
+# ╔═╡ 56a39a90-0594-48f4-ba04-f7b612019cd1
+using PlutoUI
 
 # ╔═╡ a23dfd65-50a8-4872-8c41-661e96585aca
 md"""
@@ -561,5 +564,6 @@ with_terminal(versioninfo)
 # ╠═e56ee0c8-bc4a-4b37-bfcc-9ca1c440c1f3
 # ╟─ac2b4378-bd1c-4164-af05-d9a35b1bb08f
 # ╠═56a39a90-0594-48f4-ba04-f7b612019cd1
+# ╠═2c0f3d74-8b1e-4648-b0fa-f8050035b0fd
 # ╠═fd84237a-7a19-4bbb-a702-faa31075ecbc
 # ╠═ad29b7f3-6f5e-4b04-bf70-2308a7d110c0
