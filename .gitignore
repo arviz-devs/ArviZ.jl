@@ -4,5 +4,7 @@
 /deps/deps.jl
 /docs/src/assets/logo*.png
 /docs/src/assets/favicon.ico
+/docs/src/*.log
 /docs/build
+/test/*.log
 .DS_Store
