@@ -2,11 +2,12 @@ using Documenter, ArviZ
 using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
 using SampleChains: SampleChains # make `from_samplechains` available for API docs
 
-const BUILD_ASSETS_DIR = joinpath(@__DIR__, "build", "assets")
+const ASSETS_DIR = joinpath(@__DIR__, "src", "assets")
 const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/sphinx"
 
 function download_asset(remote_fn, fn=remote_fn)
-    return download(joinpath(ARVIZ_ASSETS_URL, remote_fn), joinpath(BUILD_ASSETS_DIR, fn))
+    mkpath(ASSETS_DIR)
+    return download(joinpath(ARVIZ_ASSETS_URL, remote_fn), joinpath(ASSETS_DIR, fn))
 end
 
 makedocs(;

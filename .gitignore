@@ -2,5 +2,7 @@
 *.jl.*.cov
 *.jl.mem
 /deps/deps.jl
+/docs/src/assets/logo*.png
+/docs/src/assets/favicon.ico
 /docs/build
 .DS_Store
