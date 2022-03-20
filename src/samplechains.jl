@@ -20,7 +20,9 @@ _maybe_multichain(x::SampleChains.AbstractChain) = SampleChains.MultiChain(x)
 function _maybe_multichain(x::AbstractVector{<:SampleChains.AbstractChain})
     return SampleChains.MultiChain(x)
 end
-function _maybe_multichain(x::Tuple{Vararg{<:SampleChains.AbstractChain}})
+function _maybe_multichain(
+    x::Tuple{<:SampleChains.AbstractChain,Vararg{<:SampleChains.AbstractChain}}
+)
     return SampleChains.MultiChain(x...)
 end
 
@@ -115,7 +117,7 @@ function convert_to_inference_data(
         SampleChains.AbstractChain,
         SampleChains.MultiChain,
         AbstractVector{<:SampleChains.AbstractChain},
-        Tuple{Vararg{<:SampleChains.AbstractChain}},
+        Tuple{<:SampleChains.AbstractChain,Vararg{<:SampleChains.AbstractChain}},
     },
 }
     group = Symbol(group)
