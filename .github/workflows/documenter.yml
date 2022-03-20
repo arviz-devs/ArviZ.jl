@@ -17,9 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@latest
-        with:
-          version: 1.6
+      - uses: julia-actions/setup-julia@v1
       - name: Cache CmdStan
         id: cache-cmdstan
         uses: actions/cache@v2
