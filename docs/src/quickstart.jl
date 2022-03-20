@@ -244,15 +244,15 @@ And to extract the pointwise log-likelihoods, which is useful if you want to com
 """
 
 # ╔═╡ 5a075722-232f-40fc-a499-8dc5b0c2424a
-loglikelihoods = let
-    loglikelihoods = Turing.pointwise_loglikelihoods(
+log_likelihood = let
+    log_likelihood = Turing.pointwise_loglikelihoods(
         param_mod_turing, MCMCChains.get_sections(turing_chns, :parameters)
     )
     # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
     ynames = string.(keys(posterior_predictive))
-    loglikelihoods_vals = getindex.(Ref(loglikelihoods), ynames)
+    log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
     # Reshape into `(nchains, ndraws, size(y)...)`
-    Dict("y" => permutedims(cat(loglikelihoods_vals...; dims=3), (2, 1, 3)))
+    Dict("y" => permutedims(cat(log_likelihood_y...; dims=3), (2, 1, 3)))
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
@@ -261,10 +261,10 @@ md"This can then be included in the [`from_mcmcchains`](https://arviz-devs.githu
 # ╔═╡ b38c7a43-f00c-43c0-aa6b-9c581d6d0c73
 idata_turing = from_mcmcchains(
     turing_chns;
-    posterior_predictive=posterior_predictive,
-    log_likelihood=loglikelihoods,
-    prior=prior,
-    prior_predictive=prior_predictive,
+    posterior_predictive,
+    log_likelihood,
+    prior,
+    prior_predictive,
     observed_data=Dict("y" => y),
     coords=Dict("school" => schools),
     dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
@@ -337,7 +337,7 @@ begin
         stan_model = Stanmodel(;
             model=schools_code,
             name="schools",
-            nchains=nchains,
+            nchains,
             num_warmup=ndraws_warmup,
             num_samples=ndraws,
             output_format=:mcmcchains,
@@ -400,16 +400,16 @@ First we define our model:
 """
 
 # ╔═╡ 14408abe-a16f-4cc0-a6f3-0bb2645653b7
-constant_data = (J=J, σ=σ);
+constant_data = (; J, σ);
 
 # ╔═╡ 446341da-902e-474b-b6dc-b085ef74a99b
-observed_data = (y=y,);
+observed_data = (; y);
 
 # ╔═╡ 9daec35c-3d6e-443c-87f9-213d51964f75
 model_soss = Soss.@model (J, σ) begin
     μ ~ Soss.Normal(; μ=0, σ=5)
     τ ~ HalfCauchy(; σ=5)
-    θ ~ Soss.Normal(; μ=μ, σ=τ) |> iid(J)
+    θ ~ Soss.Normal(; μ, σ=τ) |> iid(J)
     y ~ For(1:J) do j
         Soss.Normal(; μ=θ[j], σ=σ[j])
     end
@@ -467,8 +467,8 @@ idata_soss = from_samplechains(
     posterior_predictive=postpred,
     prior=prior_priorpred,
     prior_predictive=[:y],
-    observed_data=observed_data,
-    constant_data=constant_data,
+    observed_data,
+    constant_data,
     coords=Dict("school" => schools),
     dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
     library=Soss,
