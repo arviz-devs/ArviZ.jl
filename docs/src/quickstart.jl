@@ -4,8 +4,8 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ fd84237a-7a19-4bbb-a702-faa31075ecbc
-using Pkg
+# ╔═╡ 56a39a90-0594-48f4-ba04-f7b612019cd1
+using Pkg, PlutoUI, InteractiveUtils
 
 # ╔═╡ ac57d957-0bdd-457a-ac15-9a4f94f0c785
 # Remove this cell to use release versions of dependencies 
@@ -487,8 +487,11 @@ end
 # ╔═╡ ac2b4378-bd1c-4164-af05-d9a35b1bb08f
 md"## [Environment](#environment)"
 
-# ╔═╡ bf9c88ab-92d1-4695-b04e-54d92e2c2cba
-Pkg.status()
+# ╔═╡ fd84237a-7a19-4bbb-a702-faa31075ecbc
+with_terminal(Pkg.status)
+
+# ╔═╡ ad29b7f3-6f5e-4b04-bf70-2308a7d110c0
+with_terminal(versioninfo)
 
 # ╔═╡ Cell order:
 # ╟─a23dfd65-50a8-4872-8c41-661e96585aca
@@ -557,5 +560,6 @@ Pkg.status()
 # ╟─bfa2c30f-f50c-45de-bd2a-da199ce67cfb
 # ╠═e56ee0c8-bc4a-4b37-bfcc-9ca1c440c1f3
 # ╟─ac2b4378-bd1c-4164-af05-d9a35b1bb08f
+# ╠═56a39a90-0594-48f4-ba04-f7b612019cd1
 # ╠═fd84237a-7a19-4bbb-a702-faa31075ecbc
-# ╠═bf9c88ab-92d1-4695-b04e-54d92e2c2cba
+# ╠═ad29b7f3-6f5e-4b04-bf70-2308a7d110c0
