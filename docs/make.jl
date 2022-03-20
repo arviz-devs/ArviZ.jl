@@ -1,6 +1,21 @@
-using Documenter, ArviZ
+using Documenter, Downloads, ArviZ
 using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
 using SampleChains: SampleChains # make `from_samplechains` available for API docs
+
+const ASSETS_DIR = joinpath(@__DIR__, "src", "assets")
+const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/sphinx"
+
+function download_asset(remote_fn, fn=remote_fn)
+    mkpath(ASSETS_DIR)
+    return Downloads.download(
+        joinpath(ARVIZ_ASSETS_URL, remote_fn), joinpath(ASSETS_DIR, fn); verbose=true
+    )
+end
+
+# download arviz-devs org logo assets
+download_asset("ArviZ.png", "logo.png")
+download_asset("dark-ArviZ.png", "logo-dark.png")
+download_asset("favicon.ico")
 
 makedocs(;
     modules=[ArviZ],
