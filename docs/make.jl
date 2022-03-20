@@ -26,7 +26,7 @@ makedocs(;
     checkdocs=:exports,
     format=Documenter.HTML(;
         prettyurls=haskey(ENV, "CI"),
-        assets=["assets/favicon.ico"],
+        assets=["assets/favicon.ico", "assets/custom.css"],
         sidebar_sitename=false,
         canonical="stable",
     ),

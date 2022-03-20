@@ -1,0 +1,62 @@
+/* pluto headers with links */
+
+.content h1 a,
+.content h2 a,
+.content h3 a,
+.content h4 a {
+    color: inherit;
+}
+
+html.theme--documenter-dark .content h1 a,
+html.theme--documenter-dark .content h2 a,
+html.theme--documenter-dark .content h3 a,
+html.theme--documenter-dark .content h4 a {
+    color: inherit;
+}
+
+/* pluto admonitions */
+
+.admonition-title {
+    color: #fff;
+    background-color: #363636;
+    align-items: center;
+    font-weight: 700;
+    justify-content: space-between;
+    line-height: 1.25;
+    padding: 0.75em;
+    position: relative;
+}
+
+.admonition.note {
+    background-color: #def0fc;
+    border-color: #209cee;
+}
+
+.admonition.note p {
+    padding: 1em 1.25em;
+    padding-top: inherit;
+}
+
+.admonition.note > .admonition-title {
+    background-color: #209cee;
+    color: #fff;
+}
+
+html.theme--documenter-dark .admonition.note > .admonition-title {
+    background-color: #024c7d;
+}
+
+html.theme--documenter-dark .admonition.note {
+    background-color: #282f2f;
+    border-color: #024c7d;
+}
+
+html.theme--documenter-dark .admonition-title {
+    background-color: #5e6d6f;
+    align-items: center;
+    font-weight: 700;
+    justify-content: space-between;
+    line-height: 1.25;
+    padding: 0.75em;
+    position: relative;
+}
