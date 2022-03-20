@@ -12,6 +12,11 @@ function download_asset(remote_fn, fn=remote_fn)
     )
 end
 
+# download arviz-devs org logo assets
+download_asset("ArviZ.png", "logo.png")
+download_asset("dark-ArviZ.png", "logo-dark.png")
+download_asset("favicon.ico")
+
 makedocs(;
     modules=[ArviZ],
     sitename="ArviZ.jl",
@@ -33,10 +38,5 @@ makedocs(;
     linkcheck=true,
     analytics="G-W1G68W77YV",
 )
-
-# download arviz-devs org assets
-download_asset("ArviZ.png", "logo.png")
-download_asset("dark-ArviZ.png", "logo-dark.png")
-download_asset("favicon.ico")
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)
