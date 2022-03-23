@@ -61,7 +61,7 @@ end
                     idata = from_samplechains(; group => chaindata, kwargs...)
                     idata_nt = from_namedtuple(; group => nts, kwargs...)
                 end
-                idata_conv = convert_to_inference_data(chaindata; group=group, kwargs...)
+                idata_conv = convert_to_inference_data(chaindata; group, kwargs...)
                 map((idata, idata_conv)) do _idata
                     test_namedtuple_data(
                         _idata, group, propertynames(multichain), nchains, ndraws; kwargs...

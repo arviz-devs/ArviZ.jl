@@ -46,7 +46,7 @@ function psislw(logw, reff=1)
     log_weights = result.log_weights
     d = ndims(log_weights)
     dims = d == 1 ? Colon() : ntuple(Base.Fix1(+, 1), d - 1)
-    log_norm_exp = logsumexp(log_weights; dims=dims)
+    log_norm_exp = logsumexp(log_weights; dims)
     log_weights .-= log_norm_exp
     return log_weights, result.pareto_shape
 end
@@ -143,10 +143,10 @@ function StatsBase.summarystats(data::InferenceData; group=:posterior, kwargs...
     return summarystats(dataset; kwargs...)
 end
 function StatsBase.summarystats(data::Dataset; fmt=:wide, kwargs...)
-    s = arviz.summary(data; fmt=fmt, kwargs...)
+    s = arviz.summary(data; fmt, kwargs...)
     s isa Dataset && return s
     index_name = Symbol(fmt) == :long ? :statistic : :variable
-    return todataframes(s; index_name=index_name)
+    return todataframes(s; index_name)
 end
 
 """
@@ -168,6 +168,6 @@ Compute summary statistics on any object that can be passed to [`convert_to_data
   - `kwargs`: Keyword arguments passed to [`summarystats`](@ref).
 """
 function summary(data; group=:posterior, coords=nothing, dims=nothing, kwargs...)
-    dataset = convert_to_dataset(data; group=group, coords=coords, dims=dims)
+    dataset = convert_to_dataset(data; group, coords, dims)
     return summarystats(dataset; kwargs...)
 end

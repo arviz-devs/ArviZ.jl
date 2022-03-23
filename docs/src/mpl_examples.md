@@ -422,7 +422,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 idata = load_arviz_data("non_centered_eight")
-plot_loo_pit(; idata=idata, y="obs", color="indigo")
+plot_loo_pit(; idata, y="obs", color="indigo")
 
 gcf()
 ```
@@ -475,7 +475,7 @@ ArviZ.use_style("arviz-darkgrid")
 centered = load_arviz_data("centered_eight")
 coords = Dict("school" => ["Choate", "Deerfield"])
 plot_pair(
-    centered; var_names=["theta", "mu", "tau"], coords=coords, divergences=true, textsize=22
+    centered; var_names=["theta", "mu", "tau"], coords, divergences=true, textsize=22
 )
 
 gcf()
@@ -498,7 +498,7 @@ plot_pair(
     centered;
     var_names=["theta", "mu", "tau"],
     kind="hexbin",
-    coords=coords,
+    coords,
     colorbar=true,
     divergences=true,
 )
@@ -523,7 +523,7 @@ plot_pair(
     centered;
     var_names=["theta", "mu", "tau"],
     kind="kde",
-    coords=coords,
+    coords,
     divergences=true,
     textsize=22,
 )
@@ -550,7 +550,7 @@ plot_pair(
     kind=["scatter", "kde"],
     kde_kwargs=Dict("fill_last" => false),
     marginals=true,
-    coords=coords,
+    coords,
     point_estimate="median",
     figsize=(10, 8),
 )
@@ -590,7 +590,7 @@ ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("centered_eight")
 coords = Dict("school" => ["Choate"])
-plot_posterior(data; var_names=["mu", "theta"], coords=coords, rope=(-1, 1))
+plot_posterior(data; var_names=["mu", "theta"], coords, rope=(-1, 1))
 
 gcf()
 ```

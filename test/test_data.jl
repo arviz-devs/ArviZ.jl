@@ -162,12 +162,12 @@ end
     posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
     prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2))
 
-    idata = from_dict(posterior; prior=prior)
+    idata = from_dict(posterior; prior)
     @test check_multiple_attrs(
         Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), idata
     ) == []
 
-    idata2 = from_dict(; prior=prior)
+    idata2 = from_dict(; prior)
     @test check_multiple_attrs(Dict(:prior => ["C", "D"]), idata2) == []
 end
 

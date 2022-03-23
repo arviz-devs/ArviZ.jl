@@ -58,7 +58,7 @@ function cmdstan_noncentered_schools(data, draws, chains; tmpdir=joinpath(pwd(),
         num_warmup=draws,
         num_samples=draws,
         output_format=:mcmcchains,
-        tmpdir=tmpdir,
+        tmpdir,
     )
     rc, chns, cnames = stan(stan_model, data; summary=false)
     outfiles = ["$(tmpdir)/$(model_name)_samples_$(i).csv" for i in 1:chains]
@@ -116,8 +116,8 @@ end
         dims = Dict("a" => ["ai"], "b" => ["bi"])
         nchains, ndraws = 4, 20
         chns = makechains(names, ndraws, nchains)
-        idata = from_mcmcchains(chns; coords=coords, dims=dims)
-        test_chains_data(chns, idata, :posterior, ["a", "b"]; coords=coords, dims=dims)
+        idata = from_mcmcchains(chns; coords, dims)
+        test_chains_data(chns, idata, :posterior, ["a", "b"]; coords, dims)
         vardims = dimdict(idata.posterior)
         @test vardims["a"] == ("chain", "draw", "ai")
         @test vardims["b"] == ("chain", "draw", "bi")
@@ -133,8 +133,8 @@ end
         # String or Symbol, which depends on MCMCChains version
         ET = Base.promote_typeof(chns.name_map.parameters...)
 
-        idata = from_mcmcchains(chns; coords=coords, dims=dims)
-        test_chains_data(chns, idata, :posterior, ["a"]; coords=coords, dims=dims)
+        idata = from_mcmcchains(chns; coords, dims)
+        test_chains_data(chns, idata, :posterior, ["a"]; coords, dims)
         arr = vardict(idata.posterior)["a"]
         @test arr[:, :, 1, 1] == permutedims(chns.value[:, ET(names[1]), :], [2, 1])
         @test arr[:, :, 2, 2] == permutedims(chns.value[:, ET(names[2]), :], [2, 1])
@@ -149,16 +149,16 @@ end
         domains = [Float64, (0, 1), 1:3]
         post = makechains(names, ndraws, nchains, domains)
         prior = makechains(names, ndraws, nchains, domains)
-        post_pred = makechains(["d"], ndraws, nchains, [(0, 1)])
+        posterior_predictive = makechains(["d"], ndraws, nchains, [(0, 1)])
         idata = from_mcmcchains(
             post;
-            prior=prior,
-            posterior_predictive=post_pred,
+            prior,
+            posterior_predictive,
             eltypes=Dict("y" => Bool, "z" => Int, "d" => Bool),
         )
         test_chains_data(post, idata, :posterior)
         test_chains_data(prior, idata, :prior)
-        test_chains_data(post_pred, idata, :posterior_predictive)
+        test_chains_data(posterior_predictive, idata, :posterior_predictive)
         @test eltype(idata.posterior[:y].values) <: Bool
         @test eltype(idata.posterior[:z].values) <: Int64
         @test eltype(idata.prior[:y].values) <: Bool
@@ -166,10 +166,7 @@ end
         @test eltype(idata.posterior_predictive[:d].values) <: Bool
 
         idata2 = from_mcmcchains(
-            post;
-            prior=prior,
-            posterior_predictive=["y"],
-            eltypes=Dict("y" => Bool, "z" => Int),
+            post; prior, posterior_predictive=["y"], eltypes=Dict("y" => Bool, "z" => Int)
         )
         test_chains_data(post, idata2, :posterior, ["x", "z"])
         test_chains_data(prior, idata2, :prior)
@@ -206,9 +203,9 @@ end
             predictions="zhat",
             prior=chns2,
             prior_predictive="ahat",
-            observed_data=observed_data,
-            constant_data=constant_data,
-            predictions_constant_data=predictions_constant_data,
+            observed_data,
+            constant_data,
+            predictions_constant_data,
             log_likelihood="log_lik",
         )
         for group in (
@@ -255,7 +252,7 @@ end
         nvars, nchains, ndraws = 2, 4, 20
         chns = makechains(nvars, ndraws, nchains)
         prior_predictive = randn(nchains, ndraws, 1)
-        idata = from_mcmcchains(chns; prior_predictive=prior_predictive)
+        idata = from_mcmcchains(chns; prior_predictive)
         test_chains_data(chns, idata, :posterior, names(chns))
         @test :prior_predictive ∈ ArviZ.groupnames(idata)
         @test idata.prior_predictive.x.values ≈ prior_predictive
@@ -355,21 +352,21 @@ end
         )
         idata1 = from_cmdstan(
             output.chains;
-            posterior_predictive=posterior_predictive,
-            log_likelihood=log_likelihood,
+            posterior_predictive,
+            log_likelihood,
             prior=output.chains,
-            prior_predictive=prior_predictive,
-            coords=coords,
-            dims=dims,
+            prior_predictive,
+            coords,
+            dims,
         )
         idata2 = from_cmdstan(
             output.files;
-            posterior_predictive=posterior_predictive,
-            log_likelihood=log_likelihood,
+            posterior_predictive,
+            log_likelihood,
             prior=output.files,
-            prior_predictive=prior_predictive,
-            coords=coords,
-            dims=dims,
+            prior_predictive,
+            coords,
+            dims,
         )
         @testset "idata.$(group)" for group in Symbol.(idata2._groups)
             ds1 = getproperty(idata1, group)

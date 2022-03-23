@@ -115,7 +115,7 @@ function _from_dict(posterior=nothing; attrs=Dict(), coords=nothing, dims=nothin
     datasets = []
     for (name, dict) in pairs(dicts)
         (dict === nothing || isempty(dict)) && continue
-        dataset = dict_to_dataset(dict; attrs=attrs, coords=coords, dims=dims)
+        dataset = dict_to_dataset(dict; attrs, coords, dims)
         push!(datasets, name => dataset)
     end
 

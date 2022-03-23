@@ -186,7 +186,7 @@ function from_namedtuple(
             prior;
             posterior_predictive=prior_predictive,
             sample_stats=sample_stats_prior,
-            library=library,
+            library,
             kwargs...,
         )
         prior_idata = rekey(
@@ -207,7 +207,7 @@ function from_namedtuple(
     ]
         group_data === nothing && continue
         group_dict = Dict(pairs(group_data))
-        group_dataset = convert_to_constant_dataset(group_dict; library=library, kwargs...)
+        group_dataset = convert_to_constant_dataset(group_dict; library, kwargs...)
         concat!(all_idata, InferenceData(; group => group_dataset))
     end
 
