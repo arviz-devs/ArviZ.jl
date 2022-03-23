@@ -49,12 +49,12 @@ function create_model(seed=10)
         "diverging" => Int.(randn(rng, nchains, ndraws) .> 0.95),
     )
     model = from_dict(;
-        posterior=posterior,
-        posterior_predictive=posterior_predictive,
-        sample_stats=sample_stats,
-        prior=prior,
-        prior_predictive=prior_predictive,
-        sample_stats_prior=sample_stats_prior,
+        posterior,
+        posterior_predictive,
+        sample_stats,
+        prior,
+        prior_predictive,
+        sample_stats_prior,
         observed_data=Dict("y" => data["y"]),
         dims=Dict("y" => ["obs_dim"], "log_likelihood" => ["obs_dim"]),
         coords=Dict("obs_dim" => 1:J),

@@ -86,7 +86,7 @@ convert_to_dataset
 
 function convert_to_dataset(obj; group=:posterior, kwargs...)
     group = Symbol(group)
-    idata = convert_to_inference_data(obj; group=group, kwargs...)
+    idata = convert_to_inference_data(obj; group, kwargs...)
     dataset = getproperty(idata, group)
     return dataset
 end
@@ -126,7 +126,7 @@ function convert_to_constant_dataset(
         vals = _asarray(vals)
         val_dims = get(dims, key, nothing)
         (val_dims, val_coords) = base.generate_dims_coords(
-            size(vals), key; dims=val_dims, coords=coords
+            size(vals), key; dims=val_dims, coords
         )
         data[key] = xarray.DataArray(vals; dims=val_dims, coords=val_coords)
     end
@@ -136,7 +136,7 @@ function convert_to_constant_dataset(
         default_attrs = merge(default_attrs, Dict("inference_library" => string(library)))
     end
     attrs = merge(default_attrs, attrs)
-    return Dataset(; data_vars=data, coords=coords, attrs=attrs)
+    return Dataset(; data_vars=data, coords, attrs)
 end
 
 @doc doc"""
@@ -167,7 +167,7 @@ function dict_to_dataset(data; library=nothing, attrs=Dict(), kwargs...)
     if library !== nothing
         attrs = merge(attrs, Dict("inference_library" => string(library)))
     end
-    return arviz.dict_to_dataset(data; attrs=attrs, kwargs...)
+    return arviz.dict_to_dataset(data; attrs, kwargs...)
 end
 
 @doc doc"""
