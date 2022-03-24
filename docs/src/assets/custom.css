@@ -14,6 +14,7 @@ html.theme--documenter-dark .content h4 a {
     color: inherit;
 }
 
+
 /* pluto admonitions */
 
 .admonition-title {
@@ -37,12 +38,12 @@ html.theme--documenter-dark .content h4 a {
     padding-top: 0.75em;
 }
 
-.admonition.note > .admonition-title {
+.admonition.note>.admonition-title {
     background-color: #209cee;
     color: #fff;
 }
 
-html.theme--documenter-dark .admonition.note > .admonition-title {
+html.theme--documenter-dark .admonition.note>.admonition-title {
     background-color: #024c7d;
 }
 
@@ -61,8 +62,13 @@ html.theme--documenter-dark .admonition-title {
     position: relative;
 }
 
+
 /* override PlutoStaticHTML's margin settings for some divs */
-.xr-header, .xr-section-inline-details, .xr-section-details, .docs-sidebar div {
+
+.xr-header,
+.xr-section-inline-details,
+.xr-section-details,
+.docs-sidebar div {
     margin-top: inherit !important;
     margin-bottom: inherit !important;
 }
