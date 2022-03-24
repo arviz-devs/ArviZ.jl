@@ -60,3 +60,9 @@ html.theme--documenter-dark .admonition-title {
     padding: 0.75em;
     position: relative;
 }
+
+/* override PlutoStaticHTML's margin settings for some divs */
+.xr-header, .xr-section-inline-details, .xr-section-details .docs-sidebar div {
+    margin-top: inherit !important;
+    margin-bottom: inherit !important;
+}
