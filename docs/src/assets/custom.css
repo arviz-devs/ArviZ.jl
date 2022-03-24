@@ -62,7 +62,7 @@ html.theme--documenter-dark .admonition-title {
 }
 
 /* override PlutoStaticHTML's margin settings for some divs */
-.xr-header, .xr-section-inline-details, .xr-section-details .docs-sidebar div {
+.xr-header, .xr-section-inline-details, .xr-section-details, .docs-sidebar div {
     margin-top: inherit !important;
     margin-bottom: inherit !important;
 }
