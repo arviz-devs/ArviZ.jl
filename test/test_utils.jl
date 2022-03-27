@@ -67,8 +67,8 @@ pandas = ArviZ.pandas
 
         @testset "DataFrames.DataFrame -> ELPDData" begin
             idata = load_arviz_data("centered_eight")
-            df = loo(idata)
-            elpd_data = ArviZ.arviz.loo(idata)
+            df = loo(idata; pointwise=false)
+            elpd_data = ArviZ.arviz.loo(idata; pointwise=false)
             @test all(df == ArviZ.todataframes(elpd_data))
             ps = ArviZ.topandas(Val(:ELPDData), df)
             @test pyisinstance(ps, ArviZ.arviz.stats.ELPDData)
