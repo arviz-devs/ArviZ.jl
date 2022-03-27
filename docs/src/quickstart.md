@@ -206,7 +206,7 @@ idata = from_mcmcchains(
 Then we can for example compute the expected *leave-one-out (LOO)* predictive density, which is an estimate of the out-of-distribution predictive fit of the model:
 
 ```@example turing
-loo(idata) # higher is better
+loo(idata; pointwise=false) # higher is better
 ```
 
 If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a uniform distribution.
