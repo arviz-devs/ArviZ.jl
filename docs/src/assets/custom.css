@@ -1,3 +1,7 @@
+#documenter .docs-sidebar .docs-logo>img {
+    max-height: 8rem;
+}
+
 /* pluto headers with links */
 
 .content h1 a,
