@@ -3,7 +3,7 @@
 *.jl.mem
 /deps/deps.jl
 /docs/src/assets/logo*.png
-/docs/src/assets/favicon.ico
+/docs/src/assets/favicon.png
 /docs/src/*.log
 /docs/build
 /test/*.log
