@@ -2,6 +2,8 @@
 *.jl.*.cov
 *.jl.mem
 /deps/deps.jl
+/docs/src/quickstart.md
+/docs/src/*.log
 /docs/src/assets/logo*.png
 /docs/src/assets/favicon.ico
 /docs/src/*.log
