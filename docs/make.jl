@@ -31,10 +31,7 @@ makedocs(;
     checkdocs=:exports,
     format=Documenter.HTML(;
         prettyurls=haskey(ENV, "CI"),
-        assets=[
-            asset("assets/favicon.png"; class=:ico, islocal=true),
-            "assets/custom.css",
-        ],
+        assets=["assets/favicon.png", "assets/custom.css"],
         sidebar_sitename=false,
         canonical="stable",
     ),
