@@ -31,11 +31,12 @@ html.theme--documenter-dark .content h4 a {
 .admonition.note {
     background-color: #def0fc;
     border-color: #209cee;
+    margin-bottom: 1.5rem;
 }
 
 .admonition.note p {
     padding: 1em 1.25em;
-    padding-top: 0.75em;
+    padding-top: 0em;
 }
 
 .admonition.note>.admonition-title {
