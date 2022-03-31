@@ -16,7 +16,7 @@ build_opts = PlutoStaticHTML.BuildOptions(
 PlutoStaticHTML.build_notebooks(build_opts)
 
 const ASSETS_DIR = joinpath(@__DIR__, "src", "assets")
-const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/sphinx"
+const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/arviz_logos"
 
 function download_asset(remote_fn, fn=remote_fn)
     mkpath(ASSETS_DIR)
@@ -27,7 +27,7 @@ end
 
 # download arviz-devs org logo assets
 download_asset("ArviZ.png", "logo.png")
-download_asset("dark-ArviZ.png", "logo-dark.png")
+download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
 makedocs(;
