@@ -14,8 +14,8 @@ end
 
 # download arviz-devs org logo assets
 download_asset("ArviZ.png", "logo.png")
-download_asset("dark-ArviZ.png", "logo-dark.png")
-download_asset("favicon.ico")
+download_asset("ArviZ_white.png", "logo-dark.png")
+download_asset("ArviZ_fav.png", "favicon.png")
 
 makedocs(;
     modules=[ArviZ],
@@ -31,7 +31,7 @@ makedocs(;
     checkdocs=:exports,
     format=Documenter.HTML(;
         prettyurls=haskey(ENV, "CI"),
-        assets=["assets/favicon.ico"],
+        assets=["assets/favicon.png"],
         sidebar_sitename=false,
         canonical="stable",
     ),
