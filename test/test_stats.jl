@@ -42,9 +42,8 @@ using DataFrames: DataFrames
 
             # check against Python ArviZ
             logw_smoothed2, k2 = ArviZ.arviz.psislw(copy(logw), 0.9)
-            # NOTE: currently the smoothed weights disagree, while the shapes agree
-            # see https://github.com/arviz-devs/arviz/issues/1941
-            @test_broken logw_smoothed ≈ logw_smoothed2
+            # NOTE: sometimes the smoothed weights disagree, while the shapes agree
+            @test_skip logw_smoothed ≈ logw_smoothed2
             if length(sz) == 1
                 @test k ≈ k2[] # k2 is a 0-dimensional array
             else
