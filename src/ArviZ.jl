@@ -89,7 +89,7 @@ export with_interactive_backend
 ## rcParams
 export rcParams, with_rc_context
 
-const _min_arviz_version = v"0.11.3"
+const _min_arviz_version = v"0.12.0"
 const arviz = PyNULL()
 const xarray = PyNULL()
 const bokeh = PyNULL()
