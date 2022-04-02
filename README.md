@@ -16,12 +16,12 @@ See the [documentation](https://arviz-devs.github.io/ArviZ.jl/stable) for detail
 ## Contributions
 
 ArviZ is a community project and welcomes contributions.
-Additional information can be found in the [Contributing Readme](https://github.com/arviz-devs/ArviZ.jl/blob/main/CONTRIBUTING.md)
+Additional information can be found in the [Contributing Readme](https://github.com/arviz-devs/ArviZ.jl/blob/main/CONTRIBUTING.md).
 
 ## Code of Conduct
 
 ArviZ wishes to maintain a positive community.
-Additional details can be found in the [Code of Conduct](https://github.com/arviz-devs/ArviZ.jl/blob/main/CODE_OF_CONDUCT.md)
+Additional details can be found in the [Code of Conduct](https://github.com/arviz-devs/ArviZ.jl/blob/main/CODE_OF_CONDUCT.md).
 
 ## Sponsors
 
