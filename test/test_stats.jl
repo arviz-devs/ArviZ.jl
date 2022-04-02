@@ -25,9 +25,9 @@ using DataFrames: DataFrames
     end
 
     @testset "loo" begin
-        df = loo(idata)
+        df = loo(idata; pointwise=false)
         @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(ArviZ.arviz.loo(idata)))
+        @test all(df == ArviZ.todataframes(ArviZ.arviz.loo(idata; pointwise=false)))
     end
 
     @testset "psislw" begin
@@ -54,9 +54,9 @@ using DataFrames: DataFrames
     end
 
     @testset "waic" begin
-        df = waic(idata)
+        df = waic(idata; pointwise=false)
         @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(ArviZ.arviz.waic(idata)))
+        @test all(df == ArviZ.todataframes(ArviZ.arviz.waic(idata; pointwise=false)))
     end
 
     @testset "loo_pit" begin
