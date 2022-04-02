@@ -4,6 +4,7 @@
 @forwardplotfun plot_density
 @forwardplotfun plot_dist
 @forwardplotfun plot_dist_comparison
+@forwardplotfun plot_ecdf
 @forwardplotfun plot_elpd
 @forwardplotfun plot_energy
 @forwardplotfun plot_ess
