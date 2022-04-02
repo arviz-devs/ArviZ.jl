@@ -5,10 +5,10 @@ These guidelines are provided to give potential contributors information to make
 
 There are 4 main ways of contributing to the ArviZ.jl project (in descending order of difficulty or scope):
 
-  - Adding new or improved functionality to the existing codebase.
+  - Adding new or improved functionality to the existing codebase
   - Fixing outstanding issues (bugs) with the existing codebase. They range from low-level software bugs to higher-level design problems.
-  - Contributing or improving the documentation (`docs`) or examples.
-  - Submitting issues related to bugs or desired enhancements.
+  - Contributing or improving the documentation (`docs`) or examples
+  - Submitting issues related to bugs or desired enhancements
 
 # Opening issues
 
