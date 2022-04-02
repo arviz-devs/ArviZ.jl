@@ -64,20 +64,21 @@
 
 ## [Data](@id data-api)
 
-| Name                                | Description                                          |
-|:----------------------------------- |:---------------------------------------------------- |
-| [`InferenceData`](@ref)             | Container for inference data storage using xarray.   |
-| [`convert_to_inference_data`](@ref) | Convert a supported object to an `InferenceData`.    |
-| [`load_arviz_data`](@ref)           | Load a local or remote pre-made dataset.             |
-| [`to_netcdf`](@ref)                 | Save dataset as a netcdf file.                       |
-| [`from_netcdf`](@ref)               | Load netcdf file back into an `InferenceData`.       |
-| [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`.   |
-| [`from_dict`](@ref)                 | Convert `Dict` data into an `InferenceData`.         |
-| [`from_cmdstan`](@ref)              | Convert CmdStan data into an `InferenceData`.        |
-| [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`.   |
-| [`from_samplechains`](@ref)         | Convert `SampleChains` data into an `InferenceData`. |
-| [`concat`](@ref)                    | Concatenate `InferenceData` objects.                 |
-| [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.        |
+| Name                                | Description                                                             |
+|:----------------------------------- |:----------------------------------------------------------------------- |
+| [`InferenceData`](@ref)             | Container for inference data storage using xarray.                      |
+| [`convert_to_inference_data`](@ref) | Convert a supported object to an `InferenceData`.                       |
+| [`load_arviz_data`](@ref)           | Load a local or remote pre-made dataset.                                |
+| [`extract_dataset`](@ref)           | Extract an `InferenceData` group or subset of it as an `ArviZ.Dataset`. |            |
+| [`to_netcdf`](@ref)                 | Save dataset as a netcdf file.                                          |
+| [`from_netcdf`](@ref)               | Load netcdf file back into an `InferenceData`.                          |
+| [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`.                      |
+| [`from_dict`](@ref)                 | Convert `Dict` data into an `InferenceData`.                            |
+| [`from_cmdstan`](@ref)              | Convert CmdStan data into an `InferenceData`.                           |
+| [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`.                      |
+| [`from_samplechains`](@ref)         | Convert `SampleChains` data into an `InferenceData`.                    |
+| [`concat`](@ref)                    | Concatenate `InferenceData` objects.                                    |
+| [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.                           |
 
 ## [Utils](@id utils-api)
 
