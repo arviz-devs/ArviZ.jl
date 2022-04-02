@@ -108,7 +108,7 @@ using PyCall, PyPlot
         end
     end
 
-    @testset "$(f)" for f in (plot_dist, plot_kde)
+    @testset "$(f)" for f in (plot_dist, plot_kde, ArviZ.plot_ecdf)
         f(arr1)
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin

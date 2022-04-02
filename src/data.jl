@@ -45,6 +45,8 @@ end
 
 Base.delete!(data::InferenceData, name) = PyObject(data).__delattr__(string(name))
 
+@forwardfun extract_dataset
+
 function (data1::InferenceData + data2::InferenceData)
     return InferenceData(PyObject(data1) + PyObject(data2))
 end

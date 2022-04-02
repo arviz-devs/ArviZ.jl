@@ -1,6 +1,14 @@
 import_arviz() = _import_dependency("arviz", "arviz"; channel="conda-forge")
 
-arviz_version() = VersionNumber(arviz.__version__)
+function arviz_version()
+    v = arviz.__version__
+    try
+        VersionNumber(v)
+    catch ArgumentError
+        v, suff = splitext(v)
+        return VersionNumber(v * suff[2:end])
+    end
+end
 
 function check_needs_update(; update=true)
     if arviz_version() < _min_arviz_version

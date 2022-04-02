@@ -83,6 +83,16 @@ end
     ) == []
 end
 
+@testset "extract_dataset" begin
+    data = load_arviz_data("centered_eight")
+    post = extract_dataset(data, :posterior; combined=false)
+    @test post isa ArviZ.Dataset
+    @test post.to_dict()["data_vars"] == data.posterior.to_dict()["data_vars"]
+    prior = extract_dataset(data, :prior; combined=false)
+    @test prior isa ArviZ.Dataset
+    @test prior.to_dict()["data_vars"] == data.prior.to_dict()["data_vars"]
+end
+
 @testset "concat" begin
     rng = MersenneTwister(42)
     idata1 = from_dict(;

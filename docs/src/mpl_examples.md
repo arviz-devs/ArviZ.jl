@@ -386,7 +386,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 idata = load_arviz_data("radon")
-loo_data = loo(idata; pointwise=true)
+loo_data = loo(idata)
 plot_khat(loo_data; show_bins=true)
 
 gcf()
