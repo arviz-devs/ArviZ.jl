@@ -277,7 +277,7 @@ Then we can for example compute the expected *leave-one-out (LOO)* predictive de
 """
 
 # ╔═╡ f552b5b5-9744-41df-af90-46405367ea0b
-loo(idata; pointwise=false) # higher is better
+loo(idata_turing; pointwise=false) # higher is better
 
 # ╔═╡ 9d3673f5-b57b-432e-944a-70b23643128a
 md"""
