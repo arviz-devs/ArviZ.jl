@@ -1,7 +1,7 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.5.18"
+version = "0.5.19"
 
 [deps]
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
