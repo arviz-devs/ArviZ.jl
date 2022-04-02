@@ -45,7 +45,7 @@ For code generally follow the [Julia style guide](https://docs.julialang.org/en/
 Before submission, final formatting should be done with
 [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl).
 For more detailed steps on a typical development workflow see the
-[Pull request checklist](#pull-request-checklist)
+[Pull request checklist](#pull-request-checklist).
 
 ### Docstring formatting
 
@@ -113,9 +113,9 @@ We recommend that your contribution complies with the following guidelines befor
     WIPs may be useful to (1) indicate you are working on something to avoid duplicated work, (2) request broad review of functionality or API, or (3) seek collaborators.
   - All other tests pass when everything is rebuilt from scratch.
   - Documentation and high-coverage tests are necessary for enhancements to be accepted.
-  - Documentation follows BlueStyle guide
+  - Documentation follows BlueStyle guide.
   - Code coverage **cannot** decrease.
-    Coverage is automatically checked on all pull requests
+    Coverage is automatically checked on all pull requests.
   - Your code and documentation has been formatted with [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) with BlueStyle.
     _From the ArviZ.jl repo_, execute
 
