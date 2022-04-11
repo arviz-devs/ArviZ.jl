@@ -2,7 +2,7 @@
 
 !!! note
     
-    These examples are adapted from [ArviZ's matplotlib gallery](https://arviz-devs.github.io/arviz/examples/index.html#matplotlib).
+    These examples are adapted from [ArviZ's matplotlib gallery](https://python.arviz.org/en/latest/examples/index.html#matplotlib).
 
 ## Autocorrelation Plot
 

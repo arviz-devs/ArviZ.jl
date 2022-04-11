@@ -2,4 +2,4 @@
 
 !!! note
     
-    See [ArviZ's bokeh gallery](https://arviz-devs.github.io/arviz/examples/index.html#bokeh) for examples.
+    See [ArviZ's bokeh gallery](https://python.arviz.org/en/latest/examples/index.html#bokeh) for examples.

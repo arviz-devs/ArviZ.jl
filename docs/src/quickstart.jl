@@ -35,7 +35,7 @@ md"""
 
 !!! note
     
-    This tutorial is adapted from [ArviZ's quickstart](https://arviz-devs.github.io/arviz/getting_started/Introduction.html).
+    This tutorial is adapted from [ArviZ's quickstart](https://python.arviz.org/en/latest/getting_started/Introduction.html).
 """
 
 # ╔═╡ d2eedd48-48c6-4fcd-b179-6be7fe68d3d6
@@ -166,7 +166,7 @@ md"""
 For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert `Chains` objects to xarray datasets.
 Note we are also giving some information about labelling.
 
-ArviZ is built to work with [`InferenceData`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.InferenceData) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
+ArviZ is built to work with [`InferenceData`](https://julia.arviz.org/stable/reference/#ArviZ.InferenceData) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
 """
 
 # ╔═╡ 803efdd8-656e-4e37-ba36-81195d064972
@@ -179,7 +179,7 @@ idata_turing_post = from_mcmcchains(
 
 # ╔═╡ 79f342c8-0738-432b-bfd7-2da25e50fa91
 md"""
-Each group is an [`ArviZ.Dataset`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.Dataset) (a thinly wrapped `xarray.Dataset`).
+Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/stable/reference/#ArviZ.Dataset) (a thinly wrapped `xarray.Dataset`).
 We can view a summary of the dataset.
 """
 
@@ -240,7 +240,7 @@ end;
 
 # ╔═╡ 4d2fdcbe-c1d4-43b6-b382-f2e956b952a1
 md"""
-And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.loo),
+And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](https://julia.arviz.org/stable/reference/#ArviZ.loo),
 """
 
 # ╔═╡ 5a075722-232f-40fc-a499-8dc5b0c2424a
@@ -256,7 +256,7 @@ log_likelihood = let
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
-md"This can then be included in the [`from_mcmcchains`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.from_mcmcchains) call from above:"
+md"This can then be included in the [`from_mcmcchains`](https://julia.arviz.org/stable/reference/#ArviZ.from_mcmcchains) call from above:"
 
 # ╔═╡ b38c7a43-f00c-43c0-aa6b-9c581d6d0c73
 idata_turing = from_mcmcchains(
@@ -358,7 +358,7 @@ end
 # ╔═╡ ffc7730c-d861-48e8-b173-b03e0542f32b
 md"""
 Again, converting to `InferenceData`, we can get much richer labelling and mixing of data.
-Note that we're using the same [`from_cmdstan`](https://arviz-devs.github.io/ArviZ.jl/stable/reference/#ArviZ.from_cmdstan) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to `from_mcmcchains`.
+Note that we're using the same [`from_cmdstan`](https://julia.arviz.org/stable/reference/#ArviZ.from_cmdstan) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to `from_mcmcchains`.
 """
 
 # ╔═╡ 020cbdc0-a0a2-4d20-838f-c99b541d5832

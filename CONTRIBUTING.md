@@ -24,9 +24,9 @@ This is particularly the case for simple fixes, such as typos or tweaks to docum
 of time and attention.
 
 Contributors are also encouraged to contribute new code to enhance ArviZ.jl's functionality, also via pull requests.
-Please consult the [ArviZ.jl documentation](https://arviz-devs.github.io/ArviZ.jl/) to ensure that any new contribution does not strongly overlap with existing functionality.
+Please consult the [ArviZ.jl documentation](https://julia.arviz.org/) to ensure that any new contribution does not strongly overlap with existing functionality.
 
-In general, new analysis tools such as plots, statistics, and diagnostics should be contributed directly to [ArviZ](https://arviz-devs.github.io/arviz/).
+In general, new analysis tools such as plots, statistics, and diagnostics should be contributed directly to [ArviZ](https://python.arviz.org/).
 Julia-specific tools such as improvements to the API, documentation, custom types, conversion functions, and interfaces with other Julia packages should be added to ArviZ.jl.
 
 The preferred workflow for contributing to ArviZ.jl is to fork
