@@ -18,7 +18,7 @@ It also allows smoother usage with [PyPlot.jl](https://github.com/JuliaPy/PyPlot
 
 ## [Installation](@id installation)
 
-To use with the default Python environment, first [install ArviZ](https://github.com/arviz-devs/arviz#installation).
+To use with the default Python environment, first [install ArviZ](https://python.arviz.org/en/latest/getting_started/Installation.html).
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run
 
 ```
