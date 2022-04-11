@@ -1,5 +1,5 @@
-<img src="https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/arviz_logos/ArviZ.png#gh-light-mode-only" width=200></img>
-<img src="https://raw.githubusercontent.com/arviz-devs/arviz_governance/main/arviz_logos/ArviZ_white.png#gh-dark-mode-only" width=200></img>
+<img src="https://raw.githubusercontent.com/arviz-devs/arviz-project/main/arviz_logos/ArviZ.png#gh-light-mode-only" width=200></img>
+<img src="https://raw.githubusercontent.com/arviz-devs/arviz-project/main/arviz_logos/ArviZ_white.png#gh-dark-mode-only" width=200></img>
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![CI](https://github.com/arviz-devs/ArviZ.jl/workflows/CI/badge.svg)](https://github.com/arviz-devs/ArviZ.jl/actions/workflows/ci.yml?query=branch%3Amain)
