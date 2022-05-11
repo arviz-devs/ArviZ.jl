@@ -5,8 +5,13 @@ using DataFrames: DataFrames
 
     @testset "compare" begin
         idata2 = load_arviz_data("non_centered_eight")
-        df = compare(Dict("a" => idata, "b" => idata2))
+        model_dict = Dict("a" => idata, "b" => idata2)
+        loo_dict = Dict("a" => loo(idata), "b" => loo(idata2))
+        df = compare(model_dict)
         @test df isa DataFrames.DataFrame
+        df2 = compare(loo_dict)
+        @test df2 isa DataFrames.DataFrame
+        @test df == df2
     end
 
     @testset "hdi" begin
