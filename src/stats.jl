@@ -13,6 +13,14 @@ for f in (:loo, :waic)
         end
     end
 end
+function convert_arguments(::typeof(compare), data, args...; kwargs...)
+    dict = Dict(k => try
+        topandas(Val(:ELPDData), v)
+    catch
+        convert_to_inference_data(v)
+    end for (k, v) in pairs(data))
+    return tuple(dict, args...), kwargs
+end
 
 convert_result(::typeof(loo), result) = todataframes(result)
 convert_result(::typeof(waic), result) = todataframes(result)
