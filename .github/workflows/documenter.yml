@@ -10,7 +10,6 @@ env:
   CMDSTAN_VERSION: "2.25.0"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
   JULIA_NUM_THREADS: 2
-  LD_PRELOAD: "${{ GITHUB.HOME }}/.julia/conda/3/lib/libstdc++.so" # https://github.com/JuliaPy/PyCall.jl/issues/990
 
 jobs:
   docs:
@@ -18,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set LD_PRELOAD
+        run: echo "LD_PRELOAD=$HOME/.julia/conda/3/lib/libstdc++.so" >> $GITHUB_ENV
       - uses: julia-actions/setup-julia@v1
       - name: Cache CmdStan
         id: cache-cmdstan

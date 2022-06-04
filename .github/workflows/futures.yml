@@ -11,7 +11,6 @@ env:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
   CMDSTAN_VERSION: "2.25.0"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
-  LD_PRELOAD: "${{ GITHUB.HOME }}/.julia/conda/3/lib/libstdc++.so" # https://github.com/JuliaPy/PyCall.jl/issues/990
 
 jobs:
   test:
@@ -29,6 +28,8 @@ jobs:
             arviz_version: "release"
     steps:
       - uses: actions/checkout@v2
+      - name: Set LD_PRELOAD
+        run: echo "LD_PRELOAD=$HOME/.julia/conda/3/lib/libstdc++.so" >> $GITHUB_ENV
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
