@@ -54,14 +54,15 @@ jobs:
       - uses: julia-actions/julia-buildpkg@latest
       - name: Install ArviZ dependencies
         run: |
-          using Pkg
-          Pkg.instantiate()
-          using ArviZ, Conda
-          ArviZ.initialize_arviz()
-          ArviZ.initialize_pandas()
-          ArviZ.initialize_bokeh()
-          Conda.add(["selenium", "phantomjs"])
-        shell: LD_PRELOAD=$(cc -print-file-name=libstdc++.so) julia --color=yes --project {0}
+          LD_PRELOAD=$(cc -print-file-name=libstdc++.so) julia --color=yes --project -e '
+              using Pkg
+              Pkg.instantiate()
+              using ArviZ, Conda
+              ArviZ.initialize_arviz()
+              ArviZ.initialize_pandas()
+              ArviZ.initialize_bokeh()
+              Conda.add(["selenium", "phantomjs"])
+          '
       - uses: julia-actions/julia-runtest@latest
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
