@@ -54,7 +54,7 @@ jobs:
       - uses: julia-actions/julia-buildpkg@latest
       - name: Install ArviZ dependencies
         run: |
-          LD_PRELOAD=$(cc -print-file-name=libstdc++.so) julia --color=yes --project -e '
+          LD_PRELOAD=$HOME/.julia/conda/3/lib/libstdc++.so julia --color=yes --project -e '
               using Pkg
               Pkg.instantiate()
               using ArviZ, Conda
