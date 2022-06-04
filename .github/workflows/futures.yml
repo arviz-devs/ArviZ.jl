@@ -28,6 +28,8 @@ jobs:
             arviz_version: "release"
     steps:
       - uses: actions/checkout@v2
+      - name: Set LD_PRELOAD
+        run: echo "LD_PRELOAD=$HOME/.julia/conda/3/lib/libstdc++.so" >> $GITHUB_ENV
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
