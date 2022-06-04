@@ -23,8 +23,6 @@ jobs:
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: Set LD_PRELOAD
-        run: echo "LD_PRELOAD=$(cc -print-file-name=libstdc++.so)" >> $GITHUB_ENV
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
@@ -63,7 +61,7 @@ jobs:
           ArviZ.initialize_pandas()
           ArviZ.initialize_bokeh()
           Conda.add(["selenium", "phantomjs"])
-        shell: julia --color=yes --project {0}
+        shell: LD_PRELOAD=$(cc -print-file-name=libstdc++.so) julia --color=yes --project {0}
       - uses: julia-actions/julia-runtest@latest
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
