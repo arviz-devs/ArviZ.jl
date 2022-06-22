@@ -42,9 +42,9 @@ Base.delete!(data::InferenceData, name::Symbol) = delete!(groups(data), name)
 
 @forwardfun extract_dataset
 
-function (data1::InferenceData + data2::InferenceData)
-    return InferenceData(PyObject(data1) + PyObject(data2))
-end
+@deprecate (data1::InferenceData + data2::InferenceData) convert(
+    InferenceData, PyObject(data1) + PyObject(data2)
+)
 
 function Base.show(io::IO, ::MIME"text/plain", data::InferenceData)
     print(io, "InferenceData with groups:")
