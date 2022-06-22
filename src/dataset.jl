@@ -1,39 +1,78 @@
+# Implementation of Dataset is adapted from that of DimensionalData.DimStack
+# in https://github.com/rafaqz/DimensionalData.jl under the MIT License.
+# Copyright (c) 2019 Rafael Schouten <rafaelschouten@gmail.com>
+
 """
-    Dataset(::PyObject)
-    Dataset(; data_vars = nothing, coords = Dict(), attrs = Dict())
+    Dataset{L} <: DimensionalData.AbstractDimStack{L}
 
-Loose wrapper around `xarray.Dataset`, mostly used for dispatch.
+    Dataset(data::DimensionalData.AbstractDimArray...)
+    Dataset(data::Tuple{Vararg{<:DimensionalData.AbstractDimArray}})
+    Dataset(data::NamedTuple{Keys,Vararg{<:DimensionalData.AbstractDimArray}})
+    Dataset(
+        data::NamedTuple,
+        dims::Tuple{Vararg{DimensionalData.Dimension}};
+        metadata=DimensionalData.NoMetadata(),
+    )
 
-# Keywords
+Collection of dimensional arrays with shared dimensions.
 
-  - `data_vars::Dict{String,Any}`: Dict mapping variable names to
-    
-      + `Vector`: Data vector. Single dimension is named after variable.
-      + `Tuple{String,Vector}`: Dimension name and data vector.
-      + `Tuple{NTuple{N,String},Array{T,N}} where {N,T}`: Dimension names and data array.
-
-  - `coords::Dict{String,Any}`: Dict mapping dimension names to index names. Possible
-    arguments has same form as `data_vars`.
-  - `attrs::Dict{String,Any}`: Global attributes to save on this dataset.
+This type is an
+[`DimensionalData.AbstractDimStack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.AbstractDimStack)
+that implements the same interface as `DimensionalData.DimStack` and has identical usage.
 
 In most cases, use [`convert_to_dataset`](@ref) or [`convert_to_constant_dataset`](@ref) or
 to create a `Dataset` instead of directly using a constructor.
 """
-struct Dataset
-    o::PyObject
-
-    function Dataset(o::PyObject)
-        if !pyisinstance(o, xarray.Dataset)
-            throw(ArgumentError("$o is not an `xarray.Dataset`."))
-        end
-        return new(o)
-    end
+struct Dataset{L,D<:Tuple,R<:Tuple,LD<:NamedTuple,M,LM<:NamedTuple} <:
+       DimensionalData.AbstractDimStack{L}
+    data::L
+    dims::D
+    refdims::R
+    layerdims::LD
+    metadata::M
+    layermetadata::LM
 end
 
-Dataset(; kwargs...) = Dataset(xarray.Dataset(; kwargs...))
-@inline Dataset(data::Dataset) = data
 
 @inline PyObject(data::Dataset) = getfield(data, :o)
+Dataset(das::DimensionalData.AbstractDimArray...; kw...) = Dataset(das; kw...)
+function Dataset(das::Tuple{Vararg{<:DimensionalData.AbstractDimArray}}; kw...)
+    return Dataset(NamedTuple{DimensionalData.uniquekeys(das)}(das); kw...)
+end
+function Dataset(
+    das::NamedTuple{<:Any,<:Tuple{Vararg{<:DimensionalData.AbstractDimArray}}};
+    data=map(parent, das),
+    dims=DimensionalData.combinedims(das...),
+    layerdims=map(DimensionalData.basedims, das),
+    refdims=(),
+    metadata=DimensionalData.NoMetadata(),
+    layermetadata=map(DimensionalData.metadata, das),
+)
+    return Dataset(data, dims, refdims, layerdims, metadata, layermetadata)
+end
+# Same sized arrays
+function Dataset(
+    data::NamedTuple,
+    dims::Tuple;
+    refdims=(),
+    metadata=DimensionalData.NoMetadata(),
+    layermetadata=map(_ -> DimensionalData.NoMetadata(), data),
+)
+    all(map(d -> axes(d) == axes(first(data)), data)) || throw(
+        ArgumentError(
+            "Arrays must have identical axes. For mixed dimensions, use DimArrays`"
+        ),
+    )
+    layerdims = map(_ -> DimensionalData.basedims(dims), data)
+    return Dataset(
+        data,
+        DimensionalData.format(dims, first(data)),
+        refdims,
+        layerdims,
+        metadata,
+        layermetadata,
+    )
+end
 
 Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(obj)
 Base.convert(::Type{Dataset}, obj::Dataset) = obj
