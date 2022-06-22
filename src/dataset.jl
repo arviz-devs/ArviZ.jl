@@ -100,13 +100,15 @@ function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     return nothing
 end
 
-attributes(data::Dataset) = getproperty(PyObject(data), :_attrs)
+attributes(data::Dataset) = DimensionalData.metadata(data)
 
-function setattribute!(data::Dataset, key, value)
-    attrs = merge(attributes(data), Dict(key => value))
-    setproperty!(PyObject(data), :_attrs, attrs)
-    return attrs
+function setattribute!(data::Dataset, key::Symbol, value)
+    setindex!(metadata(data), value, key)
+    return value
 end
+@deprecate setattribute!(data::Dataset, key::AbstractString, value) setattribute!(
+    data, Symbol(k), value
+) false
 
 @doc doc"""
     convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
