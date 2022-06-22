@@ -33,8 +33,6 @@ struct Dataset{L,D<:Tuple,R<:Tuple,LD<:NamedTuple,M,LM<:NamedTuple} <:
     layermetadata::LM
 end
 
-
-@inline PyObject(data::Dataset) = getfield(data, :o)
 Dataset(das::DimensionalData.AbstractDimArray...; kw...) = Dataset(das; kw...)
 function Dataset(das::Tuple{Vararg{<:DimensionalData.AbstractDimArray}}; kw...)
     return Dataset(NamedTuple{DimensionalData.uniquekeys(das)}(das); kw...)
@@ -74,12 +72,18 @@ function Dataset(
     )
 end
 
-Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(obj)
+
+
+PyObject(data::Dataset) = _to_xarray(data)
+
+Base.convert(::Type{Dataset}, obj::PyObject) = _dataset_from_xarray(obj)
 Base.convert(::Type{Dataset}, obj::Dataset) = obj
 Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
-
-
-
+function Base.convert(::Type{DimensionalData.DimStack}, obj::Dataset)
+    return DimensionalData.DimStack(
+        obj.data, obj.dims, obj.refdims, obj.layerdims, obj.metadata, obj.layermetadata
+    )
+end
 
 @deprecate Base.getindex(data::Dataset, k::String) getindex(data, Symbol(k))
 
@@ -213,4 +217,39 @@ function dataset_to_dict(ds::Dataset)
     dims = Dict(pairs(map(collect ∘ DimensionalData.name, DimensionalData.layerdims(ds))))
     coords = Dict(Symbol(name(d)) => collect(d) for d in DimensionalData.dims(ds))
     return data, (; attrs, coords, dims)
+end
+
+function _dataset_from_xarray(o::PyObject)
+    pyisinstance(o, xarray.Dataset) ||
+        throw(ArgumentError("argument is not an `xarray.Dataset`."))
+    var_names = collect(o.data_vars)
+    data = [_dimarray_from_xarray(getindex(o, name)) for name in var_names]
+    metadata = Dict{Symbol,Any}(Symbol(k) => v for (k, v) in o.attrs)
+    return Dataset(data...; metadata)
+end
+
+function _dimarray_from_xarray(o::PyObject)
+    pyisinstance(o, xarray.DataArray) ||
+        throw(ArgumentError("argument is not an `xarray.DataArray`."))
+    name = Symbol(o.name)
+    data = o.to_numpy()
+    coords = ArviZ.PyCall.PyDict(o.coords)
+    dims = NamedTuple(Symbol(d) => collect(coords[d].values) for d in o.dims)
+    return DimensionalData.DimArray(data, dims; name)
+end
+
+function _to_xarray(data::DimensionalData.AbstractDimStack)
+    data_vars = Dict(pairs(map(_to_xarray, DimensionalData.layers(data))))
+    attrs = Dict(pairs(DimensionalData.metadata(data)))
+    return PyCall.pycall(xarray.Dataset, PyObject, data_vars; attrs)
+end
+
+function _to_xarray(data::DimensionalData.AbstractDimArray)
+    var_name = DimensionalData.name(data)
+    data_dims = DimensionalData.dims(data)
+    dims = collect(DimensionalData.name(data_dims))
+    coords = Dict(zip(dims, collect.(data_dims)))
+    default_dims = String[]
+    values = parent(data)
+    return arviz.numpy_to_data_array(values; var_name, dims, coords, default_dims)
 end
