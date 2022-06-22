@@ -81,6 +81,7 @@ Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
 
 
 
+@deprecate Base.getindex(data::Dataset, k::String) getindex(data, Symbol(k))
 
 function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     obj = PyObject(data)
