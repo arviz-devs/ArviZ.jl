@@ -71,8 +71,9 @@ function Dataset(
         layermetadata,
     )
 end
+Dataset(data::Dataset) = data
 
-
+Base.parent(data::Dataset) = getfield(data, :data)
 
 PyObject(data::Dataset) = _to_xarray(data)
 
