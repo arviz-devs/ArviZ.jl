@@ -12,7 +12,8 @@
         arr = randn(rng, 4, 100)
         @test ess(arr) == ArviZ.arviz.ess(arr)
         @test ess((x=arr,)) isa ArviZ.Dataset
-        @test ess((x=arr,)).x.values == ArviZ.arviz.ess(Dict(:x => arr)).x.values
+        @test ess((x=arr,))[:x] ==
+            pycall(ArviZ.arviz.ess, PyObject, Dict(:x => arr)).x.values
     end
 
     @testset "mcse" begin
@@ -20,7 +21,8 @@
         arr = randn(rng, 4, 100)
         @test mcse(arr) == ArviZ.arviz.mcse(arr)
         @test mcse((x=arr,)) isa ArviZ.Dataset
-        @test mcse((x=arr,)).x.values == ArviZ.arviz.mcse(Dict(:x => arr)).x.values
+        @test mcse((x=arr,))[:x] ==
+            pycall(ArviZ.arviz.mcse, PyObject, Dict(:x => arr)).x.values
     end
 
     @testset "rhat" begin
@@ -28,6 +30,7 @@
         arr = randn(rng, 4, 100)
         @test rhat(arr) == ArviZ.arviz.rhat(arr)
         @test rhat((x=arr,)) isa ArviZ.Dataset
-        @test rhat((x=arr,)).x.values == ArviZ.arviz.rhat(Dict(:x => arr)).x.values
+        @test rhat((x=arr,))[:x] ==
+            pycall(ArviZ.arviz.rhat, PyObject, Dict(:x => arr)).x.values
     end
 end
