@@ -18,8 +18,6 @@ end
 InferenceData(; kwargs...) = InferenceData(Dict(kwargs))
 InferenceData(data::InferenceData) = data
 
-InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
-@inline InferenceData(data::InferenceData) = data
 
 @inline PyObject(data::InferenceData) = getfield(data, :o)
 
