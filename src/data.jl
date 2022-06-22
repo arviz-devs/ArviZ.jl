@@ -156,6 +156,14 @@ function concat!(data::InferenceData, other_data::InferenceData...; kwargs...)
 end
 concat!(; kwargs...) = InferenceData()
 
+function Base.merge!(data::InferenceData, other_data::InferenceData...)
+    return InferenceData(Base.merge!(groups(data), map(groups, other_data)...))
+end
+
+function Base.merge(data::InferenceData, other_data::InferenceData...)
+    return InferenceData(Base.merge(groups(data), map(groups, other_data)...))
+end
+
 function rekey(data::InferenceData, keymap)
     keymap = Dict([Symbol(k) => Symbol(v) for (k, v) in keymap])
     dnames = groupnames(data)
