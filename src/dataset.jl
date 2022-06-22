@@ -130,9 +130,6 @@ function convert_to_dataset(obj; group::Symbol=:posterior, kwargs...)
     return dataset
 end
 convert_to_dataset(data::Dataset; kwargs...) = data
-@deprecate convert_to_dataset(obj; group::String, kwargs...) convert_to_dataset(
-    obj; group=Symbol(group), kwargs...
-) false
 
 @doc doc"""
     convert_to_constant_dataset(obj::Dict; kwargs...) -> Dataset
