@@ -80,6 +80,13 @@ Get the groups in `data` as a dictionary mapping names to datasets.
 """
 groups(data::InferenceData) = getfield(data, :groups)
 
+"""
+    hasgroup(data::InferenceData, name::Symbol) -> Bool
+
+Return `true` if a group with name `name` is stored in `data`.
+"""
+hasgroup(data::InferenceData, name::Symbol) = haskey(groups(data), name)
+
 Base.isempty(data::InferenceData) = isempty(groups(data))
 
 @forwardfun convert_to_inference_data
