@@ -141,7 +141,7 @@ function from_namedtuple(
         end
         group_dataset = convert_to_dataset(group_data; kwargs...)
         if library !== nothing
-            setattribute!(group_dataset, "inference_library", string(library))
+            setattribute!(group_dataset, :inference_library, string(library))
         end
         merge!(all_idata, InferenceData(; group => group_dataset))
     end
@@ -150,7 +150,7 @@ function from_namedtuple(
 
     group_dataset = convert_to_dataset(post_dict; kwargs...)
     if library !== nothing
-        setattribute!(group_dataset, "inference_library", string(library))
+        setattribute!(group_dataset, :inference_library, string(library))
     end
     merge!(all_idata, InferenceData(; posterior=group_dataset))
 

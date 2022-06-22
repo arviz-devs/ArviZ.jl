@@ -203,7 +203,7 @@ function from_mcmcchains(
         else
             convert_to_dataset(group_data; library, kwargs...)
         end
-        setattribute!(group_dataset, "inference_library", library)
+        setattribute!(group_dataset, :inference_library, library)
         merge!(all_idata, InferenceData(; group => group_dataset))
     end
 
