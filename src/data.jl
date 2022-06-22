@@ -1,4 +1,5 @@
 const SUPPORTED_GROUPS = Symbol[]
+const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 
 """
     InferenceData(::PyObject)
