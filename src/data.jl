@@ -18,10 +18,17 @@ end
 InferenceData(; kwargs...) = InferenceData(Dict(kwargs))
 InferenceData(data::InferenceData) = data
 
+function PyObject(data::InferenceData)
+    return pycall(arviz.InferenceData, PyObject; groups(data)...)
+end
 
-@inline PyObject(data::InferenceData) = getfield(data, :o)
-
-Base.convert(::Type{InferenceData}, obj::PyObject) = InferenceData(obj)
+function Base.convert(::Type{InferenceData}, obj::PyObject)
+    pyisinstance(obj, arviz.InferenceData) ||
+        throw(ArgumentError("argument is not an `arviz.InferenceData`."))
+    group_names = obj.groups()
+    groups = Dict(Symbol(name) => getindex(obj, name) for name in group_names)
+    return InferenceData(groups)
+end
 Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 
