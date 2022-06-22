@@ -16,7 +16,7 @@ Soss = "8ce77f84-9b61-11e8-39ff-d17a774bf41c"
 Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 
 [compat]
-ArviZ = "0.5"
+ArviZ = "0.6"
 CmdStan = "6.0"
 Distributions = "0.25"
 Documenter = "0.27"
