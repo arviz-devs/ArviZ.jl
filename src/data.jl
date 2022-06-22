@@ -66,16 +66,16 @@ end
 
 Get the names of the groups (datasets) in `data`.
 """
-groupnames(data::InferenceData) = Symbol.(PyObject(data)._groups)
+function groupnames(data::InferenceData)
+    return sort!(collect(keys(groups(data))); by=k -> SUPPORTED_GROUPS_DICT[k])
+end
 
 """
     groups(data::InferenceData) -> Dict{Symbol,Dataset}
 
 Get the groups in `data` as a dictionary mapping names to datasets.
 """
-function groups(data::InferenceData)
-    return Dict((name => getproperty(data, name) for name in groupnames(data)))
-end
+groups(data::InferenceData) = getfield(data, :groups)
 
 Base.isempty(data::InferenceData) = isempty(groupnames(data))
 
