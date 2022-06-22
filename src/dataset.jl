@@ -78,24 +78,10 @@ Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(obj)
 Base.convert(::Type{Dataset}, obj::Dataset) = obj
 Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
 
-Base.hash(data::Dataset) = hash(PyObject(data))
 
-Base.propertynames(data::Dataset) = propertynames(PyObject(data))
 
-function Base.getproperty(data::Dataset, name::Symbol)
-    o = PyObject(data)
-    name === :o && return o
-    return getproperty(o, name)
-end
 
-Base.getindex(data::Dataset, k) = py"$(data)[$k]"
 
-function Base.show(io::IO, data::Dataset)
-    out = pycall(pybuiltin("str"), String, data)
-    out = replace(out, "<xarray.Dataset>" => "Dataset (xarray.Dataset)")
-    print(io, out)
-    return nothing
-end
 function Base.show(io::IO, ::MIME"text/html", data::Dataset)
     obj = PyObject(data)
     (:_repr_html_ in propertynames(obj)) || return show(io, data)
