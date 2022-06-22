@@ -28,13 +28,15 @@ Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 
 Base.hash(data::InferenceData) = hash(PyObject(data))
+Base.propertynames(data::InferenceData) = sort!(collect(keys(groups(data))))
 
-Base.propertynames(data::InferenceData) = propertynames(PyObject(data))
+Base.hasproperty(data::InferenceData, k::Symbol) = hasgroup(data, k)
 
-function Base.getproperty(data::InferenceData, name::Symbol)
-    o = PyObject(data)
-    name === :o && return o
-    return getproperty(o, name)
+Base.getproperty(data::InferenceData, k::Symbol) = getindex(groups(data), k)
+
+function Base.setproperty!(data::InferenceData, k::Symbol, ds::Dataset)
+    groups(data)[k] = ds
+    return ds
 end
 
 Base.delete!(data::InferenceData, name) = PyObject(data).__delattr__(string(name))
