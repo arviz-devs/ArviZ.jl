@@ -25,7 +25,8 @@ Base.convert(::Type{InferenceData}, obj::PyObject) = InferenceData(obj)
 Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 
-Base.hash(data::InferenceData) = hash(PyObject(data))
+Base.hash(data::InferenceData) = hash(groups(data))
+
 Base.propertynames(data::InferenceData) = sort!(collect(keys(groups(data))))
 
 Base.hasproperty(data::InferenceData, k::Symbol) = hasgroup(data, k)
@@ -37,7 +38,7 @@ function Base.setproperty!(data::InferenceData, k::Symbol, ds::Dataset)
     return ds
 end
 
-Base.delete!(data::InferenceData, name) = PyObject(data).__delattr__(string(name))
+Base.delete!(data::InferenceData, name::Symbol) = delete!(groups(data), name)
 
 @forwardfun extract_dataset
 
@@ -45,10 +46,12 @@ function (data1::InferenceData + data2::InferenceData)
     return InferenceData(PyObject(data1) + PyObject(data2))
 end
 
-function Base.show(io::IO, data::InferenceData)
-    out = pycall(pybuiltin("str"), String, data)
-    out = replace(out, "Inference data" => "InferenceData")
-    print(io, out)
+function Base.show(io::IO, ::MIME"text/plain", data::InferenceData)
+    print(io, "InferenceData with groups:")
+    prefix = "\n    > "
+    for name in groupnames(data)
+        print(io, prefix, name)
+    end
     return nothing
 end
 function Base.show(io::IO, ::MIME"text/html", data::InferenceData)
@@ -77,16 +80,14 @@ Get the groups in `data` as a dictionary mapping names to datasets.
 """
 groups(data::InferenceData) = getfield(data, :groups)
 
-Base.isempty(data::InferenceData) = isempty(groupnames(data))
+Base.isempty(data::InferenceData) = isempty(groups(data))
 
 @forwardfun convert_to_inference_data
 
 convert_to_inference_data(::Nothing; kwargs...) = InferenceData()
 
 function convert_to_dataset(data::InferenceData; group=:posterior, kwargs...)
-    group = Symbol(group)
-    dataset = getproperty(data, group)
-    return dataset
+    return getproperty(data, Symbol(group))
 end
 
 @forwardfun load_arviz_data
@@ -108,14 +109,14 @@ end
 function _from_dict(posterior=nothing; attrs=Dict(), coords=nothing, dims=nothing, dicts...)
     dicts = (posterior=posterior, dicts...)
 
-    datasets = []
+    groups = Dict{Symbol,Dataset}()
     for (name, dict) in pairs(dicts)
         (dict === nothing || isempty(dict)) && continue
         dataset = dict_to_dataset(dict; attrs, coords, dims)
-        push!(datasets, name => dataset)
+        groups[name] = dataset
     end
 
-    idata = InferenceData(; datasets...)
+    idata = InferenceData(groups)
     return idata
 end
 
@@ -144,20 +145,10 @@ concat!(; kwargs...) = InferenceData()
 function rekey(data::InferenceData, keymap)
     keymap = Dict([Symbol(k) => Symbol(v) for (k, v) in keymap])
     dnames = groupnames(data)
-    data_new = InferenceData[]
+    groups_new = Dict{Symbol,Dataset}()
     for k in dnames
         knew = get(keymap, k, k)
-        push!(data_new, InferenceData(; knew => getproperty(data, k)))
+        groups_new[knew] = getproperty(data, k)
     end
-    return concat(data_new...)
-end
-
-function reorder_groups!(data::InferenceData; group_order=SUPPORTED_GROUPS)
-    group_order = map(Symbol, group_order)
-    names = groupnames(data)
-    sorted_names = filter(n -> n ∈ names, group_order)
-    other_names = filter(n -> n ∉ sorted_names, names)
-    obj = PyObject(data)
-    setproperty!(obj, :_groups, string.([sorted_names; other_names]))
-    return data
+    return InferenceData(groups_new)
 end
