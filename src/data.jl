@@ -2,11 +2,9 @@ const SUPPORTED_GROUPS = Symbol[]
 const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 
 """
-    InferenceData(::PyObject)
     InferenceData(; kwargs...)
 
-Loose wrapper around `arviz.InferenceData`, which is a container for inference data storage
-using xarray.
+Container for inference data storage using DimensionalData.
 
 `InferenceData` can be constructed either from an `arviz.InferenceData` or from multiple
 [`Dataset`](@ref)s assigned to groups specified as `kwargs`.
@@ -15,15 +13,10 @@ Instead of directly creating an `InferenceData`, use the exported `from_xyz` fun
 [`convert_to_inference_data`](@ref).
 """
 struct InferenceData
-    o::PyObject
-
-    function InferenceData(o::PyObject)
-        if !pyisinstance(o, arviz.InferenceData)
-            throw(ArgumentError("$o is not an `arviz.InferenceData`."))
-        end
-        return new(o)
-    end
+    groups::Dict{Symbol,Dataset}
 end
+InferenceData(; kwargs...) = InferenceData(Dict(kwargs))
+InferenceData(data::InferenceData) = data
 
 InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
 @inline InferenceData(data::InferenceData) = data
