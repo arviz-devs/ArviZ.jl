@@ -208,24 +208,9 @@ to [`dict_to_dataset`](@ref).
 dataset_to_dict
 
 function dataset_to_dict(ds::Dataset)
-    ds_dict = ds.to_dict()
-    data_vars = ds_dict["data_vars"]
-    attrs = ds_dict["attrs"]
-
-    coords = ds_dict["coords"]
-    delete!(coords, "chain")
-    delete!(coords, "draw")
-    coords = Dict(k => v["data"] for (k, v) in coords)
-
-    data = Dict{String,Array}()
-    dims = Dict{String,Vector{String}}()
-    for (k, v) in data_vars
-        data[k] = v["data"]
-        dim = v["dims"][3:end]
-        if !isempty(dim)
-            dims[k] = [dim...]
-        end
-    end
-
-    return data, (attrs=attrs, coords=coords, dims=dims)
+    data = Dict(pairs(DimensionalData.data(ds)))
+    attrs = Dict(pairs(DimensionalData.metadata(ds)))
+    dims = Dict(pairs(map(collect ∘ DimensionalData.name, DimensionalData.layerdims(ds))))
+    coords = Dict(Symbol(name(d)) => collect(d) for d in DimensionalData.dims(ds))
+    return data, (; attrs, coords, dims)
 end
