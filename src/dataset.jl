@@ -86,7 +86,7 @@ function Base.convert(::Type{DimensionalData.DimStack}, obj::Dataset)
     )
 end
 
-@deprecate Base.getindex(data::Dataset, k::String) getindex(data, Symbol(k))
+@deprecate getindex(data::Dataset, k::String) getindex(data, Symbol(k))
 
 # Warning: this is not an API function and probably should be implemented abstractly upstream
 DimensionalData.show_after(io, mime, ::Dataset) = nothing

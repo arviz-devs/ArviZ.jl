@@ -16,6 +16,7 @@ using LogExpFunctions: logsumexp
 import Base:
     convert,
     get,
+    getindex,
     getproperty,
     hash,
     haskey,
