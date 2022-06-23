@@ -236,10 +236,9 @@ function _dimarray_from_xarray(o::PyObject)
 end
 
 _process_dims(dims) = collect(dims)
-_process_dims(dims::AbstractVector{<:AbstractString}) = collect(map(Symbol, dims))
 # NOTE: sometimes strings fail to convert to Julia types, so we try to force them here
 function _process_dims(dims::AbstractVector{<:PyObject})
-    return collect(map(Base.Fix1(convert, Symbol), dims))
+    return collect(map(Base.Fix1(convert, String), dims))
 end
 
 function _to_xarray(data::DimensionalData.AbstractDimStack)
