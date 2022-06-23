@@ -20,5 +20,6 @@ for f in (:ess, :mcse, :rhat)
         function convert_arguments(::typeof($(f)), data::AbstractArray, args...; kwargs...)
             return tuple(data, args...), kwargs
         end
+        convert_result(::typeof($(f)), o::PyObject) = convert(Dataset, o)
     end
 end
