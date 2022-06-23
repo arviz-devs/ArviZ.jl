@@ -231,15 +231,37 @@ function _dimarray_from_xarray(o::PyObject)
     name = Symbol(o.name)
     data = o.to_numpy()
     coords = ArviZ.PyCall.PyDict(o.coords)
-    dims = NamedTuple(Symbol(d) => _process_dims(coords[d].values) for d in o.dims)
+    dims = Tuple(map(d -> _wrap_dims(Symbol(d), _process_dims(coords[d].values)), o.dims))
     return DimensionalData.DimArray(data, dims; name)
 end
 
-_process_dims(dims) = collect(dims)
+_process_dims(dims) = collect(map(identity, dims))
 # NOTE: sometimes strings fail to convert to Julia types, so we try to force them here
 function _process_dims(dims::AbstractVector{<:PyObject})
     return collect(map(Base.Fix1(convert, String), dims))
 end
+
+# wrap dims in a `Dim`, converting to an AbstractRange if possible
+function _wrap_dims(name::Symbol, dims::AbstractVector{<:Real})
+    D = DimensionalData.Dim{name}
+    start = dims[begin]
+    stop = dims[end]
+    n = length(dims)
+    step = (stop - start) / (n - 1)
+    isrange = all(Iterators.drop(eachindex(dims), 1)) do i
+        return (dims[i] - dims[i - 1]) ≈ step
+    end
+    return if isrange
+        if step == 1
+            D(UnitRange(start, stop))
+        else
+            D(range(start, stop, n))
+        end
+    else
+        D(dims)
+    end
+end
+_wrap_dims(name::Symbol, dims::AbstractVector) = DimensionalData.Dim{name}(dims)
 
 function _to_xarray(data::DimensionalData.AbstractDimStack)
     data_vars = Dict(pairs(map(_to_xarray, DimensionalData.layers(data))))
