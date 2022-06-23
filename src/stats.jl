@@ -151,8 +151,9 @@ function StatsBase.summarystats(data::InferenceData; group=:posterior, kwargs...
     return summarystats(dataset; kwargs...)
 end
 function StatsBase.summarystats(data::Dataset; fmt=:wide, kwargs...)
+    fmt = fmt ∈ (:dimstack, :dataset) ? :xarray : fmt
     s = arviz.summary(data; fmt, kwargs...)
-    s isa Dataset && return s
+    pyisinstance(s, xarray.Dataset) && return convert(Dataset, s)
     index_name = Symbol(fmt) == :long ? :statistic : :variable
     return todataframes(s; index_name)
 end

@@ -204,7 +204,7 @@ function from_mcmcchains(
             convert_to_dataset(group_data; library, kwargs...)
         end
         setattribute!(group_dataset, :inference_library, library)
-        merge!(all_idata, InferenceData(; group => group_dataset))
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
     attrs_library = Dict("inference_library" => library)
@@ -215,7 +215,7 @@ function from_mcmcchains(
     end
     kwargs = Dict(pairs(merge((; attrs, dims=Dict()), kwargs)))
     post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
-    merge!(all_idata, post_idata)
+    all_idata = merge(all_idata, post_idata)
     return all_idata
 end
 function from_mcmcchains(
@@ -256,12 +256,12 @@ function from_mcmcchains(
                 :sample_stats => :sample_stats_prior,
             ),
         )
-        merge!(all_idata, prior_idata)
+        all_idata = merge(all_idata, prior_idata)
     elseif prior_predictive !== nothing
         pre_prior_predictive_idata = convert_to_inference_data(
             prior_predictive; eltypes, kwargs...
         )
-        merge!(
+        all_idata = merge(
             all_idata,
             InferenceData(; prior_predictive=pre_prior_predictive_idata.posterior),
         )
@@ -275,7 +275,7 @@ function from_mcmcchains(
         group_data === nothing && continue
         group_data = convert_to_eltypes(group_data, eltypes)
         group_dataset = convert_to_constant_dataset(group_data; library, kwargs...)
-        merge!(all_idata, InferenceData(; group => group_dataset))
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
     return all_idata

@@ -143,7 +143,7 @@ function from_namedtuple(
         if library !== nothing
             setattribute!(group_dataset, :inference_library, string(library))
         end
-        merge!(all_idata, InferenceData(; group => group_dataset))
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
     (post_dict === nothing || isempty(post_dict)) && return all_idata
@@ -152,7 +152,7 @@ function from_namedtuple(
     if library !== nothing
         setattribute!(group_dataset, :inference_library, string(library))
     end
-    merge!(all_idata, InferenceData(; posterior=group_dataset))
+    all_idata = merge(all_idata, InferenceData(; posterior=group_dataset))
 
     return all_idata
 end
@@ -197,7 +197,7 @@ function from_namedtuple(
                 :sample_stats => :sample_stats_prior,
             ),
         )
-        merge!(all_idata, prior_idata)
+        all_idata = merge(all_idata, prior_idata)
     end
 
     for (group, group_data) in [
@@ -208,7 +208,7 @@ function from_namedtuple(
         group_data === nothing && continue
         group_dict = Dict(pairs(group_data))
         group_dataset = convert_to_constant_dataset(group_dict; library, kwargs...)
-        merge!(all_idata, InferenceData(; group => group_dataset))
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
     return all_idata
