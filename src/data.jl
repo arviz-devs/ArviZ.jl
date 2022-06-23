@@ -12,21 +12,28 @@ Container for inference data storage using DimensionalData.
 Instead of directly creating an `InferenceData`, use the exported `from_xyz` functions or
 [`convert_to_inference_data`](@ref).
 """
-struct InferenceData
-    groups::Dict{Symbol,Dataset}
+struct InferenceData{group_names,groups}
+    groups::NamedTuple{group_names,groups}
 end
-InferenceData(; kwargs...) = InferenceData(Dict(kwargs))
+InferenceData(; kwargs...) = InferenceData(NamedTuple(kwargs))
 InferenceData(data::InferenceData) = data
+function InferenceData(data::NamedTuple)
+    groups_reordered = _reorder_groups(data)
+    group_names, groups = _keys_and_types(groups_reordered)
+    return InferenceData{group_names,groups}(groups_reordered)
+end
 
 function PyObject(data::InferenceData)
-    return pycall(arviz.InferenceData, PyObject; groups(data)...)
+    return pycall(arviz.InferenceData, PyObject; map(_to_xarray, groups(data))...)
 end
 
 function Base.convert(::Type{InferenceData}, obj::PyObject)
     pyisinstance(obj, arviz.InferenceData) ||
         throw(ArgumentError("argument is not an `arviz.InferenceData`."))
     group_names = obj.groups()
-    groups = Dict(Symbol(name) => getindex(obj, name) for name in group_names)
+    groups = NamedTuple(
+        Symbol(name) => convert(Dataset, getindex(obj, name)) for name in group_names
+    )
     return InferenceData(groups)
 end
 Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
@@ -34,18 +41,11 @@ Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 
 Base.hash(data::InferenceData) = hash(groups(data))
 
-Base.propertynames(data::InferenceData) = sort!(collect(keys(groups(data))))
+Base.propertynames(data::InferenceData) = groupnames(data)
 
 Base.hasproperty(data::InferenceData, k::Symbol) = hasgroup(data, k)
 
-Base.getproperty(data::InferenceData, k::Symbol) = getindex(groups(data), k)
-
-function Base.setproperty!(data::InferenceData, k::Symbol, ds::Dataset)
-    groups(data)[k] = ds
-    return ds
-end
-
-Base.delete!(data::InferenceData, name::Symbol) = delete!(groups(data), name)
+Base.getproperty(data::InferenceData, k::Symbol) = getproperty(groups(data), k)
 
 @forwardfun extract_dataset
 
@@ -63,11 +63,11 @@ function Base.show(io::IO, ::MIME"text/plain", data::InferenceData)
 end
 function Base.show(io::IO, mime::MIME"text/html", data::InferenceData)
     show(io, mime, HTML("<div>InferenceData"))
-    for name in ArviZ.groupnames(data)
+    for (name, group) in pairs(groups(data))
         show(io, mime, HTML("""
         <details>
         <summary>$name</summary>
-        <pre><code>$(sprint(show, "text/plain", getproperty(data, name)))</code></pre>
+        <pre><code>$(sprint(show, "text/plain", group))</code></pre>
         </details>
         """))
     end
@@ -79,9 +79,7 @@ end
 
 Get the names of the groups (datasets) in `data`.
 """
-function groupnames(data::InferenceData)
-    return sort!(collect(keys(groups(data))); by=k -> SUPPORTED_GROUPS_DICT[k])
-end
+groupnames(data::InferenceData) = keys(groups(data))
 
 """
     groups(data::InferenceData) -> Dict{Symbol,Dataset}
@@ -102,9 +100,12 @@ Base.isempty(data::InferenceData) = isempty(groups(data))
 @forwardfun convert_to_inference_data
 
 convert_to_inference_data(::Nothing; kwargs...) = InferenceData()
+function convert_to_inference_data(data::Dataset; group::Symbol=:posterior, kwargs...)
+    return InferenceData(; group=data)
+end
 
-function convert_to_dataset(data::InferenceData; group=:posterior, kwargs...)
-    return getproperty(data, Symbol(group))
+function convert_to_dataset(data::InferenceData; group::Symbol=:posterior, kwargs...)
+    return getproperty(data, group)
 end
 
 @forwardfun load_arviz_data
@@ -124,15 +125,8 @@ end
 # A more flexible form of `from_dict`
 # Internally calls `dict_to_dataset`
 function _from_dict(posterior=nothing; attrs=Dict(), coords=nothing, dims=nothing, dicts...)
-    dicts = (posterior=posterior, dicts...)
-
-    groups = Dict{Symbol,Dataset}()
-    for (name, dict) in pairs(dicts)
-        (dict === nothing || isempty(dict)) && continue
-        dataset = dict_to_dataset(dict; attrs, coords, dims)
-        groups[name] = dataset
-    end
-
+    dicts = filter(d -> !(d === nothing || isempty(d)), (; posterior, dicts...))
+    groups = map(d -> dict_to_dataset(d; attrs, coords, dims), dicts)
     idata = InferenceData(groups)
     return idata
 end
@@ -145,35 +139,21 @@ end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
-@doc doc"""
-    concat!(data1::InferenceData, data::InferenceData...; kwargs...) -> InferenceData
-
-In-place version of `concat`, where `data1` is modified to contain the concatenation of
-`data` and `args`. See [`concat`](@ref) for a description of `kwargs`.
-"""
-concat!
-
-function concat!(data::InferenceData, other_data::InferenceData...; kwargs...)
-    arviz.concat(data, other_data...; inplace=true, kwargs...)
-    return data
-end
-concat!(; kwargs...) = InferenceData()
-
-function Base.merge!(data::InferenceData, other_data::InferenceData...)
-    return InferenceData(Base.merge!(groups(data), map(groups, other_data)...))
-end
-
 function Base.merge(data::InferenceData, other_data::InferenceData...)
     return InferenceData(Base.merge(groups(data), map(groups, other_data)...))
 end
 
 function rekey(data::InferenceData, keymap)
-    keymap = Dict([Symbol(k) => Symbol(v) for (k, v) in keymap])
-    dnames = groupnames(data)
-    groups_new = Dict{Symbol,Dataset}()
-    for k in dnames
-        knew = get(keymap, k, k)
-        groups_new[knew] = getproperty(data, k)
-    end
+    groups_old = groups(data)
+    names_new = map(k -> get(keymap, k, k), propertynames(groups_old))
+    groups_new = NamedTuple{names_new}(Tuple(groups_old))
     return InferenceData(groups_new)
 end
+
+_reorder_groups(group::NamedTuple) = _reorder_groups_type(typeof(group))(group)
+
+@generated function _reorder_groups_type(::Type{<:NamedTuple{names}}) where {names}
+    return NamedTuple{Tuple(sort(collect(names); by = k -> SUPPORTED_GROUPS_DICT[k]))}
+end
+
+@generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
