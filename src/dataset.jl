@@ -95,15 +95,6 @@ end
 # Warning: this is not an API function and probably should be implemented abstractly upstream
 DimensionalData.show_after(io, mime, ::Dataset) = nothing
 
-function Base.show(io::IO, ::MIME"text/html", data::Dataset)
-    obj = PyObject(data)
-    (:_repr_html_ in propertynames(obj)) || return show(io, data)
-    out = obj._repr_html_()
-    out = replace(out, r"(<|&lt;)?xarray.Dataset(>|&gt;)?" => "Dataset")
-    print(io, out)
-    return nothing
-end
-
 attributes(data::Dataset) = DimensionalData.metadata(data)
 
 function setattribute!(data::Dataset, key::Symbol, value)

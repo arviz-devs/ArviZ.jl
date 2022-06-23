@@ -53,22 +53,17 @@ Base.delete!(data::InferenceData, name::Symbol) = delete!(groups(data), name)
     InferenceData, PyObject(data1) + PyObject(data2)
 )
 
-function Base.show(io::IO, ::MIME"text/plain", data::InferenceData)
-    print(io, "InferenceData with groups:")
-    prefix = "\n    > "
-    for name in groupnames(data)
-        print(io, prefix, name)
+function Base.show(io::IO, mime::MIME"text/html", data::InferenceData)
+    show(io, mime, HTML("<div>InferenceData"))
+    for name in ArviZ.groupnames(data)
+        show(io, mime, HTML("""
+        <details>
+        <summary>$name</summary>
+        <pre><code>$(sprint(show, "text/plain", getproperty(data, name)))</code></pre>
+        </details>
+        """))
     end
-    return nothing
-end
-function Base.show(io::IO, ::MIME"text/html", data::InferenceData)
-    obj = PyObject(data)
-    (:_repr_html_ in propertynames(obj)) || return show(io, data)
-    out = obj._repr_html_()
-    out = replace(out, r"arviz.InferenceData" => "InferenceData")
-    out = replace(out, r"(<|&lt;)?xarray.Dataset(>|&gt;)?" => "Dataset")
-    print(io, out)
-    return nothing
+    return show(io, mime, HTML("</div>"))
 end
 
 """
