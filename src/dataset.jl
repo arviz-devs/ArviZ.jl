@@ -1,7 +1,3 @@
-# Implementation of Dataset is adapted from that of DimensionalData.DimStack
-# in https://github.com/rafaqz/DimensionalData.jl under the MIT License.
-# Copyright (c) 2019 Rafael Schouten <rafaelschouten@gmail.com>
-
 """
     Dataset{L} <: DimensionalData.AbstractDimStack{L}
 
@@ -27,54 +23,12 @@ if an `xarray.Dataset` is passed to Julia, its data must be copied.
 In most cases, use [`convert_to_dataset`](@ref) or [`convert_to_constant_dataset`](@ref) or
 to create a `Dataset` instead of directly using a constructor.
 """
-struct Dataset{L,D<:Tuple,R<:Tuple,LD<:NamedTuple,M,LM<:NamedTuple} <:
+struct Dataset{L,D<:DimensionalData.AbstractDimStack{L}} <:
        DimensionalData.AbstractDimStack{L}
-    data::L
-    dims::D
-    refdims::R
-    layerdims::LD
-    metadata::M
-    layermetadata::LM
+    data::D
 end
 
-Dataset(das::DimensionalData.AbstractDimArray...; kw...) = Dataset(das; kw...)
-function Dataset(das::Tuple{Vararg{<:DimensionalData.AbstractDimArray}}; kw...)
-    return Dataset(NamedTuple{DimensionalData.uniquekeys(das)}(das); kw...)
-end
-function Dataset(
-    das::NamedTuple{<:Any,<:Tuple{Vararg{<:DimensionalData.AbstractDimArray}}};
-    data=map(parent, das),
-    dims=DimensionalData.combinedims(das...),
-    layerdims=map(DimensionalData.basedims, das),
-    refdims=(),
-    metadata=DimensionalData.NoMetadata(),
-    layermetadata=map(DimensionalData.metadata, das),
-)
-    return Dataset(data, dims, refdims, layerdims, metadata, layermetadata)
-end
-# Same sized arrays
-function Dataset(
-    data::NamedTuple,
-    dims::Tuple;
-    refdims=(),
-    metadata=DimensionalData.NoMetadata(),
-    layermetadata=map(_ -> DimensionalData.NoMetadata(), data),
-)
-    all(map(d -> axes(d) == axes(first(data)), data)) || throw(
-        ArgumentError(
-            "Arrays must have identical axes. For mixed dimensions, use DimArrays`"
-        ),
-    )
-    layerdims = map(_ -> DimensionalData.basedims(dims), data)
-    return Dataset(
-        data,
-        DimensionalData.format(dims, first(data)),
-        refdims,
-        layerdims,
-        metadata,
-        layermetadata,
-    )
-end
+Dataset(args...; kwargs...) = Dataset(DimensionalData.DimStack(args...; kwargs...))
 Dataset(data::Dataset) = data
 
 Base.parent(data::Dataset) = getfield(data, :data)
@@ -84,11 +38,13 @@ PyObject(data::Dataset) = _to_xarray(data)
 Base.convert(::Type{Dataset}, obj::PyObject) = _dataset_from_xarray(obj)
 Base.convert(::Type{Dataset}, obj::Dataset) = obj
 Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
-function Base.convert(::Type{DimensionalData.DimStack}, obj::Dataset)
-    return DimensionalData.DimStack(
-        obj.data, obj.dims, obj.refdims, obj.layerdims, obj.metadata, obj.layermetadata
-    )
+function Base.convert(::Type{DimensionalData.DimStack}, data::Dataset)
+    return convert(DimensionalData.DimStack, parent(data))
 end
+
+Base.propertynames(data::Dataset) = propertynames(parent(data))
+
+Base.getproperty(data::Dataset, k::Symbol) = getproperty(parent(data), k)
 
 @deprecate getindex(data::Dataset, k::String) getindex(data, Symbol(k))
 
@@ -166,7 +122,7 @@ function convert_to_constant_dataset(
         default_attrs = merge(default_attrs, Dict("inference_library" => string(library)))
     end
     attrs = merge(default_attrs, attrs)
-    return xarray.Dataset(; data_vars=data, coords, attrs)
+    return convert(Dataset, xarray.Dataset(; data_vars=data, coords, attrs))
 end
 
 @doc doc"""
@@ -197,7 +153,7 @@ function dict_to_dataset(data; library=nothing, attrs=Dict(), kwargs...)
     if library !== nothing
         attrs = merge(attrs, Dict("inference_library" => string(library)))
     end
-    return arviz.dict_to_dataset(data; attrs, kwargs...)
+    return convert(Dataset, arviz.dict_to_dataset(data; attrs, kwargs...))
 end
 
 @doc doc"""
