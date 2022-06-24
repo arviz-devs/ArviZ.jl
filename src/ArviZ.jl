@@ -123,6 +123,7 @@ end
 
 include("utils.jl")
 include("rcparams.jl")
+include("xarray.jl")
 include("dataset.jl")
 include("data.jl")
 include("diagnostics.jl")

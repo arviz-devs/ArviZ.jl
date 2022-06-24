@@ -24,7 +24,7 @@ function InferenceData(data::NamedTuple)
 end
 
 function PyObject(data::InferenceData)
-    return pycall(arviz.InferenceData, PyObject; map(_to_xarray, groups(data))...)
+    return pycall(arviz.InferenceData, PyObject; map(PyObject, groups(data))...)
 end
 
 function Base.convert(::Type{InferenceData}, obj::PyObject)
