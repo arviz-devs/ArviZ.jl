@@ -191,10 +191,10 @@ function _dimarray_from_xarray(o::PyObject)
     return DimensionalData.DimArray(data, dims; name)
 end
 
-_process_dims(dims) = collect(map(identity, dims))
+_process_dims(dims) = dims
 # NOTE: sometimes strings fail to convert to Julia types, so we try to force them here
-function _process_dims(dims::AbstractVector{<:PyObject})
-    return collect(map(Base.Fix1(convert, String), dims))
+function _process_dims(dims::Union{PyObject,<:AbstractVector{PyObject}})
+    return map(x -> PyAny(x)::Any, dims)
 end
 
 # wrap dims in a `Dim`, converting to an AbstractRange if possible
