@@ -23,19 +23,6 @@ function InferenceData(data::NamedTuple)
     return InferenceData{group_names,groups}(groups_reordered)
 end
 
-function PyObject(data::InferenceData)
-    return pycall(arviz.InferenceData, PyObject; map(PyObject, groups(data))...)
-end
-
-function Base.convert(::Type{InferenceData}, obj::PyObject)
-    pyisinstance(obj, arviz.InferenceData) ||
-        throw(ArgumentError("argument is not an `arviz.InferenceData`."))
-    group_names = obj.groups()
-    groups = NamedTuple(
-        Symbol(name) => convert(Dataset, getindex(obj, name)) for name in group_names
-    )
-    return InferenceData(groups)
-end
 Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 
@@ -157,3 +144,19 @@ _reorder_groups(group::NamedTuple) = _reorder_groups_type(typeof(group))(group)
 end
 
 @generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
+
+# python interop
+
+function PyObject(data::InferenceData)
+    return pycall(arviz.InferenceData, PyObject; map(PyObject, groups(data))...)
+end
+
+function Base.convert(::Type{InferenceData}, obj::PyObject)
+    pyisinstance(obj, arviz.InferenceData) ||
+        throw(ArgumentError("argument is not an `arviz.InferenceData`."))
+    group_names = obj.groups()
+    groups = NamedTuple(
+        Symbol(name) => convert(Dataset, getindex(obj, name)) for name in group_names
+    )
+    return InferenceData(groups)
+end

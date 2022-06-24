@@ -33,9 +33,6 @@ Dataset(data::Dataset) = data
 
 Base.parent(data::Dataset) = getfield(data, :data)
 
-PyObject(data::Dataset) = _to_xarray(data)
-
-Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(_dimstack_from_xarray(obj))
 Base.convert(::Type{Dataset}, obj::Dataset) = obj
 Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
 function Base.convert(::Type{DimensionalData.DimStack}, data::Dataset)
@@ -171,3 +168,9 @@ function dataset_to_dict(ds::Dataset)
     coords = Dict(Symbol(name(d)) => collect(d) for d in DimensionalData.dims(ds))
     return data, (; attrs, coords, dims)
 end
+
+# python interop
+
+PyObject(data::Dataset) = _to_xarray(data)
+
+Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(_dimstack_from_xarray(obj))
