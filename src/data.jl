@@ -110,7 +110,8 @@ end
 # A more flexible form of `from_dict`
 # Internally calls `dict_to_dataset`
 function _from_dict(posterior=nothing; attrs=Dict(), coords=nothing, dims=nothing, dicts...)
-    dicts = filter(d -> !(d === nothing || isempty(d)), (; posterior, dicts...))
+    dicts_all = (; posterior, dicts...)
+    dicts = NamedTuple(filter(x -> !(x[2] === nothing || isempty(x[2])), pairs(dicts_all)))
     groups = map(d -> dict_to_dataset(d; attrs, coords, dims), dicts)
     idata = InferenceData(groups)
     return idata
