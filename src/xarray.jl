@@ -21,7 +21,7 @@ end
 _process_dims(dims) = dims
 # NOTE: sometimes strings fail to convert to Julia types, so we try to force them here
 function _process_dims(dims::Union{PyObject,<:AbstractVector{PyObject}})
-    return map(x -> PyAny(x)::Any, dims)
+    return map(x -> x isa PyObject ? PyAny(x)::Any : x, dims)
 end
 
 # wrap dims in a `Dim`, converting to an AbstractRange if possible
