@@ -9,7 +9,7 @@ using DataFrames
 using PyCall
 using Conda
 using PyPlot
-using DimensionalData
+using DimensionalData: DimensionalData
 using PSIS: PSIS, PSISResult, psis, psis!
 using LogExpFunctions: logsumexp
 
