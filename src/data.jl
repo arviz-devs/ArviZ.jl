@@ -26,8 +26,6 @@ end
 Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 
-Base.hash(data::InferenceData) = hash(groups(data))
-
 Base.propertynames(data::InferenceData) = groupnames(data)
 
 Base.hasproperty(data::InferenceData, k::Symbol) = hasgroup(data, k)

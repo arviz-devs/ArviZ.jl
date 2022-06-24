@@ -35,20 +35,12 @@ Base.parent(data::Dataset) = getfield(data, :data)
 
 Base.convert(::Type{Dataset}, obj::Dataset) = obj
 Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
-function Base.convert(::Type{DimensionalData.DimStack}, data::Dataset)
-    return convert(DimensionalData.DimStack, parent(data))
-end
 
 Base.propertynames(data::Dataset) = propertynames(parent(data))
 
 Base.getproperty(data::Dataset, k::Symbol) = getproperty(parent(data), k)
 
 @deprecate getindex(data::Dataset, k::String) getindex(data, Symbol(k))
-
-# Warning: this is not an API function and probably should be implemented abstractly upstream
-DimensionalData.show_after(io, mime, ::Dataset) = nothing
-
-attributes(data::Dataset) = DimensionalData.metadata(data)
 
 function setattribute!(data::Dataset, key::Symbol, value)
     setindex!(metadata(data), value, key)
@@ -163,10 +155,27 @@ dataset_to_dict
 
 function dataset_to_dict(ds::Dataset)
     data = Dict(pairs(DimensionalData.data(ds)))
-    attrs = Dict(pairs(DimensionalData.metadata(ds)))
+    attrs = Dict(pairs(attributes(ds)))
     dims = Dict(pairs(map(collect ∘ DimensionalData.name, DimensionalData.layerdims(ds))))
-    coords = Dict(Symbol(name(d)) => collect(d) for d in DimensionalData.dims(ds))
+    coords = Dict(
+        Symbol(DimensionalData.name(d)) => collect(d) for d in DimensionalData.dims(ds)
+    )
     return data, (; attrs, coords, dims)
+end
+
+# DimensionalData interop
+
+# Warning: this is not an API function and probably should be implemented abstractly upstream
+DimensionalData.show_after(io, mime, ::Dataset) = nothing
+
+attributes(data::DimensionalData.AbstractDimStack) = DimensionalData.metadata(data)
+
+function Base.convert(::Type{DimensionalData.DimStack}, data::Dataset)
+    return convert(DimensionalData.DimStack, parent(data))
+end
+
+function DimensionalData.rebuild(data::Dataset; kwargs...)
+    return Dataset(DimensionalData.rebuild(parent(data), kwargs...))
 end
 
 # python interop
