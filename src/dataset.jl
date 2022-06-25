@@ -40,8 +40,6 @@ Base.propertynames(data::Dataset) = propertynames(parent(data))
 
 Base.getproperty(data::Dataset, k::Symbol) = getproperty(parent(data), k)
 
-@deprecate getindex(data::Dataset, k::String) getindex(data, Symbol(k))
-
 function setattribute!(data::Dataset, key::Symbol, value)
     setindex!(metadata(data), value, key)
     return value
