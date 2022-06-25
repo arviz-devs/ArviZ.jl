@@ -1,10 +1,6 @@
 using ArviZ, DimensionalData, PyObject, Test
 
 @testset "ArviZ.Dataset" begin
-    data = load_arviz_data("centered_eight")
-    dataset = data.posterior
-    @test dataset isa ArviZ.Dataset
-
     @testset "Constructors" begin
         nchains = 4
         ndraws = 100
@@ -60,7 +56,7 @@ using ArviZ, DimensionalData, PyObject, Test
                 x=DimArray(randn(3, 100, 3), (:chains, :draws, :shared)),
                 y=DimArray(randn(4, 100, 2, 3), (:chains, :draws, :ydim1, :shared)),
             )
-            @test_throws ErrorException ArviZ.Dataset(data_bad)
+            @test_throws Exception ArviZ.Dataset(data_bad)
         end
     end
 
@@ -107,23 +103,10 @@ using ArviZ, DimensionalData, PyObject, Test
     end
 
     @testset "conversion" begin
-        @test pyisinstance(PyObject(dataset), ArviZ.xarray.Dataset)
-        dataset4 = convert(ArviZ.Dataset, PyObject(dataset))
-        @test dataset4 isa ArviZ.Dataset
-        @test PyObject(dataset4) === PyObject(dataset)
-
-        # TODO: improve this test
-        @test convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0]) isa ArviZ.Dataset
-    end
-
-    @testset "show(::ArviZ.Dataset)" begin
-        @testset "$mimetype" for mimetype in ("plain", "html")
-            text = repr(MIME("text/$(mimetype)"), dataset)
-            @test text isa String
-            @test !occursin("<xarray.Dataset>", text)
-            @test !occursin("&lt;xarray.Dataset&gt;", text)
-            @test occursin("Dataset (xarray.Dataset)", text)
-        end
+        @test convert(ArviZ.Dataset, ds) === ds
+        ds2 = convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0])
+        @test ds2 isa ArviZ.Dataset
+        @test ds2 == ArviZ.convert_to_dataset([1.0, 2.0, 3.0, 4.0])
     end
 end
 
