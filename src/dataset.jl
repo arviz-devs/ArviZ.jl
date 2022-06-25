@@ -175,7 +175,7 @@ function Base.convert(::Type{DimensionalData.DimStack}, data::Dataset)
 end
 
 function DimensionalData.rebuild(data::Dataset; kwargs...)
-    return Dataset(DimensionalData.rebuild(parent(data), kwargs...))
+    return Dataset(DimensionalData.rebuild(parent(data); kwargs...))
 end
 
 # python interop
