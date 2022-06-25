@@ -124,10 +124,10 @@ end
     @test o isa PyObject
     @test pyisinstance(o, ArviZ.xarray.Dataset)
 
-    @test sort(Symbol.(o.coords.keys())) == [:chain, :draw, :shared, :ydim1]
+    @test issetequal(Symbol.(o.coords.keys()), (:chain, :draw, :shared, :ydim1))
     for (dim, coord) in o.coords.items()
         i = DimensionalData.dimnum(ds, Symbol(dim))
-        @test collect(coord.values) == DimensionalData.index(DimensionalData.dims(ds)[i])
+        @test collect(coord.values) == DimensionalData.index(ds[i])
     end
 
     variables = Dict(collect(o.data_vars.variables.items()))
