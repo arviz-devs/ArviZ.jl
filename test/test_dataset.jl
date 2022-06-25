@@ -156,40 +156,34 @@ end
             @test DimensionalData.index(dim2) isa AbstractRange
         end
     end
+    @test DimensionalData.metadata(ds2) == DimensionalData.metadata(ds)
 end
 
 @testset "ArviZ.convert_to_dataset" begin
-    rng = MersenneTwister(42)
+    nchains = 4
+    ndraws = 100
+    nshared = 3
+    xdims = (:chain, :draw, :shared)
+    x = DimArray(randn(nchains, ndraws, nshared), xdims)
+    ydims = (:chain, :draw, Dim{:ydim1}(Any["a", "b"]), :shared)
+    y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
+    metadata = Dict(:prop1 => "val1", :prop2 => "val2")
+    ds = ArviZ.Dataset((; x, y); metadata)
 
     @testset "ArviZ.convert_to_dataset(::ArviZ.Dataset; kwargs...)" begin
-        data = load_arviz_data("centered_eight")
-        dataset = data.posterior
-        @test ArviZ.convert_to_dataset(dataset) isa ArviZ.Dataset
-        @test ArviZ.convert_to_dataset(dataset) === dataset
-    end
-
-    @testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
-        A = Dict("A" => randn(rng, 2, 10, 2))
-        B = Dict("B" => randn(rng, 2, 10, 2))
-        dataA = ArviZ.convert_to_dataset(A)
-        dataB = ArviZ.convert_to_dataset(B)
-        idata = InferenceData(; posterior=dataA, prior=dataB)
-
-        ds1 = ArviZ.convert_to_dataset(idata)
-        @test ds1 isa ArviZ.Dataset
-        @test "A" ∈ [ds1.keys()...]
-
-        ds2 = ArviZ.convert_to_dataset(idata; group=:prior)
-        @test ds2 isa ArviZ.Dataset
-        @test "B" ∈ [ds2.keys()...]
+        @test ArviZ.convert_to_dataset(ds) isa ArviZ.Dataset
+        @test ArviZ.convert_to_dataset(ds) === ds
     end
 
     @testset "ArviZ.convert_to_dataset(::Dict; kwargs...)" begin
-        data = Dict("x" => randn(rng, 4, 100), "y" => randn(rng, 4, 100))
-        dataset = ArviZ.dict_to_dataset(data)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ [dataset.keys()...]
-        @test "y" ∈ [dataset.keys()...]
+        data = Dict(:x => randn(4, 100), :y => randn(4, 100, 2))
+        ds2 = ArviZ.dict_to_dataset(data)
+        @test ds2 isa ArviZ.Dataset
+        @test ds2[:x] == data[:x]
+        @test DimensionalData.name(DimensionalData.dims(ds2[:x])) == (:chain, :draw)
+        @test ds2[:y] == data[:y]
+        @test DimensionalData.name(DimensionalData.dims(ds2[:y])) ==
+            (:chain, :draw, :y_dim_0)
     end
 end
 

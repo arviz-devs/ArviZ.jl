@@ -126,6 +126,22 @@ end
     ) == []
 end
 
+@testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
+    A = Dict("A" => randn(rng, 2, 10, 2))
+    B = Dict("B" => randn(rng, 2, 10, 2))
+    dataA = ArviZ.convert_to_dataset(A)
+    dataB = ArviZ.convert_to_dataset(B)
+    idata = InferenceData(; posterior=dataA, prior=dataB)
+
+    ds1 = ArviZ.convert_to_dataset(idata)
+    @test ds1 isa ArviZ.Dataset
+    @test "A" ∈ [ds1.keys()...]
+
+    ds2 = ArviZ.convert_to_dataset(idata; group=:prior)
+    @test ds2 isa ArviZ.Dataset
+    @test "B" ∈ [ds2.keys()...]
+end
+
 @testset "convert_to_inference_data" begin
     rng = MersenneTwister(42)
 
