@@ -33,9 +33,6 @@ Dataset(data::Dataset) = data
 
 Base.parent(data::Dataset) = getfield(data, :data)
 
-Base.convert(::Type{Dataset}, obj::Dataset) = obj
-Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
-
 Base.propertynames(data::Dataset) = propertynames(parent(data))
 
 Base.getproperty(data::Dataset, k::Symbol) = getproperty(parent(data), k)
@@ -47,6 +44,9 @@ end
 @deprecate setattribute!(data::Dataset, key::AbstractString, value) setattribute!(
     data, Symbol(k), value
 ) false
+
+Base.convert(::Type{Dataset}, obj::Dataset) = obj
+Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
 
 @doc doc"""
     convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
