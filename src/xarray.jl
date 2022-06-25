@@ -56,7 +56,7 @@ function _to_xarray(data::DimensionalData.AbstractDimArray)
     var_name = DimensionalData.name(data)
     data_dims = DimensionalData.dims(data)
     dims = collect(DimensionalData.name(data_dims))
-    coords = Dict(zip(dims, DimensionalData.index.(data_dims)))
+    coords = Dict(zip(dims, DimensionalData.index(data_dims)))
     default_dims = String[]
     values = parent(data)
     return arviz.numpy_to_data_array(values; var_name, dims, coords, default_dims)
