@@ -72,7 +72,6 @@ export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
 
 ## Data
 export InferenceData,
-    Dataset,
     convert_to_inference_data,
     extract_dataset,
     load_arviz_data,
