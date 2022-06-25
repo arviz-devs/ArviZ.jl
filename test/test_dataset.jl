@@ -38,7 +38,7 @@ using ArviZ, DimensionalData, PyObject, Test
             data = (
                 DimensionalData.rebuild(x; name=:x), DimensionalData.rebuild(y; name=:y)
             )
-            ds = ArviZ.Dataset(data...; metadata=metadata)
+            ds = ArviZ.Dataset(data...; metadata)
             @test ds isa ArviZ.Dataset
             @test values(DimensionalData.data(ds)) == data
             for dim in xdims
@@ -64,10 +64,46 @@ using ArviZ, DimensionalData, PyObject, Test
         end
     end
 
+    nchains = 4
+    ndraws = 100
+    nshared = 3
+    xdims = (:chain, :draw, :shared)
+    x = DimArray(randn(nchains, ndraws, nshared), xdims)
+    ydims = (:chain, :draw, :ydim1, :shared)
+    y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
+    metadata = Dict(:prop1 => "val1", :prop2 => "val2")
+    ds = ArviZ.Dataset((; x, y); metadata)
+
+    @testset "parent" begin
+        @test parent(ds) isa DimStack
+        @test parent(ds) == ds
+    end
+
     @testset "properties" begin
-        @test length(propertynames(dataset)) > 1
-        @test dataset["mu"] isa PyObject
-        @test dataset["mu"].values == py"$(dataset)['mu'].values"
+        @test @inferred(propertynames(ds)) === propertynames(parent(ds))
+        @test hasproperty(ds, :data)
+        @test getproperty(ds, :data) === DimensionalData.data(ds)
+    end
+
+    @testset "getindex" begin
+        @test ds[:x] isa DimArray
+        @test ds[:x] == x
+        @test ds[:y] isa DimArray
+        @test ds[:y] == y
+    end
+
+    @testset "copy/deepcopy" begin
+        @test copy(ds) == ds
+        @test deepcopy(ds) == ds
+    end
+
+    @testset "attributes" begin
+        @test ArviZ.attributes(ds) == metadata
+        dscopy = deepcopy(ds)
+        ArviZ.setattribute!(dscopy, :prop3, "val3")
+        @test ArviZ.attributes(dscopy)[:prop3] == "val3"
+        @test_deprecated ArviZ.setattribute!(dscopy, "prop3", "val4")
+        @test ArviZ.attributes(dscopy)[:prop3] == "val4"
     end
 
     @testset "conversion" begin

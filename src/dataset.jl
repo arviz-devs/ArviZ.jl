@@ -37,11 +37,11 @@ Base.propertynames(data::Dataset) = propertynames(parent(data))
 
 Base.getproperty(data::Dataset, k::Symbol) = getproperty(parent(data), k)
 
-function setattribute!(data::Dataset, key::Symbol, value)
-    setindex!(metadata(data), value, key)
+function setattribute!(data::Dataset, k::Symbol, value)
+    setindex!(DimensionalData.metadata(data), value, k)
     return value
 end
-@deprecate setattribute!(data::Dataset, key::AbstractString, value) setattribute!(
+@deprecate setattribute!(data::Dataset, k::AbstractString, value) setattribute!(
     data, Symbol(k), value
 ) false
 
