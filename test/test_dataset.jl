@@ -189,62 +189,69 @@ end
 
 @testset "ArviZ.convert_to_constant_dataset" begin
     @testset "ArviZ.convert_to_constant_dataset(::Dict)" begin
-        data = Dict("x" => randn(4, 5), "y" => ["a", "b", "c"])
-        dataset = ArviZ.convert_to_constant_dataset(data)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ dataset.keys()
-        @test "y" ∈ dataset.keys()
-        @test Set(dataset.coords) == Set(["x_dim_0", "x_dim_1", "y_dim_0"])
-        @test collect(dataset._variables["x"].values) == data["x"]
-        @test collect(dataset._variables["y"].values) == data["y"]
+        data = Dict(:x => randn(4, 5), :y => ["a", "b", "c"])
+        ds = ArviZ.convert_to_constant_dataset(data)
+        @test ds isa ArviZ.Dataset
+        @test issetequal(keys(ds), keys(data))
+        @test :x ∈ keys(ds)
+        @test :y ∈ keys(ds)
+        @test issetequal(
+            DimensionalData.name(DimensionalData.dims(ds)), (:x_dim_0, :x_dim_1, :y_dim_0)
+        )
+        @test ds[:x] == data[:x]
+        @test ds[:y] == data[:y]
     end
 
     @testset "ArviZ.convert_to_constant_dataset(::Dict; kwargs...)" begin
-        data = Dict("x" => randn(4, 5), "y" => ["a", "b", "c"])
-        coords = Dict("xdim1" => 1:4, "xdim2" => 5:9, "ydim1" => ["d", "e", "f"])
-        dims = Dict("x" => ["xdim1", "xdim2"], "y" => ["ydim1"])
+        data = Dict(:x => randn(4, 5), :y => ["a", "b", "c"])
+        coords = Dict(:xdim1 => 1:4, :xdim2 => 5:9, :ydim1 => ["d", "e", "f"])
+        dims = Dict(:x => [:xdim1, :xdim2], :y => [:ydim1])
         library = "MyLib"
-        dataset = ArviZ.convert_to_constant_dataset(data)
-        attrs = Dict("prop" => "propval")
-
-        dataset = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ dataset.keys()
-        @test "y" ∈ dataset.keys()
-        @test Set(dataset.coords) == Set(["xdim1", "xdim2", "ydim1"])
-        @test collect(dataset._variables["xdim1"].values) == coords["xdim1"]
-        @test collect(dataset._variables["xdim2"].values) == coords["xdim2"]
-        @test collect(dataset._variables["ydim1"].values) == coords["ydim1"]
-        @test collect(dataset["x"].coords) == ["xdim1", "xdim2"]
-        @test collect(dataset["y"].coords) == ["ydim1"]
-        @test collect(dataset._variables["x"].values) == data["x"]
-        @test collect(dataset._variables["y"].values) == data["y"]
-        @test dataset.attrs["prop"] == attrs["prop"]
-        @test dataset.attrs["inference_library"] == library
+        attrs = Dict(:prop => "propval")
+        ds = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
+        @test ds isa ArviZ.Dataset
+        @test :x ∈ keys(ds)
+        @test :y ∈ keys(ds)
+        @test issetequal(DimensionalData.name(DimensionalData.dims(ds)), keys(coords))
+        @test ds[:x] == data[:x]
+        @test ds[:y] == data[:y]
+        for varname in keys(dims)
+            @test ds[varname] == data[varname]
+            @test collect(DimensionalData.name(DimensionalData.dims(ds[varname]))) ==
+                dims[varname]
+        end
+        for k in keys(coords)
+            @test DimensionalData.index(ds, k) == coords[k]
+        end
+        @test ArviZ.attributes(ds)[:prop] == "propval"
+        @test ArviZ.attributes(ds)[:inference_library] == library
     end
 
     @testset "ArviZ.convert_to_constant_dataset(::NamedTuple; kwargs...)" begin
         data = (x=randn(4, 5), y=["a", "b", "c"])
         coords = (xdim1=1:4, xdim2=5:9, ydim1=["d", "e", "f"])
-        dims = (x=["xdim1", "xdim2"], y=["ydim1"])
+        dims = (x=[:xdim1, :xdim2], y=[:ydim1])
         library = "MyLib"
         dataset = ArviZ.convert_to_constant_dataset(data)
         attrs = (prop="propval",)
 
-        dataset = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ dataset.keys()
-        @test "y" ∈ dataset.keys()
-        @test Set(dataset.coords) == Set(["xdim1", "xdim2", "ydim1"])
-        @test collect(dataset._variables["xdim1"].values) == coords.xdim1
-        @test collect(dataset._variables["xdim2"].values) == coords.xdim2
-        @test collect(dataset._variables["ydim1"].values) == coords.ydim1
-        @test collect(dataset["x"].coords) == ["xdim1", "xdim2"]
-        @test collect(dataset["y"].coords) == ["ydim1"]
-        @test collect(dataset._variables["x"].values) == data.x
-        @test collect(dataset._variables["y"].values) == data.y
-        @test dataset.attrs["prop"] == attrs.prop
-        @test dataset.attrs["inference_library"] == library
+        ds = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
+        @test ds isa ArviZ.Dataset
+        @test :x ∈ keys(ds)
+        @test :y ∈ keys(ds)
+        @test issetequal(DimensionalData.name(DimensionalData.dims(ds)), keys(coords))
+        @test ds[:x] == data.x
+        @test ds[:y] == data.y
+        for varname in keys(dims)
+            @test ds[varname] == getproperty(data, varname)
+            @test collect(DimensionalData.name(DimensionalData.dims(ds[varname]))) ==
+                getproperty(dims, varname)
+        end
+        for k in keys(coords)
+            @test DimensionalData.index(ds, k) == getproperty(coords, k)
+        end
+        @test ArviZ.attributes(ds)[:prop] == "propval"
+        @test ArviZ.attributes(ds)[:inference_library] == library
     end
 end
 
