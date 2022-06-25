@@ -1,33 +1,66 @@
+using ArviZ, DimensionalData, PyObject, Test
+
 @testset "ArviZ.Dataset" begin
     data = load_arviz_data("centered_eight")
     dataset = data.posterior
     @test dataset isa ArviZ.Dataset
 
-    @testset "construction" begin
-        pydataset = PyObject(dataset)
-        @test ArviZ.Dataset(pydataset) isa ArviZ.Dataset
-        @test PyObject(ArviZ.Dataset(pydataset)) === pydataset
-        @test ArviZ.Dataset(dataset) === dataset
-        @test_throws ArgumentError ArviZ.Dataset(py"PyNullObject()")
-        @test hash(dataset) == hash(pydataset)
+    @testset "Constructors" begin
+        nchains = 4
+        ndraws = 100
+        nshared = 3
+        xdims = (:chain, :draw, :shared)
+        x = DimArray(randn(nchains, ndraws, nshared), xdims)
+        ydims = (:chain, :draw, :ydim1, :shared)
+        y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
+        metadata = Dict(:prop1 => "val1", :prop2 => "val2")
 
-        vars = Dict("x" => ("dimx", randn(3)), ("y" => (("dimy_1", "dimy_2"), randn(3, 2))))
-        coords = Dict(
-            "dimx" => [1, 2, 3], "dimy_1" => ["a", "b", "c"], "dimy_2" => ["d", "e"]
-        )
-        attrs = Dict("prop1" => 1, "prop2" => "propval")
-        @inferred ArviZ.Dataset(; data_vars=vars, coords, attrs)
-        ds = ArviZ.Dataset(; data_vars=vars, coords, attrs)
-        @test ds isa ArviZ.Dataset
-        vars2, kwargs = ArviZ.dataset_to_dict(ds)
-        for (k, v) in vars
-            @test k ∈ keys(vars2)
-            @test vars2[k] ≈ v[2]
+        @testset "from NamedTuple" begin
+            data = (; x, y)
+            ds = ArviZ.Dataset(data; metadata)
+            @test ds isa ArviZ.Dataset
+            @test DimensionalData.data(ds) == data
+            for dim in xdims
+                @test DimensionalData.hasdim(ds, dim)
+            end
+            for dim in ydims
+                @test DimensionalData.hasdim(ds, dim)
+            end
+            for (var_name, dims) in ((:x, xdims), (:y, ydims))
+                da = ds[var_name]
+                @test DimensionalData.name(da) === var_name
+                @test DimensionalData.name(DimensionalData.dims(da)) === dims
+            end
+            @test DimensionalData.metadata(ds) == metadata
         end
-        @test kwargs.coords == coords
-        for (k, v) in attrs
-            @test k ∈ keys(kwargs.attrs)
-            @test kwargs.attrs[k] == v
+
+        @testset "from DimArrays" begin
+            data = (
+                DimensionalData.rebuild(x; name=:x), DimensionalData.rebuild(y; name=:y)
+            )
+            ds = ArviZ.Dataset(data...; metadata=metadata)
+            @test ds isa ArviZ.Dataset
+            @test values(DimensionalData.data(ds)) == data
+            for dim in xdims
+                @test DimensionalData.hasdim(ds, dim)
+            end
+            for dim in ydims
+                @test DimensionalData.hasdim(ds, dim)
+            end
+            for (var_name, dims) in ((:x, xdims), (:y, ydims))
+                da = ds[var_name]
+                @test DimensionalData.name(da) === var_name
+                @test DimensionalData.name(DimensionalData.dims(da)) === dims
+            end
+            @test DimensionalData.metadata(ds) == metadata
+        end
+
+        @testset "errors with mismatched dimensions" begin
+            data_bad = (
+                x=DimArray(randn(3, 100, 3), (:chains, :draws, :shared)),
+                y=DimArray(randn(4, 100, 2, 3), (:chains, :draws, :ydim1, :shared)),
+            )
+            @test_throws ErrorException ArviZ.Dataset(data_bad)
         end
     end
 
