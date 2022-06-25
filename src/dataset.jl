@@ -156,7 +156,8 @@ function dataset_to_dict(ds::Dataset)
     attrs = Dict(pairs(attributes(ds)))
     dims = Dict(pairs(map(collect ∘ DimensionalData.name, DimensionalData.layerdims(ds))))
     coords = Dict(
-        Symbol(DimensionalData.name(d)) => collect(d) for d in DimensionalData.dims(ds)
+        Symbol(DimensionalData.name(d)) => DimensionalData.index(d) for
+        d in DimensionalData.dims(ds)
     )
     return data, (; attrs, coords, dims)
 end
