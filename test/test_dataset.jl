@@ -1,4 +1,4 @@
-using ArviZ, DimensionalData, PyCall, Random, Test
+using ArviZ, DimensionalData, PyCall, Test
 
 @testset "ArviZ.Dataset" begin
     @testset "Constructors" begin
@@ -126,8 +126,7 @@ end
 
     @test issetequal(Symbol.(o.coords.keys()), (:chain, :draw, :shared, :ydim1))
     for (dim, coord) in o.coords.items()
-        i = DimensionalData.dimnum(ds, Symbol(dim))
-        @test collect(coord.values) == DimensionalData.index(ds[i])
+        @test collect(coord.values) == DimensionalData.index(ds, Symbol(dim))
     end
 
     variables = Dict(collect(o.data_vars.variables.items()))
@@ -256,17 +255,14 @@ end
 end
 
 @testset "dict to dataset roundtrip" begin
-    rng = MersenneTwister(42)
     J = 8
     K = 6
     nchains = 4
     ndraws = 500
-    vars = Dict(
-        "a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, J, K)
-    )
-    coords = Dict("bi" => 1:J, "bj" => 1:K)
-    dims = Dict("b" => ["bi", "bj"])
-    attrs = Dict("mykey" => 5)
+    vars = Dict(:a => randn(nchains, ndraws), :b => randn(nchains, ndraws, J, K))
+    coords = Dict(:bi => 1:J, :bj => 1:K)
+    dims = Dict(:b => [:bi, :bj])
+    attrs = Dict(:mykey => 5)
 
     ds = ArviZ.dict_to_dataset(vars; library=:MyLib, coords, dims, attrs)
     @test ds isa ArviZ.Dataset
@@ -281,6 +277,6 @@ end
         @test k ∈ keys(kwargs.attrs)
         @test kwargs.attrs[k] == v
     end
-    @test "inference_library" ∈ keys(kwargs.attrs)
-    @test kwargs.attrs["inference_library"] == "MyLib"
+    @test :inference_library ∈ keys(kwargs.attrs)
+    @test kwargs.attrs[:inference_library] == "MyLib"
 end
