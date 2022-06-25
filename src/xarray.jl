@@ -12,16 +12,18 @@ function _dimarray_from_xarray(o::PyObject)
     pyisinstance(o, xarray.DataArray) ||
         throw(ArgumentError("argument is not an `xarray.DataArray`."))
     name = Symbol(o.name)
-    data = o.to_numpy()
+    data = _process_pyarray(o.to_numpy())
     coords = PyCall.PyDict(o.coords)
-    dims = Tuple(map(d -> _wrap_dims(Symbol(d), _process_dims(coords[d].values)), o.dims))
+    dims = Tuple(
+        map(d -> _wrap_dims(Symbol(d), _process_pyarray(coords[d].values)), o.dims)
+    )
     return DimensionalData.DimArray(data, dims; name)
 end
 
-_process_dims(dims) = dims
+_process_pyarray(x) = x
 # NOTE: sometimes strings fail to convert to Julia types, so we try to force them here
-function _process_dims(dims::Union{PyObject,<:AbstractVector{PyObject}})
-    return map(x -> x isa PyObject ? PyAny(x)::Any : x, dims)
+function _process_pyarray(x::Union{PyObject,<:AbstractVector{PyObject}})
+    return map(z -> z isa PyObject ? PyAny(z)::Any : z, x)
 end
 
 # wrap dims in a `Dim`, converting to an AbstractRange if possible
