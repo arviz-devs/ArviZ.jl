@@ -12,23 +12,23 @@ Container for inference data storage using DimensionalData.
 Instead of directly creating an `InferenceData`, use the exported `from_xyz` functions or
 [`convert_to_inference_data`](@ref).
 """
-struct InferenceData{group_names,groups}
-    groups::NamedTuple{group_names,groups}
+struct InferenceData{group_names,group_types<:Tuple{Vararg{Dataset}}}
+    groups::NamedTuple{group_names,group_types}
+    function InferenceData(groups::NamedTuple{group_names,<:Tuple{Vararg{Dataset}}}) where {group_names}
+        group_names_ordered = _reorder_group_names(Val{group_names}())
+        groups_ordered = NamedTuple{group_names_ordered}(groups)
+        return new{group_names_ordered,typeof(values(groups_ordered))}(groups_ordered)
+    end
 end
 InferenceData(; kwargs...) = InferenceData(NamedTuple(kwargs))
 InferenceData(data::InferenceData) = data
-function InferenceData(data::NamedTuple)
-    groups_reordered = _reorder_groups(data)
-    group_names, groups = _keys_and_types(groups_reordered)
-    return InferenceData{group_names,groups}(groups_reordered)
-end
 
 Base.parent(data::InferenceData) = getfield(data, :groups)
 
-Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
-Base.convert(::Type{NamedTuple}, data::InferenceData) = NamedTuple(data)
+Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 
+Base.convert(::Type{NamedTuple}, data::InferenceData) = NamedTuple(data)
 NamedTuple(data::InferenceData) = parent(data)
 
 # these 3 interfaces ensure InferenceData behaves like a NamedTuple
@@ -60,6 +60,7 @@ function Base.map(f, data::InferenceData)
 end
 
 @forwardfun extract_dataset
+convert_result(::typeof(extract_dataset), result, args...) = convert(Dataset, result)
 
 @deprecate (data1::InferenceData + data2::InferenceData) convert(
     InferenceData, PyObject(data1) + PyObject(data2)
@@ -161,10 +162,8 @@ function rekey(data::InferenceData, keymap)
     return InferenceData(groups_new)
 end
 
-_reorder_groups(group::NamedTuple) = _reorder_groups_type(typeof(group))(group)
-
-@generated function _reorder_groups_type(::Type{<:NamedTuple{names}}) where {names}
-    return NamedTuple{Tuple(sort(collect(names); by = k -> SUPPORTED_GROUPS_DICT[k]))}
+@generated function _reorder_group_names(::Val{names}) where {names}
+    return Tuple(sort(collect(names); by = k -> SUPPORTED_GROUPS_DICT[k]))
 end
 
 @generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
