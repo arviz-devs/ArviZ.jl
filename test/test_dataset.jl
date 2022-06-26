@@ -218,10 +218,10 @@ using ArviZ, DimensionalData, PyCall, Test
             @test issetequal(DimensionalData.name(DimensionalData.dims(ds)), keys(coords))
             @test ds.x == data[:x]
             @test ds.y == data[:y]
-            for varname in keys(dims)
-                @test ds[varname] == data[varname]
-                @test collect(DimensionalData.name(DimensionalData.dims(ds[varname]))) ==
-                    dims[varname]
+            for var_name in keys(dims)
+                @test ds[var_name] == data[var_name]
+                @test collect(DimensionalData.name(DimensionalData.dims(ds[var_name]))) ==
+                    dims[var_name]
             end
             for k in keys(coords)
                 @test DimensionalData.index(ds, k) == coords[k]
@@ -245,10 +245,10 @@ using ArviZ, DimensionalData, PyCall, Test
             @test issetequal(DimensionalData.name(DimensionalData.dims(ds)), keys(coords))
             @test ds.x == data.x
             @test ds.y == data.y
-            for varname in keys(dims)
-                @test ds[varname] == getproperty(data, varname)
-                @test collect(DimensionalData.name(DimensionalData.dims(ds[varname]))) ==
-                    getproperty(dims, varname)
+            for var_name in keys(dims)
+                @test ds[var_name] == getproperty(data, var_name)
+                @test collect(DimensionalData.name(DimensionalData.dims(ds[var_name]))) ==
+                    getproperty(dims, var_name)
             end
             for k in keys(coords)
                 @test DimensionalData.index(ds, k) == getproperty(coords, k)
