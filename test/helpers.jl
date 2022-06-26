@@ -107,6 +107,28 @@ function noncentered_schools_data()
     )
 end
 
+function test_idata_approx_equal(idata1::InferenceData, idata2::InferenceData)
+    @test ArviZ.groupnames(idata1) === ArviZ.groupnames(idata2)
+    for (ds1, ds2) in zip(idata1, idata2)
+        @test issetequal(keys(ds1), keys(ds2))
+        for var_name in keys(ds1)
+            da1 = ds1[var_name]
+            da2 = ds2[var_name]
+            @test da1 ≈ da2
+            dims1 = DimensionalData.dims(da1)
+            dims2 = DimensionalData.dims(da2)
+            @test DimensionalData.name(dims1) == DimensionalData.name(dims2)
+            @test DimensionalData.index(dims1) == DimensionalData.index(dims2)
+        end
+        metadata1 = DimensionalData.metadata(ds1)
+        metadata2 = DimensionalData.metadata(ds2)
+        @test issetequal(keys(metadata1), keys(metadata2))
+        for k in keys(metadata1)
+            @test metadata1[k] == metadata2[k]
+        end
+    end
+end
+
 function check_multiple_attrs(test_dict, parent)
     failed_attrs = []
     for (dataset_name, attributes) in test_dict
