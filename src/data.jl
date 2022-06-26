@@ -23,14 +23,40 @@ function InferenceData(data::NamedTuple)
     return InferenceData{group_names,groups}(groups_reordered)
 end
 
+Base.parent(data::InferenceData) = getfield(data, :groups)
+
 Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
+Base.convert(::Type{NamedTuple}, data::InferenceData) = NamedTuple(data)
 
-Base.propertynames(data::InferenceData) = groupnames(data)
+NamedTuple(data::InferenceData) = parent(data)
 
-Base.hasproperty(data::InferenceData, k::Symbol) = hasgroup(data, k)
+# these 3 interfaces ensure InferenceData behaves like a NamedTuple
 
-Base.getproperty(data::InferenceData, k::Symbol) = getproperty(groups(data), k)
+# properties interface
+Base.propertynames(data::InferenceData) = propertynames(parent(data))
+Base.getproperty(data::InferenceData, k::Symbol) = getproperty(parent(data), k)
+
+# indexing interface
+Base.getindex(data::InferenceData, k) = parent(data)[k]
+function Base.setindex(data::InferenceData, v, k::Symbol)
+    return InferenceData(Base.setindex(parent(data), v, k))
+end
+
+# iteration interface
+Base.keys(data::InferenceData) = keys(parent(data))
+Base.haskey(data::InferenceData, k::Symbol) = haskey(parent(data), k)
+Base.values(data::InferenceData) = values(parent(data))
+Base.pairs(data::InferenceData) = pairs(parent(data))
+Base.length(data::InferenceData) = length(parent(data))
+Base.iterate(data::InferenceData, i...) = Base.iterate(parent(data), i...)
+
+function Base.map(f, data::InferenceData)
+    ret = map(f, parent(data))
+    # if output can be an InferenceData, then make it so
+    ret isa NamedTuple{<:Any,<:Tuple{Vararg{Dataset}}} && return InferenceData(ret)
+    return ret
+end
 
 @forwardfun extract_dataset
 
@@ -60,27 +86,25 @@ function Base.show(io::IO, mime::MIME"text/html", data::InferenceData)
 end
 
 """
-    groupnames(data::InferenceData) -> Vector{Symbol}
+    groups(data::InferenceData)
 
-Get the names of the groups (datasets) in `data`.
+Get the groups in `data` as a named tuple mapping symbols to [`Datasets`](@ref).
+"""
+groups(data::InferenceData) = parent(data)
+
+"""
+    groupnames(data::InferenceData)
+
+Get the names of the groups (datasets) in `data` as a tuple of symbols.
 """
 groupnames(data::InferenceData) = keys(groups(data))
-
-"""
-    groups(data::InferenceData) -> Dict{Symbol,Dataset}
-
-Get the groups in `data` as a dictionary mapping names to datasets.
-"""
-groups(data::InferenceData) = getfield(data, :groups)
 
 """
     hasgroup(data::InferenceData, name::Symbol) -> Bool
 
 Return `true` if a group with name `name` is stored in `data`.
 """
-hasgroup(data::InferenceData, name::Symbol) = haskey(groups(data), name)
-
-Base.isempty(data::InferenceData) = isempty(groups(data))
+hasgroup(data::InferenceData, name::Symbol) = haskey(data, name)
 
 @forwardfun convert_to_inference_data
 
