@@ -196,7 +196,8 @@ using ArviZ, DimensionalData, PyCall, Test
             @test :x ∈ keys(ds)
             @test :y ∈ keys(ds)
             @test issetequal(
-                DimensionalData.name(DimensionalData.dims(ds)), (:x_dim_0, :x_dim_1, :y_dim_0)
+                DimensionalData.name(DimensionalData.dims(ds)),
+                (:x_dim_0, :x_dim_1, :y_dim_0),
             )
             @test ds[:x] == data[:x]
             @test ds[:y] == data[:y]
