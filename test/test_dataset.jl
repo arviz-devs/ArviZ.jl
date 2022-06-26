@@ -77,9 +77,11 @@ using ArviZ, DimensionalData, PyCall, Test
         end
 
         @testset "properties" begin
-            @test @inferred(propertynames(ds)) === propertynames(parent(ds))
-            @test hasproperty(ds, :data)
-            @test getproperty(ds, :data) === DimensionalData.data(ds)
+            @test propertynames(ds) == (:x, :y)
+            @test ds.x isa DimArray
+            @test ds.x == x
+            @test ds.y isa DimArray
+            @test ds.y == y
         end
 
         @testset "getindex" begin
@@ -145,8 +147,8 @@ using ArviZ, DimensionalData, PyCall, Test
 
         ds2 = convert(ArviZ.Dataset, o)
         @test ds2 isa ArviZ.Dataset
-        @test ds2[:x] ≈ ds[:x]
-        @test ds2[:y] ≈ ds[:y]
+        @test ds2.x ≈ ds.x
+        @test ds2.y ≈ ds.y
         dims1 = sort(collect(DimensionalData.dims(ds)); by=DimensionalData.name)
         dims2 = sort(collect(DimensionalData.dims(ds2)); by=DimensionalData.name)
         for (dim1, dim2) in zip(dims1, dims2)
@@ -179,10 +181,10 @@ using ArviZ, DimensionalData, PyCall, Test
             data = Dict(:x => randn(4, 100), :y => randn(4, 100, 2))
             ds2 = ArviZ.dict_to_dataset(data)
             @test ds2 isa ArviZ.Dataset
-            @test ds2[:x] == data[:x]
-            @test DimensionalData.name(DimensionalData.dims(ds2[:x])) == (:chain, :draw)
-            @test ds2[:y] == data[:y]
-            @test DimensionalData.name(DimensionalData.dims(ds2[:y])) ==
+            @test ds2.x == data[:x]
+            @test DimensionalData.name(DimensionalData.dims(ds2.x)) == (:chain, :draw)
+            @test ds2.y == data[:y]
+            @test DimensionalData.name(DimensionalData.dims(ds2.y)) ==
                 (:chain, :draw, :y_dim_0)
         end
     end
@@ -199,8 +201,8 @@ using ArviZ, DimensionalData, PyCall, Test
                 DimensionalData.name(DimensionalData.dims(ds)),
                 (:x_dim_0, :x_dim_1, :y_dim_0),
             )
-            @test ds[:x] == data[:x]
-            @test ds[:y] == data[:y]
+            @test ds.x == data[:x]
+            @test ds.y == data[:y]
         end
 
         @testset "ArviZ.convert_to_constant_dataset(::Dict; kwargs...)" begin
@@ -214,8 +216,8 @@ using ArviZ, DimensionalData, PyCall, Test
             @test :x ∈ keys(ds)
             @test :y ∈ keys(ds)
             @test issetequal(DimensionalData.name(DimensionalData.dims(ds)), keys(coords))
-            @test ds[:x] == data[:x]
-            @test ds[:y] == data[:y]
+            @test ds.x == data[:x]
+            @test ds.y == data[:y]
             for varname in keys(dims)
                 @test ds[varname] == data[varname]
                 @test collect(DimensionalData.name(DimensionalData.dims(ds[varname]))) ==
@@ -241,8 +243,8 @@ using ArviZ, DimensionalData, PyCall, Test
             @test :x ∈ keys(ds)
             @test :y ∈ keys(ds)
             @test issetequal(DimensionalData.name(DimensionalData.dims(ds)), keys(coords))
-            @test ds[:x] == data.x
-            @test ds[:y] == data.y
+            @test ds.x == data.x
+            @test ds.y == data.y
             for varname in keys(dims)
                 @test ds[varname] == getproperty(data, varname)
                 @test collect(DimensionalData.name(DimensionalData.dims(ds[varname]))) ==

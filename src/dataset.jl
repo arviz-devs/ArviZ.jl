@@ -33,9 +33,9 @@ Dataset(data::Dataset) = data
 
 Base.parent(data::Dataset) = getfield(data, :data)
 
-Base.propertynames(data::Dataset) = propertynames(parent(data))
+Base.propertynames(data::Dataset) = keys(data)
 
-Base.getproperty(data::Dataset, k::Symbol) = getproperty(parent(data), k)
+Base.getproperty(data::Dataset, k::Symbol) = getindex(data, k)
 
 function setattribute!(data::Dataset, k::Symbol, value)
     setindex!(DimensionalData.metadata(data), value, k)
@@ -173,6 +173,12 @@ function dataset_to_dict(ds::Dataset)
 end
 
 # DimensionalData interop
+
+for f in [:data, :dims, :refdims, :metadata, :layerdims, :layermetadata]
+    @eval begin
+        DimensionalData.$(f)(ds::Dataset) = DimensionalData.$(f)(parent(ds))
+    end
+end
 
 # Warning: this is not an API function and probably should be implemented abstractly upstream
 DimensionalData.show_after(io, mime, ::Dataset) = nothing
