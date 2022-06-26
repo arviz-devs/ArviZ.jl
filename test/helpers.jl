@@ -44,7 +44,9 @@ function random_data()
     prior = random_dataset(var_names, dims, coords, metadata)
     prior_predictive = random_dataset(data_names, dims, coords, metadata)
     observed_data = random_dataset(data_names, dims, coords, metadata, ())
-    return InferenceData(; posterior, posterior_predictive, prior, prior_predictive, observed_data)
+    return InferenceData(;
+        posterior, posterior_predictive, prior, prior_predictive, observed_data
+    )
 end
 
 function create_model(seed=10)

@@ -14,7 +14,9 @@ Instead of directly creating an `InferenceData`, use the exported `from_xyz` fun
 """
 struct InferenceData{group_names,group_types<:Tuple{Vararg{Dataset}}}
     groups::NamedTuple{group_names,group_types}
-    function InferenceData(groups::NamedTuple{group_names,<:Tuple{Vararg{Dataset}}}) where {group_names}
+    function InferenceData(
+        groups::NamedTuple{group_names,<:Tuple{Vararg{Dataset}}}
+    ) where {group_names}
         group_names_ordered = _reorder_group_names(Val{group_names}())
         groups_ordered = NamedTuple{group_names_ordered}(groups)
         return new{group_names_ordered,typeof(values(groups_ordered))}(groups_ordered)
@@ -163,7 +165,7 @@ function rekey(data::InferenceData, keymap)
 end
 
 @generated function _reorder_group_names(::Val{names}) where {names}
-    return Tuple(sort(collect(names); by = k -> SUPPORTED_GROUPS_DICT[k]))
+    return Tuple(sort(collect(names); by=k -> SUPPORTED_GROUPS_DICT[k]))
 end
 
 @generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
