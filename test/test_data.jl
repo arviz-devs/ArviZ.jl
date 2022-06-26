@@ -105,6 +105,25 @@ using MonteCarloMeasurements: Particles
     end
 end
 
+@testset "InferenceData <-> PyObject" begin
+    idata = random_data()
+    pyidata = PyObject(idata)
+    @test pyidata isa PyObject
+    @test pyisinstance(pyidata, ArviZ.arviz.InferenceData)
+    idata2 = convert(InferenceData, pyidata)
+    @test ArviZ.groupnames(idata2) === ArviZ.groupnames(idata)
+    for (ds1, ds2) in zip(idata, idata2)
+        @test issetequal(keys(ds2), keys(ds1))
+        for var_name in keys(ds2)
+            arr1 = ds1[var_name]
+            arr2 = ds2[var_name]
+            @test arr1 == arr2
+            @test DimensionalData.dims(arr2) == DimensionalData.dims(arr1)
+        end
+        @test pairs(DimensionalData.metadata(ds2)) == pairs(DimensionalData.metadata(ds1))
+    end
+end
+
 @testset "extract_dataset" begin
     idata = random_data()
     post = extract_dataset(idata, :posterior; combined=false)
