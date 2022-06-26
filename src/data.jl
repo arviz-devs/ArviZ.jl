@@ -64,10 +64,6 @@ end
 @forwardfun extract_dataset
 convert_result(::typeof(extract_dataset), result, args...) = convert(Dataset, result)
 
-@deprecate (data1::InferenceData + data2::InferenceData) convert(
-    InferenceData, PyObject(data1) + PyObject(data2)
-)
-
 function Base.show(io::IO, ::MIME"text/plain", data::InferenceData)
     print(io, "InferenceData with groups:")
     prefix = "\n    > "
