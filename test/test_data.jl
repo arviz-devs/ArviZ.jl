@@ -137,74 +137,87 @@ end
 end
 
 @testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
-    A = Dict("A" => randn(rng, 2, 10, 2))
-    B = Dict("B" => randn(rng, 2, 10, 2))
-    dataA = ArviZ.convert_to_dataset(A)
-    dataB = ArviZ.convert_to_dataset(B)
-    idata = InferenceData(; posterior=dataA, prior=dataB)
-
-    ds1 = ArviZ.convert_to_dataset(idata)
-    @test ds1 isa ArviZ.Dataset
-    @test "A" ∈ [ds1.keys()...]
-
-    ds2 = ArviZ.convert_to_dataset(idata; group=:prior)
-    @test ds2 isa ArviZ.Dataset
-    @test "B" ∈ [ds2.keys()...]
+    idata = random_data()
+    @test ArviZ.convert_to_dataset(idata) === idata.posterior
+    @test ArviZ.convert_to_dataset(idata; group=:prior) === idata.prior
 end
 
 @testset "convert_to_inference_data" begin
-    rng = MersenneTwister(42)
-
     @testset "convert_to_inference_data(::Dict)" begin
-        dataset = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
-        idata1 = convert_to_inference_data(dataset)
-        @test idata1 isa InferenceData
-        @test check_multiple_attrs(Dict(:posterior => ["A", "B"]), idata1) == []
+        data = Dict(:A => randn(2, 10, 2), :B => randn(2, 10, 5, 2))
+        idata = convert_to_inference_data(data)
+        @test idata isa InferenceData
+        @test ArviZ.groupnames(idata) == (:posterior,)
+        posterior = idata.posterior
+        @test posterior.A == data[:A]
+        @test posterior.B == data[:B]
+        idata2 = convert_to_inference_data(data; group=:prior)
+        @test ArviZ.groupnames(idata2) == (:prior,)
+        @test idata2.prior == idata.posterior
     end
 
     @testset "convert_to_inference_data(::Array)" begin
-        arr = randn(rng, 2, 10, 2)
-        idata2 = convert_to_inference_data(arr)
-        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata2) == []
+        data = randn(2, 10, 2)
+        idata = convert_to_inference_data(data)
+        @test idata isa InferenceData
+        @test ArviZ.groupnames(idata) == (:posterior,)
+        posterior = idata.posterior
+        @test posterior.x == data
+        idata2 = convert_to_inference_data(data; group=:prior)
+        @test ArviZ.groupnames(idata2) == (:prior,)
+        @test idata2.prior == idata.posterior
     end
 
     @testset "convert_to_inference_data(::Nothing)" begin
-        idata3 = convert_to_inference_data(nothing)
-        @test idata3 isa InferenceData
-        @test isempty(idata3)
+        idata = convert_to_inference_data(nothing)
+        @test idata isa InferenceData
+        @test isempty(idata)
     end
 
     @testset "convert_to_inference_data(::Particles)" begin
-        p = Particles(randn(rng, 10))
-        idata4 = convert_to_inference_data(p)
-        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata4) == []
+        p = Particles(randn(10))
+        idata = convert_to_inference_data(p)
+        @test idata.posterior.x == reshape(p.particles, 1, :)
     end
 
     @testset "convert_to_inference_data(::Vector{Particles})" begin
-        p = [Particles(randn(rng, 10)) for _ in 1:4]
-        idata5 = convert_to_inference_data(p)
-        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata5) == []
+        p = [Particles(randn(10)) for _ in 1:4]
+        idata = convert_to_inference_data(p)
+        @test idata.posterior.x == reduce(vcat, getproperty.(p, :particles)')
     end
+
     @testset "convert_to_inference_data(::Vector{Array{Particles}})" begin
-        p = [Particles(randn(rng, 10, 3)) for _ in 1:4]
-        idata6 = convert_to_inference_data(p)
-        @test check_multiple_attrs(Dict(:posterior => ["x"]), idata6) == []
+        p = [Particles(randn(10, 3)) for _ in 1:4]
+        idata = convert_to_inference_data(p)
+        x = permutedims(
+            cat(map(pi -> reduce(vcat, getproperty.(pi, :particles)'), p)...; dims=3),
+            (3, 2, 1),
+        )
+        @test idata.posterior.x == x
     end
 end
 
 @testset "from_dict" begin
-    rng = MersenneTwister(42)
-
-    posterior = Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
-    prior = Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2))
+    posterior = Dict(:A => randn(2, 10, 2), :B => randn(2, 10, 5, 2))
+    prior = Dict(:C => randn(2, 10, 2), :D => randn(2, 10, 5, 2))
 
     idata = from_dict(posterior; prior)
-    @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), idata
-    ) == []
+    @test ArviZ.groupnames(idata) == (:posterior, :prior)
+    @test idata.posterior.A == posterior[:A]
+    @test idata.posterior.B == posterior[:B]
+    @test idata.prior.C == prior[:C]
+    @test idata.prior.D == prior[:D]
 
     idata2 = from_dict(; prior)
-    @test check_multiple_attrs(Dict(:prior => ["C", "D"]), idata2) == []
+    @test idata2.prior == idata.prior
+end
+
+@testset "load_arviz_data" begin
+    data = load_arviz_data("centered_eight")
+    @test data isa InferenceData
+
+    datasets = load_arviz_data()
+    @test datasets isa Dict
 end
 
 @testset "netcdf roundtrip" begin
@@ -214,15 +227,10 @@ end
         to_netcdf(data, filename)
         data2 = from_netcdf(filename)
         @test data2 isa InferenceData
-        @test propertynames(data) == propertynames(data2)
+        @test ArviZ.groupnames(data) == ArviZ.groupnames(data2)
+        for (ds1, ds2) in zip(data, data2), k in keys(ds1)
+            @test ds1[k] ≈ ds2[k]
+        end
         return nothing
     end
-end
-
-@testset "load_arviz_data" begin
-    data = load_arviz_data("centered_eight")
-    @test data isa InferenceData
-
-    datasets = load_arviz_data()
-    @test datasets isa Dict
 end
