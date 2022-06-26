@@ -1,129 +1,139 @@
+using ArviZ, DimensionalData, Test
 using MonteCarloMeasurements: Particles
 
 @testset "InferenceData" begin
-    data = load_arviz_data("centered_eight")
+    var_names = (:a, :b)
+    data_names = (:y,)
+    coords = (
+        chain=1:4, draw=1:100, shared=["s1", "s2", "s3"], dima=1:4, dimb=2:6, dimy=1:5
+    )
+    dims = (a=(:shared, :dima), b=(:shared, :dimb), y=(:shared, :dimy))
+    metadata = (inference_library="PPL",)
+    posterior = random_dataset(var_names, dims, coords, metadata)
+    prior = random_dataset(var_names, dims, coords, metadata)
+    group_data = (; prior, posterior)
 
-    @testset "construction" begin
-        pydata = PyObject(data)
-        @test InferenceData(pydata) isa InferenceData
-        @test PyObject(InferenceData(pydata)) === pydata
-        @test InferenceData(data) === data
-        @test_throws ArgumentError InferenceData(py"PyNullObject()")
-        data2 = InferenceData(; posterior=data.posterior)
-        @test data2 isa InferenceData
-        @test :posterior in propertynames(data2)
-        @test hash(data) == hash(pydata)
+    @testset "constructors" begin
+        idata = @inferred(InferenceData(group_data))
+        @test idata isa InferenceData
+        @test getfield(idata, :groups) === (; posterior, prior)
+
+        @test InferenceData(; group_data...) == idata
+        @test InferenceData(idata) === idata
     end
+
+    idata = InferenceData(group_data)
 
     @testset "properties" begin
-        @test :posterior in propertynames(data)
-        @test length(propertynames(data)) > 1
-        data3 = InferenceData(; posterior=data.posterior, prior=data.prior)
-        @test :prior in propertynames(data3)
-        delete!(data3, :prior)
-        @test :prior ∉ propertynames(data3)
+        @test propertynames(idata) === (:posterior, :prior)
+        @test getproperty(idata, :posterior) === posterior
+        @test getproperty(idata, :prior) === prior
+        @test hasproperty(idata, :posterior)
+        @test hasproperty(idata, :prior)
+        @test !hasproperty(idata, :prior_predictive)
     end
 
-    @testset "groups" begin
-        data4 = InferenceData(; posterior=data.posterior)
-        @test ArviZ.groupnames(data4) == [:posterior]
-        g = ArviZ.groups(data4)
-        @test g isa Dict
-        @test :posterior in keys(g)
+    @testset "iteration" begin
+        @test keys(idata) === (:posterior, :prior)
+        @test haskey(idata, :posterior)
+        @test haskey(idata, :prior)
+        @test !haskey(idata, :log_likelihood)
+        @test values(idata) === (posterior, prior)
+        @test pairs(idata) isa Base.Pairs
+        @test Tuple(pairs(idata)) === (:posterior => posterior, :prior => prior)
+        @test length(idata) == 2
+        @test iterate(idata) === (posterior, 2)
+        @test iterate(idata, 2) === (prior, 3)
+        @test iterate(idata, 3) === nothing
+        @test eltype(idata) <: ArviZ.Dataset
+        @test collect(idata) isa Vector{<:ArviZ.Dataset}
+    end
+
+    @testset "indexing" begin
+        @test idata[:posterior] === posterior
+        @test idata[:prior] === prior
+        @test idata[1] === posterior
+        @test idata[2] === prior
+        idata2 = Base.setindex(idata, posterior, :warmup_posterior)
+        @test keys(idata2) === (:posterior, :prior, :warmup_posterior)
+        @test idata2[:warmup_posterior] === posterior
     end
 
     @testset "isempty" begin
-        @test !isempty(data)
+        @test !isempty(idata)
         @test isempty(InferenceData())
     end
 
-    @testset "conversion" begin
-        @test pyisinstance(PyObject(data), ArviZ.arviz.InferenceData)
-        data4 = convert(InferenceData, PyObject(data))
-        @test data4 isa InferenceData
-        @test PyObject(data4) === PyObject(data)
+    @testset "groups" begin
+        @test ArviZ.groups(idata) === (; posterior, prior)
+        @test ArviZ.groups(InferenceData(; prior)) === (; prior)
+    end
 
-        # TODO: improve this test
-        @test convert(InferenceData, [1.0, 2.0, 3.0, 4.0]) isa InferenceData
+    @testset "hasgroup" begin
+        @test ArviZ.hasgroup(idata, :posterior)
+        @test ArviZ.hasgroup(idata, :prior)
+        @test !ArviZ.hasgroup(idata, :prior_predictive)
+    end
+
+    @testset "groupnames" begin
+        @test ArviZ.groupnames(idata) === (:posterior, :prior)
+        @test ArviZ.groupnames(InferenceData(; posterior)) === (:posterior,)
+    end
+
+    @testset "conversion" begin
+        @test convert(InferenceData, idata) === idata
+        @test convert(NamedTuple, idata) === parent(idata)
+        @test NamedTuple(idata) === parent(idata)
     end
 
     @testset "show" begin
         @testset "plain" begin
-            text = sprint(show, data)
-            @test startswith(text, "InferenceData with groups:")
-            rest = split(PyObject(data).__str__(), '\n'; limit=2)[2]
-            @test split(text, '\n'; limit=2)[2] == rest
+            text = sprint(show, MIME("text/plain"), idata)
+            @test text == """
+            InferenceData with groups:
+                > posterior
+                > prior"""
         end
 
         @testset "html" begin
-            text = repr(MIME("text/html"), data)
+            # TODO: improve test
+            text = sprint(show, MIME("text/html"), idata)
             @test text isa String
-            @test !occursin("<xarray.Dataset>", text)
-            @test !occursin("&lt;xarray.Dataset&gt;", text)
-            @test !occursin("arviz.InferenceData", text)
-            @test occursin("Dataset (xarray.Dataset)", text)
             @test occursin("InferenceData", text)
+            @test occursin("Dataset", text)
         end
     end
 end
 
-@testset "+(::InferenceData, ::InferenceData)" begin
-    rng = MersenneTwister(42)
-    idata1 = from_dict(;
-        posterior=Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
-    )
-    idata2 = from_dict(;
-        prior=Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2))
-    )
-
-    new_idata = idata1 + idata2
-    @test new_idata isa InferenceData
-    @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), new_idata
-    ) == []
-end
-
 @testset "extract_dataset" begin
-    data = load_arviz_data("centered_eight")
-    post = extract_dataset(data, :posterior; combined=false)
-    @test post isa ArviZ.Dataset
-    @test post.to_dict()["data_vars"] == data.posterior.to_dict()["data_vars"]
-    prior = extract_dataset(data, :prior; combined=false)
-    @test prior isa ArviZ.Dataset
-    @test prior.to_dict()["data_vars"] == data.prior.to_dict()["data_vars"]
+    idata = random_data()
+    post = extract_dataset(idata, :posterior; combined=false)
+    for k in keys(idata.posterior)
+        @test haskey(post, k)
+        @test post[k] == idata.posterior[k]
+        dims = DimensionalData.dims(post)
+        dims_exp = DimensionalData.dims(idata.posterior)
+        @test DimensionalData.name(dims) === DimensionalData.name(dims_exp)
+        @test DimensionalData.index(dims) == DimensionalData.index(dims_exp)
+    end
+    prior = extract_dataset(idata, :prior; combined=false)
+    for k in keys(idata.prior)
+        @test haskey(prior, k)
+        @test prior[k] == idata.prior[k]
+        dims = DimensionalData.dims(prior)
+        dims_exp = DimensionalData.dims(idata.prior)
+        @test DimensionalData.name(dims) === DimensionalData.name(dims_exp)
+        @test DimensionalData.index(dims) == DimensionalData.index(dims_exp)
+    end
 end
 
 @testset "concat" begin
-    rng = MersenneTwister(42)
-    idata1 = from_dict(;
-        posterior=Dict("A" => randn(rng, 2, 10, 2), "B" => randn(rng, 2, 10, 5, 2))
-    )
-    idata2 = from_dict(;
-        prior=Dict("C" => randn(rng, 2, 10, 2), "D" => randn(rng, 2, 10, 5, 2))
-    )
-
+    data = random_data()
+    idata1 = InferenceData(; posterior=data.posterior)
+    idata2 = InferenceData(; prior=data.prior)
     new_idata = concat(idata1, idata2)
     @test new_idata isa InferenceData
-    @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), new_idata
-    ) == []
-
-    new_idata = concat!(idata1, idata2)
-    @test new_idata === idata1
-    @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), idata1
-    ) == []
-
-    idata3 = concat!()
-    @test idata3 isa InferenceData
-    @test isempty(idata3)
-
-    idata4 = InferenceData()
-    new_idata = concat!(idata4, idata1)
-    @test new_idata === idata4
-    @test check_multiple_attrs(
-        Dict(:posterior => ["A", "B"], :prior => ["C", "D"]), idata4
-    ) == []
+    @test ArviZ.groups(new_idata) == (; posterior=data.posterior, prior=data.prior)
 end
 
 @testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
