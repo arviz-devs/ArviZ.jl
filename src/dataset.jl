@@ -152,14 +152,24 @@ to [`dict_to_dataset`](@ref).
 dataset_to_dict
 
 function dataset_to_dict(ds::Dataset)
-    data = Dict(pairs(DimensionalData.data(ds)))
-    attrs = Dict(pairs(attributes(ds)))
-    dims = Dict(pairs(map(collect ∘ DimensionalData.name, DimensionalData.layerdims(ds))))
+    data = DimensionalData.data(ds)
+    attrs = attributes(ds)
+    dims = map(DimensionalData.layerdims(ds)) do d
+        names = collect(DimensionalData.name(d))
+        filter!(∉((:chain, :draw)), names)
+    end
     coords = Dict(
         Symbol(DimensionalData.name(d)) => DimensionalData.index(d) for
         d in DimensionalData.dims(ds)
     )
-    return data, (; attrs, coords, dims)
+    delete!(coords, :chain)
+    delete!(coords, :draw)
+    return data,
+    (;
+        attrs=Dict(pairs(attrs)),
+        coords=Dict(pairs(coords)),
+        dims=Dict(filter(p -> !isempty(p[2]), pairs(dims))),
+    )
 end
 
 # DimensionalData interop
