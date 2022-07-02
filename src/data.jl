@@ -2,12 +2,13 @@ const SUPPORTED_GROUPS = Symbol[]
 const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 
 """
-    InferenceData(; kwargs...)
+    InferenceData(groups)
+    InferenceData(; groups...)
 
 Container for inference data storage using DimensionalData.
 
-`InferenceData` can be constructed either from an `arviz.InferenceData` or from multiple
-[`Dataset`](@ref)s assigned to groups specified as `kwargs`.
+`InferenceData` can be constructed from either a `NamedTuple` or pairs mapping a group name
+to a corresponding [`Dataet`](@ref).
 
 Instead of directly creating an `InferenceData`, use the exported `from_xyz` functions or
 [`convert_to_inference_data`](@ref).
