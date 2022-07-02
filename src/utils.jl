@@ -181,14 +181,10 @@ frompytype(x::AbstractArray{PyObject}) = map(frompytype, x)
 frompytype(x::AbstractArray{Any}) = map(frompytype, x)
 frompytype(x::AbstractArray{<:AbstractArray}) = map(frompytype, x)
 
-function rekey(d, keymap)
-    dnew = empty(d)
-    for (k, v) in d
-        knew = get(keymap, k, k)
-        haskey(dnew, knew) && throw(ArgumentError("$knew in `keymap` is already in `d`."))
-        dnew[knew] = d[k]
-    end
-    return dnew
+rekey(d, keymap) = Dict(map(k -> get(keymap, k, k) => d[k], keys(d)))
+function rekey(d::NamedTuple, keymap)
+    new_keys = map(k -> get(keymap, k, k), keys(d))
+    return NamedTuple{new_keys}(values(d))
 end
 
 removekeys!(dict, keys) = map(k -> delete!(dict, k), keys)
