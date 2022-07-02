@@ -152,15 +152,19 @@ end
 end
 
 @testset "convert_to_inference_data" begin
-    @testset "convert_to_inference_data(::Dict)" begin
-        data = Dict(:A => randn(2, 10, 2), :B => randn(2, 10, 5, 2))
+    @testset "convert_to_inference_data(::$T)" for T in (NamedTuple, Dict)
+        data = (A=randn(2, 10, 2), B=randn(2, 10, 5, 2))
+        if T <: Dict
+            data = Dict(pairs(data))
+        end
         idata = convert_to_inference_data(data)
-        @test idata isa InferenceData
+        check_idata_schema(idata)
         @test ArviZ.groupnames(idata) == (:posterior,)
         posterior = idata.posterior
         @test posterior.A == data[:A]
         @test posterior.B == data[:B]
         idata2 = convert_to_inference_data(data; group=:prior)
+        check_idata_schema(idata2)
         @test ArviZ.groupnames(idata2) == (:prior,)
         @test idata2.prior == idata.posterior
     end
@@ -168,19 +172,14 @@ end
     @testset "convert_to_inference_data(::Array)" begin
         data = randn(2, 10, 2)
         idata = convert_to_inference_data(data)
-        @test idata isa InferenceData
+        check_idata_schema(idata)
         @test ArviZ.groupnames(idata) == (:posterior,)
         posterior = idata.posterior
         @test posterior.x == data
         idata2 = convert_to_inference_data(data; group=:prior)
+        check_idata_schema(idata2)
         @test ArviZ.groupnames(idata2) == (:prior,)
         @test idata2.prior == idata.posterior
-    end
-
-    @testset "convert_to_inference_data(::Nothing)" begin
-        idata = convert_to_inference_data(nothing)
-        @test idata isa InferenceData
-        @test isempty(idata)
     end
 
     @testset "convert_to_inference_data(::Particles)" begin
@@ -211,6 +210,7 @@ end
     prior = Dict(:C => randn(2, 10, 2), :D => randn(2, 10, 5, 2))
 
     idata = from_dict(posterior; prior)
+    check_idata_schema(idata)
     @test ArviZ.groupnames(idata) == (:posterior, :prior)
     @test idata.posterior.A == posterior[:A]
     @test idata.posterior.B == posterior[:B]
@@ -218,12 +218,13 @@ end
     @test idata.prior.D == prior[:D]
 
     idata2 = from_dict(; prior)
+    check_idata_schema(idata2)
     @test idata2.prior == idata.prior
 end
 
 @testset "load_arviz_data" begin
     data = load_arviz_data("centered_eight")
-    @test data isa InferenceData
+    check_idata_schema(data)
 
     datasets = load_arviz_data()
     @test datasets isa Dict
@@ -231,11 +232,12 @@ end
 
 @testset "netcdf roundtrip" begin
     data = load_arviz_data("centered_eight")
+    check_idata_schema(data)
     mktempdir() do path
         filename = joinpath(path, "tmp.nc")
         to_netcdf(data, filename)
         data2 = from_netcdf(filename)
-        @test data2 isa InferenceData
+        check_idata_schema(data2)
         @test ArviZ.groupnames(data) == ArviZ.groupnames(data2)
         for (ds1, ds2) in zip(data, data2), k in keys(ds1)
             @test ds1[k] ≈ ds2[k]
