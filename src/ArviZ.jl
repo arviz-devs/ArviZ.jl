@@ -11,7 +11,7 @@ using OrderedCollections: OrderedDict
 using PyCall
 using Conda
 using PyPlot
-using DimensionalData: DimensionalData
+using DimensionalData: DimensionalData, Dimensions
 using PSIS: PSIS, PSISResult, psis, psis!
 using LogExpFunctions: logsumexp
 
@@ -99,6 +99,7 @@ const xarray = PyNULL()
 const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
+const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
 
 include("setup.jl")
 
