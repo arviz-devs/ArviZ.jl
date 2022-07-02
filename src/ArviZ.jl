@@ -2,9 +2,11 @@ __precompile__()
 module ArviZ
 
 using Base: @__doc__
+using Dates
 using Requires
 using REPL
 using DataFrames
+using OrderedCollections: OrderedDict
 
 using PyCall
 using Conda
