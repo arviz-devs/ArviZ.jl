@@ -169,13 +169,20 @@ end
         @test idata2.prior == idata.posterior
     end
 
-    @testset "convert_to_inference_data(::Array)" begin
+    @testset "convert_to_inference_data(::$T)" for T in (Array, DimensionalData.DimArray)
         data = randn(2, 10, 2)
+        if T <: DimensionalData.DimArray
+            data = DimensionalData.DimArray(data, (:a, :b, :c); name=:y)
+        end
         idata = convert_to_inference_data(data)
         check_idata_schema(idata)
         @test ArviZ.groupnames(idata) == (:posterior,)
         posterior = idata.posterior
-        @test posterior.x == data
+        if T <: DimensionalData.DimArray
+            @test posterior.y == data
+        else
+            @test posterior.x == data
+        end
         idata2 = convert_to_inference_data(data; group=:prior)
         check_idata_schema(idata2)
         @test ArviZ.groupnames(idata2) == (:prior,)
@@ -224,20 +231,16 @@ end
 
 @testset "load_arviz_data" begin
     data = load_arviz_data("centered_eight")
-    check_idata_schema(data)
-
     datasets = load_arviz_data()
     @test datasets isa Dict
 end
 
 @testset "netcdf roundtrip" begin
     data = load_arviz_data("centered_eight")
-    check_idata_schema(data)
     mktempdir() do path
         filename = joinpath(path, "tmp.nc")
         to_netcdf(data, filename)
         data2 = from_netcdf(filename)
-        check_idata_schema(data2)
         @test ArviZ.groupnames(data) == ArviZ.groupnames(data2)
         for (ds1, ds2) in zip(data, data2), k in keys(ds1)
             @test ds1[k] ≈ ds2[k]

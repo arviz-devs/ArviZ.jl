@@ -64,6 +64,9 @@ function _to_xarray(data::DimensionalData.AbstractDimArray)
     default_dims = String[]
     values = parent(data)
     metadata = DimensionalData.metadata(data)
-    attrs = isempty(metadata) ? nothing : metadata
-    return arviz.numpy_to_data_array(values; var_name, dims, coords, default_dims, attrs)
+    da = arviz.numpy_to_data_array(values; var_name, dims, coords, default_dims)
+    if !isempty(metadata)
+        da.attrs = metadata
+    end
+    return da
 end

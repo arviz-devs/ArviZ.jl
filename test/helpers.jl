@@ -110,14 +110,14 @@ end
 function check_idata_schema(idata)
     @testset "check arviz schema" begin
         @test idata isa InferenceData
-        @testset for (name, group) in pairs(idata)
+        @testset "$name" for (name, group) in pairs(idata)
             @test name ∈ ArviZ.SUPPORTED_GROUPS
             @test group isa ArviZ.Dataset
             for (var_name, var_data) in pairs(group)
                 @test var_data isa DimensionalData.AbstractDimArray
                 if ArviZ.has_all_sample_dims(var_data)
-                    @test Dimensions.name(Dimensions.dims(idata.posterior.g)[1]) === :chain
-                    @test Dimensions.name(Dimensions.dims(idata.posterior.g)[2]) === :draw
+                    @test Dimensions.name(Dimensions.dims(var_data)[1]) === :chain
+                    @test Dimensions.name(Dimensions.dims(var_data)[2]) === :draw
                 end
             end
             @testset "attributes" begin
