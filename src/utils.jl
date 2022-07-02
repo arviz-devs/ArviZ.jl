@@ -290,3 +290,11 @@ function topandas(::Val{:ELPDData}, df)
     colvals = Array(only(eachrow(df)))
     return ArviZ.arviz.stats.ELPDData(colvals, rownames)
 end
+
+function package_version(pkg::Module)
+    isdefined(Base, :pkgversion) && return Base.pkgversion(pkg)
+    project = joinpath(dirname(dirname(pathof(pkg))), "Project.toml")
+    toml = read(project, String)
+    m = match(r"(*ANYCRLF)^version\s*=\s\"(.*)\"$"m, toml)
+    return VersionNumber(m[1])
+end
