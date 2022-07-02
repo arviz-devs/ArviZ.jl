@@ -107,7 +107,35 @@ function noncentered_schools_data()
     )
 end
 
-function test_idata_approx_equal(idata1::InferenceData, idata2::InferenceData)
+function check_idata_schema(idata)
+    @testset "check arviz schema" begin
+        @test idata isa InferenceData
+        @testset for (name, group) in pairs(idata)
+            @test name ∈ ArviZ.SUPPORTED_GROUPS
+            @test group isa ArviZ.Dataset
+            for (var_name, var_data) in pairs(group)
+                @test var_data isa DimensionalData.AbstractDimArray
+                if ArviZ.has_all_sample_dims(var_data)
+                    @test Dimensions.name(Dimensions.dims(idata.posterior.g)[1]) === :chain
+                    @test Dimensions.name(Dimensions.dims(idata.posterior.g)[2]) === :draw
+                end
+            end
+            @testset "attributes" begin
+                attrs = ArviZ.attributes(group)
+                @test attrs isa AbstractDict{Symbol,Any}
+                @test :created_at in keys(attrs)
+                @test :arviz_version in keys(attrs)
+                @test_skip :inference_library in keys(attrs)
+                @test_skip :inference_library_version in keys(attrs)
+                @test_skip :arviz_language in keys(attrs)
+            end
+        end
+    end
+end
+
+function test_idata_approx_equal(
+    idata1::InferenceData, idata2::InferenceData; check_metadata=true
+)
     @test ArviZ.groupnames(idata1) === ArviZ.groupnames(idata2)
     for (ds1, ds2) in zip(idata1, idata2)
         @test issetequal(keys(ds1), keys(ds2))
@@ -120,54 +148,69 @@ function test_idata_approx_equal(idata1::InferenceData, idata2::InferenceData)
             @test DimensionalData.name(dims1) == DimensionalData.name(dims2)
             @test DimensionalData.index(dims1) == DimensionalData.index(dims2)
         end
-        metadata1 = DimensionalData.metadata(ds1)
-        metadata2 = DimensionalData.metadata(ds2)
-        @test issetequal(keys(metadata1), keys(metadata2))
-        for k in keys(metadata1)
-            @test metadata1[k] == metadata2[k]
-        end
-    end
-end
-
-function check_multiple_attrs(test_dict, parent)
-    failed_attrs = []
-    for (dataset_name, attributes) in test_dict
-        if Symbol(dataset_name) ∈ propertynames(parent)
-            dataset = getproperty(parent, Symbol(dataset_name))
-            for attribute in attributes
-                if Symbol(attribute) ∉ propertynames(dataset)
-                    push!(failed_attrs, (dataset_name, attribute))
-                end
+        if check_metadata
+            metadata1 = DimensionalData.metadata(ds1)
+            metadata2 = DimensionalData.metadata(ds2)
+            @test issetequal(keys(metadata1), keys(metadata2))
+            for k in keys(metadata1)
+                Symbol(k) === :created_at && continue
+                @test metadata1[k] == metadata2[k]
             end
-        else
-            push!(failed_attrs, dataset_name)
         end
     end
-    return failed_attrs
 end
 
-dimsizes(ds) = ds._dims
-convertindex(x::AbstractArray) = x
-convertindex(o::PyObject) = o.array.values
-vardict(ds) = Dict(k => convertindex(v._data) for (k, v) in ds._variables)
-dimdict(ds) = Dict(k => v._dims for (k, v) in ds._variables)
+# function check_multiple_attrs(test_dict, parent)
+#     failed_attrs = []
+#     for (dataset_name, attributes) in test_dict
+#         if Symbol(dataset_name) ∈ propertynames(parent)
+#             dataset = getproperty(parent, Symbol(dataset_name))
+#             for attribute in attributes
+#                 if Symbol(attribute) ∉ propertynames(dataset)
+#                     push!(failed_attrs, (dataset_name, attribute))
+#                 end
+#             end
+#         else
+#             push!(failed_attrs, dataset_name)
+#         end
+#     end
+#     return failed_attrs
+# end
 
-function test_namedtuple_data(
-    idata, group, names, nchains, ndraws; library="MyLib", coords=Dict(), dims=Dict()
+function test_idata_group_correct(
+    idata,
+    group_name,
+    var_names;
+    library=nothing,
+    dims=(;),
+    coords=(;),
+    default_dims=(:chain, :draw),
 )
     @test idata isa InferenceData
-    @test group in ArviZ.groupnames(idata)
-    ds = getproperty(idata, group)
-    sizes = dimsizes(ds)
-    @test length(sizes) == 2 + length(coords)
-    vars = vardict(ds)
-    for name in string.(names)
-        @test name in keys(vars)
-        dim = get(dims, name, get(dims, Symbol(name), []))
-        s = (x -> length(get(coords, x, get(coords, Symbol(x), [])))).(dim)
-        @test size(vars[name]) == (nchains, ndraws, s...)
+    @test ArviZ.hasgroup(idata, group_name)
+    ds = getproperty(idata, group_name)
+    @test ds isa ArviZ.Dataset
+    @test issetequal(keys(ds), var_names)
+    for name in var_names
+        da = ds[name]
+        @test DimensionalData.name(da) === name
+        _dims = DimensionalData.dims(da)
+        _dim_names_exp = (default_dims..., get(dims, name, ())...)
+        _dim_names = DimensionalData.name(_dims)
+        @test issubset(_dim_names_exp, _dim_names)
+        for dim in _dims
+            dim_name = DimensionalData.name(dim)
+            if dim_name ∈ keys(coords)
+                @test coords[dim_name] == DimensionalData.index(dim)
+            end
+        end
     end
-    @test "inference_library" in keys(attributes(ds))
-    @test attributes(ds)["inference_library"] == library
+    metadata = DimensionalData.metadata(ds)
+    if library !== nothing
+        @test metadata[:inference_library] == library
+    end
+    for k in [:created_at, :arviz_version]
+        @test k in keys(metadata)
+    end
     return nothing
 end
