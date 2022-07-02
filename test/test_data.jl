@@ -140,9 +140,9 @@ end
     data = random_data()
     idata1 = InferenceData(; posterior=data.posterior)
     idata2 = InferenceData(; prior=data.prior)
-    new_idata = concat(idata1, idata2)
-    @test new_idata isa InferenceData
-    @test ArviZ.groups(new_idata) == (; posterior=data.posterior, prior=data.prior)
+    new_idata1 = concat(idata1, idata2)
+    new_idata2 = InferenceData(; posterior=data.posterior, prior=data.prior)
+    test_idata_approx_equal(new_idata1, new_idata2)
 end
 
 @testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
