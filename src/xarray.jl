@@ -4,7 +4,7 @@ function _dimstack_from_xarray(o::PyObject)
         throw(ArgumentError("argument is not an `xarray.Dataset`."))
     var_names = collect(o.data_vars)
     data = [_dimarray_from_xarray(getindex(o, name)) for name in var_names]
-    metadata = Dict{Symbol,Any}(Symbol(k) => v for (k, v) in o.attrs)
+    metadata = OrderedDict{Symbol,Any}(Symbol(k) => v for (k, v) in o.attrs)
     return DimensionalData.DimStack(data...; metadata)
 end
 
@@ -17,7 +17,9 @@ function _dimarray_from_xarray(o::PyObject)
     dims = Tuple(
         map(d -> _wrap_dims(Symbol(d), _process_pyarray(coords[d].values)), o.dims)
     )
-    return DimensionalData.DimArray(data, dims; name)
+    attrs = OrderedDict{Symbol,Any}(Symbol(k) => v for (k, v) in o.attrs)
+    metadata = isempty(attrs) ? DimensionalData.NoMetadata() : attrs
+    return DimensionalData.DimArray(data, dims; name, metadata)
 end
 
 _process_pyarray(x) = x
@@ -61,5 +63,7 @@ function _to_xarray(data::DimensionalData.AbstractDimArray)
     coords = Dict(zip(dims, DimensionalData.index(data_dims)))
     default_dims = String[]
     values = parent(data)
-    return arviz.numpy_to_data_array(values; var_name, dims, coords, default_dims)
+    metadata = DimensionalData.metadata(data)
+    attrs = isempty(metadata) ? nothing : metadata
+    return arviz.numpy_to_data_array(values; var_name, dims, coords, default_dims, attrs)
 end
