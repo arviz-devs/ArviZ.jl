@@ -91,8 +91,8 @@ using MonteCarloMeasurements: Particles
             text = sprint(show, MIME("text/plain"), idata)
             @test text == """
             InferenceData with groups:
-                > posterior
-                > prior"""
+              > posterior
+              > prior"""
         end
 
         @testset "html" begin

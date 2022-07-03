@@ -67,7 +67,7 @@ convert_result(::typeof(extract_dataset), result, args...) = convert(Dataset, re
 
 function Base.show(io::IO, ::MIME"text/plain", data::InferenceData)
     print(io, "InferenceData with groups:")
-    prefix = "\n    > "
+    prefix = "\n  > "
     for name in groupnames(data)
         print(io, prefix, name)
     end
