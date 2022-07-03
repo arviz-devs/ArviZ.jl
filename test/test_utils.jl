@@ -127,4 +127,9 @@ pandas = ArviZ.pandas
         @test data2_format.y == data2.y
         @test eltype(data2_format.y) === eltype(data2.y)
     end
+
+    @testset "package_version" begin
+        @test ArviZ.package_version(ArviZ) isa VersionNumber
+        @test ArviZ.package_version(PyCall) isa VersionNumber
+    end
 end
