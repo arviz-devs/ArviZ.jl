@@ -18,6 +18,7 @@ using MonteCarloMeasurements: Particles
     ]
 
     @testset "posterior::$(type)" for (type, nt) in nts
+        @test_broken @inferred from_namedtuple(nt; dims, coords, library="MyLib")
         idata1 = from_namedtuple(nt; dims, coords, library="MyLib")
         idata2 = convert_to_inference_data(nt; dims, coords, library="MyLib")
         test_idata_approx_equal(idata1, idata2)
