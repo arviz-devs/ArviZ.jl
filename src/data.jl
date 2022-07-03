@@ -157,7 +157,7 @@ function convert_to_inference_data(var_data::AbstractArray{<:Real}; kwargs...)
     return convert_to_inference_data(data; kwargs...)
 end
 function convert_to_inference_data(filename::AbstractString; kwargs...)
-    return ArviZ.arviz.convert_to_inference_data(filename)::InferenceData
+    return from_netcdf(filename)
 end
 function convert_to_inference_data(
     data::NamedTuple{<:Any,<:Tuple{Vararg{AbstractArray{<:Real}}}};
