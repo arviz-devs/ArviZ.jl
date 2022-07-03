@@ -52,6 +52,11 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
                 @test DimensionalData.metadata(ds) == metadata
             end
 
+            @testset "idempotent" begin
+                ds = ArviZ.Dataset((; x, y); metadata)
+                @test ArviZ.Dataset(ds) === ds
+            end
+
             @testset "errors with mismatched dimensions" begin
                 data_bad = (
                     x=DimArray(randn(3, 100, 3), (:chains, :draws, :shared)),
@@ -110,6 +115,7 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
             ds2 = convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0])
             @test ds2 isa ArviZ.Dataset
             @test ds2 == ArviZ.convert_to_dataset([1.0, 2.0, 3.0, 4.0])
+            @test convert(DimensionalData.DimStack, ds) === parent(ds)
         end
     end
 
