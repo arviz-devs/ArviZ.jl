@@ -55,13 +55,6 @@ Base.length(data::InferenceData) = length(parent(data))
 Base.iterate(data::InferenceData, i...) = iterate(parent(data), i...)
 Base.eltype(data::InferenceData) = eltype(parent(data))
 
-function Base.map(f, data::InferenceData)
-    ret = map(f, parent(data))
-    # if output can be an InferenceData, then make it so
-    ret isa NamedTuple{<:Any,<:Tuple{Vararg{Dataset}}} && return InferenceData(ret)
-    return ret
-end
-
 @forwardfun extract_dataset
 convert_result(::typeof(extract_dataset), result, args...) = convert(Dataset, result)
 
