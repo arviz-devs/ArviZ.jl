@@ -42,7 +42,7 @@ function _wrap_dims(name::Symbol, dims::AbstractVector{<:Real})
         if step == 1
             D(UnitRange(start, stop))
         else
-            D(range(start, stop, n))
+            D(range(start, stop; length=n))
         end
     else
         D(dims)

@@ -39,7 +39,7 @@ using MonteCarloMeasurements: Particles
         @test haskey(idata, :prior)
         @test !haskey(idata, :log_likelihood)
         @test values(idata) === (posterior, prior)
-        @test pairs(idata) isa Base.Pairs
+        @test pairs(idata) isa Base.Iterators.Pairs
         @test Tuple(pairs(idata)) === (:posterior => posterior, :prior => prior)
         @test length(idata) == 2
         @test iterate(idata) === (posterior, 2)
