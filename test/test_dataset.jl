@@ -1,4 +1,4 @@
-using ArviZ, DimensionalData, PyCall, Test
+using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
 
 @testset "dataset" begin
     @testset "ArviZ.Dataset" begin
@@ -159,6 +159,51 @@ using ArviZ, DimensionalData, PyCall, Test
             end
         end
         @test DimensionalData.metadata(ds2) == DimensionalData.metadata(ds)
+    end
+
+    @testset "namedtuple_to_dataset" begin
+        J = 8
+        K = 6
+        L = 3
+        nchains = 4
+        ndraws = 500
+        vars = (a=randn(nchains, ndraws, J), b=randn(nchains, ndraws, K, L))
+        coords = (bi=2:(K + 1), draw=1:2:1_000)
+        dims = (b=[:bi, nothing],)
+        expected_dims = (
+            a=(
+                Dimensions.Dim{:chain}(1:nchains),
+                Dimensions.Dim{:draw}(1:2:1_000),
+                Dimensions.Dim{:a_dim_1}(1:J),
+            ),
+            b=(
+                Dimensions.Dim{:chain}(1:nchains),
+                Dimensions.Dim{:draw}(1:2:1_000),
+                Dimensions.Dim{:bi}(2:(K + 1)),
+                Dimensions.Dim{:b_dim_2}(1:L),
+            ),
+        )
+        attrs = Dict(:mykey => 5)
+        @test_broken @inferred ArviZ.namedtuple_to_dataset(
+            vars; library="MyLib", coords, dims, attrs
+        )
+        ds = ArviZ.namedtuple_to_dataset(vars; library="MyLib", coords, dims, attrs)
+        @test ds isa ArviZ.Dataset
+        for (var_name, var_data) in pairs(DimensionalData.layers(ds))
+            @test var_data isa DimensionalData.DimArray
+            @test var_name === DimensionalData.name(var_data)
+            @test var_data == vars[var_name]
+            _dims = DimensionalData.dims(var_data)
+            @test _dims == expected_dims[var_name]
+        end
+        metadata = DimensionalData.metadata(ds)
+        @test metadata isa OrderedDict
+        @test haskey(metadata, :created_at)
+        @test haskey(metadata, :arviz_version)
+        @test metadata[:arviz_language] == "julia"
+        @test metadata[:inference_library] == "MyLib"
+        @test !haskey(metadata, :inference_library_version)
+        @test metadata[:mykey] == 5
     end
 
     @testset "ArviZ.convert_to_dataset" begin
