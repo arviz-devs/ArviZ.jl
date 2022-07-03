@@ -244,11 +244,9 @@ function Base.convert(::Type{InferenceData}, obj::PyObject)
     return InferenceData(; groups...)
 end
 
-function convert_to_inference_data(obj::PyObject; dims=(;), coords=(;), kwargs...)
+function convert_to_inference_data(obj::PyObject; dims=nothing, coords=nothing, kwargs...)
     # Python ArviZ requires dims and coords be dicts matching to vectors
-    dims_dict = Dict(k -> collect(dims[k]) for k in keys(dims))
-    coords_dict = Dict(k -> collect(coords[k]) for k in keys(coords))
-    return arviz.convert_to_inference_data(
-        obj; dims=dims_dict, coords=coords_dict, kwargs...
-    )
+    pydims = dims === nothing ? dims : Dict(k -> collect(dims[k]) for k in keys(dims))
+    pycoords = dims === nothing ? dims : Dict(k -> collect(coords[k]) for k in keys(coords))
+    return arviz.convert_to_inference_data(obj; dims=pydims, coords=pycoords, kwargs...)
 end
