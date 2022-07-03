@@ -89,7 +89,7 @@ end
 """
     groups(data::InferenceData)
 
-Get the groups in `data` as a named tuple mapping symbols to [`Datasets`](@ref).
+Get the groups in `data` as a named tuple mapping symbols to [`Dataset`](@ref)s.
 """
 groups(data::InferenceData) = parent(data)
 
