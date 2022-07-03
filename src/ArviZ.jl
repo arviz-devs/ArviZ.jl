@@ -84,8 +84,7 @@ export InferenceData,
     from_cmdstan,
     from_mcmcchains,
     from_samplechains,
-    concat,
-    concat!
+    concat
 
 ## Utils
 export with_interactive_backend
