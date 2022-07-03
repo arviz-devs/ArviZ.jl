@@ -8,7 +8,7 @@ const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 Container for inference data storage using DimensionalData.
 
 `InferenceData` can be constructed from either a `NamedTuple` or pairs mapping a group name
-to a corresponding [`Dataet`](@ref).
+to a corresponding [`Dataset`](@ref).
 
 Instead of directly creating an `InferenceData`, use the exported `from_xyz` functions or
 [`convert_to_inference_data`](@ref).
