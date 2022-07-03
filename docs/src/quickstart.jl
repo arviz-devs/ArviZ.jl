@@ -462,7 +462,7 @@ idata_soss = from_samplechains(
     prior=prior_priorpred,
     prior_predictive=(:y,),
     observed_data,
-    constant_data,
+    constant_data = (; J=[J], σ),
     coords=(; school = schools),
     dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
     library=Soss,
