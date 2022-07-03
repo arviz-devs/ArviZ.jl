@@ -296,7 +296,7 @@ data = load_arviz_data("non_centered_eight")
 plot_pair(
     data;
     var_names=[:theta],
-    coords=Dict(:school => [:Choate, :Phillips Andover]),
+    coords=Dict(:school => ["Choate", "Phillips Andover"]),
     kind=:hexbin,
     marginals=true,
     figsize=(10, 10),
