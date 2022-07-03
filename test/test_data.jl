@@ -162,6 +162,13 @@ end
     @test ArviZ.convert_to_dataset(idata; group=:prior) === idata.prior
 end
 
+@testset "ArviZ.default_var_name" begin
+    x = randn(4, 5)
+    @test ArviZ.default_var_name(x) === :x
+    @test ArviZ.default_var_name(DimensionalData.DimArray(x, (:a, :b))) === :x
+    @test ArviZ.default_var_name(DimensionalData.DimArray(x, (:a, :b); name=:y)) === :y
+end
+
 @testset "convert_to_inference_data" begin
     @testset "convert_to_inference_data(::AbstractDimStack)" begin
         ds = ArviZ.namedtuple_to_dataset((x=randn(4, 10), y=randn(4, 10, 5)))
