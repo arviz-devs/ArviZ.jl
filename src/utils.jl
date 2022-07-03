@@ -187,26 +187,6 @@ function rekey(d::NamedTuple, keymap)
     return NamedTuple{new_keys}(values(d))
 end
 
-removekeys!(dict, keys) = map(k -> delete!(dict, k), keys)
-
-function popsubdict!(dict, names)
-    (dict === nothing || names === nothing) && return nothing
-    subdict = empty(dict)
-    for k in names
-        subdict[k] = pop!(dict, k)
-    end
-    return subdict
-end
-popsubdict!(dict, key::String) = popsubdict!(dict, [key])
-
-snakecase(s) = replace(lowercase(s), " " => "_")
-
-@inline _asarray(x) = [x]
-@inline _asarray(x::AbstractArray) = x
-
-_asstringkeydict(x) = Dict(String(k) => v for (k, v) in pairs(x))
-_asstringkeydict(x::Dict{String}) = x
-
 enforce_stat_eltypes(stats) = convert_to_eltypes(stats, sample_stats_eltypes)
 
 function convert_to_eltypes(data::Dict, data_eltypes)

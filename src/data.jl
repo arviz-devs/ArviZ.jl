@@ -206,16 +206,6 @@ end
 @forwardfun from_pystan
 @forwardfun from_tfp
 
-# A more flexible form of `from_dict`
-# Internally calls `dict_to_dataset`
-function _from_dict(posterior=nothing; attrs=Dict(), coords=nothing, dims=nothing, dicts...)
-    dicts_all = (; posterior, dicts...)
-    dicts = NamedTuple(filter(x -> !(x[2] === nothing || isempty(x[2])), pairs(dicts_all)))
-    groups = map(d -> dict_to_dataset(d; attrs, coords, dims), dicts)
-    idata = InferenceData(groups)
-    return idata
-end
-
 @doc forwarddoc(:concat) concat
 
 function concat(data::InferenceData...; kwargs...)

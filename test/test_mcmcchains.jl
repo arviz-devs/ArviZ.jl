@@ -243,17 +243,6 @@ end
 
         @test length(Dimensions.dims(idata[:predictions_constant_data])) == 1
         @test :z ∈ keys(idata[:predictions_constant_data])
-
-        # @test length(dimdict(idata.predictions)) == 3
-        # @test "zhat" ∈ keys(dimdict(idata.predictions))
-        # @test length(dimdict(idata.log_likelihood)) == 3
-        # @test "log_lik" ∈ keys(dimdict(idata.log_likelihood))
-        # @test length(dimdict(idata.observed_data)) == 2
-        # @test "xhat" ∈ keys(dimdict(idata.observed_data))
-        # @test length(dimdict(idata.constant_data)) == 2
-        # @test "x" ∈ keys(dimdict(idata.constant_data))
-        # @test length(dimdict(idata.predictions_constant_data)) == 2
-        # @test "z" ∈ keys(dimdict(idata.predictions_constant_data))
     end
 
     # https://github.com/arviz-devs/ArviZ.jl/issues/146

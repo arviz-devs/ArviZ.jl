@@ -160,23 +160,6 @@ function test_idata_approx_equal(
     end
 end
 
-# function check_multiple_attrs(test_dict, parent)
-#     failed_attrs = []
-#     for (dataset_name, attributes) in test_dict
-#         if Symbol(dataset_name) ∈ propertynames(parent)
-#             dataset = getproperty(parent, Symbol(dataset_name))
-#             for attribute in attributes
-#                 if Symbol(attribute) ∉ propertynames(dataset)
-#                     push!(failed_attrs, (dataset_name, attribute))
-#                 end
-#             end
-#         else
-#             push!(failed_attrs, dataset_name)
-#         end
-#     end
-#     return failed_attrs
-# end
-
 function test_idata_group_correct(
     idata,
     group_name,
