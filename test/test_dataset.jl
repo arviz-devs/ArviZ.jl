@@ -222,15 +222,18 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
             @test ArviZ.convert_to_dataset(ds) === ds
         end
 
-        @testset "ArviZ.convert_to_dataset(::Dict; kwargs...)" begin
-            data = Dict(:x => randn(4, 100), :y => randn(4, 100, 2))
-            ds2 = ArviZ.dict_to_dataset(data)
+        @testset "ArviZ.convert_to_dataset(::$T; kwargs...)" for T in (Dict, NamedTuple)
+            data = (x=randn(4, 100), y=randn(4, 100, 2))
+            if T <: Dict
+                data = T(pairs(data))
+            end
+            ds2 = ArviZ.convert_to_dataset(data)
             @test ds2 isa ArviZ.Dataset
             @test ds2.x == data[:x]
             @test DimensionalData.name(DimensionalData.dims(ds2.x)) == (:chain, :draw)
             @test ds2.y == data[:y]
             @test DimensionalData.name(DimensionalData.dims(ds2.y)) ==
-                (:chain, :draw, :y_dim_0)
+                (:chain, :draw, :y_dim_1)
         end
     end
 
