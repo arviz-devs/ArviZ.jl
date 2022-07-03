@@ -64,20 +64,19 @@ whose first dimensions correspond to the dimensions of the containers.
 - `prior::Any=nothing`: Draws from the prior
 - `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
 - `sample_stats_prior::Any=nothing`: Statistics of the prior sampling process
-- `observed_data::Dict{String,Array}=nothing`: Observed data on which the `posterior` is
+- `observed_data::NamedTuple`: Observed data on which the `posterior` is
      conditional. It should only contain data which is modeled as a random variable. Keys
      are parameter names and values.
-- `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
+- `constant_data::NamedTuple`: Model constants, data included in the model
      which is not modeled as a random variable. Keys are parameter names and values.
-- `predictions_constant_data::Dict{String,Array}=nothing`: Constants relevant to the model
+- `predictions_constant_data::NamedTuple`: Constants relevant to the model
      predictions (i.e. new `x` values in a linear regression).
-- `log_likelihood::Any=nothing`: Pointwise log-likelihood for the data. It is recommended
-     to use this argument as a dictionary whose keys are observed variable names and whose
+- `log_likelihood`: Pointwise log-likelihood for the data. It is recommended
+     to use this argument as a `NamedTuple` whose keys are observed variable names and whose
      values are log likelihood arrays.
-- `library=nothing`: Name of library that generated the draws
-- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
-     dimensions
+- `library`: Name of library that generated the draws
+- `coords`: Map from named dimension to named indices
+- `dims`: Map from variable name to names of its dimensions
 
 # Returns
 
@@ -178,10 +177,10 @@ function from_namedtuple(
         )
         prior_idata = rekey(
             pre_prior_idata,
-            Dict(
-                :posterior => :prior,
-                :posterior_predictive => :prior_predictive,
-                :sample_stats => :sample_stats_prior,
+            (
+                posterior=:prior,
+                posterior_predictive=:prior_predictive,
+                sample_stats=:sample_stats_prior,
             ),
         )
         all_idata = merge(all_idata, prior_idata)
