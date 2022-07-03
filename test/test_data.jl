@@ -84,6 +84,9 @@ using MonteCarloMeasurements: Particles
         @test convert(InferenceData, idata) === idata
         @test convert(NamedTuple, idata) === parent(idata)
         @test NamedTuple(idata) === parent(idata)
+        a = idata.posterior.a
+        @test convert(InferenceData, a) isa InferenceData
+        @test convert(InferenceData, a).posterior.a == a
     end
 
     @testset "show" begin
@@ -112,6 +115,14 @@ end
     @test pyisinstance(pyidata1, ArviZ.arviz.InferenceData)
     idata2 = convert(InferenceData, pyidata1)
     test_idata_approx_equal(idata2, idata1)
+end
+
+@testset "convert_to_inference_data(obj::PyObject)" begin
+    data = Dict(:z => randn(4, 100, 10))
+    idata1 = convert_to_inference_data(data)
+    idata2 = convert_to_inference_data(PyObject(data))
+    @test idata2 isa InferenceData
+    @test idata2.posterior.z ≈ collect(idata1.posterior.z)
 end
 
 @testset "extract_dataset" begin
@@ -152,6 +163,16 @@ end
 end
 
 @testset "convert_to_inference_data" begin
+    @testset "convert_to_inference_data(::AbstractDimStack)" begin
+        ds = ArviZ.namedtuple_to_dataset((x=randn(4, 10), y=randn(4, 10, 5)))
+        idata1 = convert_to_inference_data(ds; group=:prior)
+        @test ArviZ.groupnames(idata1) == (:prior,)
+        idata2 = InferenceData(; prior=ds)
+        @test idata2 == idata1
+        idata3 = convert_to_inference_data(parent(ds); group=:prior)
+        @test idata3 == idata1
+    end
+
     @testset "convert_to_inference_data(::$T)" for T in (NamedTuple, Dict)
         data = (A=randn(2, 10, 2), B=randn(2, 10, 5, 2))
         if T <: Dict
@@ -245,6 +266,8 @@ end
         for (ds1, ds2) in zip(data, data2), k in keys(ds1)
             @test ds1[k] ≈ ds2[k]
         end
+        data3 = convert_to_inference_data(filename)
+        test_idata_approx_equal(data3, data2; check_metadata=false)
         return nothing
     end
 end
