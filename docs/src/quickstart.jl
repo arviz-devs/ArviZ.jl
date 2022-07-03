@@ -75,14 +75,12 @@ Below, we have 10 chains of 50 draws each for four different distributions.
 # ╔═╡ 49f19c17-ac1d-46b5-a655-4376b7713244
 let
     s = (10, 50)
-    plot_forest(
-        (
-            normal = randn(rng1, s),
-            gumbel = rand(rng1, Gumbel(), s),
-            student_t = rand(rng1, TDist(6), s),
-            exponential = rand(rng1, Exponential(), s),
-        ),
-    )
+    plot_forest((
+        normal=randn(rng1, s),
+        gumbel=rand(rng1, Gumbel(), s),
+        student_t=rand(rng1, TDist(6), s),
+        exponential=rand(rng1, Exponential(), s),
+    ),)
     gcf()
 end
 
@@ -252,7 +250,7 @@ log_likelihood = let
     ynames = string.(keys(posterior_predictive))
     log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
     # Reshape into `(nchains, ndraws, size(y)...)`
-    (; y = permutedims(cat(log_likelihood_y...; dims=3), (2, 1, 3)))
+    (; y=permutedims(cat(log_likelihood_y...; dims=3), (2, 1, 3)))
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
@@ -367,7 +365,7 @@ idata_stan = from_cmdstan(
     posterior_predictive=:y_hat,
     observed_data=(; y),
     log_likelihood=:log_lik,
-    coords=(; school = schools),
+    coords=(; school=schools),
     dims=NamedTuple(k => (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)),
 )
 
@@ -462,8 +460,8 @@ idata_soss = from_samplechains(
     prior=prior_priorpred,
     prior_predictive=(:y,),
     observed_data,
-    constant_data = (; J=[J], σ),
-    coords=(; school = schools),
+    constant_data=(; J=[J], σ),
+    coords=(; school=schools),
     dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
     library=Soss,
 )
