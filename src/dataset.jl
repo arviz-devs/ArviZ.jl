@@ -20,8 +20,8 @@ When a `Dataset` is passed to Python, it is converted to an `xarray.Dataset` wit
 the data. That is, the Python object shares the same memory as the Julia object. However,
 if an `xarray.Dataset` is passed to Julia, its data must be copied.
 
-In most cases, use [`convert_to_dataset`](@ref) or [`convert_to_constant_dataset`](@ref) or
-to create a `Dataset` instead of directly using a constructor.
+In most cases, use [`convert_to_dataset`](@ref) to create a `Dataset` instead of directly
+using a constructor.
 """
 struct Dataset{L,D<:DimensionalData.AbstractDimStack{L}} <:
        DimensionalData.AbstractDimStack{L}
