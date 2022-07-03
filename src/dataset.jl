@@ -74,10 +74,12 @@ Convert `NamedTuple` mapping variable names to arrays to a [`Dataset`](@ref).
 
   - `attrs`: a Symbol-indexable collection of metadata to attach to the dataset, in addition
     to defaults. Values should be JSON serializable.
+
   - `library::Union{String,Module}`: library used for performing inference. Will be attached
     to the `attrs` metadata.
   - `dims`: a collection mapping variable names to collections of objects containing dimension
     names. Acceptable such objects are:
+    
       + `Symbol`: dimension name
       + `Type{<:DimensionsionalData.Dimension}`: dimension type
       + `DimensionsionalData.Dimension`: dimension, potentially with indices
@@ -161,7 +163,7 @@ Generate `DimensionsionalData.Dimension` objects for each dimension of `array`.
 
   - `dims`: A collection of objects indicating dimension names. If any dimensions are not
     provided, their names are automatically generated. Acceptable types of entries are:
-
+    
       + `Symbol`: dimension name
       + `Type{<:DimensionsionalData.Dimension}`: dimension type
       + `DimensionsionalData.Dimension`: dimension, potentially with indices
@@ -199,7 +201,7 @@ Convert `dim`, `coords`, and `length` to a `Dimension` object.
 
   - `dim`: An object specifying the name and potentially indices of a dimension. Can be the
     following types:
-
+    
       + `Symbol`: dimension name.
       + `Type{<:DimensionsionalData.Dimension}`: dimension type
       + `DimensionsionalData.Dimension`: dimension, potentially with indices
