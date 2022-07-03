@@ -378,7 +378,7 @@ md"""Here is a plot showing where the Hamiltonian sampler had divergences:"""
 begin
     plot_pair(
         idata_stan;
-        coords=(; school = ["Choate", "Deerfield", "Phillips Andover"]),
+        coords=Dict(:school => ["Choate", "Deerfield", "Phillips Andover"]),
         divergences=true,
     )
     gcf()
