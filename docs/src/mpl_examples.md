@@ -14,7 +14,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("centered_eight")
-plot_autocorr(data; var_names=(:tau, :mu))
+plot_autocorr(data; var_names=[:tau, :mu])
 
 gcf()
 ```
@@ -91,7 +91,7 @@ non_centered_data = load_arviz_data("non_centered_eight")
 plot_density(
     [centered_data, non_centered_data];
     data_labels=["Centered", "Non Centered"],
-    var_names=(:theta,),
+    var_names=[:theta],
     shade=0.1,
 )
 
@@ -169,7 +169,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 idata = load_arviz_data("radon")
-plot_ess(idata; var_names=(:b,), kind=:evolution)
+plot_ess(idata; var_names=[:b], kind=:evolution)
 
 gcf()
 ```
@@ -186,7 +186,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 idata = load_arviz_data("non_centered_eight")
-plot_ess(idata; var_names=(:mu,), kind=:local, marker="_", ms=20, mew=2, rug=true)
+plot_ess(idata; var_names=[:mu], kind=:local, marker="_", ms=20, mew=2, rug=true)
 
 gcf()
 ```
@@ -203,7 +203,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 idata = load_arviz_data("radon")
-plot_ess(idata; var_names=(:sigma,), kind=:quantile, color="C4")
+plot_ess(idata; var_names=[:sigma], kind=:quantile, color="C4")
 
 gcf()
 ```
@@ -224,7 +224,7 @@ non_centered_data = load_arviz_data("non_centered_eight")
 plot_forest(
     [centered_data, non_centered_data];
     model_names=["Centered", "Non Centered"],
-    var_names=(:mu,),
+    var_names=[:mu],
 )
 title("Estimated theta for eight schools model")
 
@@ -246,7 +246,7 @@ rugby_data = load_arviz_data("rugby")
 plot_forest(
     rugby_data;
     kind=:ridgeplot,
-    var_names=(:defs,),
+    var_names=[:defs],
     linewidth=4,
     combined=true,
     ridgeplot_overlap=1.5,
@@ -295,8 +295,8 @@ ArviZ.use_style("arviz-darkgrid")
 data = load_arviz_data("non_centered_eight")
 plot_pair(
     data;
-    var_names=(:theta,),
-    coords=(school = (:Choate, :Phillips Andover),),
+    var_names=[:theta],
+    coords=Dict(:school => [:Choate, :Phillips Andover]),
     kind=:hexbin,
     marginals=true,
     figsize=(10, 10),
@@ -439,7 +439,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("centered_eight")
-plot_mcse(data; var_names=(:tau, :mu), rug=true, extra_methods=true)
+plot_mcse(data; var_names=[:tau, :mu], rug=true, extra_methods=true)
 
 gcf()
 ```
@@ -456,7 +456,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("radon")
-plot_mcse(data; var_names=(:sigma_a,), color="C4", errorbar=true)
+plot_mcse(data; var_names=[:sigma_a], color="C4", errorbar=true)
 
 gcf()
 ```
@@ -473,9 +473,9 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 centered = load_arviz_data("centered_eight")
-coords = Dict("school" => ["Choate", "Deerfield"])
+coords = Dict(:school => ["Choate", "Deerfield"])
 plot_pair(
-    centered; var_names=(:theta, :mu, :tau), coords, divergences=true, textsize=22
+    centered; var_names=[:theta, :mu, :tau], coords, divergences=true, textsize=22
 )
 
 gcf()
@@ -493,10 +493,10 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 centered = load_arviz_data("centered_eight")
-coords = (school = ["Choate", "Deerfield"],)
+coords = Dict(:school => ["Choate", "Deerfield"])
 plot_pair(
     centered;
-    var_names=(:theta, :mu, :tau),
+    var_names=[:theta, :mu, :tau],
     kind=:hexbin,
     coords,
     colorbar=true,
@@ -518,10 +518,10 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 centered = load_arviz_data("centered_eight")
-coords = (school = ["Choate", "Deerfield"],)
+coords = Dict(:school => ["Choate", "Deerfield"])
 plot_pair(
     centered;
-    var_names=(:theta, :mu, :tau),
+    var_names=[:theta, :mu, :tau],
     kind=:kde,
     coords,
     divergences=true,
@@ -543,10 +543,10 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 centered = load_arviz_data("centered_eight")
-coords = (school = ["Choate", "Deerfield"],)
+coords = Dict(:school => ["Choate", "Deerfield"])
 plot_pair(
     centered;
-    var_names=(:mu, :theta),
+    var_names=[:mu, :theta],
     kind=[:scatter, :kde],
     kde_kwargs=Dict(:fill_last => false),
     marginals=true,
@@ -570,7 +570,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("centered_eight")
-ax = plot_parallel(data; var_names=(:theta, :tau, :mu))
+ax = plot_parallel(data; var_names=[:theta, :tau, :mu])
 ax.set_xticklabels(ax.get_xticklabels(); rotation=70)
 draw()
 
@@ -589,8 +589,8 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("centered_eight")
-coords = (school = ["Choate"],)
-plot_posterior(data; var_names=(:mu, :theta), coords, rope=(-1, 1))
+coords = Dict(:school => ["Choate"])
+plot_posterior(data; var_names=[:mu, :theta], coords, rope=(-1, 1))
 
 gcf()
 ```
@@ -641,7 +641,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("centered_eight")
-plot_rank(data; var_names=(:tau, :mu))
+plot_rank(data; var_names=[:tau, :mu])
 
 gcf()
 ```
@@ -675,7 +675,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("non_centered_eight")
-plot_trace(data; var_names=(:tau, :mu))
+plot_trace(data; var_names=[:tau, :mu])
 
 gcf()
 ```
@@ -692,7 +692,7 @@ using ArviZ
 ArviZ.use_style("arviz-darkgrid")
 
 data = load_arviz_data("non_centered_eight")
-plot_violin(data; var_names=(:mu, :tau))
+plot_violin(data; var_names=[:mu, :tau])
 
 gcf()
 ```
