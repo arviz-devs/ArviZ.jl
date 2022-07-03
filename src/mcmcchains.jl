@@ -109,9 +109,9 @@ end
     from_mcmcchains(; kwargs...) -> InferenceData
     from_mcmcchains(
         posterior::MCMCChains.Chains,
-        posterior_predictive::Any,
-        predictions::Any,
-        log_likelihood::Any;
+        posterior_predictive,
+        predictions,
+        log_likelihood;
         kwargs...
     ) -> InferenceData
 
@@ -128,27 +128,25 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 
 - `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution or
     name(s) of predictive variables in `posterior`
-- `predictions::Any=nothing`: Out-of-sample predictions for the posterior.
-- `prior::Any=nothing`: Draws from the prior
-- `prior_predictive::Any=nothing`: Draws from the prior predictive distribution or name(s)
-    of predictive variables in `prior`
-- `observed_data::Dict{String,Array}=nothing`: Observed data on which the `posterior` is
-    conditional. It should only contain data which is modeled as a random variable. Keys are
-    parameter names and values.
-- `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
-    which is not modeled as a random variable. Keys are parameter names and values.
-- `predictions_constant_data::Dict{String,Array}=nothing`: Constants relevant to the model
-     predictions (i.e. new `x` values in a linear regression).
-- `log_likelihood::Any=nothing`: Pointwise log-likelihood for the data. It is recommended
-     to use this argument as a dictionary whose keys are observed variable names and whose
-     values are log likelihood arrays.
-- `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
+- `predictions`: Out-of-sample predictions for the posterior.
+- `prior`: Draws from the prior
+- `prior_predictive`: Draws from the prior predictive distribution or name(s) of predictive
+    variables in `prior`
+- `observed_data`: Observed data on which the `posterior` is conditional. It should only
+    contain data which is modeled as a random variable. Keys are parameter names and values.
+- `constant_data`: Model constants, data included in the model that are not modeled as
+    random variables. Keys are parameter names.
+- `predictions_constant_data`: Constants relevant to the model predictions (i.e. new `x`
+    values in a linear regression).
+- `log_likelihood`: Pointwise log-likelihood for the data. It is recommended to use this
+    argument as a named tuple whose keys are observed variable names and whose values are log
+    likelihood arrays. Alternatively, provide the name of variable in `posterior` containing
+    log likelihoods.
 - `library=MCMCChains`: Name of library that generated the chains
-- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
-    dimensions
-- `eltypes::Dict{String,DataType}=Dict()`: Apply eltypes to specific variables. This is used
-    to assign discrete eltypes to discrete variables.
+- `coords`: Map from named dimension to named indices
+- `dims`: Map from variable name to names of its dimensions
+- `eltypes`: Map from variable names to eltypes. This is primarily used to assign discrete
+    eltypes to discrete variables that were stored in `Chains` as floats.
 
 # Returns
 
