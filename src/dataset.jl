@@ -239,9 +239,7 @@ DimensionalData.show_after(io, mime, ::Dataset) = nothing
 
 attributes(data::DimensionalData.AbstractDimStack) = DimensionalData.metadata(data)
 
-function Base.convert(::Type{DimensionalData.DimStack}, data::Dataset)
-    return convert(DimensionalData.DimStack, parent(data))
-end
+Base.convert(T::Type{<:DimensionalData.DimStack}, data::Dataset) = convert(T, parent(data))
 
 function DimensionalData.rebuild(data::Dataset; kwargs...)
     return Dataset(DimensionalData.rebuild(parent(data); kwargs...))
