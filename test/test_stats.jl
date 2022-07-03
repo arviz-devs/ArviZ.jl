@@ -71,11 +71,9 @@ using DataFrames: DataFrames
     @testset "summarystats" begin
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
-        idata = convert_to_inference_data(
-            Dict(
-                "a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, 3, 4)
-            ),
-        )
+        idata = convert_to_inference_data((
+            a=randn(rng, nchains, ndraws), b=randn(rng, nchains, ndraws, 3, 4)
+        ),)
 
         s = summarystats(idata)
         @test s isa DataFrames.DataFrame
@@ -99,9 +97,7 @@ using DataFrames: DataFrames
     @testset "ArviZ.summary" begin
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
-        data = Dict(
-            "a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, 3, 4)
-        )
+        data = (a=randn(rng, nchains, ndraws), b=randn(rng, nchains, ndraws, 3, 4))
 
         @test ArviZ.summary(data) isa DataFrames.DataFrame
     end

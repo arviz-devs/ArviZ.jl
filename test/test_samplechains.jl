@@ -27,8 +27,8 @@ end
 @testset "SampleChains" begin
     @testset "TestChain with $nchains chains" for nchains in (1, 4)
         ndraws = 10
-        dims = Dict(:y => [:a], :z => [:b, :c])
-        coords = Dict(:a => ["a1", "a2"], :b => ["b1", "b2"], :c => ["c1", "c2", "c3"])
+        dims = (y=[:a], z=[:b, :c])
+        coords = (a=["a1", "a2"], b=["b1", "b2"], c=["c1", "c2", "c3"])
         tvs = map(1:nchains) do _
             init = (x=randn(), y=randn(2), z=randn(2, 3))
             tv = TupleVectors.TupleVector(undef, init, ndraws)
@@ -62,18 +62,8 @@ end
                     idata_nt = from_namedtuple(; group => nts, kwargs...)
                 end
                 idata_conv = convert_to_inference_data(chaindata; group, kwargs...)
-                map((idata, idata_conv)) do _idata
-                    test_namedtuple_data(
-                        _idata, group, propertynames(multichain), nchains, ndraws; kwargs...
-                    )
-                    @test only(ArviZ.groupnames(_idata)) === group
-                end
-                @testset for var_name in propertynames(multichain)
-                    @test getproperty(getproperty(idata, group), var_name).values ==
-                        getproperty(getproperty(idata_nt, group), var_name).values
-                    @test getproperty(getproperty(idata, group), var_name).values ==
-                        getproperty(getproperty(idata_conv, group), var_name).values
-                end
+                test_idata_approx_equal(idata, idata_nt)
+                test_idata_approx_equal(idata, idata_conv)
             end
         end
     end
@@ -84,21 +74,13 @@ end
 
         multichain = samplechains_dynamichmc_sample(4, 10)
         idata = convert_to_inference_data(multichain)
-        @test sort([:posterior, :sample_stats]) == ArviZ.groupnames(idata)
-        stats_vars = setdiff(map(Symbol, idata.sample_stats.variables), (:chain, :draw))
-        missing_vars = setdiff(expected_stats_vars, stats_vars)
-        @test isempty(missing_vars)
-        post_vars = setdiff(map(Symbol, idata.posterior.variables), (:chain, :draw))
-        @test issubset((:μ, :σ), post_vars)
-        @test size(idata.posterior.μ.values) == (4, 10, 2, 3)
-        @test size(idata.posterior.σ.values) == (4, 10)
+        @test ArviZ.groupnames(idata) === (:posterior, :sample_stats)
+        @test issubset(expected_stats_vars, keys(idata.sample_stats))
+        @test size(idata.posterior.μ) == (4, 10, 2, 3)
+        @test size(idata.posterior.σ) == (4, 10)
 
         idata = convert_to_inference_data(multichain; group=:prior)
-        @test sort([:prior, :sample_stats_prior]) == ArviZ.groupnames(idata)
-        stats_vars = setdiff(
-            map(Symbol, idata.sample_stats_prior.variables), (:chain, :draw)
-        )
-        missing_vars = setdiff(expected_stats_vars, stats_vars)
-        @test isempty(missing_vars)
+        @test ArviZ.groupnames(idata) === (:prior, :sample_stats_prior)
+        @test issubset(expected_stats_vars, keys(idata.sample_stats_prior))
     end
 end
