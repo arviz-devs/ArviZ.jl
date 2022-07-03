@@ -78,7 +78,6 @@
 | [`from_mcmcchains`](@ref)           | Convert `MCMCChains` data into an `InferenceData`.                      |
 | [`from_samplechains`](@ref)         | Convert `SampleChains` data into an `InferenceData`.                    |
 | [`concat`](@ref)                    | Concatenate `InferenceData` objects.                                    |
-| [`concat!`](@ref)                   | Concatenate `InferenceData` objects in-place.                           |
 
 ## [Utils](@id utils-api)
 
