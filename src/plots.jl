@@ -23,6 +23,15 @@
 @forwardplotfun plot_trace
 @forwardplotfun plot_violin
 
+function convert_arguments(::typeof(plot_kde), values, args...; values2=nothing, kwargs...)
+    if values2 === nothing
+        kwargs_new = NamedTuple(kwargs)
+    else
+        kwargs_new = (; values2=convert(Array, values2), kwargs...)
+    end
+    return tuple(convert(Array, values), args...), kwargs_new
+end
+
 @deprecate plot_joint(args...; kwargs...) plot_pair(args...; kwargs...)
 
 function convert_arguments(::typeof(plot_compare), df, args...; kwargs...)
