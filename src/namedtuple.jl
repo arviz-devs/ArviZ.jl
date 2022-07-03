@@ -109,20 +109,10 @@ idata4 = from_namedtuple(data4)
 from_namedtuple
 
 function from_namedtuple(
-    posterior,
-    posterior_predictive,
-    sample_stats,
-    predictions,
-    log_likelihood;
-    library=nothing,
-    kwargs...,
+    posterior, posterior_predictive, sample_stats, predictions, log_likelihood; kwargs...
 )
     all_idata = InferenceData()
-    if posterior === nothing
-        post_dict = nothing
-    else
-        post_dict = Dict(pairs(namedtuple_of_arrays(posterior)))
-    end
+    post_data = posterior === nothing ? posterior : namedtuple_of_arrays(posterior)
     for (group, group_data) in [
         :posterior_predictive => posterior_predictive,
         :sample_stats => sample_stats,
@@ -130,29 +120,26 @@ function from_namedtuple(
         :log_likelihood => log_likelihood,
     ]
         group_data === nothing && continue
-        if post_dict !== nothing
-            if group_data isa Union{Symbol,String}
-                group_data = [Symbol(group_data)]
+        if post_data !== nothing
+            if group_data isa Symbol
+                group_data = (Symbol(group_data),)
             end
-            if group_data isa Union{AbstractVector{Symbol},NTuple{N,Symbol} where {N}}
-                group_data = popsubdict!(post_dict, group_data)
+            if all(Base.Fix2(isa, Symbol), group_data)
+                group_data = NamedTuple{Tuple(group_data)}(post_data)
+                post_data = NamedTuple{Tuple(setdiff(keys(post_data), keys(group_data)))}(
+                    post_data
+                )
             end
             isempty(group_data) && continue
         end
         group_dataset = convert_to_dataset(group_data; kwargs...)
-        if library !== nothing
-            setattribute!(group_dataset, :inference_library, string(library))
-        end
         all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
-    (post_dict === nothing || isempty(post_dict)) && return all_idata
+    (post_data === nothing || isempty(post_data)) && return all_idata
 
-    group_dataset = convert_to_dataset(post_dict; kwargs...)
-    if library !== nothing
-        setattribute!(group_dataset, :inference_library, string(library))
-    end
-    all_idata = merge(all_idata, InferenceData(; posterior=group_dataset))
+    post_dataset = convert_to_dataset(post_data; kwargs...)
+    all_idata = merge(all_idata, InferenceData(; posterior=post_dataset))
 
     return all_idata
 end
@@ -182,7 +169,7 @@ function from_namedtuple(
     )
 
     if any(x -> x !== nothing, [prior, prior_predictive, sample_stats_prior])
-        pre_prior_idata = convert_to_inference_data(
+        pre_prior_idata = from_namedtuple(
             prior;
             posterior_predictive=prior_predictive,
             sample_stats=sample_stats_prior,
@@ -206,8 +193,7 @@ function from_namedtuple(
         :predictions_constant_data => predictions_constant_data,
     ]
         group_data === nothing && continue
-        group_dict = Dict(pairs(group_data))
-        group_dataset = convert_to_constant_dataset(group_dict; library, kwargs...)
+        group_dataset = convert_to_dataset(group_data; library, default_dims=(), kwargs...)
         all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
