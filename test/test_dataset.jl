@@ -218,7 +218,7 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
         nshared = 3
         xdims = (:chain, :draw, :shared)
         x = DimArray(randn(nchains, ndraws, nshared), xdims)
-        ydims = (:chain, :draw, Dim{:ydim1}(Any["a", "b"]), :shared)
+        ydims = (:chain, :draw, Dim{:ydim1}(Any["a", "b"]), Dim{:shared})
         y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
         metadata = Dict(:prop1 => "val1", :prop2 => "val2")
         ds = ArviZ.Dataset((; x, y); metadata)
