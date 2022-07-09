@@ -254,6 +254,13 @@ end
         test_chains_data(chns, idata, :posterior, names(chns))
         @test :prior_predictive ∈ ArviZ.groupnames(idata)
         @test idata.prior_predictive.x ≈ prior_predictive
+
+        prior_predictive = makechains(1, ndraws, nchains)
+        idata = from_mcmcchains(chns; prior_predictive)
+        test_chains_data(chns, idata, :posterior, names(chns))
+        @test :prior_predictive ∈ ArviZ.groupnames(idata)
+        @test idata.prior_predictive.var1 ≈
+            permutedims(prior_predictive.value, (:chain, :iter, :var))[:, :, [:var1]]
     end
 
     @testset "missing -> NaN" begin
