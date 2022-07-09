@@ -108,11 +108,25 @@ using PyCall, PyPlot
         end
     end
 
-    @testset "$(f)" for f in (plot_dist, plot_kde, ArviZ.plot_ecdf)
+    @testset "$(f)" for f in (plot_dist, ArviZ.plot_ecdf)
         f(arr1)
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
             @test f(arr1; backend=:bokeh) isa ArviZ.BokehPlot
+        end
+    end
+
+    @testset "plot_kde" begin
+        plot_kde(arr1)
+        close(gcf())
+        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
+            @test plot_kde(arr1; backend=:bokeh) isa ArviZ.BokehPlot
+        end
+
+        plot_kde(arr1, arr2)
+        close(gcf())
+        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
+            @test plot_kde(arr1, arr2; backend=:bokeh) isa ArviZ.BokehPlot
         end
     end
 
