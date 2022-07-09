@@ -1,5 +1,4 @@
 using ArviZ, DimensionalData, Test
-using MonteCarloMeasurements: Particles
 
 @testset "InferenceData" begin
     var_names = (:a, :b)
@@ -215,28 +214,6 @@ end
         check_idata_schema(idata2)
         @test ArviZ.groupnames(idata2) == (:prior,)
         @test idata2.prior == idata.posterior
-    end
-
-    @testset "convert_to_inference_data(::Particles)" begin
-        p = Particles(randn(10))
-        idata = convert_to_inference_data(p)
-        @test idata.posterior.x == reshape(p.particles, 1, :)
-    end
-
-    @testset "convert_to_inference_data(::Vector{Particles})" begin
-        p = [Particles(randn(10)) for _ in 1:4]
-        idata = convert_to_inference_data(p)
-        @test idata.posterior.x == reduce(vcat, getproperty.(p, :particles)')
-    end
-
-    @testset "convert_to_inference_data(::Vector{Array{Particles}})" begin
-        p = [Particles(randn(10, 3)) for _ in 1:4]
-        idata = convert_to_inference_data(p)
-        x = permutedims(
-            cat(map(pi -> reduce(vcat, getproperty.(pi, :particles)'), p)...; dims=3),
-            (3, 2, 1),
-        )
-        @test idata.posterior.x == x
     end
 end
 

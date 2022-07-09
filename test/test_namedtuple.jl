@@ -1,5 +1,3 @@
-using MonteCarloMeasurements: Particles
-
 @testset "from_namedtuple" begin
     nchains, ndraws = 4, 10
     sizes = (x=(), y=(2,), z=(3, 5))
@@ -13,8 +11,6 @@ using MonteCarloMeasurements: Particles
             [map(sz -> randn(sz...), sizes) for _ in 1:nchains, _ in 1:ndraws],
         "Vector{Vector{NamedTuple}}" =>
             [[map(sz -> randn(sz...), sizes) for _ in 1:ndraws] for _ in 1:nchains],
-        "Vector{NamedTuple} particles" =>
-            [map(sz -> Particles(randn(ndraws, sz...)), sizes) for _ in 1:nchains],
     ]
 
     @testset "posterior::$(type)" for (type, nt) in nts
