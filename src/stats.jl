@@ -97,10 +97,8 @@ Compute summary statistics on `data`.
 - `order::String="C"`: If `fmt` is "wide", use either "C" or "F" unpacking order.
 - `skipna::Bool=false`: If `true`, ignores `NaN` values when computing the summary
     statistics. It does not affect the behaviour of the functions passed to `stat_funcs`.
-- `coords::Dict{String,Vector}=Dict()`: Coordinates specification to be used if the `fmt`
-    is `"xarray"`.
-- `dims::Dict{String,Vector}=Dict()`: Dimensions specification for the variables to be used
-    if the `fmt` is `"xarray"`.
+- `coords`: Coordinates specification to be used if the `fmt` is `"xarray"`.
+- `dims`: Dimensions specification for the variables to be used if the `fmt` is `"xarray"`.
 
 # Returns
 
@@ -151,31 +149,27 @@ function StatsBase.summarystats(data::InferenceData; group=:posterior, kwargs...
     return summarystats(dataset; kwargs...)
 end
 function StatsBase.summarystats(data::Dataset; fmt=:wide, kwargs...)
+    fmt = fmt ∈ (:dimstack, :dataset) ? :xarray : fmt
     s = arviz.summary(data; fmt, kwargs...)
-    s isa Dataset && return s
+    pyisinstance(s, xarray.Dataset) && return convert(Dataset, s)
     index_name = Symbol(fmt) == :long ? :statistic : :variable
     return todataframes(s; index_name)
 end
 
 """
     summary(
-        data;
-        group = :posterior,
-        coords = nothing,
-        dims = nothing,
-        kwargs...,
+        data; group = :posterior, coords dims, kwargs...,
     ) -> Union{Dataset,DataFrames.DataFrame}
 
 Compute summary statistics on any object that can be passed to [`convert_to_dataset`](@ref).
 
 # Keywords
 
-  - `coords::Dict{String,Vector}=nothing`: Map from named dimension to named indices.
-  - `dims::Dict{String,Vector{String}}=nothing`: Map from variable name to names of its
-    dimensions.
+  - `coords`: Map from named dimension to named indices.
+  - `dims`: Map from variable name to names of its dimensions.
   - `kwargs`: Keyword arguments passed to [`summarystats`](@ref).
 """
-function summary(data; group=:posterior, coords=nothing, dims=nothing, kwargs...)
+function summary(data; group=:posterior, coords=(;), dims=(;), kwargs...)
     dataset = convert_to_dataset(data; group, coords, dims)
     return summarystats(dataset; kwargs...)
 end

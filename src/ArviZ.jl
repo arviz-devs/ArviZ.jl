@@ -2,19 +2,23 @@ __precompile__()
 module ArviZ
 
 using Base: @__doc__
+using Dates
 using Requires
 using REPL
 using DataFrames
+using OrderedCollections: OrderedDict
 
 using PyCall
 using Conda
 using PyPlot
+using DimensionalData: DimensionalData, Dimensions
 using PSIS: PSIS, PSISResult, psis, psis!
 using LogExpFunctions: logsumexp
 
 import Base:
     convert,
     get,
+    getindex,
     getproperty,
     hash,
     haskey,
@@ -80,8 +84,7 @@ export InferenceData,
     from_cmdstan,
     from_mcmcchains,
     from_samplechains,
-    concat,
-    concat!
+    concat
 
 ## Utils
 export with_interactive_backend
@@ -95,6 +98,7 @@ const xarray = PyNULL()
 const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
+const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
 
 include("setup.jl")
 
@@ -121,6 +125,7 @@ end
 
 include("utils.jl")
 include("rcparams.jl")
+include("xarray.jl")
 include("dataset.jl")
 include("data.jl")
 include("diagnostics.jl")

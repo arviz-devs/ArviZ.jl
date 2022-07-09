@@ -64,20 +64,19 @@ whose first dimensions correspond to the dimensions of the containers.
 - `prior::Any=nothing`: Draws from the prior
 - `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
 - `sample_stats_prior::Any=nothing`: Statistics of the prior sampling process
-- `observed_data::Dict{String,Array}=nothing`: Observed data on which the `posterior` is
+- `observed_data::NamedTuple`: Observed data on which the `posterior` is
      conditional. It should only contain data which is modeled as a random variable. Keys
      are parameter names and values.
-- `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
+- `constant_data::NamedTuple`: Model constants, data included in the model
      which is not modeled as a random variable. Keys are parameter names and values.
-- `predictions_constant_data::Dict{String,Array}=nothing`: Constants relevant to the model
+- `predictions_constant_data::NamedTuple`: Constants relevant to the model
      predictions (i.e. new `x` values in a linear regression).
-- `log_likelihood::Any=nothing`: Pointwise log-likelihood for the data. It is recommended
-     to use this argument as a dictionary whose keys are observed variable names and whose
+- `log_likelihood`: Pointwise log-likelihood for the data. It is recommended
+     to use this argument as a `NamedTuple` whose keys are observed variable names and whose
      values are log likelihood arrays.
-- `library=nothing`: Name of library that generated the draws
-- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
-     dimensions
+- `library`: Name of library that generated the draws
+- `coords`: Map from named dimension to named indices
+- `dims`: Map from variable name to names of its dimensions
 
 # Returns
 
@@ -109,20 +108,10 @@ idata4 = from_namedtuple(data4)
 from_namedtuple
 
 function from_namedtuple(
-    posterior,
-    posterior_predictive,
-    sample_stats,
-    predictions,
-    log_likelihood;
-    library=nothing,
-    kwargs...,
+    posterior, posterior_predictive, sample_stats, predictions, log_likelihood; kwargs...
 )
     all_idata = InferenceData()
-    if posterior === nothing
-        post_dict = nothing
-    else
-        post_dict = Dict(pairs(namedtuple_of_arrays(posterior)))
-    end
+    post_data = posterior === nothing ? posterior : namedtuple_of_arrays(posterior)
     for (group, group_data) in [
         :posterior_predictive => posterior_predictive,
         :sample_stats => sample_stats,
@@ -130,29 +119,26 @@ function from_namedtuple(
         :log_likelihood => log_likelihood,
     ]
         group_data === nothing && continue
-        if post_dict !== nothing
-            if group_data isa Union{Symbol,String}
-                group_data = [Symbol(group_data)]
+        if post_data !== nothing
+            if group_data isa Symbol
+                group_data = (Symbol(group_data),)
             end
-            if group_data isa Union{AbstractVector{Symbol},NTuple{N,Symbol} where {N}}
-                group_data = popsubdict!(post_dict, group_data)
+            if all(Base.Fix2(isa, Symbol), group_data)
+                group_data = NamedTuple{Tuple(group_data)}(post_data)
+                post_data = NamedTuple{Tuple(setdiff(keys(post_data), keys(group_data)))}(
+                    post_data
+                )
             end
             isempty(group_data) && continue
         end
         group_dataset = convert_to_dataset(group_data; kwargs...)
-        if library !== nothing
-            setattribute!(group_dataset, "inference_library", string(library))
-        end
-        concat!(all_idata, InferenceData(; group => group_dataset))
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
-    (post_dict === nothing || isempty(post_dict)) && return all_idata
+    (post_data === nothing || isempty(post_data)) && return all_idata
 
-    group_dataset = convert_to_dataset(post_dict; kwargs...)
-    if library !== nothing
-        setattribute!(group_dataset, "inference_library", string(library))
-    end
-    concat!(all_idata, InferenceData(; posterior=group_dataset))
+    post_dataset = convert_to_dataset(post_data; kwargs...)
+    all_idata = merge(all_idata, InferenceData(; posterior=post_dataset))
 
     return all_idata
 end
@@ -182,7 +168,7 @@ function from_namedtuple(
     )
 
     if any(x -> x !== nothing, [prior, prior_predictive, sample_stats_prior])
-        pre_prior_idata = convert_to_inference_data(
+        pre_prior_idata = from_namedtuple(
             prior;
             posterior_predictive=prior_predictive,
             sample_stats=sample_stats_prior,
@@ -191,13 +177,13 @@ function from_namedtuple(
         )
         prior_idata = rekey(
             pre_prior_idata,
-            Dict(
-                :posterior => :prior,
-                :posterior_predictive => :prior_predictive,
-                :sample_stats => :sample_stats_prior,
+            (
+                posterior=:prior,
+                posterior_predictive=:prior_predictive,
+                sample_stats=:sample_stats_prior,
             ),
         )
-        concat!(all_idata, prior_idata)
+        all_idata = merge(all_idata, prior_idata)
     end
 
     for (group, group_data) in [
@@ -206,9 +192,8 @@ function from_namedtuple(
         :predictions_constant_data => predictions_constant_data,
     ]
         group_data === nothing && continue
-        group_dict = Dict(pairs(group_data))
-        group_dataset = convert_to_constant_dataset(group_dict; library, kwargs...)
-        concat!(all_idata, InferenceData(; group => group_dataset))
+        group_dataset = convert_to_dataset(group_data; library, default_dims=(), kwargs...)
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
     return all_idata

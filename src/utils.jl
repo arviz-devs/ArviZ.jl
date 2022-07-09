@@ -1,14 +1,14 @@
-const sample_stats_eltypes = Dict(
-    "lp" => Float64,
-    "step_size" => Float64,
-    "step_size_nom" => Float64,
-    "tree_depth" => Int,
-    "n_steps" => Int,
-    "diverging" => Bool,
-    "energy" => Float64,
-    "energy_error" => Float64,
-    "max_energy_error" => Float64,
-    "int_time" => Float64,
+const sample_stats_eltypes = (
+    lp=Float64,
+    step_size=Float64,
+    step_size_nom=Float64,
+    tree_depth=Int,
+    n_steps=Int,
+    diverging=Bool,
+    energy=Float64,
+    energy_error=Float64,
+    max_energy_error=Float64,
+    int_time=Float64,
 )
 
 @doc doc"""
@@ -181,35 +181,11 @@ frompytype(x::AbstractArray{PyObject}) = map(frompytype, x)
 frompytype(x::AbstractArray{Any}) = map(frompytype, x)
 frompytype(x::AbstractArray{<:AbstractArray}) = map(frompytype, x)
 
-function rekey(d, keymap)
-    dnew = empty(d)
-    for (k, v) in d
-        knew = get(keymap, k, k)
-        haskey(dnew, knew) && throw(ArgumentError("$knew in `keymap` is already in `d`."))
-        dnew[knew] = d[k]
-    end
-    return dnew
+rekey(d, keymap) = Dict(get(keymap, k, k) => d[k] for k in keys(d))
+function rekey(d::NamedTuple, keymap)
+    new_keys = map(k -> get(keymap, k, k), keys(d))
+    return NamedTuple{new_keys}(values(d))
 end
-
-removekeys!(dict, keys) = map(k -> delete!(dict, k), keys)
-
-function popsubdict!(dict, names)
-    (dict === nothing || names === nothing) && return nothing
-    subdict = empty(dict)
-    for k in names
-        subdict[k] = pop!(dict, k)
-    end
-    return subdict
-end
-popsubdict!(dict, key::String) = popsubdict!(dict, [key])
-
-snakecase(s) = replace(lowercase(s), " " => "_")
-
-@inline _asarray(x) = [x]
-@inline _asarray(x::AbstractArray) = x
-
-_asstringkeydict(x) = Dict(String(k) => v for (k, v) in pairs(x))
-_asstringkeydict(x::Dict{String}) = x
 
 enforce_stat_eltypes(stats) = convert_to_eltypes(stats, sample_stats_eltypes)
 
@@ -289,4 +265,12 @@ function topandas(::Val{:ELPDData}, df)
     rownames = names(df)
     colvals = Array(only(eachrow(df)))
     return ArviZ.arviz.stats.ELPDData(colvals, rownames)
+end
+
+function package_version(pkg::Module)
+    isdefined(Base, :pkgversion) && return Base.pkgversion(pkg)
+    project = joinpath(dirname(dirname(pathof(pkg))), "Project.toml")
+    toml = read(project, String)
+    m = match(r"(*ANYCRLF)^version\s*=\s\"(.*)\"$"m, toml)
+    return VersionNumber(m[1])
 end

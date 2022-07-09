@@ -1,185 +1,245 @@
-@testset "ArviZ.Dataset" begin
-    data = load_arviz_data("centered_eight")
-    dataset = data.posterior
-    @test dataset isa ArviZ.Dataset
+using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
 
-    @testset "construction" begin
-        pydataset = PyObject(dataset)
-        @test ArviZ.Dataset(pydataset) isa ArviZ.Dataset
-        @test PyObject(ArviZ.Dataset(pydataset)) === pydataset
-        @test ArviZ.Dataset(dataset) === dataset
-        @test_throws ArgumentError ArviZ.Dataset(py"PyNullObject()")
-        @test hash(dataset) == hash(pydataset)
+@testset "dataset" begin
+    @testset "ArviZ.Dataset" begin
+        @testset "Constructors" begin
+            nchains = 4
+            ndraws = 100
+            nshared = 3
+            xdims = (:chain, :draw, :shared)
+            x = DimArray(randn(nchains, ndraws, nshared), xdims)
+            ydims = (:chain, :draw, :ydim1, :shared)
+            y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
+            metadata = Dict(:prop1 => "val1", :prop2 => "val2")
 
-        vars = Dict("x" => ("dimx", randn(3)), ("y" => (("dimy_1", "dimy_2"), randn(3, 2))))
-        coords = Dict(
-            "dimx" => [1, 2, 3], "dimy_1" => ["a", "b", "c"], "dimy_2" => ["d", "e"]
-        )
-        attrs = Dict("prop1" => 1, "prop2" => "propval")
-        @inferred ArviZ.Dataset(; data_vars=vars, coords, attrs)
-        ds = ArviZ.Dataset(; data_vars=vars, coords, attrs)
-        @test ds isa ArviZ.Dataset
-        vars2, kwargs = ArviZ.dataset_to_dict(ds)
-        for (k, v) in vars
-            @test k ∈ keys(vars2)
-            @test vars2[k] ≈ v[2]
+            @testset "from NamedTuple" begin
+                data = (; x, y)
+                ds = ArviZ.Dataset(data; metadata)
+                @test ds isa ArviZ.Dataset
+                @test DimensionalData.data(ds) == data
+                for dim in xdims
+                    @test DimensionalData.hasdim(ds, dim)
+                end
+                for dim in ydims
+                    @test DimensionalData.hasdim(ds, dim)
+                end
+                for (var_name, dims) in ((:x, xdims), (:y, ydims))
+                    da = ds[var_name]
+                    @test DimensionalData.name(da) === var_name
+                    @test DimensionalData.name(DimensionalData.dims(da)) === dims
+                end
+                @test DimensionalData.metadata(ds) == metadata
+            end
+
+            @testset "from DimArrays" begin
+                data = (
+                    DimensionalData.rebuild(x; name=:x), DimensionalData.rebuild(y; name=:y)
+                )
+                ds = ArviZ.Dataset(data...; metadata)
+                @test ds isa ArviZ.Dataset
+                @test values(DimensionalData.data(ds)) == data
+                for dim in xdims
+                    @test DimensionalData.hasdim(ds, dim)
+                end
+                for dim in ydims
+                    @test DimensionalData.hasdim(ds, dim)
+                end
+                for (var_name, dims) in ((:x, xdims), (:y, ydims))
+                    da = ds[var_name]
+                    @test DimensionalData.name(da) === var_name
+                    @test DimensionalData.name(DimensionalData.dims(da)) === dims
+                end
+                @test DimensionalData.metadata(ds) == metadata
+            end
+
+            @testset "idempotent" begin
+                ds = ArviZ.Dataset((; x, y); metadata)
+                @test ArviZ.Dataset(ds) === ds
+            end
+
+            @testset "errors with mismatched dimensions" begin
+                data_bad = (
+                    x=DimArray(randn(3, 100, 3), (:chains, :draws, :shared)),
+                    y=DimArray(randn(4, 100, 2, 3), (:chains, :draws, :ydim1, :shared)),
+                )
+                @test_throws Exception ArviZ.Dataset(data_bad)
+            end
         end
-        @test kwargs.coords == coords
-        for (k, v) in attrs
-            @test k ∈ keys(kwargs.attrs)
-            @test kwargs.attrs[k] == v
+
+        nchains = 4
+        ndraws = 100
+        nshared = 3
+        xdims = (:chain, :draw, :shared)
+        x = DimArray(randn(nchains, ndraws, nshared), xdims)
+        ydims = (:chain, :draw, :ydim1, :shared)
+        y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
+        metadata = Dict(:prop1 => "val1", :prop2 => "val2")
+        ds = ArviZ.Dataset((; x, y); metadata)
+
+        @testset "parent" begin
+            @test parent(ds) isa DimStack
+            @test parent(ds) == ds
+        end
+
+        @testset "properties" begin
+            @test propertynames(ds) == (:x, :y)
+            @test ds.x isa DimArray
+            @test ds.x == x
+            @test ds.y isa DimArray
+            @test ds.y == y
+        end
+
+        @testset "getindex" begin
+            @test ds[:x] isa DimArray
+            @test ds[:x] == x
+            @test ds[:y] isa DimArray
+            @test ds[:y] == y
+        end
+
+        @testset "copy/deepcopy" begin
+            @test copy(ds) == ds
+            @test deepcopy(ds) == ds
+        end
+
+        @testset "attributes" begin
+            @test ArviZ.attributes(ds) == metadata
+            dscopy = deepcopy(ds)
+            ArviZ.setattribute!(dscopy, :prop3, "val3")
+            @test ArviZ.attributes(dscopy)[:prop3] == "val3"
+            @test_deprecated ArviZ.setattribute!(dscopy, "prop3", "val4")
+            @test ArviZ.attributes(dscopy)[:prop3] == "val4"
+        end
+
+        @testset "conversion" begin
+            @test convert(ArviZ.Dataset, ds) === ds
+            ds2 = convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0])
+            @test ds2 isa ArviZ.Dataset
+            @test ds2 == ArviZ.convert_to_dataset([1.0, 2.0, 3.0, 4.0])
+            @test convert(DimensionalData.DimStack, ds) === parent(ds)
         end
     end
 
-    @testset "properties" begin
-        @test length(propertynames(dataset)) > 1
-        @test dataset["mu"] isa PyObject
-        @test dataset["mu"].values == py"$(dataset)['mu'].values"
-    end
+    @testset "Dataset <-> xarray" begin
+        nchains = 4
+        ndraws = 100
+        nshared = 3
+        xdims = (:chain, :draw, :shared)
+        x = DimArray(randn(nchains, ndraws, nshared), xdims)
+        ydims = (:chain, :draw, Dim{:ydim1}(Any["a", "b"]), :shared)
+        y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
+        metadata = Dict(:prop1 => "val1", :prop2 => "val2")
+        ds = ArviZ.Dataset((; x, y); metadata)
+        o = PyObject(ds)
+        @test o isa PyObject
+        @test pyisinstance(o, ArviZ.xarray.Dataset)
 
-    @testset "conversion" begin
-        @test pyisinstance(PyObject(dataset), ArviZ.xarray.Dataset)
-        dataset4 = convert(ArviZ.Dataset, PyObject(dataset))
-        @test dataset4 isa ArviZ.Dataset
-        @test PyObject(dataset4) === PyObject(dataset)
-
-        # TODO: improve this test
-        @test convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0]) isa ArviZ.Dataset
-    end
-
-    @testset "show(::ArviZ.Dataset)" begin
-        @testset "$mimetype" for mimetype in ("plain", "html")
-            text = repr(MIME("text/$(mimetype)"), dataset)
-            @test text isa String
-            @test !occursin("<xarray.Dataset>", text)
-            @test !occursin("&lt;xarray.Dataset&gt;", text)
-            @test occursin("Dataset (xarray.Dataset)", text)
+        @test issetequal(Symbol.(o.coords.keys()), (:chain, :draw, :shared, :ydim1))
+        for (dim, coord) in o.coords.items()
+            @test collect(coord.values) == DimensionalData.index(ds, Symbol(dim))
         end
-    end
-end
 
-@testset "ArviZ.convert_to_dataset" begin
-    rng = MersenneTwister(42)
+        variables = Dict(collect(o.data_vars.variables.items()))
+        @test "x" ∈ keys(variables)
+        @test x == variables["x"].values
+        @test variables["x"].dims == String.(xdims)
 
-    @testset "ArviZ.convert_to_dataset(::ArviZ.Dataset; kwargs...)" begin
-        data = load_arviz_data("centered_eight")
-        dataset = data.posterior
-        @test ArviZ.convert_to_dataset(dataset) isa ArviZ.Dataset
-        @test ArviZ.convert_to_dataset(dataset) === dataset
-    end
+        @test "y" ∈ keys(variables)
+        @test y == variables["y"].values
+        @test variables["y"].dims == ("chain", "draw", "ydim1", "shared")
 
-    @testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
-        A = Dict("A" => randn(rng, 2, 10, 2))
-        B = Dict("B" => randn(rng, 2, 10, 2))
-        dataA = ArviZ.convert_to_dataset(A)
-        dataB = ArviZ.convert_to_dataset(B)
-        idata = InferenceData(; posterior=dataA, prior=dataB)
+        # check that the Python object accesses the underlying Julia array
+        x[1] = 1
+        @test x == variables["x"].values
 
-        ds1 = ArviZ.convert_to_dataset(idata)
-        @test ds1 isa ArviZ.Dataset
-        @test "A" ∈ [ds1.keys()...]
-
-        ds2 = ArviZ.convert_to_dataset(idata; group=:prior)
+        ds2 = convert(ArviZ.Dataset, o)
         @test ds2 isa ArviZ.Dataset
-        @test "B" ∈ [ds2.keys()...]
+        @test ds2.x ≈ ds.x
+        @test ds2.y ≈ ds.y
+        dims1 = sort(collect(DimensionalData.dims(ds)); by=DimensionalData.name)
+        dims2 = sort(collect(DimensionalData.dims(ds2)); by=DimensionalData.name)
+        for (dim1, dim2) in zip(dims1, dims2)
+            @test DimensionalData.name(dim1) === DimensionalData.name(dim2)
+            @test DimensionalData.index(dim1) == DimensionalData.index(dim2)
+            if DimensionalData.index(dim1) isa AbstractRange
+                @test DimensionalData.index(dim2) isa AbstractRange
+            end
+        end
+        @test DimensionalData.metadata(ds2) == DimensionalData.metadata(ds)
     end
 
-    @testset "ArviZ.convert_to_dataset(::Dict; kwargs...)" begin
-        data = Dict("x" => randn(rng, 4, 100), "y" => randn(rng, 4, 100))
-        dataset = ArviZ.dict_to_dataset(data)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ [dataset.keys()...]
-        @test "y" ∈ [dataset.keys()...]
+    @testset "namedtuple_to_dataset" begin
+        J = 8
+        K = 6
+        L = 3
+        nchains = 4
+        ndraws = 500
+        vars = (a=randn(nchains, ndraws, J), b=randn(nchains, ndraws, K, L))
+        coords = (bi=2:(K + 1), draw=1:2:1_000)
+        dims = (b=[:bi, nothing],)
+        expected_dims = (
+            a=(
+                Dimensions.Dim{:chain}(1:nchains),
+                Dimensions.Dim{:draw}(1:2:1_000),
+                Dimensions.Dim{:a_dim_1}(1:J),
+            ),
+            b=(
+                Dimensions.Dim{:chain}(1:nchains),
+                Dimensions.Dim{:draw}(1:2:1_000),
+                Dimensions.Dim{:bi}(2:(K + 1)),
+                Dimensions.Dim{:b_dim_2}(1:L),
+            ),
+        )
+        attrs = Dict(:mykey => 5)
+        @test_broken @inferred ArviZ.namedtuple_to_dataset(
+            vars; library="MyLib", coords, dims, attrs
+        )
+        ds = ArviZ.namedtuple_to_dataset(vars; library="MyLib", coords, dims, attrs)
+        @test ds isa ArviZ.Dataset
+        for (var_name, var_data) in pairs(DimensionalData.layers(ds))
+            @test var_data isa DimensionalData.DimArray
+            @test var_name === DimensionalData.name(var_data)
+            @test var_data == vars[var_name]
+            _dims = DimensionalData.dims(var_data)
+            @test _dims == expected_dims[var_name]
+        end
+        metadata = DimensionalData.metadata(ds)
+        @test metadata isa OrderedDict
+        @test haskey(metadata, :created_at)
+        @test haskey(metadata, :arviz_version)
+        @test metadata[:arviz_language] == "julia"
+        @test metadata[:inference_library] == "MyLib"
+        @test !haskey(metadata, :inference_library_version)
+        @test metadata[:mykey] == 5
     end
-end
 
-@testset "ArviZ.convert_to_constant_dataset" begin
-    @testset "ArviZ.convert_to_constant_dataset(::Dict)" begin
-        data = Dict("x" => randn(4, 5), "y" => ["a", "b", "c"])
-        dataset = ArviZ.convert_to_constant_dataset(data)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ dataset.keys()
-        @test "y" ∈ dataset.keys()
-        @test Set(dataset.coords) == Set(["x_dim_0", "x_dim_1", "y_dim_0"])
-        @test collect(dataset._variables["x"].values) == data["x"]
-        @test collect(dataset._variables["y"].values) == data["y"]
+    @testset "ArviZ.convert_to_dataset" begin
+        nchains = 4
+        ndraws = 100
+        nshared = 3
+        xdims = (:chain, :draw, :shared)
+        x = DimArray(randn(nchains, ndraws, nshared), xdims)
+        ydims = (:chain, :draw, Dim{:ydim1}(Any["a", "b"]), Dim{:shared})
+        y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
+        metadata = Dict(:prop1 => "val1", :prop2 => "val2")
+        ds = ArviZ.Dataset((; x, y); metadata)
+
+        @testset "ArviZ.convert_to_dataset(::ArviZ.Dataset; kwargs...)" begin
+            @test ArviZ.convert_to_dataset(ds) isa ArviZ.Dataset
+            @test ArviZ.convert_to_dataset(ds) === ds
+        end
+
+        @testset "ArviZ.convert_to_dataset(::$T; kwargs...)" for T in (Dict, NamedTuple)
+            data = (x=randn(4, 100), y=randn(4, 100, 2))
+            if T <: Dict
+                data = T(pairs(data))
+            end
+            ds2 = ArviZ.convert_to_dataset(data)
+            @test ds2 isa ArviZ.Dataset
+            @test ds2.x == data[:x]
+            @test DimensionalData.name(DimensionalData.dims(ds2.x)) == (:chain, :draw)
+            @test ds2.y == data[:y]
+            @test DimensionalData.name(DimensionalData.dims(ds2.y)) ==
+                (:chain, :draw, :y_dim_1)
+        end
     end
-
-    @testset "ArviZ.convert_to_constant_dataset(::Dict; kwargs...)" begin
-        data = Dict("x" => randn(4, 5), "y" => ["a", "b", "c"])
-        coords = Dict("xdim1" => 1:4, "xdim2" => 5:9, "ydim1" => ["d", "e", "f"])
-        dims = Dict("x" => ["xdim1", "xdim2"], "y" => ["ydim1"])
-        library = "MyLib"
-        dataset = ArviZ.convert_to_constant_dataset(data)
-        attrs = Dict("prop" => "propval")
-
-        dataset = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ dataset.keys()
-        @test "y" ∈ dataset.keys()
-        @test Set(dataset.coords) == Set(["xdim1", "xdim2", "ydim1"])
-        @test collect(dataset._variables["xdim1"].values) == coords["xdim1"]
-        @test collect(dataset._variables["xdim2"].values) == coords["xdim2"]
-        @test collect(dataset._variables["ydim1"].values) == coords["ydim1"]
-        @test collect(dataset["x"].coords) == ["xdim1", "xdim2"]
-        @test collect(dataset["y"].coords) == ["ydim1"]
-        @test collect(dataset._variables["x"].values) == data["x"]
-        @test collect(dataset._variables["y"].values) == data["y"]
-        @test dataset.attrs["prop"] == attrs["prop"]
-        @test dataset.attrs["inference_library"] == library
-    end
-
-    @testset "ArviZ.convert_to_constant_dataset(::NamedTuple; kwargs...)" begin
-        data = (x=randn(4, 5), y=["a", "b", "c"])
-        coords = (xdim1=1:4, xdim2=5:9, ydim1=["d", "e", "f"])
-        dims = (x=["xdim1", "xdim2"], y=["ydim1"])
-        library = "MyLib"
-        dataset = ArviZ.convert_to_constant_dataset(data)
-        attrs = (prop="propval",)
-
-        dataset = ArviZ.convert_to_constant_dataset(data; coords, dims, library, attrs)
-        @test dataset isa ArviZ.Dataset
-        @test "x" ∈ dataset.keys()
-        @test "y" ∈ dataset.keys()
-        @test Set(dataset.coords) == Set(["xdim1", "xdim2", "ydim1"])
-        @test collect(dataset._variables["xdim1"].values) == coords.xdim1
-        @test collect(dataset._variables["xdim2"].values) == coords.xdim2
-        @test collect(dataset._variables["ydim1"].values) == coords.ydim1
-        @test collect(dataset["x"].coords) == ["xdim1", "xdim2"]
-        @test collect(dataset["y"].coords) == ["ydim1"]
-        @test collect(dataset._variables["x"].values) == data.x
-        @test collect(dataset._variables["y"].values) == data.y
-        @test dataset.attrs["prop"] == attrs.prop
-        @test dataset.attrs["inference_library"] == library
-    end
-end
-
-@testset "dict to dataset roundtrip" begin
-    rng = MersenneTwister(42)
-    J = 8
-    K = 6
-    nchains = 4
-    ndraws = 500
-    vars = Dict(
-        "a" => randn(rng, nchains, ndraws), "b" => randn(rng, nchains, ndraws, J, K)
-    )
-    coords = Dict("bi" => 1:J, "bj" => 1:K)
-    dims = Dict("b" => ["bi", "bj"])
-    attrs = Dict("mykey" => 5)
-
-    ds = ArviZ.dict_to_dataset(vars; library=:MyLib, coords, dims, attrs)
-    @test ds isa ArviZ.Dataset
-    vars2, kwargs = ArviZ.dataset_to_dict(ds)
-    for (k, v) in vars
-        @test k ∈ keys(vars2)
-        @test vars2[k] ≈ v
-    end
-    @test kwargs.coords == coords
-    @test kwargs.dims == dims
-    for (k, v) in attrs
-        @test k ∈ keys(kwargs.attrs)
-        @test kwargs.attrs[k] == v
-    end
-    @test "inference_library" ∈ keys(kwargs.attrs)
-    @test kwargs.attrs["inference_library"] == "MyLib"
 end

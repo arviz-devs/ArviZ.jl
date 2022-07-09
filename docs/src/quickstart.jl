@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.18.2
+# v0.19.5
 
 using Markdown
 using InteractiveUtils
@@ -75,14 +75,12 @@ Below, we have 10 chains of 50 draws each for four different distributions.
 # ╔═╡ 49f19c17-ac1d-46b5-a655-4376b7713244
 let
     s = (10, 50)
-    plot_forest(
-        Dict(
-            "normal" => randn(rng1, s),
-            "gumbel" => rand(rng1, Gumbel(), s),
-            "student t" => rand(rng1, TDist(6), s),
-            "exponential" => rand(rng1, Exponential(), s),
-        ),
-    )
+    plot_forest((
+        normal=randn(rng1, s),
+        gumbel=rand(rng1, Gumbel(), s),
+        student_t=rand(rng1, TDist(6), s),
+        exponential=rand(rng1, Exponential(), s),
+    ),)
     gcf()
 end
 
@@ -155,7 +153,7 @@ Most ArviZ functions work fine with `Chains` objects from Turing:
 
 # ╔═╡ 500f4e0d-0a36-4b5c-8900-667560fbf1d4
 begin
-    plot_autocorr(turing_chns; var_names=["μ", "τ"])
+    plot_autocorr(turing_chns; var_names=(:μ, :τ))
     gcf()
 end
 
@@ -163,23 +161,23 @@ end
 md"""
 ### Convert to `InferenceData`
 
-For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert `Chains` objects to xarray datasets.
-Note we are also giving some information about labelling.
+For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert `Chains` objects to multidimensional data structures with named dimensions and indices.
+Note that for such dimensions, the information is not contained in `Chains`, so we need to provide it.
 
-ArviZ is built to work with [`InferenceData`](https://julia.arviz.org/stable/reference/#ArviZ.InferenceData) (a netcdf datastore that loads data into `xarray` datasets), and the more *groups* it has access to, the more powerful analyses it can perform.
+ArviZ is built to work with [`InferenceData`](https://julia.arviz.org/stable/reference/#ArviZ.InferenceData), and the more *groups* it has access to, the more powerful analyses it can perform.
 """
 
 # ╔═╡ 803efdd8-656e-4e37-ba36-81195d064972
 idata_turing_post = from_mcmcchains(
     turing_chns;
-    coords=Dict("school" => schools),
-    dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
+    coords=(; school=schools),
+    dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
     library="Turing",
 )
 
 # ╔═╡ 79f342c8-0738-432b-bfd7-2da25e50fa91
 md"""
-Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/stable/reference/#ArviZ.Dataset) (a thinly wrapped `xarray.Dataset`).
+Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/stable/reference/#ArviZ.Dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.DimStack).
 We can view a summary of the dataset.
 """
 
@@ -252,7 +250,7 @@ log_likelihood = let
     ynames = string.(keys(posterior_predictive))
     log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
     # Reshape into `(nchains, ndraws, size(y)...)`
-    Dict("y" => permutedims(cat(log_likelihood_y...; dims=3), (2, 1, 3)))
+    (; y=permutedims(cat(log_likelihood_y...; dims=3), (2, 1, 3)))
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
@@ -265,10 +263,10 @@ idata_turing = from_mcmcchains(
     log_likelihood,
     prior,
     prior_predictive,
-    observed_data=Dict("y" => y),
-    coords=Dict("school" => schools),
-    dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
-    library="Turing",
+    observed_data=(; y),
+    coords=(; school=schools),
+    dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
+    library=Turing,
 )
 
 # ╔═╡ a3b71e4e-ac1f-4404-b8a2-35d03d326774
@@ -287,7 +285,7 @@ This can be inspected visually:
 
 # ╔═╡ 05c9be29-7758-4324-971c-5579f99aaf9d
 begin
-    plot_loo_pit(idata_turing; y="y", ecdf=true)
+    plot_loo_pit(idata_turing; y=:y, ecdf=true)
     gcf()
 end
 
@@ -351,7 +349,7 @@ end;
 
 # ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
 begin
-    plot_density(stan_chns; var_names=["mu", "tau"])
+    plot_density(stan_chns; var_names=(:mu, :tau))
     gcf()
 end
 
@@ -364,17 +362,11 @@ Note that we're using the same [`from_cmdstan`](https://julia.arviz.org/stable/r
 # ╔═╡ 020cbdc0-a0a2-4d20-838f-c99b541d5832
 idata_stan = from_cmdstan(
     stan_chns;
-    posterior_predictive="y_hat",
-    observed_data=Dict("y" => schools_data["y"]),
-    log_likelihood="log_lik",
-    coords=Dict("school" => schools),
-    dims=Dict(
-        "y" => ["school"],
-        "sigma" => ["school"],
-        "theta" => ["school"],
-        "log_lik" => ["school"],
-        "y_hat" => ["school"],
-    ),
+    posterior_predictive=:y_hat,
+    observed_data=(; y),
+    log_likelihood=:log_lik,
+    coords=(; school=schools),
+    dims=NamedTuple(k => (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)),
 )
 
 # ╔═╡ e44b260c-9d2f-43f8-a64b-04245a0a5658
@@ -384,7 +376,7 @@ md"""Here is a plot showing where the Hamiltonian sampler had divergences:"""
 begin
     plot_pair(
         idata_stan;
-        coords=Dict("school" => ["Choate", "Deerfield", "Phillips Andover"]),
+        coords=Dict(:school => ["Choate", "Deerfield", "Phillips Andover"]),
         divergences=true,
     )
     gcf()
@@ -454,7 +446,7 @@ We can plot the rank order statistics of the posterior to identify poor converge
 
 # ╔═╡ eac7b059-129d-472b-a69e-b1611c7cc703
 begin
-    plot_rank(post; var_names=["μ", "τ"])
+    plot_rank(post; var_names=(:μ, :τ))
     gcf()
 end
 
@@ -466,11 +458,11 @@ idata_soss = from_samplechains(
     post;
     posterior_predictive=postpred,
     prior=prior_priorpred,
-    prior_predictive=[:y],
+    prior_predictive=(:y,),
     observed_data,
-    constant_data,
-    coords=Dict("school" => schools),
-    dims=Dict("y" => ["school"], "σ" => ["school"], "θ" => ["school"]),
+    constant_data=(; J=[J], σ),
+    coords=(; school=schools),
+    dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
     library=Soss,
 )
 
@@ -482,7 +474,7 @@ begin
     plot_density(
         [idata_soss.posterior_predictive, idata_soss.prior_predictive];
         data_labels=["Post-pred", "Prior-pred"],
-        var_names=["y"],
+        var_names=(:y,),
     )
     gcf()
 end

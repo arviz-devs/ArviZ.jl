@@ -1,25 +1,25 @@
 const turing_key_map = Dict(
-    "hamiltonian_energy" => "energy",
-    "hamiltonian_energy_error" => "energy_error",
-    "is_adapt" => "tune",
-    "max_hamiltonian_energy_error" => "max_energy_error",
-    "nom_step_size" => "step_size_nom",
-    "numerical_error" => "diverging",
+    :hamiltonian_energy => :energy,
+    :hamiltonian_energy_error => :energy_error,
+    :is_adapt => :tune,
+    :max_hamiltonian_energy_error => :max_energy_error,
+    :nom_step_size => :step_size_nom,
+    :numerical_error => :diverging,
 )
 const stan_key_map = Dict(
-    "accept_stat__" => "acceptance_rate",
-    "divergent__" => "diverging",
-    "energy__" => "energy",
-    "lp__" => "lp",
-    "n_leapfrog__" => "n_steps",
-    "stepsize__" => "step_size",
-    "treedepth__" => "tree_depth",
+    :accept_stat__ => :acceptance_rate,
+    :divergent__ => :diverging,
+    :energy__ => :energy,
+    :lp__ => :lp,
+    :n_leapfrog__ => :n_steps,
+    :stepsize__ => :step_size,
+    :treedepth__ => :tree_depth,
 )
 const stats_key_map = merge(turing_key_map, stan_key_map)
 
 headtail(x) = x[1], x[2:end]
 
-function split_locname(name)
+function split_locname(name::AbstractString)
     name = replace(name, r"[\[,]" => '.')
     name = replace(name, ']' => "")
     name, loc = headtail(split(name, '.'))
@@ -28,15 +28,19 @@ function split_locname(name)
     Nothing <: eltype(loc) && return name, ()
     return name, tuple(loc...)
 end
+function split_locname(name::Symbol)
+    subname, loc = split_locname(string(name))
+    return Symbol(subname), loc
+end
 
-function varnames_locs_dict(loc_names, loc_str_to_old)
-    vars_to_locs = Dict()
+function varnames_locs(loc_names)
+    vars_to_locs = Dict{Symbol,Any}()
     for loc_name in loc_names
         var_name, loc = split_locname(loc_name)
         if var_name ∉ keys(vars_to_locs)
-            vars_to_locs[var_name] = ([loc_str_to_old[loc_name]], [loc])
+            vars_to_locs[var_name] = ([loc_name], [loc])
         else
-            push!(vars_to_locs[var_name][1], loc_str_to_old[loc_name])
+            push!(vars_to_locs[var_name][1], loc_name)
             push!(vars_to_locs[var_name][2], loc)
         end
     end
@@ -46,7 +50,7 @@ function varnames_locs_dict(loc_names, loc_str_to_old)
         permute!(loc_name_locs[1], perm)
         permute!(loc_name_locs[2], perm)
     end
-    return vars_to_locs
+    return NamedTuple(vars_to_locs)
 end
 
 function attributes_dict(chns::Chains)
@@ -54,16 +58,11 @@ function attributes_dict(chns::Chains)
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
 
-function section_dict(chns::Chains, section)
+function section_namedtuple(chns::Chains, section)
     ndraws, _, nchains = size(chns)
-    loc_names_old = getfield(chns.name_map, section) # old may be Symbol or String
-    loc_names = string.(loc_names_old)
-    loc_str_to_old = Dict(
-        name_str => name_old for (name_str, name_old) in zip(loc_names, loc_names_old)
-    )
-    vars_to_locs = varnames_locs_dict(loc_names, loc_str_to_old)
-    vars_to_arrays = Dict{String,Array}()
-    for (var_name, names_locs) in vars_to_locs
+    loc_names = chns.name_map[section]
+    vars_to_locs = varnames_locs(loc_names)
+    vars_to_arrays = map(vars_to_locs) do names_locs
         loc_names, locs = names_locs
         sizes = reduce((a, b) -> max.(a, b), locs)
         ndim = length(sizes)
@@ -79,18 +78,18 @@ function section_dict(chns::Chains, section)
                 @views arr[:, :, locs[i]...] = oldarr[:, :, loc_names[i]]
             end
         end
-        vars_to_arrays[var_name] = arr
+        return arr
     end
     return vars_to_arrays
 end
 
-function chains_to_dict(
-    chns::Chains; ignore=String[], section=:parameters, rekey_fun=identity
+function chains_to_namedtuple(
+    chns::Chains; ignore=(), section=:parameters, rekey_fun=identity
 )
-    section in sections(chns) || return Dict()
-    chns_dict = section_dict(chns, section)
-    removekeys!(chns_dict, ignore)
-    return rekey_fun(chns_dict)
+    section in sections(chns) || return (;)
+    chns_data = section_namedtuple(chns, section)
+    chns_data_return = NamedTuple{filter(∉(ignore), keys(chns_data))}(chns_data)
+    return rekey_fun(chns_data_return)
 end
 
 """
@@ -100,10 +99,9 @@ Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group
 
 Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
 """
-function convert_to_inference_data(chns::Chains; group=:posterior, kwargs...)
-    group = Symbol(group)
+function convert_to_inference_data(chns::Chains; group::Symbol=:posterior, kwargs...)
     group === :posterior && return from_mcmcchains(chns; kwargs...)
-    return from_mcmcchains(; group => chns)
+    return from_mcmcchains(; group => chns, kwargs...)
 end
 
 @doc doc"""
@@ -111,9 +109,9 @@ end
     from_mcmcchains(; kwargs...) -> InferenceData
     from_mcmcchains(
         posterior::MCMCChains.Chains,
-        posterior_predictive::Any,
-        predictions::Any,
-        log_likelihood::Any;
+        posterior_predictive,
+        predictions,
+        log_likelihood;
         kwargs...
     ) -> InferenceData
 
@@ -130,27 +128,25 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 
 - `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution or
     name(s) of predictive variables in `posterior`
-- `predictions::Any=nothing`: Out-of-sample predictions for the posterior.
-- `prior::Any=nothing`: Draws from the prior
-- `prior_predictive::Any=nothing`: Draws from the prior predictive distribution or name(s)
-    of predictive variables in `prior`
-- `observed_data::Dict{String,Array}=nothing`: Observed data on which the `posterior` is
-    conditional. It should only contain data which is modeled as a random variable. Keys are
-    parameter names and values.
-- `constant_data::Dict{String,Array}=nothing`: Model constants, data included in the model
-    which is not modeled as a random variable. Keys are parameter names and values.
-- `predictions_constant_data::Dict{String,Array}=nothing`: Constants relevant to the model
-     predictions (i.e. new `x` values in a linear regression).
-- `log_likelihood::Any=nothing`: Pointwise log-likelihood for the data. It is recommended
-     to use this argument as a dictionary whose keys are observed variable names and whose
-     values are log likelihood arrays.
-- `log_likelihood::String=nothing`: Name of variable in `posterior` with log likelihoods
+- `predictions`: Out-of-sample predictions for the posterior.
+- `prior`: Draws from the prior
+- `prior_predictive`: Draws from the prior predictive distribution or name(s) of predictive
+    variables in `prior`
+- `observed_data`: Observed data on which the `posterior` is conditional. It should only
+    contain data which is modeled as a random variable. Keys are parameter names and values.
+- `constant_data`: Model constants, data included in the model that are not modeled as
+    random variables. Keys are parameter names.
+- `predictions_constant_data`: Constants relevant to the model predictions (i.e. new `x`
+    values in a linear regression).
+- `log_likelihood`: Pointwise log-likelihood for the data. It is recommended to use this
+    argument as a named tuple whose keys are observed variable names and whose values are log
+    likelihood arrays. Alternatively, provide the name of variable in `posterior` containing
+    log likelihoods.
 - `library=MCMCChains`: Name of library that generated the chains
-- `coords::Dict{String,Vector}=Dict()`: Map from named dimension to named indices
-- `dims::Dict{String,Vector{String}}=Dict()`: Map from variable name to names of its
-    dimensions
-- `eltypes::Dict{String,DataType}=Dict()`: Apply eltypes to specific variables. This is used
-    to assign discrete eltypes to discrete variables.
+- `coords`: Map from named dimension to named indices
+- `dims`: Map from variable name to names of its dimensions
+- `eltypes`: Map from variable names to eltypes. This is primarily used to assign discrete
+    eltypes to discrete variables that were stored in `Chains` as floats.
 
 # Returns
 
@@ -164,22 +160,20 @@ function from_mcmcchains(
     predictions,
     log_likelihood;
     library=MCMCChains,
-    eltypes=Dict(),
+    eltypes=(;),
     kwargs...,
 )
-    kwargs = Dict(pairs(merge((; dims=Dict()), kwargs)))
-    library = string(library)
     rekey_fun = d -> rekey(d, stats_key_map)
 
     # Convert chains to dicts
     if posterior === nothing
-        post_dict = nothing
-        stats_dict = nothing
+        post_data = nothing
+        stats_data = nothing
     else
-        post_dict = convert_to_eltypes(chains_to_dict(posterior), eltypes)
-        stats_dict = chains_to_dict(posterior; section=:internals, rekey_fun)
-        stats_dict = enforce_stat_eltypes(stats_dict)
-        stats_dict = convert_to_eltypes(stats_dict, Dict("is_accept" => Bool))
+        post_data = convert_to_eltypes(chains_to_namedtuple(posterior), eltypes)
+        stats_data = chains_to_namedtuple(posterior; section=:internals, rekey_fun)
+        stats_data = enforce_stat_eltypes(stats_data)
+        stats_data = convert_to_eltypes(stats_data, (; is_accept=Bool))
     end
 
     all_idata = InferenceData()
@@ -189,33 +183,24 @@ function from_mcmcchains(
         :log_likelihood => log_likelihood,
     ]
         group_data === nothing && continue
-        if group_data isa Union{Symbol,String}
-            group_data = [string(group_data)]
+        if group_data isa Symbol
+            group_data = (group_data,)
         end
-        if group_data isa Union{AbstractVector{Symbol},NTuple{N,Symbol} where {N}}
-            group_data = map(string, group_data)
-        end
-        if group_data isa Union{AbstractVector{String},NTuple{N,String} where {N}}
-            group_data = popsubdict!(post_dict, group_data)
+        if Base.isiterable(typeof(group_data)) && all(Base.Fix2(isa, Symbol), group_data)
+            group_data = NamedTuple{Tuple(group_data)}(post_data)
+            post_data = NamedTuple{Tuple(setdiff(keys(post_data), keys(group_data)))}(
+                post_data
+            )
         end
         group_dataset = if group_data isa Chains
             convert_to_dataset(group_data; library, eltypes, kwargs...)
         else
             convert_to_dataset(group_data; library, kwargs...)
         end
-        setattribute!(group_dataset, "inference_library", library)
-        concat!(all_idata, InferenceData(; group => group_dataset))
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
-
-    attrs_library = Dict("inference_library" => library)
-    if posterior === nothing
-        attrs = attrs_library
-    else
-        attrs = merge(attributes_dict(posterior), attrs_library)
-    end
-    kwargs = Dict(pairs(merge((; attrs, dims=Dict()), kwargs)))
-    post_idata = _from_dict(post_dict; sample_stats=stats_dict, kwargs...)
-    concat!(all_idata, post_idata)
+    post_idata = from_namedtuple(post_data; sample_stats=stats_data, library, kwargs...)
+    all_idata = merge(all_idata, post_idata)
     return all_idata
 end
 function from_mcmcchains(
@@ -229,18 +214,16 @@ function from_mcmcchains(
     predictions_constant_data=nothing,
     log_likelihood=nothing,
     library=MCMCChains,
-    eltypes=Dict(),
+    eltypes=(;),
     kwargs...,
 )
-    kwargs = Dict(pairs(merge((; dims=Dict(), coords=Dict()), kwargs)))
-
     all_idata = from_mcmcchains(
         posterior,
         posterior_predictive,
         predictions,
         log_likelihood;
-        library=library,
-        eltypes=eltypes,
+        library,
+        eltypes,
         kwargs...,
     )
 
@@ -250,18 +233,24 @@ function from_mcmcchains(
         )
         prior_idata = rekey(
             pre_prior_idata,
-            Dict(
-                :posterior => :prior,
-                :posterior_predictive => :prior_predictive,
-                :sample_stats => :sample_stats_prior,
+            (
+                posterior=:prior,
+                posterior_predictive=:prior_predictive,
+                sample_stats=:sample_stats_prior,
             ),
         )
-        concat!(all_idata, prior_idata)
+        all_idata = merge(all_idata, prior_idata)
     elseif prior_predictive !== nothing
-        pre_prior_predictive_idata = convert_to_inference_data(
-            prior_predictive; eltypes, kwargs...
-        )
-        concat!(
+        if prior_predictive isa Chains
+            pre_prior_predictive_idata = convert_to_inference_data(
+                prior_predictive; library, eltypes, kwargs...
+            )
+        else
+            pre_prior_predictive_idata = convert_to_inference_data(
+                prior_predictive; library, kwargs...
+            )
+        end
+        all_idata = merge(
             all_idata,
             InferenceData(; prior_predictive=pre_prior_predictive_idata.posterior),
         )
@@ -274,8 +263,8 @@ function from_mcmcchains(
     ]
         group_data === nothing && continue
         group_data = convert_to_eltypes(group_data, eltypes)
-        group_dataset = convert_to_constant_dataset(group_data; library, kwargs...)
-        concat!(all_idata, InferenceData(; group => group_dataset))
+        group_dataset = convert_to_dataset(group_data; library, default_dims=(), kwargs...)
+        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
     end
 
     return all_idata

@@ -45,7 +45,7 @@ function makechains(
 end
 
 function makechains(nvars::Int, args...; kwargs...)
-    names = ["var$(i)" for i in 1:nvars]
+    names = [Symbol("var$(i)") for i in 1:nvars]
     return makechains(names, args...; kwargs...)
 end
 
@@ -65,25 +65,18 @@ function cmdstan_noncentered_schools(data, draws, chains; tmpdir=joinpath(pwd(),
     return (model=stan_model, files=outfiles, chains=chns)
 end
 
-function test_chains_data(chns, idata, group, names=names(chns); coords=Dict(), dims=Dict())
+function test_chains_data(chns, idata, group, names=names(chns); coords=(;), dims=(;))
     ndraws, nvars, nchains = size(chns)
     @test idata isa InferenceData
-    @test group in propertynames(idata)
-    ds = getproperty(idata, group)
-    sizes = dimsizes(ds)
-    @test length(sizes) == 2 + length(coords)
-    vars = vardict(ds)
+    @test group in ArviZ.groupnames(idata)
+    ds = idata[group]
     for name in names
-        # `vars`, the value in ArviZ/Python is always String, 
-        # while `names` is String or Symbol which depends on version of MCMCChains
-        name = string(name)
-
-        @test name in keys(vars)
-        dim = get(dims, name, [])
-        s = (x -> length(get(coords, x, []))).(dim)
-        @test size(vars[name]) == (nchains, ndraws, s...)
+        @test name in keys(ds)
+        dim = get(dims, name, ())
+        s = (x -> length(get(coords, x, ()))).(dim)
+        @test size(ds[name]) == (nchains, ndraws, s...)
     end
-    @test attributes(ds)["inference_library"] == "MCMCChains"
+    @test ArviZ.attributes(ds)[:inference_library] == "MCMCChains"
     return nothing
 end
 
@@ -111,82 +104,79 @@ end
     end
 
     @testset "coords/dim" begin
-        names = ["a[1]", "a[2]", "b[1]", "b[2]"]
-        coords = Dict("ai" => 1:2, "bi" => ["b1", "b2"])
-        dims = Dict("a" => ["ai"], "b" => ["bi"])
+        var_names = Symbol.(["a[1]", "a[2]", "b[1]", "b[2]"])
+        coords = (ai=1:2, bi=["b1", "b2"])
+        dims = (a=(:ai,), b=[:bi])
         nchains, ndraws = 4, 20
-        chns = makechains(names, ndraws, nchains)
+        chns = makechains(var_names, ndraws, nchains)
         idata = from_mcmcchains(chns; coords, dims)
-        test_chains_data(chns, idata, :posterior, ["a", "b"]; coords, dims)
-        vardims = dimdict(idata.posterior)
-        @test vardims["a"] == ("chain", "draw", "ai")
-        @test vardims["b"] == ("chain", "draw", "bi")
+        test_chains_data(chns, idata, :posterior, [:a, :b]; coords, dims)
+        var_dims = DimensionalData.layerdims(idata.posterior)
+        @test Dimensions.name(var_dims[:a]) == (:chain, :draw, :ai)
+        @test Dimensions.name(var_dims[:b]) == (:chain, :draw, :bi)
     end
 
     @testset "multivariate" begin
-        names = ["a[1][1]", "a.2.2", "a[2,1]", "a[1, 2]"]
-        coords = Dict("ai" => 1:2, "aj" => ["aj1", "aj2"])
-        dims = Dict("a" => ["ai", "aj"])
+        var_names = Symbol.(["a[1][1]", "a.2.2", "a[2,1]", "a[1, 2]"])
+        coords = (ai=1:2, aj=["aj1", "aj2"])
+        dims = (a=[:ai, :aj],)
         nchains, ndraws = 4, 20
-        chns = makechains(names, ndraws, nchains)
+        chns = makechains(var_names, ndraws, nchains)
 
         # String or Symbol, which depends on MCMCChains version
         ET = Base.promote_typeof(chns.name_map.parameters...)
 
         idata = from_mcmcchains(chns; coords, dims)
-        test_chains_data(chns, idata, :posterior, ["a"]; coords, dims)
-        arr = vardict(idata.posterior)["a"]
-        @test arr[:, :, 1, 1] == permutedims(chns.value[:, ET(names[1]), :], [2, 1])
-        @test arr[:, :, 2, 2] == permutedims(chns.value[:, ET(names[2]), :], [2, 1])
-        @test arr[:, :, 2, 1] == permutedims(chns.value[:, ET(names[3]), :], [2, 1])
-        @test arr[:, :, 1, 2] == permutedims(chns.value[:, ET(names[4]), :], [2, 1])
+        test_chains_data(chns, idata, :posterior, [:a]; coords, dims)
+        arr = idata.posterior.a
+        @test arr[:, :, 1, 1] == permutedims(chns.value[:, ET(var_names[1]), :], [2, 1])
+        @test arr[:, :, 2, 2] == permutedims(chns.value[:, ET(var_names[2]), :], [2, 1])
+        @test arr[:, :, 2, 1] == permutedims(chns.value[:, ET(var_names[3]), :], [2, 1])
+        @test arr[:, :, 1, 2] == permutedims(chns.value[:, ET(var_names[4]), :], [2, 1])
     end
 
     @testset "specify eltypes" begin
         # https://github.com/arviz-devs/ArviZ.jl/issues/125
         nchains, ndraws = 4, 20
-        names = ["x", "y", "z"]
+        var_names = [:x, :y, :z]
         domains = [Float64, (0, 1), 1:3]
-        post = makechains(names, ndraws, nchains, domains)
-        prior = makechains(names, ndraws, nchains, domains)
-        posterior_predictive = makechains(["d"], ndraws, nchains, [(0, 1)])
+        post = makechains(var_names, ndraws, nchains, domains)
+        prior = makechains(var_names, ndraws, nchains, domains)
+        posterior_predictive = makechains([:d], ndraws, nchains, [(0, 1)])
         idata = from_mcmcchains(
-            post;
-            prior,
-            posterior_predictive,
-            eltypes=Dict("y" => Bool, "z" => Int, "d" => Bool),
+            post; prior, posterior_predictive, eltypes=(y=Bool, z=Int, d=Bool)
         )
         test_chains_data(post, idata, :posterior)
         test_chains_data(prior, idata, :prior)
         test_chains_data(posterior_predictive, idata, :posterior_predictive)
-        @test eltype(idata.posterior[:y].values) <: Bool
-        @test eltype(idata.posterior[:z].values) <: Int64
-        @test eltype(idata.prior[:y].values) <: Bool
-        @test eltype(idata.prior[:z].values) <: Int64
-        @test eltype(idata.posterior_predictive[:d].values) <: Bool
+        @test eltype(idata.posterior[:y]) <: Bool
+        @test eltype(idata.posterior[:z]) <: Int64
+        @test eltype(idata.prior[:y]) <: Bool
+        @test eltype(idata.prior[:z]) <: Int64
+        @test eltype(idata.posterior_predictive[:d]) <: Bool
 
         idata2 = from_mcmcchains(
-            post; prior, posterior_predictive=["y"], eltypes=Dict("y" => Bool, "z" => Int)
+            post; prior, posterior_predictive=[:y], eltypes=(y=Bool, z=Int)
         )
-        test_chains_data(post, idata2, :posterior, ["x", "z"])
+        test_chains_data(post, idata2, :posterior, [:x, :z])
         test_chains_data(prior, idata2, :prior)
-        @test eltype(idata2.posterior[:z].values) <: Int64
-        @test eltype(idata2.prior[:y].values) <: Bool
-        @test eltype(idata2.prior[:z].values) <: Int64
-        @test eltype(idata2.posterior_predictive[:y].values) <: Bool
+        @test eltype(idata2.posterior[:z]) <: Int64
+        @test eltype(idata2.prior[:y]) <: Bool
+        @test eltype(idata2.prior[:z]) <: Int64
+        @test eltype(idata2.posterior_predictive[:y]) <: Bool
     end
 
     @testset "complete" begin
         nchains, ndraws = 4, 20
         nobs = 10
-        posterior = prior = ["a[1]", "a[2]"]
-        posterior_predictive = prior_predictive = ["ahat[1]", "ahat[2]"]
-        observed_data = Dict("xhat" => 1:nobs)
-        constant_data = Dict("x" => (1:nobs) .+ nobs)
-        predictions_constant_data = Dict("z" => (1:nobs) .+ nobs)
-        predictions = "zhat"
-        sample_stats = ["stat"]
-        log_likelihood = "log_lik"
+        posterior = prior = Symbol.(["a[1]", "a[2]"])
+        posterior_predictive = prior_predictive = Symbol.(["ahat[1]", "ahat[2]"])
+        observed_data = (xhat=1:nobs,)
+        constant_data = (x=(1:nobs) .+ nobs,)
+        predictions_constant_data = (z=(1:nobs) .+ nobs,)
+        predictions = :zhat
+        sample_stats = [:stat]
+        log_likelihood = :log_lik
         post_names = [
             posterior
             posterior_predictive
@@ -195,18 +185,18 @@ end
             log_likelihood
         ]
         prior_names = [prior; prior_predictive; sample_stats]
-        chns = makechains(post_names, ndraws, nchains; internal_names=["stat"])
-        chns2 = makechains(prior_names, ndraws, nchains; internal_names=["stat"])
+        chns = makechains(post_names, ndraws, nchains; internal_names=[:stat])
+        chns2 = makechains(prior_names, ndraws, nchains; internal_names=[:stat])
         idata = from_mcmcchains(
             chns;
-            posterior_predictive="ahat",
-            predictions="zhat",
+            posterior_predictive=:ahat,
+            predictions=:zhat,
             prior=chns2,
-            prior_predictive="ahat",
+            prior_predictive=:ahat,
             observed_data,
             constant_data,
             predictions_constant_data,
-            log_likelihood="log_lik",
+            log_likelihood=:log_lik,
         )
         for group in (
             :posterior,
@@ -223,28 +213,36 @@ end
         )
             @test group in propertynames(idata)
         end
-        @test length(dimdict(idata.posterior)) == 4
-        @test "a" ∈ keys(dimdict(idata.posterior))
-        @test length(dimdict(idata.posterior_predictive)) == 4
-        @test "ahat" ∈ keys(dimdict(idata.posterior_predictive))
-        @test length(dimdict(idata.prior)) == 4
-        @test "a" ∈ keys(dimdict(idata.prior))
-        @test length(dimdict(idata.prior_predictive)) == 4
-        @test "ahat" ∈ keys(dimdict(idata.prior_predictive))
-        @test length(dimdict(idata.sample_stats)) == 3
-        @test "stat" ∈ keys(dimdict(idata.sample_stats))
-        @test length(dimdict(idata.predictions)) == 3
-        @test "zhat" ∈ keys(dimdict(idata.predictions))
-        @test length(dimdict(idata.log_likelihood)) == 3
-        @test "log_lik" ∈ keys(dimdict(idata.log_likelihood))
-        @test length(dimdict(idata.sample_stats_prior)) == 3
-        @test "stat" ∈ keys(dimdict(idata.sample_stats_prior))
-        @test length(dimdict(idata.observed_data)) == 2
-        @test "xhat" ∈ keys(dimdict(idata.observed_data))
-        @test length(dimdict(idata.constant_data)) == 2
-        @test "x" ∈ keys(dimdict(idata.constant_data))
-        @test length(dimdict(idata.predictions_constant_data)) == 2
-        @test "z" ∈ keys(dimdict(idata.predictions_constant_data))
+
+        for group_name in (:prior, :posterior)
+            @test length(Dimensions.dims(idata[group_name])) == 3
+            @test :a ∈ keys(idata[group_name])
+        end
+
+        for group_name in (:prior_predictive, :posterior_predictive)
+            @test length(Dimensions.dims(idata[group_name])) == 3
+            @test :ahat ∈ keys(idata[group_name])
+        end
+
+        for group_name in (:sample_stats_prior, :sample_stats)
+            @test length(Dimensions.dims(idata[group_name])) == 2
+            @test :stat ∈ keys(idata[group_name])
+        end
+
+        @test length(Dimensions.dims(idata[:predictions])) == 2
+        @test :zhat ∈ keys(idata[:predictions])
+
+        @test length(Dimensions.dims(idata[:log_likelihood])) == 2
+        @test :log_lik ∈ keys(idata[:log_likelihood])
+
+        @test length(Dimensions.dims(idata[:observed_data])) == 1
+        @test :xhat ∈ keys(idata[:observed_data])
+
+        @test length(Dimensions.dims(idata[:constant_data])) == 1
+        @test :x ∈ keys(idata[:constant_data])
+
+        @test length(Dimensions.dims(idata[:predictions_constant_data])) == 1
+        @test :z ∈ keys(idata[:predictions_constant_data])
     end
 
     # https://github.com/arviz-devs/ArviZ.jl/issues/146
@@ -255,7 +253,14 @@ end
         idata = from_mcmcchains(chns; prior_predictive)
         test_chains_data(chns, idata, :posterior, names(chns))
         @test :prior_predictive ∈ ArviZ.groupnames(idata)
-        @test idata.prior_predictive.x.values ≈ prior_predictive
+        @test idata.prior_predictive.x ≈ prior_predictive
+
+        prior_predictive = makechains(1, ndraws, nchains)
+        idata = from_mcmcchains(chns; prior_predictive)
+        test_chains_data(chns, idata, :posterior, names(chns))
+        @test :prior_predictive ∈ ArviZ.groupnames(idata)
+        @test idata.prior_predictive.var1 ≈
+            permutedims(prior_predictive.value, (:chain, :iter, :var))[:, :, [:var1]]
     end
 
     @testset "missing -> NaN" begin
@@ -268,18 +273,17 @@ end
         chns = MCMCChains.Chains(vals, names)
         @test Missing <: eltype(chns.value)
         idata = from_mcmcchains(chns)
-        vdict = vardict(idata.posterior)
-        @test eltype(vdict["var1"]) <: Real
-        @test isnan(vdict["var1"][1, 1, 1])
+        @test eltype(idata.posterior.var1) <: Real
+        @test isnan(idata.posterior.var1[1, 1, 1])
     end
 
     @testset "info -> attributes" begin
         nvars, nchains, ndraws = 2, 4, 20
         chns = makechains(nvars, ndraws, nchains)
         idata = from_mcmcchains(chns; library="MyLib")
-        attrs = idata.posterior.attrs
-        @test attrs isa Dict
-        @test attrs["inference_library"] == "MyLib"
+        metadata = DimensionalData.metadata(idata.posterior)
+        @test metadata isa OrderedDict
+        @test metadata[:inference_library] == "MyLib"
     end
 
     # https://github.com/arviz-devs/ArviZ.jl/issues/140
@@ -304,9 +308,8 @@ end
     chns = makechains(nvars, ndraws, nchains)
     ds = ArviZ.convert_to_dataset(chns; library="MyLib")
     @test ds isa ArviZ.Dataset
-    attrs = ds.attrs
-    @test "inference_library" ∈ keys(attrs)
-    @test attrs["inference_library"] == "MyLib"
+    metadata = DimensionalData.metadata(ds)
+    @test metadata[:inference_library] == "MyLib"
 end
 
 @testset "convert_to_inference_data(::MCMCChains.Chains)" begin
@@ -340,15 +343,11 @@ end
     data = noncentered_schools_data()
     mktempdir() do path
         output = cmdstan_noncentered_schools(data, 500, 4; tmpdir=path)
-        posterior_predictive = prior_predictive = ["y_hat"]
-        log_likelihood = "log_lik"
-        coords = Dict("school" => 1:8)
-        dims = Dict(
-            "theta" => ["school"],
-            "y" => ["school"],
-            "log_lik" => ["school"],
-            "y_hat" => ["school"],
-            "eta" => ["school"],
+        posterior_predictive = prior_predictive = [:y_hat]
+        log_likelihood = :log_lik
+        coords = (school=1:8,)
+        dims = (
+            theta=[:school], y=[:school], log_lik=[:school], y_hat=[:school], eta=[:school]
         )
         idata1 = from_cmdstan(
             output.chains;
@@ -365,19 +364,19 @@ end
             log_likelihood,
             prior=output.files,
             prior_predictive,
-            coords,
-            dims,
+            coords=Dict(pairs(coords)),
+            dims=Dict(pairs(dims)),
         )
-        @testset "idata.$(group)" for group in Symbol.(idata2._groups)
-            ds1 = getproperty(idata1, group)
-            ds2 = getproperty(idata2, group)
-            for f in (vardict, dimsizes)
-                d1 = f(ds1)
-                d2 = f(ds2)
-                for k in keys(d1)
-                    @test k in keys(d2)
-                    @test d1[k] ≈ d2[k]
-                end
+        @testset "idata.$(group)" for group in ArviZ.groupnames(idata2)
+            ds1 = idata1[group]
+            ds2 = idata2[group]
+
+            for var_name in keys(ds1)
+                da1 = ds1[var_name]
+                da2 = ds2[var_name]
+                @test Dimensions.name(Dimensions.dims(da1)) ==
+                    Dimensions.name(Dimensions.dims(da2))
+                @test da1 ≈ da2
             end
         end
     end

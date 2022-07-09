@@ -57,8 +57,9 @@ These functions are not exported to reduce namespace clutter.
 For `InferenceData` inputs, [`summarystats`](@ref) replaces `arviz.summary` to avoid confusion with `Base.summary`.
 For arbitrary inputs and the full functionality of `arviz.summary`, use [`ArviZ.summary`](@ref), which is not exported.
 
-ArviZ.jl transparently interconverts between `arviz.InferenceData` and our own [`InferenceData`](@ref), used for dispatch.
-`InferenceData` has identical usage to its Python counterpart.
+While Python ArviZ is built on xarray, and `InferenceData` groups are `xarray.Dataset`s, ArviZ.jl is built on [DimensionalData.jl](https://rafaqz.github.io/DimensionalData.jl/stable/), and `InferenceData` groups are `DimensionalData.AbstractDimStack`s that have identical usage to [`DimensionalData.DimStack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.DimStack).
+When ArviZ.jl uses functionality implemented in Python, it transparently interconverts `InferenceData` to/from `arviz.InferenceData`.
+Going to Python, this is non-allocating.
 
 Functions that in ArviZ return Pandas types here return [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl) types.
 

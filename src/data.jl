@@ -1,98 +1,188 @@
 const SUPPORTED_GROUPS = Symbol[]
+const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 
 """
-    InferenceData(::PyObject)
-    InferenceData(; kwargs...)
+    InferenceData(groups)
+    InferenceData(; groups...)
 
-Loose wrapper around `arviz.InferenceData`, which is a container for inference data storage
-using xarray.
+Container for inference data storage using DimensionalData.
 
-`InferenceData` can be constructed either from an `arviz.InferenceData` or from multiple
-[`Dataset`](@ref)s assigned to groups specified as `kwargs`.
+`InferenceData` can be constructed from either a `NamedTuple` or pairs mapping a group name
+to a corresponding [`Dataset`](@ref).
 
 Instead of directly creating an `InferenceData`, use the exported `from_xyz` functions or
 [`convert_to_inference_data`](@ref).
 """
-struct InferenceData
-    o::PyObject
-
-    function InferenceData(o::PyObject)
-        if !pyisinstance(o, arviz.InferenceData)
-            throw(ArgumentError("$o is not an `arviz.InferenceData`."))
-        end
-        return new(o)
+struct InferenceData{group_names,group_types<:Tuple{Vararg{Dataset}}}
+    groups::NamedTuple{group_names,group_types}
+    function InferenceData(
+        groups::NamedTuple{group_names,<:Tuple{Vararg{Dataset}}}
+    ) where {group_names}
+        group_names_ordered = _reorder_group_names(Val{group_names}())
+        groups_ordered = NamedTuple{group_names_ordered}(groups)
+        return new{group_names_ordered,typeof(values(groups_ordered))}(groups_ordered)
     end
 end
+InferenceData(; kwargs...) = InferenceData(NamedTuple(kwargs))
+InferenceData(data::InferenceData) = data
 
-InferenceData(; kwargs...) = reorder_groups!(arviz.InferenceData(; kwargs...))
-@inline InferenceData(data::InferenceData) = data
+Base.parent(data::InferenceData) = getfield(data, :groups)
 
-@inline PyObject(data::InferenceData) = getfield(data, :o)
-
-Base.convert(::Type{InferenceData}, obj::PyObject) = InferenceData(obj)
-Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
+Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
 
-Base.hash(data::InferenceData) = hash(PyObject(data))
+Base.convert(::Type{NamedTuple}, data::InferenceData) = NamedTuple(data)
+NamedTuple(data::InferenceData) = parent(data)
 
-Base.propertynames(data::InferenceData) = propertynames(PyObject(data))
+# these 3 interfaces ensure InferenceData behaves like a NamedTuple
 
-function Base.getproperty(data::InferenceData, name::Symbol)
-    o = PyObject(data)
-    name === :o && return o
-    return getproperty(o, name)
+# properties interface
+Base.propertynames(data::InferenceData) = propertynames(parent(data))
+Base.getproperty(data::InferenceData, k::Symbol) = getproperty(parent(data), k)
+
+# indexing interface
+Base.getindex(data::InferenceData, k) = parent(data)[k]
+function Base.setindex(data::InferenceData, v, k::Symbol)
+    return InferenceData(Base.setindex(parent(data), v, k))
 end
 
-Base.delete!(data::InferenceData, name) = PyObject(data).__delattr__(string(name))
+# iteration interface
+Base.keys(data::InferenceData) = keys(parent(data))
+Base.haskey(data::InferenceData, k::Symbol) = haskey(parent(data), k)
+Base.values(data::InferenceData) = values(parent(data))
+Base.pairs(data::InferenceData) = pairs(parent(data))
+Base.length(data::InferenceData) = length(parent(data))
+Base.iterate(data::InferenceData, i...) = iterate(parent(data), i...)
+Base.eltype(data::InferenceData) = eltype(parent(data))
 
 @forwardfun extract_dataset
+convert_result(::typeof(extract_dataset), result, args...) = convert(Dataset, result)
 
-function (data1::InferenceData + data2::InferenceData)
-    return InferenceData(PyObject(data1) + PyObject(data2))
-end
-
-function Base.show(io::IO, data::InferenceData)
-    out = pycall(pybuiltin("str"), String, data)
-    out = replace(out, "Inference data" => "InferenceData")
-    print(io, out)
+function Base.show(io::IO, ::MIME"text/plain", data::InferenceData)
+    print(io, "InferenceData with groups:")
+    prefix = "\n  > "
+    for name in groupnames(data)
+        print(io, prefix, name)
+    end
     return nothing
 end
-function Base.show(io::IO, ::MIME"text/html", data::InferenceData)
-    obj = PyObject(data)
-    (:_repr_html_ in propertynames(obj)) || return show(io, data)
-    out = obj._repr_html_()
-    out = replace(out, r"arviz.InferenceData" => "InferenceData")
-    out = replace(out, r"(<|&lt;)?xarray.Dataset(>|&gt;)?" => "Dataset (xarray.Dataset)")
-    print(io, out)
-    return nothing
+function Base.show(io::IO, mime::MIME"text/html", data::InferenceData)
+    show(io, mime, HTML("<div>InferenceData"))
+    for (name, group) in pairs(groups(data))
+        show(io, mime, HTML("""
+        <details>
+        <summary>$name</summary>
+        <pre><code>$(sprint(show, "text/plain", group))</code></pre>
+        </details>
+        """))
+    end
+    return show(io, mime, HTML("</div>"))
 end
 
 """
-    groupnames(data::InferenceData) -> Vector{Symbol}
+    groups(data::InferenceData)
 
-Get the names of the groups (datasets) in `data`.
+Get the groups in `data` as a named tuple mapping symbols to [`Dataset`](@ref)s.
 """
-groupnames(data::InferenceData) = Symbol.(PyObject(data)._groups)
+groups(data::InferenceData) = parent(data)
 
 """
-    groups(data::InferenceData) -> Dict{Symbol,Dataset}
+    groupnames(data::InferenceData)
 
-Get the groups in `data` as a dictionary mapping names to datasets.
+Get the names of the groups (datasets) in `data` as a tuple of symbols.
 """
-function groups(data::InferenceData)
-    return Dict((name => getproperty(data, name) for name in groupnames(data)))
+groupnames(data::InferenceData) = keys(groups(data))
+
+"""
+    hasgroup(data::InferenceData, name::Symbol) -> Bool
+
+Return `true` if a group with name `name` is stored in `data`.
+"""
+hasgroup(data::InferenceData, name::Symbol) = haskey(data, name)
+
+"""
+    convert_to_inference_data(obj; group, kwargs...) -> InferenceData
+
+Convert a supported object to an [`InferenceData`](@ref) object.
+
+If `obj` converts to a single dataset, `group` specifies which dataset in the resulting
+`InferenceData` that is.
+
+# Arguments
+
+  - `obj` can be many objects. Basic supported types are:
+    
+      + [`InferenceData`](@ref): return unchanged
+      + `AbstractString`: attempt to load a NetCDF file from disk
+      + [`Dataset`](@ref)/`DimensionalData.AbstractDimStack`: add to `InferenceData` as the only
+        group
+      + `NamedTuple`/`AbstractDict`: create a `Dataset` as the only group
+      + `AbstractArray{<:Real}`: create a `Dataset` as the only group, given an arbitrary
+        name, if the name is not set
+      + `PyCall.PyObject`: forward object to Python ArviZ for conversion
+
+More specific types are documented separately.
+
+# Keywords
+
+  - `group::Symbol = :posterior`: If `obj` converts to a single dataset, assign the resulting
+    dataset to this group.
+
+  - `dims`: a collection mapping variable names to collections of objects containing dimension names. Acceptable such objects are:
+    
+      + `Symbol`: dimension name
+      + `Type{<:DimensionsionalData.Dimension}`: dimension type
+      + `DimensionsionalData.Dimension`: dimension, potentially with indices
+      + `Nothing`: no dimension name provided, dimension name is automatically generated
+  - `coords`: a collection indexable by dimension name specifying the indices of the given
+    dimension. If indices for a dimension in `dims` are provided, they are used even if
+    the dimension contains its own indices. If a dimension is missing, its indices are
+    automatically generated.
+  - `kwargs`: remaining keywords forwarded to converter functions
+"""
+function convert_to_inference_data end
+
+convert_to_inference_data(data::InferenceData; kwargs...) = data
+function convert_to_inference_data(stack::DimensionalData.AbstractDimStack; kwargs...)
+    return convert_to_inference_data(Dataset(stack); kwargs...)
+end
+function convert_to_inference_data(data::Dataset; group=:posterior, kwargs...)
+    return convert_to_inference_data(InferenceData(; group => data); kwargs...)
+end
+function convert_to_inference_data(data::AbstractDict{Symbol}; kwargs...)
+    return convert_to_inference_data(NamedTuple(data); kwargs...)
+end
+function convert_to_inference_data(var_data::AbstractArray{<:Real}; kwargs...)
+    data = (; default_var_name(var_data) => var_data)
+    return convert_to_inference_data(data; kwargs...)
+end
+function convert_to_inference_data(filename::AbstractString; kwargs...)
+    return from_netcdf(filename)
+end
+function convert_to_inference_data(
+    data::NamedTuple{<:Any,<:Tuple{Vararg{AbstractArray{<:Real}}}};
+    group=:posterior,
+    kwargs...,
+)
+    ds = namedtuple_to_dataset(data; kwargs...)
+    return convert_to_inference_data(ds; group)
 end
 
-Base.isempty(data::InferenceData) = isempty(groupnames(data))
+"""
+    default_var_name(data) -> Symbol
 
-@forwardfun convert_to_inference_data
+Return the default name for the variable whose values are stored in `data`.
+"""
+default_var_name(data) = :x
+function default_var_name(data::DimensionalData.AbstractDimArray)
+    name = DimensionalData.name(data)
+    name isa Symbol && return name
+    name isa AbstractString && !isempty(name) && return Symbol(name)
+    return default_var_name(parent(data))
+end
 
-convert_to_inference_data(::Nothing; kwargs...) = InferenceData()
-
-function convert_to_dataset(data::InferenceData; group=:posterior, kwargs...)
-    group = Symbol(group)
-    dataset = getproperty(data, group)
-    return dataset
+function convert_to_dataset(data::InferenceData; group::Symbol=:posterior, kwargs...)
+    return getproperty(data, group)
 end
 
 @forwardfun load_arviz_data
@@ -109,22 +199,6 @@ end
 @forwardfun from_pystan
 @forwardfun from_tfp
 
-# A more flexible form of `from_dict`
-# Internally calls `dict_to_dataset`
-function _from_dict(posterior=nothing; attrs=Dict(), coords=nothing, dims=nothing, dicts...)
-    dicts = (posterior=posterior, dicts...)
-
-    datasets = []
-    for (name, dict) in pairs(dicts)
-        (dict === nothing || isempty(dict)) && continue
-        dataset = dict_to_dataset(dict; attrs, coords, dims)
-        push!(datasets, name => dataset)
-    end
-
-    idata = InferenceData(; datasets...)
-    return idata
-end
-
 @doc forwarddoc(:concat) concat
 
 function concat(data::InferenceData...; kwargs...)
@@ -133,37 +207,41 @@ end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
-@doc doc"""
-    concat!(data1::InferenceData, data::InferenceData...; kwargs...) -> InferenceData
-
-In-place version of `concat`, where `data1` is modified to contain the concatenation of
-`data` and `args`. See [`concat`](@ref) for a description of `kwargs`.
-"""
-concat!
-
-function concat!(data::InferenceData, other_data::InferenceData...; kwargs...)
-    arviz.concat(data, other_data...; inplace=true, kwargs...)
-    return data
+function Base.merge(data::InferenceData, other_data::InferenceData...)
+    return InferenceData(Base.merge(groups(data), map(groups, other_data)...))
 end
-concat!(; kwargs...) = InferenceData()
 
 function rekey(data::InferenceData, keymap)
-    keymap = Dict([Symbol(k) => Symbol(v) for (k, v) in keymap])
-    dnames = groupnames(data)
-    data_new = InferenceData[]
-    for k in dnames
-        knew = get(keymap, k, k)
-        push!(data_new, InferenceData(; knew => getproperty(data, k)))
-    end
-    return concat(data_new...)
+    groups_old = groups(data)
+    names_new = map(k -> get(keymap, k, k), propertynames(groups_old))
+    groups_new = NamedTuple{names_new}(Tuple(groups_old))
+    return InferenceData(groups_new)
 end
 
-function reorder_groups!(data::InferenceData; group_order=SUPPORTED_GROUPS)
-    group_order = map(Symbol, group_order)
-    names = groupnames(data)
-    sorted_names = filter(n -> n ∈ names, group_order)
-    other_names = filter(n -> n ∉ sorted_names, names)
-    obj = PyObject(data)
-    setproperty!(obj, :_groups, string.([sorted_names; other_names]))
-    return data
+@generated function _reorder_group_names(::Val{names}) where {names}
+    return Tuple(sort(collect(names); by=k -> SUPPORTED_GROUPS_DICT[k]))
+end
+
+@generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
+
+# python interop
+
+function PyObject(data::InferenceData)
+    return pycall(arviz.InferenceData, PyObject; map(PyObject, groups(data))...)
+end
+
+function convert_to_inference_data(obj::PyObject; dims=nothing, coords=nothing, kwargs...)
+    if pyisinstance(obj, arviz.InferenceData)
+        group_names = obj.groups()
+        groups = (
+            Symbol(name) => convert(Dataset, getindex(obj, name)) for name in group_names
+        )
+        return InferenceData(; groups...)
+    else
+        # Python ArviZ requires dims and coords be dicts matching to vectors
+        pydims = dims === nothing ? dims : Dict(k -> collect(dims[k]) for k in keys(dims))
+        pycoords =
+            dims === nothing ? dims : Dict(k -> collect(coords[k]) for k in keys(coords))
+        return arviz.convert_to_inference_data(obj; dims=pydims, coords=pycoords, kwargs...)
+    end
 end
