@@ -109,10 +109,6 @@ const _precompile_arviz_version = arviz_version()
 
 function __init__()
     initialize_arviz()
-    @require MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca" begin
-        import .MonteCarloMeasurements: AbstractParticles
-        include("particles.jl")
-    end
     @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
         include("samplechains.jl")
     end
