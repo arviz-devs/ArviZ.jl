@@ -23,6 +23,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
             backend = get(ArviZ.rcParams, "plot.backend", nothing)
             @test backend == "bokeh"
 
+            @test_deprecated plot_trace(idata)
             @test plot_trace(idata) isa ArviZ.BokehPlot
             @test plot_trace(idata; backend="matplotlib") isa Array{PyObject}
 

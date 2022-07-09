@@ -1,6 +1,9 @@
 const has_bokeh_png_deps = false
 
 function initialize_bokeh()
+    Base.depwarn(
+        "backend=\"bokeh\" is deprecated; use backend=\"matplotlib\" instead.", :backend
+    )
     ispynull(bokeh) || return nothing
     try
         copy!(bokeh, _import_dependency("bokeh", "bokeh"; channel="conda-forge"))
