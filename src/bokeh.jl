@@ -1,6 +1,7 @@
 const has_bokeh_png_deps = false
 
 function initialize_bokeh()
+    Base.depwarn("bokeh backend is deprecated and will be removed in a future release.")
     ispynull(bokeh) || return nothing
     try
         copy!(bokeh, _import_dependency("bokeh", "bokeh"; channel="conda-forge"))
