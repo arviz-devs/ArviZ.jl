@@ -65,14 +65,16 @@ using ArviZ, DimensionalData, Test
         @test Dimensions.index(idata_sel.posterior, :dimb) == [6]
         @test Dimensions.index(idata_sel.prior, :dimb) == [6]
 
-        idata_sel = idata[(:posterior, :observed_data), dimy=1, dimb=1, shared=At("s1")]
-        @test idata_sel isa InferenceData
-        @test ArviZ.groupnames(idata_sel) === (:posterior, :observed_data)
-        @test Dimensions.index(idata_sel.posterior, :dima) == coords.dima
-        @test Dimensions.index(idata_sel.posterior, :dimb) == coords.dimb[[1]]
-        @test Dimensions.index(idata_sel.posterior, :shared) == ["s1"]
-        @test Dimensions.index(idata_sel.observed_data, :dimy) == coords.dimy[[1]]
-        @test Dimensions.index(idata_sel.observed_data, :shared) == ["s1"]
+        if VERSION ≥ v"1.7"
+            idata_sel = idata[(:posterior, :observed_data), dimy=1, dimb=1, shared=At("s1")]
+            @test idata_sel isa InferenceData
+            @test ArviZ.groupnames(idata_sel) === (:posterior, :observed_data)
+            @test Dimensions.index(idata_sel.posterior, :dima) == coords.dima
+            @test Dimensions.index(idata_sel.posterior, :dimb) == coords.dimb[[1]]
+            @test Dimensions.index(idata_sel.posterior, :shared) == ["s1"]
+            @test Dimensions.index(idata_sel.observed_data, :dimy) == coords.dimy[[1]]
+            @test Dimensions.index(idata_sel.observed_data, :shared) == ["s1"]
+        end
 
         ds_sel = idata[:posterior, chain=1]
         @test ds_sel isa ArviZ.Dataset
