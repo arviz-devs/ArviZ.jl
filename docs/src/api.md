@@ -66,10 +66,10 @@
 
 | Name                                | Description                                                             |
 |:----------------------------------- |:----------------------------------------------------------------------- |
-| [`InferenceData`](@ref)             | Container for inference data storage using xarray.                      |
+| [`InferenceData`](@ref)             | Container for inference data storage using DimensionalData.             |
 | [`convert_to_inference_data`](@ref) | Convert a supported object to an `InferenceData`.                       |
 | [`load_arviz_data`](@ref)           | Load a local or remote pre-made dataset.                                |
-| [`extract_dataset`](@ref)           | Extract an `InferenceData` group or subset of it as an `ArviZ.Dataset`. |            |
+| [`extract_dataset`](@ref)           | Extract an `InferenceData` group or subset of it as an `ArviZ.Dataset`. |
 | [`to_netcdf`](@ref)                 | Save dataset as a netcdf file.                                          |
 | [`from_netcdf`](@ref)               | Load netcdf file back into an `InferenceData`.                          |
 | [`from_namedtuple`](@ref)           | Convert `NamedTuple` data into an `InferenceData`.                      |
