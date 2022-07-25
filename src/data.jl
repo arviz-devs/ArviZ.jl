@@ -90,6 +90,7 @@ end
 
 @forwardfun to_netcdf
 @forwardfun from_netcdf
+@forwardfun from_json
 @forwardfun from_dict
 @forwardfun from_cmdstan
 @forwardfun from_cmdstanpy
@@ -98,7 +99,6 @@ end
 @forwardfun from_pyro
 @forwardfun from_numpyro
 @forwardfun from_pystan
-@forwardfun from_tfp
 
 @doc forwarddoc(:concat) concat
 
