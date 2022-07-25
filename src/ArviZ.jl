@@ -99,6 +99,8 @@ const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
 const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
+const SUPPORTED_GROUPS = Symbol[]
+const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 
 include("setup.jl")
 
@@ -123,6 +125,7 @@ include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
 include("dataset.jl")
+include("inference_data.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
