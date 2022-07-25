@@ -115,9 +115,8 @@ macro forwardfun(f)
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
     end
     # make sure line number of methods are place where macro is called, not here
-    for i in 2:2:6
-        ex.args[i].args[2] = __source__
-    end
+    ex.args[4].args[2].args[1] = __source__
+    ex.args[6].args[2].args[1] = __source__
     return esc(ex)
 end
 
@@ -151,9 +150,8 @@ macro forwardplotfun(f)
         Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
     end
     # make sure line number of methods are place where macro is called, not here
-    for i in 2:2:6
-        ex.args[i].args[2] = __source__
-    end
+    ex.args[4].args[2].args[1] = __source__
+    ex.args[6].args[2].args[1] = __source__
     return esc(ex)
 end
 
