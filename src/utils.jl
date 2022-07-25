@@ -103,19 +103,22 @@ and returned from `f`.
 """
 macro forwardfun(f)
     fdoc = forwarddoc(f)
-    return esc(
-        quote
-            @doc $fdoc $f
+    ex = quote
+        @doc $fdoc $f
 
-            function $(f)(args...; kwargs...)
-                args, kwargs = convert_arguments($(f), args...; kwargs...)
-                result = arviz.$(f)(args...; kwargs...)
-                return convert_result($(f), result)
-            end
+        function $(f)(args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs...)
+            return convert_result($(f), result)
+        end
 
-            Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-        end,
-    )
+        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+    end
+    # make sure line number of methods are place where macro is called, not here
+    for i in 2:2:6
+        ex.args[i].args[2] = __source__
+    end
+    return esc(ex)
 end
 
 """
@@ -130,25 +133,28 @@ and returned from `f`.
 """
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
-    return esc(
-        quote
-            @doc $fdoc $f
+    ex = quote
+        @doc $fdoc $f
 
-            function $(f)(args...; backend=nothing, kwargs...)
-                if backend === nothing
-                    backend = get(rcParams, "plot.backend", nothing)
-                end
-                backend = Symbol(backend)
-                backend_val = Val(backend)
-                load_backend(backend_val)
-                args, kwargs = convert_arguments($(f), args...; kwargs...)
-                result = arviz.$(f)(args...; kwargs..., backend)
-                return convert_result($(f), result, backend_val)
+        function $(f)(args...; backend=nothing, kwargs...)
+            if backend === nothing
+                backend = get(rcParams, "plot.backend", nothing)
             end
+            backend = Symbol(backend)
+            backend_val = Val(backend)
+            load_backend(backend_val)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs..., backend)
+            return convert_result($(f), result, backend_val)
+        end
 
-            Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-        end,
-    )
+        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
+    end
+    # make sure line number of methods are place where macro is called, not here
+    for i in 2:2:6
+        ex.args[i].args[2] = __source__
+    end
+    return esc(ex)
 end
 
 # Replace `missing` values with `NaN` and do type inference on the result
