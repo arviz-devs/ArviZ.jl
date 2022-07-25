@@ -41,9 +41,86 @@ Base.propertynames(data::InferenceData) = propertynames(parent(data))
 Base.getproperty(data::InferenceData, k::Symbol) = getproperty(parent(data), k)
 
 # indexing interface
-Base.getindex(data::InferenceData, k) = parent(data)[k]
+"""
+    Base.getindex(data::InferenceData, groups::Symbol; coords...) -> Dataset
+    Base.getindex(data::InferenceData, groups; coords...) -> InferenceData
+
+Return a new `InferenceData` containing the specified groups sliced to the specified coords.
+
+`coords` specifies a dimension name mapping to an index, a `DimensionalData.Selector`, or
+an `IntervalSets.AbstractInterval`.
+
+If one or more groups lack the specified dimension, a warning is raised but can be ignored.
+All groups that contain the dimension must also contain the specified indices, or an
+exception will be raised.
+
+# Examples
+
+Select data from all groups for just the specified schools.
+
+```@repl 1
+using ArviZ, DimensionalData
+idata = load_arviz_data("centered_eight")
+idata[school=At(["Choate", "Deerfield"])]
+```
+
+Select data from just the posterior, returning a `Dataset`
+
+```@repl 1
+idata[:posterior, school=At(["Choate", "Deerfield"])]
+```
+
+Note that if a single index is provided, the behavior is still to slice so that the
+dimension is preserved:
+
+```@repl 1
+idata[chain=1, draw=1].posterior
+```
+"""
+Base.getindex(data::InferenceData, groups; kwargs...)
+
+function Base.getindex(data::InferenceData, k::Symbol; kwargs...)
+    ds = parent(data)[k]
+    isempty(kwargs) && return ds
+    return getindex(ds; kwargs...)
+end
+function Base.getindex(data::InferenceData, i::Int; kwargs...)
+    ds = parent(data)[i]
+    isempty(kwargs) && return ds
+    return getindex(ds; kwargs...)
+end
+function Base.getindex(data::InferenceData, ks; kwargs...)
+    data_new = InferenceData(parent(data)[ks])
+    isempty(kwargs) && return data_new
+    return getindex(data_new; kwargs...)
+end
+function Base.getindex(data::InferenceData; kwargs...)
+    # if a single index is requested, then the return type of each group
+    # will be a `Dataset` if the group has other dimensions or `NamedTuple`
+    # if it has no other dimensions.
+    # So we promote to an array of indices
+    new_kwargs = map(_index_to_indices, NamedTuple(kwargs))
+    groups = map(parent(data)) do ds
+        return getindex(ds; new_kwargs...)
+    end
+    return InferenceData(groups)
+end
 function Base.setindex(data::InferenceData, v, k::Symbol)
     return InferenceData(Base.setindex(parent(data), v, k))
+end
+
+_index_to_indices(i) = i
+_index_to_indices(i::Int) = [i]
+_index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
+
+struct AsSlice{T<:Dimensions.Selector} <: Dimensions.Selector{T}
+    val::T
+end
+
+function Dimensions.selectindices(l::Dimensions.LookupArray, sel::AsSlice; kw...)
+    i = Dimensions.selectindices(l, Dimensions.val(sel); kw...)
+    inds = i isa AbstractVector ? i : [i]
+    return inds
 end
 
 # iteration interface
