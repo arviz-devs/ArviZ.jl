@@ -113,14 +113,14 @@ Compute summary statistics on `data`.
 ```@example summarystats
 using ArviZ
 idata = load_arviz_data("centered_eight")
-summarystats(idata; var_names=["mu", "tau"])
+summarystats(idata; var_names=(:mu, :tau))
 ```
 
 Other statistics can be calculated by passing a list of functions or a dictionary with key,
 function pairs:
 
 ```@example summarystats
-using StatsBase, Statistics
+using Statistics
 function median_sd(x)
     med = median(x)
     sd = sqrt(mean((x .- med).^2))
@@ -130,12 +130,12 @@ end
 func_dict = Dict(
     "std" => x -> std(x; corrected = false),
     "median_std" => median_sd,
-    "5%" => x -> percentile(x, 5),
+    "5%" => x -> quantile(x, 0.05),
     "median" => median,
-    "95%" => x -> percentile(x, 95),
+    "95%" => x -> quantile(x, 0.95),
 )
 
-summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
+summarystats(idata; var_names = (:mu, :tau), stat_funcs = func_dict, extend = false)
 ```
 """
 function StatsBase.summarystats(data::InferenceData; group::Symbol=:posterior, kwargs...)
