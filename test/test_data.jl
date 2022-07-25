@@ -10,12 +10,14 @@ using ArviZ, DimensionalData, Test
     metadata = (inference_library="PPL",)
     posterior = random_dataset(var_names, dims, coords, metadata)
     prior = random_dataset(var_names, dims, coords, metadata)
-    group_data = (; prior, posterior)
+    observed_data = random_dataset(data_names, dims, coords, metadata)
+    group_data = (; prior, observed_data, posterior)
+    group_data_ordered = (; posterior, prior, observed_data)
 
     @testset "constructors" begin
         idata = @inferred(InferenceData(group_data))
         @test idata isa InferenceData
-        @test getfield(idata, :groups) === (; posterior, prior)
+        @test getfield(idata, :groups) === group_data_ordered
 
         @test InferenceData(; group_data...) == idata
         @test InferenceData(idata) === idata
@@ -24,7 +26,7 @@ using ArviZ, DimensionalData, Test
     idata = InferenceData(group_data)
 
     @testset "properties" begin
-        @test propertynames(idata) === (:posterior, :prior)
+        @test propertynames(idata) === propertynames(group_data_ordered)
         @test getproperty(idata, :posterior) === posterior
         @test getproperty(idata, :prior) === prior
         @test hasproperty(idata, :posterior)
@@ -33,17 +35,18 @@ using ArviZ, DimensionalData, Test
     end
 
     @testset "iteration" begin
-        @test keys(idata) === (:posterior, :prior)
+        @test keys(idata) === keys(group_data_ordered)
         @test haskey(idata, :posterior)
         @test haskey(idata, :prior)
         @test !haskey(idata, :log_likelihood)
-        @test values(idata) === (posterior, prior)
+        @test values(idata) === values(group_data_ordered)
         @test pairs(idata) isa Base.Iterators.Pairs
-        @test Tuple(pairs(idata)) === (:posterior => posterior, :prior => prior)
-        @test length(idata) == 2
-        @test iterate(idata) === (posterior, 2)
-        @test iterate(idata, 2) === (prior, 3)
-        @test iterate(idata, 3) === nothing
+        @test pairs(idata) === pairs(group_data_ordered)
+        @test length(idata) == length(group_data_ordered)
+        @test iterate(idata) === iterate(group_data_ordered)
+        for i in 1:(length(idata) + 1)
+            @test iterate(idata, i) === iterate(group_data_ordered, i)
+        end
         @test eltype(idata) <: ArviZ.Dataset
         @test collect(idata) isa Vector{<:ArviZ.Dataset}
     end
@@ -54,7 +57,7 @@ using ArviZ, DimensionalData, Test
         @test idata[1] === posterior
         @test idata[2] === prior
         idata2 = Base.setindex(idata, posterior, :warmup_posterior)
-        @test keys(idata2) === (:posterior, :prior, :warmup_posterior)
+        @test keys(idata2) === (keys(idata)..., :warmup_posterior)
         @test idata2[:warmup_posterior] === posterior
     end
 
@@ -64,7 +67,7 @@ using ArviZ, DimensionalData, Test
     end
 
     @testset "groups" begin
-        @test ArviZ.groups(idata) === (; posterior, prior)
+        @test ArviZ.groups(idata) === group_data_ordered
         @test ArviZ.groups(InferenceData(; prior)) === (; prior)
     end
 
@@ -75,7 +78,7 @@ using ArviZ, DimensionalData, Test
     end
 
     @testset "groupnames" begin
-        @test ArviZ.groupnames(idata) === (:posterior, :prior)
+        @test ArviZ.groupnames(idata) === propertynames(group_data_ordered)
         @test ArviZ.groupnames(InferenceData(; posterior)) === (:posterior,)
     end
 
@@ -94,7 +97,8 @@ using ArviZ, DimensionalData, Test
             @test text == """
             InferenceData with groups:
               > posterior
-              > prior"""
+              > prior
+              > observed_data"""
         end
 
         @testset "html" begin
