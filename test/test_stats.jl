@@ -1,3 +1,4 @@
+using ArviZ, Random, Statistics, Test
 using DataFrames: DataFrames
 
 @testset "stats" begin
@@ -77,21 +78,35 @@ using DataFrames: DataFrames
 
         s = summarystats(idata)
         @test s isa DataFrames.DataFrame
-        @test string(first(names(summarystats(idata)))) == "variable"
-        @test string(first(names(summarystats(idata; fmt="wide")))) == "variable"
-        @test :variable in propertynames(summarystats(idata; fmt="wide"))
+        @test first(names(summarystats(idata))) === "variable"
+        @test :variable in propertynames(summarystats(idata))
         @test "a" ∈ s.variable
         @test "b" ∉ s.variable
         @test "b[0, 0]" ∉ s.variable
         @test "b[1, 1]" ∈ s.variable
+        @test s.mean != round.(s.mean; digits=1)
 
-        s2 = summarystats(idata; fmt="long")
-        @test s2 isa DataFrames.DataFrame
-        @test string(first(names(s2))) == "statistic"
-        @test "mean" ∈ s2.statistic
+        s2 = summarystats(idata; digits=1)
+        @test s2.mean == round.(s2.mean; digits=1)
 
-        s3 = summarystats(idata; fmt="xarray")
-        @test s3 isa ArviZ.Dataset
+        function median_sd(x)
+            med = median(x)
+            sd = sqrt(mean((x .- med) .^ 2))
+            return sd
+        end
+        func_dict = Dict(
+            "std" => x -> std(x; corrected=false),
+            "median_std" => median_sd,
+            "5%" => x -> quantile(x, 0.05),
+            "median" => median,
+            "95%" => x -> quantile(x, 0.95),
+        )
+        s3 = summarystats(idata; var_names=(:a,), stat_funcs=func_dict, extend=false)
+        @test s3 isa DataFrames.DataFrame
+        @test s3.variable == ["a"]
+        @test issetequal(
+            names(s3), ["variable", "std", "median_std", "5%", "median", "95%"]
+        )
     end
 
     @testset "ArviZ.summary" begin
