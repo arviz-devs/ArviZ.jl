@@ -76,12 +76,10 @@ Compute summary statistics on `data`.
 
 # Keywords
 
-- `var_names::Vector{String}=nothing`: Names of variables to include in summary
+- `var_names`: Collection of names of variables as `Symbol`s to include in summary
 - `include_circ::Bool=false`: Whether to include circular statistics
-- `fmt::String="wide"`: Return format is either `DataFrames.DataFrame` ("wide", "long") or
-    [`Dataset`](@ref) ("xarray").
-- `round_to::Int=nothing`: Number of decimals used to round results. Use `nothing` to return
-    raw numbers.
+- `digits::Int`: Number of decimals used to round results. If not provided, numbers are not
+    rounded.
 - `stat_funcs::Union{Dict{String,Function},Vector{Function}}=nothing`: A vector of functions
     or a dict of functions with function names as keys used to calculate statistics. By
     default, the mean, standard deviation, simulation standard error, and highest posterior
@@ -94,16 +92,12 @@ Compute summary statistics on `data`.
     `stat_funcs` is not `nothing`.
 - `hdi_prob::Real=0.94`: HDI interval to compute. This is only meaningful when `stat_funcs`
     is `nothing`.
-- `order::String="C"`: If `fmt` is "wide", use either "C" or "F" unpacking order.
 - `skipna::Bool=false`: If `true`, ignores `NaN` values when computing the summary
     statistics. It does not affect the behaviour of the functions passed to `stat_funcs`.
-- `coords`: Coordinates specification to be used if the `fmt` is `"xarray"`.
-- `dims`: Dimensions specification for the variables to be used if the `fmt` is `"xarray"`.
 
 # Returns
 
-- `Union{Dataset,DataFrames.DataFrame}`: Return type dicated by `fmt` argument. Return value
-    will contain summary statistics for each variable. Default statistics are:
+- `DataFrames.DataFrame`: Summary statistics for each variable. Default statistics are:
     + `mean`
     + `sd`
     + `hdi_3%`
@@ -144,16 +138,19 @@ func_dict = Dict(
 summarystats(idata; var_names = ["mu", "tau"], stat_funcs = func_dict, extend = false)
 ```
 """
-function StatsBase.summarystats(data::InferenceData; group=:posterior, kwargs...)
-    dataset = getproperty(data, Symbol(group))
+function StatsBase.summarystats(data::InferenceData; group::Symbol=:posterior, kwargs...)
+    dataset = getproperty(data, group)
     return summarystats(dataset; kwargs...)
 end
-function StatsBase.summarystats(data::Dataset; fmt=:wide, kwargs...)
-    fmt = fmt ∈ (:dimstack, :dataset) ? :xarray : fmt
-    s = arviz.summary(data; fmt, kwargs...)
+function StatsBase.summarystats(
+    data::Dataset; var_names=nothing, digits::Int=typemax(Int), kwargs...
+)
+    var_names = var_names === nothing ? var_names : collect(var_names)
+    s = arviz.summary(
+        data; var_names, round_to=digits == typemax(Int) ? nothing : digits, kwargs...
+    )
     pyisinstance(s, xarray.Dataset) && return convert(Dataset, s)
-    index_name = Symbol(fmt) == :long ? :statistic : :variable
-    return todataframes(s; index_name)
+    return todataframes(s; index_name=:variable)
 end
 
 """
