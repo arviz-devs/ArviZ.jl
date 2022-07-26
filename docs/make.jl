@@ -37,6 +37,7 @@ makedocs(;
         "Home" => "index.md",
         "Getting Started" => [
             "Quickstart" => "quickstart.md",
+            "Working with `InferenceData`" => "working_with_inference_data.md",
         ],
         "Example Gallery" => ["Matplotlib" => "mpl_examples.md"],
         "API" => [
