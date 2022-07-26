@@ -27,7 +27,7 @@ For specifying other Python versions, see the [PyCall documentation](https://git
 
 ## [Usage](@id usage)
 
-See the [Quickstart](@ref) for example usage and the [API](@ref) for description of functions.
+See the [Quickstart](./quickstart) for example usage and the [API Overview](@ref api) for description of functions.
 
 ## [Extending ArviZ.jl](@id extendingarviz)
 
