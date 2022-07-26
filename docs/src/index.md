@@ -64,11 +64,12 @@ Going to Python, this is non-allocating.
 Functions that in ArviZ return Pandas types here return [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl) types.
 
 ArviZ includes the context managers `rc_context` and `interactive_backend`.
-ArviZ.jl includes the functions [`with_rc_context`](@ref) and [`with_interactive_backend`](@ref), which can be used with a nearly identical syntax.
+ArviZ.jl includes the functions `with_rc_context` and `with_interactive_backend`, which can be used with a nearly identical syntax.
 `with_interactive_backend` here is not limited to an IPython/IJulia context.
 
-In place of `arviz.style.use` and `arviz.style.available`, ArviZ.jl provides [`ArviZ.use_style`](@ref) and [`ArviZ.styles`](@ref).
+In place of `arviz.style.use` and `arviz.style.available`, ArviZ.jl provides `ArviZ.use_style` and `ArviZ.styles`.
 
+Note that none of these are API functions; we recommend them only for interactive usage.
 ## [Extending ArviZ.jl](@id extendingarviz)
 
 To use a custom data type with ArviZ.jl, simply overload [`convert_to_inference_data`](@ref) to convert your input(s) to an [`InferenceData`](@ref).
