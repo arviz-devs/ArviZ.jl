@@ -31,14 +31,24 @@ download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
 makedocs(;
-    modules=[ArviZ],
+    modules=[ArviZ, PSIS],
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",
-        "Quickstart" => "quickstart.md",
-        "API" => "api.md",
+        "Getting Started" => [
+            "Quickstart" => "quickstart.md",
+            "Working with `InferenceData`" => "working_with_inference_data.md",
+        ],
         "Example Gallery" => ["Matplotlib" => "mpl_examples.md"],
-        "Reference" => "reference.md",
+        "API" => [
+            hide("api/index.md"),
+            "Plots" => "api/plots.md",
+            "Stats" => "api/stats.md",
+            "Diagnostics" => "api/diagnostics.md",
+            "Data" => "api/data.md",
+            "InferenceData" => "api/inference_data.md",
+            "Dataset" => "api/dataset.md",
+        ],
     ],
     checkdocs=:exports,
     format=Documenter.HTML(;

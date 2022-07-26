@@ -87,7 +87,25 @@ convert_result(f, result, args...) = result
 load_backend(backend) = nothing
 
 function forwarddoc(f::Symbol)
-    return "See documentation for [`arviz.$(f)`](https://python.arviz.org/en/latest/api/generated/arviz.$(f).html)."
+    pydoc = "$(Docs.getdoc(getproperty(arviz, f)))"
+    pydoc_sections = split(pydoc, '\n'; limit=2)
+    if length(pydoc_sections) > 1
+        summary, body = pydoc_sections
+        summary *= "\n"
+    else
+        summary = ""
+        body = pydoc
+    end
+    return """
+    $summary
+
+    !!! note
+        This function is forwarded to Python's [`arviz.$(f)`](https://python.arviz.org/en/v$(arviz_version())/api/generated/arviz.$(f).html).
+        The docstring of that function is included below.
+    ```
+    $body
+    ```
+    """
 end
 
 forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
@@ -103,19 +121,18 @@ and returned from `f`.
 """
 macro forwardfun(f)
     fdoc = forwarddoc(f)
-    return esc(
-        quote
-            @doc $fdoc $f
+    ex = quote
+        @doc $fdoc $f
 
-            function $(f)(args...; kwargs...)
-                args, kwargs = convert_arguments($(f), args...; kwargs...)
-                result = arviz.$(f)(args...; kwargs...)
-                return convert_result($(f), result)
-            end
-
-            Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-        end,
-    )
+        function $(f)(args...; kwargs...)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs...)
+            return convert_result($(f), result)
+        end
+    end
+    # make sure line number of methods are place where macro is called, not here
+    _replace_line_number!(ex, __source__)
+    return esc(ex)
 end
 
 """
@@ -130,25 +147,34 @@ and returned from `f`.
 """
 macro forwardplotfun(f)
     fdoc = forwarddoc(f)
-    return esc(
-        quote
-            @doc $fdoc $f
+    ex = quote
+        @doc $fdoc $f
 
-            function $(f)(args...; backend=nothing, kwargs...)
-                if backend === nothing
-                    backend = get(rcParams, "plot.backend", nothing)
-                end
-                backend = Symbol(backend)
-                backend_val = Val(backend)
-                load_backend(backend_val)
-                args, kwargs = convert_arguments($(f), args...; kwargs...)
-                result = arviz.$(f)(args...; kwargs..., backend)
-                return convert_result($(f), result, backend_val)
+        function $(f)(args...; backend=nothing, kwargs...)
+            if backend === nothing
+                backend = get(rcParams, "plot.backend", nothing)
             end
+            backend = Symbol(backend)
+            backend_val = Val(backend)
+            load_backend(backend_val)
+            args, kwargs = convert_arguments($(f), args...; kwargs...)
+            result = arviz.$(f)(args...; kwargs..., backend)
+            return convert_result($(f), result, backend_val)
+        end
+    end
+    # make sure line number of methods are place where macro is called, not here
+    _replace_line_number!(ex, __source__)
+    return esc(ex)
+end
 
-            Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
-        end,
-    )
+function _replace_line_number!(ex, source)
+    for i in eachindex(ex.args)
+        if ex.args[i] isa LineNumberNode
+            ex.args[i] = source
+        elseif ex.args[i] isa Expr
+            _replace_line_number!(ex.args[i], source)
+        end
+    end
 end
 
 # Replace `missing` values with `NaN` and do type inference on the result
@@ -273,4 +299,14 @@ function package_version(pkg::Module)
     toml = read(project, String)
     m = match(r"(*ANYCRLF)^version\s*=\s\"(.*)\"$"m, toml)
     return VersionNumber(m[1])
+end
+
+struct AsSlice{T<:Dimensions.Selector} <: Dimensions.Selector{T}
+    val::T
+end
+
+function Dimensions.selectindices(l::Dimensions.LookupArray, sel::AsSlice; kw...)
+    i = Dimensions.selectindices(l, Dimensions.val(sel); kw...)
+    inds = i isa AbstractVector ? i : [i]
+    return inds
 end

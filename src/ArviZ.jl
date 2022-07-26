@@ -71,13 +71,18 @@ export bfmi, ess, rhat, mcse
 
 ## Stats utils
 export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
+## Dataset
+export Dataset, convert_to_dataset, namedtuple_to_dataset
+
+## InferenceData
+export InferenceData
 
 ## Data
-export InferenceData,
-    convert_to_inference_data,
+export convert_to_inference_data,
     extract_dataset,
     load_arviz_data,
     to_netcdf,
+    from_json,
     from_netcdf,
     from_namedtuple,
     from_dict,
@@ -99,6 +104,8 @@ const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
 const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
+const SUPPORTED_GROUPS = Symbol[]
+const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 
 include("setup.jl")
 
@@ -123,6 +130,7 @@ include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
 include("dataset.jl")
+include("inference_data.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
