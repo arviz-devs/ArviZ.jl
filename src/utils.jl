@@ -87,7 +87,25 @@ convert_result(f, result, args...) = result
 load_backend(backend) = nothing
 
 function forwarddoc(f::Symbol)
-    return "See documentation for [`arviz.$(f)`](https://python.arviz.org/en/v$(arviz_version())/api/generated/arviz.$(f).html)."
+    pydoc = "$(Docs.getdoc(getproperty(arviz, f)))"
+    pydoc_sections = split(pydoc, '\n'; limit=2)
+    if length(pydoc_sections) > 1
+        summary, body = pydoc_sections
+        summary *= "\n"
+    else
+        summary = ""
+        body = pydoc
+    end
+    return """
+    $summary
+
+    !!! note
+        This function is forward to Python's [`arviz.$(f)`](https://python.arviz.org/en/v$(arviz_version())/api/generated/arviz.$(f).html).
+        The docstring of that function is included below.
+    ```
+    $body
+    ```
+    """
 end
 
 forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
