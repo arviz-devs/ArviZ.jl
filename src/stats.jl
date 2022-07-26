@@ -146,10 +146,8 @@ function StatsBase.summarystats(
     data::Dataset; var_names=nothing, digits::Int=typemax(Int), kwargs...
 )
     var_names = var_names === nothing ? var_names : collect(var_names)
-    s = arviz.summary(
-        data; var_names, round_to=digits == typemax(Int) ? nothing : digits, kwargs...
-    )
-    pyisinstance(s, xarray.Dataset) && return convert(Dataset, s)
+    round_to = digits == typemax(Int) ? nothing : digits
+    s = arviz.summary(data; var_names, round_to, kwargs...)
     return todataframes(s; index_name=:variable)
 end
 
