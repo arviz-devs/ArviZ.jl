@@ -1,9 +1,5 @@
 # Matplotlib Example Gallery
 
-!!! note
-    
-    These examples are adapted from [ArviZ's matplotlib gallery](https://python.arviz.org/en/latest/examples/index.html#matplotlib).
-
 ## Autocorrelation Plot
 
 ```@example
