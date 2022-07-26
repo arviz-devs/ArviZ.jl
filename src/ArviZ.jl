@@ -109,6 +109,9 @@ const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
 
 include("setup.jl")
 
+# try to install scipy with pip if not yet installed
+# temporary workaround for https://github.com/arviz-devs/ArviZ.jl/issues/188
+pyimport_conda("scipy", "scipy", "pypi")
 # Load ArviZ once at precompilation time for docstringS
 copy!(arviz, import_arviz())
 check_needs_update(; update=false)
