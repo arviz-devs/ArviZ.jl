@@ -71,14 +71,18 @@ export bfmi, ess, rhat, mcse
 
 ## Stats utils
 export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
+## Dataset
+export Dataset, convert_to_dataset, namedtuple_to_dataset
+
+## InferenceData
+export InferenceData
 
 ## Data
-export InferenceData,
-    Dataset,
-    convert_to_inference_data,
+export convert_to_inference_data,
     extract_dataset,
     load_arviz_data,
     to_netcdf,
+    from_json,
     from_netcdf,
     from_namedtuple,
     from_dict,
