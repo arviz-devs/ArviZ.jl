@@ -111,12 +111,9 @@ macro forwardfun(f)
             result = arviz.$(f)(args...; kwargs...)
             return convert_result($(f), result)
         end
-
-        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
     end
     # make sure line number of methods are place where macro is called, not here
-    ex.args[4].args[2].args[1] = __source__
-    ex.args[6].args[2].args[1] = __source__
+    _replace_line_number!(ex, __source__)
     return esc(ex)
 end
 
@@ -146,13 +143,20 @@ macro forwardplotfun(f)
             result = arviz.$(f)(args...; kwargs..., backend)
             return convert_result($(f), result, backend_val)
         end
-
-        Docs.getdoc(::typeof($(f))) = forwardgetdoc(Symbol($(f)))
     end
     # make sure line number of methods are place where macro is called, not here
-    ex.args[4].args[2].args[1] = __source__
-    ex.args[6].args[2].args[1] = __source__
+    _replace_line_number!(ex, __source__)
     return esc(ex)
+end
+
+function _replace_line_number!(ex, source)
+    for i in eachindex(ex.args)
+        if ex.args[i] isa LineNumberNode
+            ex.args[i] = source
+        elseif ex.args[i] isa Expr
+            _replace_line_number!(ex.args[i], source)
+        end
+    end
 end
 
 # Replace `missing` values with `NaN` and do type inference on the result
