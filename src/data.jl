@@ -9,6 +9,8 @@ Convert a supported object to an [`InferenceData`](@ref) object.
 If `obj` converts to a single dataset, `group` specifies which dataset in the resulting
 `InferenceData` that is.
 
+See [`convert_to_dataset`](@ref)
+
 # Arguments
 
   - `obj` can be many objects. Basic supported types are:
@@ -108,8 +110,18 @@ end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
-function Base.merge(data::InferenceData, other_data::InferenceData...)
-    return InferenceData(Base.merge(groups(data), map(groups, other_data)...))
+"""
+    merge(data::InferenceData, others::InferenceData...) -> InferenceData
+
+Merge [`InferenceData`](@ref) objects.
+
+The result contains all groups in `data` and `others`.
+If a group appears more than once, the one that occurs first is kept.
+
+See [`concat`](@ref)
+"""
+function Base.merge(data::InferenceData, others::InferenceData...)
+    return InferenceData(Base.merge(groups(data), map(groups, others)...))
 end
 
 function rekey(data::InferenceData, keymap)

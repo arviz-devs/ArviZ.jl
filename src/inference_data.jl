@@ -3,6 +3,11 @@
 
 Container for inference data storage using DimensionalData.
 
+This object implements the [InferenceData schema](https://python.arviz.org/en/v$(arviz_version())/schema/schema.html).
+
+Internally, groups are stored in a `NamedTuple`, which can be accessed using
+`parent(::InferenceData)`.
+
 # Constructors
 
     InferenceData(groups::NamedTuple)
@@ -30,16 +35,33 @@ InferenceData(data::InferenceData) = data
 
 Base.parent(data::InferenceData) = getfield(data, :groups)
 
-Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
-Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
+"""
+    convert(::Type{InferenceData}, obj)
 
+Convert `obj` to an `InferenceData`.
+
+`obj` can be any type for which [`convert_to_inference_data`](@ref) is defined.
+"""
+Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
+Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
 Base.convert(::Type{NamedTuple}, data::InferenceData) = NamedTuple(data)
 NamedTuple(data::InferenceData) = parent(data)
 
 # these 3 interfaces ensure InferenceData behaves like a NamedTuple
 
 # properties interface
+"""
+    propertynames(data::InferenceData) -> Tuple{Symbol}
+
+Get names of groups
+"""
 Base.propertynames(data::InferenceData) = propertynames(parent(data))
+
+"""
+    getproperty(data::InferenceData, name::Symbol) -> Dataset
+
+Get group with the specified `name`.
+"""
 Base.getproperty(data::InferenceData, k::Symbol) = getproperty(parent(data), k)
 
 # indexing interface
@@ -60,27 +82,55 @@ exception will be raised.
 
 Select data from all groups for just the specified schools.
 
-```@repl 1
-using ArviZ, DimensionalData
-idata = load_arviz_data("centered_eight")
-idata[school=At(["Choate", "Deerfield"])]
+```@repl getindex
+julia> using ArviZ, DimensionalData
+
+julia> idata = load_arviz_data("centered_eight");
+
+julia> idata_sel = idata[school=At(["Choate", "Deerfield"])]
+InferenceData with groups:
+  > posterior
+  > posterior_predictive
+  > sample_stats
+  > prior
+  > observed_data
+
+julia> idata_sel.posterior
+Dataset with dimensions:
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×2)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at                => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library         => "pymc3"
 ```
 
-Select data from just the posterior, returning a `Dataset`
+Select data from just the posterior, returning a `Dataset` if the indices index more than
+one element from any of the variables:
 
-```@repl 1
-idata[:posterior, school=At(["Choate", "Deerfield"])]
+```@repl getindex
+julia> idata[:observed_data, school=At(["Choate"])]
+Dataset with dimensions:
+  Dim{:school} Categorical String[Choate] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:school} (1)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at                => "2019-06-21T17:36:34.491909"
+  :inference_library_version => "3.7"
+  :inference_library         => "pymc3"
 ```
 
 Note that if a single index is provided, the behavior is still to slice so that the
-dimension is preserved:
-
-```@repl 1
-idata[chain=1, draw=1].posterior
-```
+dimension is preserved.
 """
-Base.getindex(data::InferenceData, groups; kwargs...)
-
+Base.getindex(data::InferenceData, groups...; kwargs...)
 function Base.getindex(data::InferenceData, k::Symbol; kwargs...)
     ds = parent(data)[k]
     isempty(kwargs) && return ds
@@ -107,6 +157,14 @@ function Base.getindex(data::InferenceData; kwargs...)
     end
     return InferenceData(groups)
 end
+
+"""
+    Base.setindex(data::InferenceData, group::Dataset, name::Symbol) -> InferenceData
+
+Create a new `InferenceData` containing the `group` with the specified `name`.
+
+If a group with `name` is already in `data`, it is replaced.
+"""
 function Base.setindex(data::InferenceData, v, k::Symbol)
     return InferenceData(Base.setindex(parent(data), v, k))
 end

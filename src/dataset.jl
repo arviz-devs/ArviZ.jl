@@ -58,7 +58,7 @@ Convert a supported object to a `Dataset`.
 In most cases, this function calls [`convert_to_inference_data`](@ref) and returns the
 corresponding `group`.
 """
-convert_to_dataset
+function convert_to_dataset end
 
 function convert_to_dataset(obj; group::Symbol=:posterior, kwargs...)
     idata = convert_to_inference_data(obj; group, kwargs...)
