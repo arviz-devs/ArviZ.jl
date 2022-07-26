@@ -40,7 +40,7 @@ While ArviZ includes many plotting functions for visualizing the data stored in 
 
 In this tutorial, we will show you a few useful techniques you can use to construct these plots using Julia's plotting packages.
 For demonstration purposes, we'll use Makie.jl and AlgebraOfGraphics.jl, which can consume `Dataset` objects since they implement the Tables interface.
-However, we could just as easily have used StatsPlots.jl or Gadfly.jl.
+However, we could just as easily have used StatsPlots.jl.
 """
 
 # ╔═╡ 7bdff7ba-408c-4893-9857-7cf328301a34
