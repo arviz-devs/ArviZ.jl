@@ -1,6 +1,9 @@
 [deps]
+AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
 ArviZ = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 CmdStan = "593b3428-ca2f-500c-ae53-031589ec8ddd"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
@@ -18,8 +21,11 @@ Soss = "8ce77f84-9b61-11e8-39ff-d17a774bf41c"
 Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 
 [compat]
+AlgebraOfGraphics = "0.6.9"
 ArviZ = "0.6"
+CairoMakie = "0.8.9"
 CmdStan = "6.0"
+DataFrames = "1"
 DimensionalData = "0.20"
 Distributions = "0.25"
 Documenter = "0.27"
