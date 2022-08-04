@@ -1,5 +1,5 @@
 using DataFrames: DataFrames
-using PyCall, PyPlot
+using Dates, PyCall, PyPlot
 
 pandas = ArviZ.pandas
 
@@ -147,5 +147,13 @@ pandas = ArviZ.pandas
     @testset "package_version" begin
         @test ArviZ.package_version(ArviZ) isa VersionNumber
         @test ArviZ.package_version(PyCall) isa VersionNumber
+    end
+
+    @testset "current_time_iso" begin
+        iso = ArviZ.current_time_iso()
+        @test iso isa String
+        @test startswith(iso, Dates.format(Dates.now(), Dates.ISODateFormat))
+        iso2 = ArviZ.current_time_iso()
+        @test Dates.DateTime(iso2) > Dates.DateTime(iso)
     end
 end

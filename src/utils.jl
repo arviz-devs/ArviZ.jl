@@ -310,3 +310,5 @@ function Dimensions.selectindices(l::Dimensions.LookupArray, sel::AsSlice; kw...
     inds = i isa AbstractVector ? i : [i]
     return inds
 end
+
+current_time_iso() = Dates.format(Dates.now(), Dates.ISODateTimeFormat)

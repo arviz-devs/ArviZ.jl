@@ -1,6 +1,7 @@
 using Random
 using PyCall
 using ArviZ: attributes
+using Dates
 
 try
     ArviZ.initialize_bokeh()
@@ -38,7 +39,7 @@ function random_data()
         chain=1:4, draw=1:100, shared=["s1", "s2", "s3"], dima=1:4, dimb=2:6, dimy=1:5
     )
     dims = (a=(:shared, :dima), b=(:shared, :dimb), y=(:shared, :dimy))
-    metadata = (inference_library="PPL",)
+    metadata = (created_at=ArviZ.current_time_iso(), inference_library="PPL")
     posterior = random_dataset(var_names, dims, coords, metadata)
     posterior_predictive = random_dataset(data_names, dims, coords, metadata)
     prior = random_dataset(var_names, dims, coords, metadata)
