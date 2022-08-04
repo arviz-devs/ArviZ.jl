@@ -13,7 +13,7 @@ Internally, groups are stored in a `NamedTuple`, which can be accessed using
     InferenceData(groups::NamedTuple)
     InferenceData(; groups...)
 
-Construct an inference data from either a `NamedTuple` or keyword arguments of groups.
+Construct inference data from either a `NamedTuple` or keyword arguments of groups.
 
 Groups must be [`Dataset`](@ref) objects.
 
