@@ -90,6 +90,8 @@ Convert `NamedTuple` mapping variable names to arrays to a [`Dataset`](@ref).
     dimension. If indices for a dimension in `dims` are provided, they are used even if
     the dimension contains its own indices. If a dimension is missing, its indices are
     automatically generated.
+  - `default_dims`: a set of dimension names assumed to apply to the first dimensions of all
+    variables, used to assign sample dimensions.
 """
 function namedtuple_to_dataset end
 function namedtuple_to_dataset(
