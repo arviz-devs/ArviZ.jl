@@ -181,7 +181,14 @@ Generate `DimensionsionalData.Dimension` objects for each dimension of `array`.
 function generate_dims end
 function generate_dims(array, name; dims=(), coords=(;), default_dims=())
     num_default_dims = length(default_dims)
-    length(dims) + num_default_dims > ndims(array) && @error "blah"
+    if length(dims) + num_default_dims > ndims(array)
+        dim_names = Dimensions.name(Dimensions.basedims((dims..., default_dims...)))
+        throw(
+            DimensionMismatch(
+                "Provided dimensions $dim_names more than dimensions of array: $(ndims(array))",
+            ),
+        )
+    end
     dims_named = ntuple(ndims(array) - length(default_dims)) do i
         dim = get(dims, i, nothing)
         dim === nothing && return Symbol("$(name)_dim_$(i)")
