@@ -13,7 +13,7 @@ Internally, groups are stored in a `NamedTuple`, which can be accessed using
     InferenceData(groups::NamedTuple)
     InferenceData(; groups...)
 
-Construct an inference data from either a `NamedTuple` or keyword arguments of groups.
+Construct inference data from either a `NamedTuple` or keyword arguments of groups.
 
 Groups must be [`Dataset`](@ref) objects.
 
@@ -225,7 +225,8 @@ _index_to_indices(i::Int) = [i]
 _index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
 
 @generated function _reorder_group_names(::Val{names}) where {names}
-    return Tuple(sort(collect(names); by=k -> SUPPORTED_GROUPS_DICT[k]))
+    lt = (a, b) -> (a isa Integer && b isa Integer) ? a < b : string(a) < string(b)
+    return Tuple(sort(collect(names); lt, by=k -> get(SUPPORTED_GROUPS_DICT, k, string(k))))
 end
 
 @generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)

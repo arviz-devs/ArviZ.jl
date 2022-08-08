@@ -71,11 +71,15 @@ export bfmi, ess, rhat, mcse
 
 ## Stats utils
 export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
+
 ## Dataset
 export Dataset, convert_to_dataset, namedtuple_to_dataset
 
 ## InferenceData
 export InferenceData
+
+## Schema
+export check_follows_schema, follows_schema
 
 ## Data
 export convert_to_inference_data,
@@ -131,6 +135,7 @@ include("rcparams.jl")
 include("xarray.jl")
 include("dataset.jl")
 include("inference_data.jl")
+include("schema.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")

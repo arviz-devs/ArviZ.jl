@@ -1,6 +1,7 @@
 [deps]
 CmdStan = "593b3428-ca2f-500c-ae53-031589ec8ddd"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
