@@ -166,3 +166,13 @@ the proposed structure's energy. Said Potential is bound by Boltzman's law.""",
     ),
 )
 
+function _register_data(md::LocalFileMetadata)
+    return DataDeps.register(DataDeps.ManualDataDep(md.name, md.description))
+end
+
+function _register_data(md::RemoteFileMetadata)
+    return DataDeps.register(DataDeps.DataDep(md.name, md.description, md.url, md.checksum))
+end
+
+_init_data_deps() = map(_register_data, values(EXAMPLE_DATA))
+

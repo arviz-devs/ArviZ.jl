@@ -117,6 +117,7 @@ const _precompile_arviz_version = arviz_version()
 
 function __init__()
     initialize_arviz()
+    _init_data_deps()
     @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
         include("samplechains.jl")
     end
