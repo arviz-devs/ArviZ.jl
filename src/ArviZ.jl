@@ -82,6 +82,7 @@ export InferenceData
 export convert_to_inference_data,
     extract_dataset,
     load_arviz_data,
+    load_example_data,
     to_netcdf,
     from_json,
     from_netcdf,
