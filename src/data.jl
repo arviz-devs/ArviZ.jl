@@ -88,8 +88,6 @@ function convert_to_dataset(data::InferenceData; group::Symbol=:posterior, kwarg
     return getproperty(data, group)
 end
 
-@forwardfun load_arviz_data
-
 @forwardfun to_netcdf
 @forwardfun from_netcdf
 @forwardfun from_json

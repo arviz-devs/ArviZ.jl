@@ -228,3 +228,13 @@ end
 
 _init_data_deps() = map(_register_data, values(EXAMPLE_DATA))
 
+@doc forwarddoc(:load_arviz_data) load_arviz_data
+
+Base.@deprecate load_arviz_data(name; kwargs...) load_example_data(name; kwargs...)
+Base.@deprecate load_arviz_data() load_example_data()
+function load_arviz_data(name, data_home; kwargs...)
+    Base.depwarn("customizing `data_home` is deprecated.", :data_home)
+    return arviz.load_arviz_data(name, data_home; kwargs...)
+end
+
+Docs.getdoc(::typeof(load_arviz_data)) = forwardgetdoc(:load_arviz_data)
