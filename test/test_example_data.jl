@@ -22,3 +22,12 @@ using ArviZ, Test
     end
 end
 
+@testset "load_arviz_data" begin
+    data = @test_deprecated load_arviz_data("centered_eight")
+    datasets = @test_deprecated load_arviz_data()
+    @test datasets isa Dict
+    mktempdir() do data_home
+        @test_deprecated load_arviz_data("rugby", data_home)
+        @test readdir(data_home) == ["rugby.nc"]
+    end
+end

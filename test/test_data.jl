@@ -262,12 +262,6 @@ end
     @test idata2.prior == idata.prior
 end
 
-@testset "load_arviz_data" begin
-    data = load_arviz_data("centered_eight")
-    datasets = load_arviz_data()
-    @test datasets isa Dict
-end
-
 @testset "netcdf roundtrip" begin
     data = load_arviz_data("centered_eight")
     mktempdir() do path
