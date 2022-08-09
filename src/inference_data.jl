@@ -85,7 +85,7 @@ Select data from all groups for just the specified schools.
 ```@repl getindex
 julia> using ArviZ, DimensionalData
 
-julia> idata = load_arviz_data("centered_eight");
+julia> idata = load_example_data("centered_eight");
 
 julia> idata_sel = idata[school=At(["Choate", "Deerfield"])]
 InferenceData with groups:

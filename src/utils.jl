@@ -20,7 +20,7 @@ provide no arguments to use a default.
 # Examples
 
 ```julia
-idata = load_arviz_data("centered_eight")
+idata = load_example_data("centered_eight")
 plot_posterior(idata) # inline
 with_interactive_backend() do
     plot_density(idata) # interactive

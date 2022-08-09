@@ -83,7 +83,7 @@ See [`rcParams`](@ref) for supported params or to modify params long-term.
 
 ```julia
 with_rc_context(fname = "pystan.rc") do
-    idata = load_arviz_data("radon")
+    idata = load_example_data("radon")
     plot_posterior(idata; var_names=["gamma"])
 end
 ```
@@ -94,7 +94,7 @@ A dictionary can also be passed to the context manager:
 
 ```julia
 with_rc_context(rc = Dict("plot.max_subplots" => 1), fname = "pystan.rc") do
-    idata = load_arviz_data("radon")
+    idata = load_example_data("radon")
     plot_posterior(idata, var_names=["gamma"])
 end
 ```

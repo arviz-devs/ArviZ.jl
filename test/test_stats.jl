@@ -2,10 +2,10 @@ using ArviZ, Random, Statistics, Test
 using DataFrames: DataFrames
 
 @testset "stats" begin
-    idata = load_arviz_data("centered_eight")
+    idata = load_example_data("centered_eight")
 
     @testset "compare" begin
-        idata2 = load_arviz_data("non_centered_eight")
+        idata2 = load_example_data("non_centered_eight")
         model_dict = Dict("a" => idata, "b" => idata2)
         loo_dict = Dict("a" => loo(idata), "b" => loo(idata2))
         df = compare(model_dict)

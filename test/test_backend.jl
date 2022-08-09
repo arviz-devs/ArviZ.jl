@@ -1,7 +1,7 @@
 using PyCall
 
 @testset "matplotlib backend" begin
-    idata = load_arviz_data("centered_eight")
+    idata = load_example_data("centered_eight")
 
     backend = get(ArviZ.rcParams, "plot.backend", nothing)
     @test backend in ["matplotlib", nothing]
@@ -17,7 +17,7 @@ if !ispynull(ArviZ.bokeh) && "plot.backend" in keys(ArviZ.rcParams)
     end
 
     @testset "bokeh backend" begin
-        idata = load_arviz_data("centered_eight")
+        idata = load_example_data("centered_eight")
 
         with_rc_context(; rc=Dict("plot.backend" => "bokeh")) do
             backend = get(ArviZ.rcParams, "plot.backend", nothing)

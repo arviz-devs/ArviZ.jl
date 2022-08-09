@@ -34,5 +34,5 @@ merge
 ## Example data
 
 ```@docs
-load_arviz_data
+load_example_data
 ```

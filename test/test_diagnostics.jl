@@ -1,6 +1,6 @@
 @testset "diagnostics" begin
     @testset "bfmi" begin
-        idata = load_arviz_data("centered_eight")
+        idata = load_example_data("centered_eight")
         @test bfmi(idata) == ArviZ.arviz.bfmi(idata)
         rng = Random.MersenneTwister(42)
         arr = randn(rng, 4, 100)

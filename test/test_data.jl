@@ -263,7 +263,7 @@ end
 end
 
 @testset "netcdf roundtrip" begin
-    data = load_arviz_data("centered_eight")
+    data = load_example_data("centered_eight")
     mktempdir() do path
         filename = joinpath(path, "tmp.nc")
         to_netcdf(data, filename)
