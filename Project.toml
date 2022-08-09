@@ -5,6 +5,7 @@ version = "0.6.0"
 
 [deps]
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+DataDeps = "124859b0-ceae-595e-8997-d05f6a7a8dfe"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
@@ -20,6 +21,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 Conda = "1.0"
+DataDeps = "0.7"
 DataFrames = "0.20, 0.21, 0.22, 1.0"
 DimensionalData = "0.20"
 LogExpFunctions = "0.2.0, 0.3"

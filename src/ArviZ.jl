@@ -11,6 +11,7 @@ using OrderedCollections: OrderedDict
 using PyCall
 using Conda
 using PyPlot
+using DataDeps: DataDeps
 using DimensionalData: DimensionalData, Dimensions
 using PSIS: PSIS, PSISResult, psis, psis!
 using LogExpFunctions: logsumexp
