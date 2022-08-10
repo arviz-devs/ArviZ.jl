@@ -35,18 +35,6 @@ InferenceData(data::InferenceData) = data
 
 Base.parent(data::InferenceData) = getfield(data, :groups)
 
-"""
-    convert(::Type{InferenceData}, obj)
-
-Convert `obj` to an `InferenceData`.
-
-`obj` can be any type for which [`convert_to_inference_data`](@ref) is defined.
-"""
-Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
-Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
-Base.convert(::Type{NamedTuple}, data::InferenceData) = NamedTuple(data)
-NamedTuple(data::InferenceData) = parent(data)
-
 # these 3 interfaces ensure InferenceData behaves like a NamedTuple
 
 # properties interface
