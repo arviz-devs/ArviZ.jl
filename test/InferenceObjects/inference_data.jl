@@ -1,4 +1,4 @@
-using ArviZ, DimensionalData, Test
+using ArviZ.InferenceObjects, DimensionalData, Test
 
 @testset "InferenceData" begin
     var_names = (:a, :b)

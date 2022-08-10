@@ -1,7 +1,7 @@
-using ArviZ, DimensionalData, OrderedCollections, Test
+using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
 
 @testset "dataset" begin
-    @testset "ArviZ.Dataset" begin
+    @testset "Dataset" begin
         @testset "Constructors" begin
             nchains = 4
             ndraws = 100
