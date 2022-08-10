@@ -115,7 +115,7 @@ function check_idata_schema(idata)
             @test group isa ArviZ.Dataset
             for (var_name, var_data) in pairs(group)
                 @test var_data isa DimensionalData.AbstractDimArray
-                if ArviZ.has_all_sample_dims(var_data)
+                if ArviZ.InferenceObjects.has_all_sample_dims(var_data)
                     @test Dimensions.name(Dimensions.dims(var_data)[1]) === :chain
                     @test Dimensions.name(Dimensions.dims(var_data)[2]) === :draw
                 end
