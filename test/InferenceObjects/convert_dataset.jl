@@ -30,5 +30,11 @@ using ArviZ.InferenceObjects, DimensionalData, Test
             @test DimensionalData.name(DimensionalData.dims(ds2.y)) ==
                 (:chain, :draw, :y_dim_1)
         end
+
+        @testset "ArviZ.convert_to_dataset(::InferenceData; kwargs...)" begin
+            idata = random_data()
+            @test ArviZ.convert_to_dataset(idata) === idata.posterior
+            @test ArviZ.convert_to_dataset(idata; group=:prior) === idata.prior
+        end
     end
 end

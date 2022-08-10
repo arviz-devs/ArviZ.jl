@@ -4,4 +4,5 @@ using ArviZ.InferenceObjects, Test
     include("dataset.jl")
     include("inference_data.jl")
     include("convert_dataset.jl")
+    include("convert_inference_data.jl")
 end
