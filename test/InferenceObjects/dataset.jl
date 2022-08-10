@@ -158,8 +158,6 @@ using ArviZ.InferenceObjects: attributes, setattribute!
         metadata = DimensionalData.metadata(ds)
         @test metadata isa OrderedDict
         @test haskey(metadata, :created_at)
-        @test haskey(metadata, :arviz_version)
-        @test metadata[:arviz_language] == "julia"
         @test metadata[:inference_library] == "MyLib"
         @test !haskey(metadata, :inference_library_version)
         @test metadata[:mykey] == 5
