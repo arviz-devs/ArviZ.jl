@@ -1,0 +1,3 @@
+module InferenceObjects
+
+end # module
