@@ -213,7 +213,8 @@ _index_to_indices(i::Int) = [i]
 _index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
 
 @generated function _reorder_group_names(::Val{names}) where {names}
-    return Tuple(sort(collect(names); by=k -> SUPPORTED_GROUPS_DICT[k]))
+    lt = (a, b) -> (a isa Integer && b isa Integer) ? a < b : string(a) < string(b)
+    return Tuple(sort(collect(names); lt, by=k -> get(SCHEMA_GROUPS_DICT, k, string(k))))
 end
 
 @generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
