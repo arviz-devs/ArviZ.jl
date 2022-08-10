@@ -35,6 +35,10 @@ import StatsBase: summarystats
 import Markdown: @doc_str
 import PyCall: PyObject
 
+include("InferenceObjects/InferenceObjects.jl")
+using .InferenceObjects
+import .InferenceObjects: convert_to_inference_data
+
 # Exports
 
 ## Plots
@@ -129,7 +133,6 @@ end
 include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
-include("InferenceObjects/InferenceObjects.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
