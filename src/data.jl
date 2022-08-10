@@ -18,10 +18,6 @@ function default_var_name(data::DimensionalData.AbstractDimArray)
     return default_var_name(parent(data))
 end
 
-function convert_to_dataset(data::InferenceData; group::Symbol=:posterior, kwargs...)
-    return getproperty(data, group)
-end
-
 @forwardfun load_arviz_data
 
 @forwardfun to_netcdf
