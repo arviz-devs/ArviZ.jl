@@ -37,7 +37,8 @@ using ArviZ.InferenceObjects: default_var_name, groupnames
             @test idata2.prior == idata.posterior
         end
 
-        @testset "convert_to_inference_data(::$T)" for T in (Array, DimensionalData.DimArray)
+        @testset "convert_to_inference_data(::$T)" for T in
+                                                       (Array, DimensionalData.DimArray)
             data = randn(2, 10, 2)
             if T <: DimensionalData.DimArray
                 data = DimensionalData.DimArray(data, (:a, :b, :c); name=:y)

@@ -190,7 +190,7 @@ function test_idata_group_correct(
     if library !== nothing
         @test metadata[:inference_library] == library
     end
-    for k in [:created_at,]
+    for k in [:created_at]
         @test k in keys(metadata)
     end
     return nothing
