@@ -5,6 +5,7 @@ using Base: @__doc__
 using Requires
 using REPL
 using DataFrames
+using OrderedCollections: OrderedDict
 
 using PyCall
 using Conda
