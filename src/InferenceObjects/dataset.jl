@@ -50,7 +50,7 @@ end
 Base.convert(::Type{Dataset}, obj::Dataset) = obj
 Base.convert(::Type{Dataset}, obj) = convert_to_dataset(obj)
 
-@doc doc"""
+"""
     convert_to_dataset(obj; group = :posterior, kwargs...) -> Dataset
 
 Convert a supported object to a `Dataset`.
