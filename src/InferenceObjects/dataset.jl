@@ -246,9 +246,3 @@ Base.convert(T::Type{<:DimensionalData.DimStack}, data::Dataset) = convert(T, pa
 function DimensionalData.rebuild(data::Dataset; kwargs...)
     return Dataset(DimensionalData.rebuild(parent(data); kwargs...))
 end
-
-# python interop
-
-PyObject(data::Dataset) = _to_xarray(data)
-
-Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(_dimstack_from_xarray(obj))

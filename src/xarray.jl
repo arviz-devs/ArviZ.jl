@@ -1,3 +1,26 @@
+PyObject(data::Dataset) = _to_xarray(data)
+
+Base.convert(::Type{Dataset}, obj::PyObject) = Dataset(_dimstack_from_xarray(obj))
+
+function PyObject(data::InferenceData)
+    return pycall(arviz.InferenceData, PyObject; map(PyObject, groups(data))...)
+end
+
+function convert_to_inference_data(obj::PyObject; dims=nothing, coords=nothing, kwargs...)
+    if pyisinstance(obj, arviz.InferenceData)
+        group_names = obj.groups()
+        groups = (
+            Symbol(name) => convert(Dataset, getindex(obj, name)) for name in group_names
+        )
+        return InferenceData(; groups...)
+    else
+        # Python ArviZ requires dims and coords be dicts matching to vectors
+        pydims = dims === nothing ? dims : Dict(k -> collect(dims[k]) for k in keys(dims))
+        pycoords =
+            dims === nothing ? dims : Dict(k -> collect(coords[k]) for k in keys(coords))
+        return arviz.convert_to_inference_data(obj; dims=pydims, coords=pycoords, kwargs...)
+    end
+end
 
 function _dimstack_from_xarray(o::PyObject)
     pyisinstance(o, xarray.Dataset) ||
