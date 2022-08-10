@@ -124,10 +124,8 @@ function check_idata_schema(idata)
                 attrs = ArviZ.attributes(group)
                 @test attrs isa AbstractDict{Symbol,Any}
                 @test :created_at in keys(attrs)
-                @test :arviz_version in keys(attrs)
                 @test_skip :inference_library in keys(attrs)
                 @test_skip :inference_library_version in keys(attrs)
-                @test_skip :arviz_language in keys(attrs)
             end
         end
     end
@@ -192,7 +190,7 @@ function test_idata_group_correct(
     if library !== nothing
         @test metadata[:inference_library] == library
     end
-    for k in [:created_at, :arviz_version]
+    for k in [:created_at,]
         @test k in keys(metadata)
     end
     return nothing
