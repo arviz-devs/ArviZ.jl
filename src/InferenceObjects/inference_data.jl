@@ -3,7 +3,7 @@
 
 Container for inference data storage using DimensionalData.
 
-This object implements the [InferenceData schema](https://python.arviz.org/en/v$(arviz_version())/schema/schema.html).
+This object implements the [InferenceData schema](https://python.arviz.org/en/latest/schema/schema.html).
 
 Internally, groups are stored in a `NamedTuple`, which can be accessed using
 `parent(::InferenceData)`.
