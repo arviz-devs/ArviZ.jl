@@ -1,6 +1,8 @@
 module InferenceObjects
 
+using Dates: Dates
 using DimensionalData: DimensionalData, Dimensions
+using OrderedCollections: OrderedDict
 
 export Dataset, InferenceData
 export convert_to_dataset, convert_to_inference_data, namedtuple_to_dataset
