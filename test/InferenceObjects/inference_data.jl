@@ -1,4 +1,5 @@
 using ArviZ.InferenceObjects, DimensionalData, Test
+using ArviZ.InferenceObjects: groupnames, groups, hasgroup
 
 @testset "InferenceData" begin
     var_names = (:a, :b)
@@ -47,8 +48,8 @@ using ArviZ.InferenceObjects, DimensionalData, Test
         for i in 1:(length(idata) + 1)
             @test iterate(idata, i) === iterate(group_data_ordered, i)
         end
-        @test eltype(idata) <: ArviZ.Dataset
-        @test collect(idata) isa Vector{<:ArviZ.Dataset}
+        @test eltype(idata) <: Dataset
+        @test collect(idata) isa Vector{<:Dataset}
     end
 
     @testset "indexing" begin
@@ -59,7 +60,7 @@ using ArviZ.InferenceObjects, DimensionalData, Test
 
         idata_sel = idata[dima=At(2:3), dimb=At(6)]
         @test idata_sel isa InferenceData
-        @test ArviZ.groupnames(idata_sel) === ArviZ.groupnames(idata)
+        @test groupnames(idata_sel) === groupnames(idata)
         @test Dimensions.index(idata_sel.posterior, :dima) == 2:3
         @test Dimensions.index(idata_sel.prior, :dima) == 2:3
         @test Dimensions.index(idata_sel.posterior, :dimb) == [6]
@@ -68,7 +69,7 @@ using ArviZ.InferenceObjects, DimensionalData, Test
         if VERSION ≥ v"1.7"
             idata_sel = idata[(:posterior, :observed_data), dimy=1, dimb=1, shared=At("s1")]
             @test idata_sel isa InferenceData
-            @test ArviZ.groupnames(idata_sel) === (:posterior, :observed_data)
+            @test groupnames(idata_sel) === (:posterior, :observed_data)
             @test Dimensions.index(idata_sel.posterior, :dima) == coords.dima
             @test Dimensions.index(idata_sel.posterior, :dimb) == coords.dimb[[1]]
             @test Dimensions.index(idata_sel.posterior, :shared) == ["s1"]
@@ -77,7 +78,7 @@ using ArviZ.InferenceObjects, DimensionalData, Test
         end
 
         ds_sel = idata[:posterior, chain=1]
-        @test ds_sel isa ArviZ.Dataset
+        @test ds_sel isa Dataset
         @test !hasdim(ds_sel, :chain)
 
         idata2 = Base.setindex(idata, posterior, :warmup_posterior)
@@ -91,19 +92,19 @@ using ArviZ.InferenceObjects, DimensionalData, Test
     end
 
     @testset "groups" begin
-        @test ArviZ.groups(idata) === group_data_ordered
-        @test ArviZ.groups(InferenceData(; prior)) === (; prior)
+        @test groups(idata) === group_data_ordered
+        @test groups(InferenceData(; prior)) === (; prior)
     end
 
     @testset "hasgroup" begin
-        @test ArviZ.hasgroup(idata, :posterior)
-        @test ArviZ.hasgroup(idata, :prior)
-        @test !ArviZ.hasgroup(idata, :prior_predictive)
+        @test hasgroup(idata, :posterior)
+        @test hasgroup(idata, :prior)
+        @test !hasgroup(idata, :prior_predictive)
     end
 
     @testset "groupnames" begin
-        @test ArviZ.groupnames(idata) === propertynames(group_data_ordered)
-        @test ArviZ.groupnames(InferenceData(; posterior)) === (:posterior,)
+        @test groupnames(idata) === propertynames(group_data_ordered)
+        @test groupnames(InferenceData(; posterior)) === (:posterior,)
     end
 
     @testset "conversion" begin

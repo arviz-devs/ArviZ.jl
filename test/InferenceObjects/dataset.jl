@@ -1,4 +1,5 @@
 using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
+using ArviZ.InferenceObjects: attributes, setattribute!
 
 @testset "dataset" begin
     @testset "Dataset" begin
@@ -14,8 +15,8 @@ using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
 
             @testset "from NamedTuple" begin
                 data = (; x, y)
-                ds = ArviZ.Dataset(data; metadata)
-                @test ds isa ArviZ.Dataset
+                ds = Dataset(data; metadata)
+                @test ds isa Dataset
                 @test DimensionalData.data(ds) == data
                 for dim in xdims
                     @test DimensionalData.hasdim(ds, dim)
@@ -35,8 +36,8 @@ using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
                 data = (
                     DimensionalData.rebuild(x; name=:x), DimensionalData.rebuild(y; name=:y)
                 )
-                ds = ArviZ.Dataset(data...; metadata)
-                @test ds isa ArviZ.Dataset
+                ds = Dataset(data...; metadata)
+                @test ds isa Dataset
                 @test values(DimensionalData.data(ds)) == data
                 for dim in xdims
                     @test DimensionalData.hasdim(ds, dim)
@@ -53,8 +54,8 @@ using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
             end
 
             @testset "idempotent" begin
-                ds = ArviZ.Dataset((; x, y); metadata)
-                @test ArviZ.Dataset(ds) === ds
+                ds = Dataset((; x, y); metadata)
+                @test Dataset(ds) === ds
             end
 
             @testset "errors with mismatched dimensions" begin
@@ -62,7 +63,7 @@ using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
                     x=DimArray(randn(3, 100, 3), (:chains, :draws, :shared)),
                     y=DimArray(randn(4, 100, 2, 3), (:chains, :draws, :ydim1, :shared)),
                 )
-                @test_throws Exception ArviZ.Dataset(data_bad)
+                @test_throws Exception Dataset(data_bad)
             end
         end
 
@@ -74,7 +75,7 @@ using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
         ydims = (:chain, :draw, :ydim1, :shared)
         y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
         metadata = Dict(:prop1 => "val1", :prop2 => "val2")
-        ds = ArviZ.Dataset((; x, y); metadata)
+        ds = Dataset((; x, y); metadata)
 
         @testset "parent" begin
             @test parent(ds) isa DimStack
@@ -102,19 +103,19 @@ using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
         end
 
         @testset "attributes" begin
-            @test ArviZ.attributes(ds) == metadata
+            @test attributes(ds) == metadata
             dscopy = deepcopy(ds)
-            ArviZ.setattribute!(dscopy, :prop3, "val3")
-            @test ArviZ.attributes(dscopy)[:prop3] == "val3"
-            @test_deprecated ArviZ.setattribute!(dscopy, "prop3", "val4")
-            @test ArviZ.attributes(dscopy)[:prop3] == "val4"
+            setattribute!(dscopy, :prop3, "val3")
+            @test attributes(dscopy)[:prop3] == "val3"
+            @test_deprecated setattribute!(dscopy, "prop3", "val4")
+            @test attributes(dscopy)[:prop3] == "val4"
         end
 
         @testset "conversion" begin
-            @test convert(ArviZ.Dataset, ds) === ds
-            ds2 = convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0])
-            @test ds2 isa ArviZ.Dataset
-            @test ds2 == ArviZ.convert_to_dataset([1.0, 2.0, 3.0, 4.0])
+            @test convert(Dataset, ds) === ds
+            ds2 = convert(Dataset, [1.0, 2.0, 3.0, 4.0])
+            @test ds2 isa Dataset
+            @test ds2 == convert_to_dataset([1.0, 2.0, 3.0, 4.0])
             @test convert(DimensionalData.DimStack, ds) === parent(ds)
         end
     end
@@ -142,11 +143,11 @@ using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
             ),
         )
         attrs = Dict(:mykey => 5)
-        @test_broken @inferred ArviZ.namedtuple_to_dataset(
+        @test_broken @inferred namedtuple_to_dataset(
             vars; library="MyLib", coords, dims, attrs
         )
-        ds = ArviZ.namedtuple_to_dataset(vars; library="MyLib", coords, dims, attrs)
-        @test ds isa ArviZ.Dataset
+        ds = namedtuple_to_dataset(vars; library="MyLib", coords, dims, attrs)
+        @test ds isa Dataset
         for (var_name, var_data) in pairs(DimensionalData.layers(ds))
             @test var_data isa DimensionalData.DimArray
             @test var_name === DimensionalData.name(var_data)
