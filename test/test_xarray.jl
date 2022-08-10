@@ -48,4 +48,21 @@ using ArviZ, DimensionalData, PyCall, Test
         end
         @test DimensionalData.metadata(ds2) == DimensionalData.metadata(ds)
     end
+
+    @testset "InferenceData <-> PyObject" begin
+        idata1 = random_data()
+        pyidata1 = PyObject(idata1)
+        @test pyidata1 isa PyObject
+        @test pyisinstance(pyidata1, ArviZ.arviz.InferenceData)
+        idata2 = convert(InferenceData, pyidata1)
+        test_idata_approx_equal(idata2, idata1)
+    end
+
+    @testset "convert_to_inference_data(obj::PyObject)" begin
+        data = Dict(:z => randn(4, 100, 10))
+        idata1 = convert_to_inference_data(data)
+        idata2 = convert_to_inference_data(PyObject(data))
+        @test idata2 isa InferenceData
+        @test idata2.posterior.z ≈ collect(idata1.posterior.z)
+    end
 end
