@@ -71,3 +71,16 @@ function convert_to_inference_data(
     ds = namedtuple_to_dataset(data; kwargs...)
     return convert_to_inference_data(ds; group)
 end
+
+"""
+    default_var_name(data) -> Symbol
+
+Return the default name for the variable whose values are stored in `data`.
+"""
+default_var_name(data) = :x
+function default_var_name(data::DimensionalData.AbstractDimArray)
+    name = DimensionalData.name(data)
+    name isa Symbol && return name
+    name isa AbstractString && !isempty(name) && return Symbol(name)
+    return default_var_name(parent(data))
+end

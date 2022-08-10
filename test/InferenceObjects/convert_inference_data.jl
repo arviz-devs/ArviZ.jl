@@ -1,12 +1,12 @@
 using ArviZ.InferenceObjects, DimensionalData, Test
-using ArviZ.InferenceObjects: groupnames
+using ArviZ.InferenceObjects: default_var_name, groupnames
 
 @testset "conversion to InferenceData" begin
-    @testset "ArviZ.default_var_name" begin
+    @testset "default_var_name" begin
         x = randn(4, 5)
-        @test ArviZ.default_var_name(x) === :x
-        @test ArviZ.default_var_name(DimensionalData.DimArray(x, (:a, :b))) === :x
-        @test ArviZ.default_var_name(DimensionalData.DimArray(x, (:a, :b); name=:y)) === :y
+        @test default_var_name(x) === :x
+        @test default_var_name(DimensionalData.DimArray(x, (:a, :b))) === :x
+        @test default_var_name(DimensionalData.DimArray(x, (:a, :b); name=:y)) === :y
     end
 
     @testset "convert_to_inference_data" begin
