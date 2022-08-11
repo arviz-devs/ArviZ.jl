@@ -154,7 +154,7 @@ function Base.getindex(data::InferenceData; kwargs...)
     # will be a `Dataset` if the group has other dimensions or `NamedTuple`
     # if it has no other dimensions.
     # So we promote to an array of indices
-    new_kwargs = map(_index_to_indices, NamedTuple(kwargs))
+    new_kwargs = map(index_to_indices, NamedTuple(kwargs))
     groups = map(parent(data)) do ds
         return getindex(ds; new_kwargs...)
     end

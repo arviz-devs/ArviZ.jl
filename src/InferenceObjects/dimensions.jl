@@ -97,9 +97,14 @@ function as_dimension(dim::Symbol, coords, n)
     return as_dimension(Dimensions.rebuild(Dimensions.key2dim(dim), 1:n), coords, n)
 end
 
-_index_to_indices(i) = i
-_index_to_indices(i::Int) = [i]
-_index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
+"""
+    index_to_indices(index)
+
+Convert `index` to a collection of indices or a selector representing such a collection.
+"""
+index_to_indices(i) = i
+index_to_indices(i::Int) = [i]
+index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
 
 struct AsSlice{T<:Dimensions.Selector} <: Dimensions.Selector{T}
     val::T
