@@ -28,3 +28,15 @@ Base.setindex
 
 `InferenceData` also implements the same iteration interface as its underlying `NamedTuple`.
 That is, iterating over an `InferenceData` iterates over its groups.
+
+## General conversion
+
+```@docs
+convert_to_inference_data
+```
+
+## General functions
+
+```@docs
+merge
+```
