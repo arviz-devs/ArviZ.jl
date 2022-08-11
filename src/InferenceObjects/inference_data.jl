@@ -68,51 +68,66 @@ exception will be raised.
 
 # Examples
 
-Select data from all groups for just the specified schools.
+Select data from all groups for just the specified id values.
 
 ```@repl getindex
 julia> using ArviZ, DimensionalData
 
-julia> idata = load_arviz_data("centered_eight");
-
-julia> idata_sel = idata[school=At(["Choate", "Deerfield"])]
+julia> idata = from_namedtuple(
+           (θ=randn(4, 100, 4), τ=randn(4, 100));
+           prior=(θ=randn(4, 100, 4), τ=randn(4, 100)),
+           observed_data=(y=randn(4),),
+           dims=(θ=[:id], y=[:id]),
+           coords=(id=["a", "b", "c", "d"],),
+       )
 InferenceData with groups:
   > posterior
-  > posterior_predictive
-  > sample_stats
+  > prior
+  > observed_data
+
+julia> idata.posterior
+Dataset with dimensions:
+  Dim{:chain} Sampled 1:4 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 1:100 ForwardOrdered Regular Points,
+  Dim{:id} Categorical String[a, b, c, d] ForwardOrdered
+and 2 layers:
+  :θ Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:id} (4×100×4)
+  :τ Float64 dims: Dim{:chain}, Dim{:draw} (4×100)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 1 entry:
+  :created_at => "2022-08-11T11:15:21.4"
+
+julia> idata_sel = idata[id=At(["a", "b"])]
+InferenceData with groups:
+  > posterior
   > prior
   > observed_data
 
 julia> idata_sel.posterior
 Dataset with dimensions:
-  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
-  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
-  Dim{:school} Categorical String[Choate, Deerfield] Unordered
-and 3 layers:
-  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
-  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×2)
-  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  Dim{:chain} Sampled 1:4 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 1:100 ForwardOrdered Regular Points,
+  Dim{:id} Categorical String[a, b] ForwardOrdered
+and 2 layers:
+  :θ Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:id} (4×100×2)
+  :τ Float64 dims: Dim{:chain}, Dim{:draw} (4×100)
 
-with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
-  :created_at                => "2019-06-21T17:36:34.398087"
-  :inference_library_version => "3.7"
-  :inference_library         => "pymc3"
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 1 entry:
+  :created_at => "2022-08-11T11:15:21.4"
 ```
 
 Select data from just the posterior, returning a `Dataset` if the indices index more than
 one element from any of the variables:
 
 ```@repl getindex
-julia> idata[:observed_data, school=At(["Choate"])]
+julia> idata[:observed_data, id=At(["a"])]
 Dataset with dimensions:
-  Dim{:school} Categorical String[Choate] Unordered
+  Dim{:id} Categorical String[a] ForwardOrdered
 and 1 layer:
-  :obs Float64 dims: Dim{:school} (1)
+  :y Float64 dims: Dim{:id} (1)
 
-with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
-  :created_at                => "2019-06-21T17:36:34.491909"
-  :inference_library_version => "3.7"
-  :inference_library         => "pymc3"
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 1 entry:
+  :created_at => "2022-08-11T11:19:25.982"
 ```
 
 Note that if a single index is provided, the behavior is still to slice so that the
