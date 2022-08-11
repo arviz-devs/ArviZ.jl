@@ -1,6 +1,14 @@
 using ArviZ.InferenceObjects, DimensionalData, Test
 
 @testset "conversion to Dataset" begin
+    @testset "conversion" begin
+        @test convert(Dataset, ds) === ds
+        ds2 = convert(Dataset, [1.0, 2.0, 3.0, 4.0])
+        @test ds2 isa Dataset
+        @test ds2 == convert_to_dataset([1.0, 2.0, 3.0, 4.0])
+        @test convert(DimensionalData.DimStack, ds) === parent(ds)
+    end
+
     @testset "convert_to_dataset" begin
         nchains = 4
         ndraws = 100

@@ -110,14 +110,6 @@ using ArviZ.InferenceObjects: attributes, setattribute!
             @test_deprecated setattribute!(dscopy, "prop3", "val4")
             @test attributes(dscopy)[:prop3] == "val4"
         end
-
-        @testset "conversion" begin
-            @test convert(Dataset, ds) === ds
-            ds2 = convert(Dataset, [1.0, 2.0, 3.0, 4.0])
-            @test ds2 isa Dataset
-            @test ds2 == convert_to_dataset([1.0, 2.0, 3.0, 4.0])
-            @test convert(DimensionalData.DimStack, ds) === parent(ds)
-        end
     end
 
     @testset "namedtuple_to_dataset" begin

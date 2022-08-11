@@ -1,4 +1,4 @@
-using ArviZ, ArviZ.InferenceObjects, Test
+using ArviZ.InferenceObjects, Test
 using ArviZ.InferenceObjects: package_version
 
 @testset "package_version" begin

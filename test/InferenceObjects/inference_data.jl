@@ -107,15 +107,6 @@ using ArviZ.InferenceObjects: groupnames, groups, hasgroup
         @test groupnames(InferenceData(; posterior)) === (:posterior,)
     end
 
-    @testset "conversion" begin
-        @test convert(InferenceData, idata) === idata
-        @test convert(NamedTuple, idata) === parent(idata)
-        @test NamedTuple(idata) === parent(idata)
-        a = idata.posterior.a
-        @test convert(InferenceData, a) isa InferenceData
-        @test convert(InferenceData, a).posterior.a == a
-    end
-
     @testset "show" begin
         @testset "plain" begin
             text = sprint(show, MIME("text/plain"), idata)

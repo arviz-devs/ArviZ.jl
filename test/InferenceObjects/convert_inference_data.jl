@@ -9,6 +9,15 @@ using ArviZ.InferenceObjects: default_var_name, groupnames
         @test default_var_name(DimensionalData.DimArray(x, (:a, :b); name=:y)) === :y
     end
 
+    @testset "conversion" begin
+        @test convert(InferenceData, idata) === idata
+        @test convert(NamedTuple, idata) === parent(idata)
+        @test NamedTuple(idata) === parent(idata)
+        a = idata.posterior.a
+        @test convert(InferenceData, a) isa InferenceData
+        @test convert(InferenceData, a).posterior.a == a
+    end
+
     @testset "convert_to_inference_data" begin
         @testset "convert_to_inference_data(::AbstractDimStack)" begin
             ds = namedtuple_to_dataset((x=randn(4, 10), y=randn(4, 10, 5)))
