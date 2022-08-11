@@ -218,3 +218,17 @@ _index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
 end
 
 @generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
+
+"""
+    merge(data::InferenceData, others::InferenceData...) -> InferenceData
+
+Merge [`InferenceData`](@ref) objects.
+
+The result contains all groups in `data` and `others`.
+If a group appears more than once, the one that occurs first is kept.
+
+See [`concat`](@ref)
+"""
+function Base.merge(data::InferenceData, others::InferenceData...)
+    return InferenceData(Base.merge(groups(data), map(groups, others)...))
+end

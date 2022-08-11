@@ -27,20 +27,6 @@ end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
 
-"""
-    merge(data::InferenceData, others::InferenceData...) -> InferenceData
-
-Merge [`InferenceData`](@ref) objects.
-
-The result contains all groups in `data` and `others`.
-If a group appears more than once, the one that occurs first is kept.
-
-See [`concat`](@ref)
-"""
-function Base.merge(data::InferenceData, others::InferenceData...)
-    return InferenceData(Base.merge(groups(data), map(groups, others)...))
-end
-
 function rekey(data::InferenceData, keymap)
     groups_old = groups(data)
     names_new = map(k -> get(keymap, k, k), propertynames(groups_old))
