@@ -37,6 +37,7 @@ More specific types may be documented separately.
 
   - `group::Symbol = :posterior`: If `obj` converts to a single dataset, assign the resulting
     dataset to this group.
+
   - `dims`: a collection mapping variable names to collections of objects containing
     dimension names. Acceptable such objects are:
     
