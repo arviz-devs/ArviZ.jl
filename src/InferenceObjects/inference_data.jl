@@ -223,10 +223,6 @@ Return `true` if a group with name `name` is stored in `data`.
 """
 hasgroup(data::InferenceData, name::Symbol) = haskey(data, name)
 
-_index_to_indices(i) = i
-_index_to_indices(i::Int) = [i]
-_index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
-
 @generated function _reorder_group_names(::Val{names}) where {names}
     lt = (a, b) -> (a isa Integer && b isa Integer) ? a < b : string(a) < string(b)
     return Tuple(sort(collect(names); lt, by=k -> get(SCHEMA_GROUPS_DICT, k, string(k))))
