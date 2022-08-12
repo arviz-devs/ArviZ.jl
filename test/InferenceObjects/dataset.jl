@@ -1,5 +1,4 @@
 using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
-using ArviZ.InferenceObjects: attributes, setattribute!
 
 @testset "dataset" begin
     @testset "Dataset" begin
@@ -103,12 +102,12 @@ using ArviZ.InferenceObjects: attributes, setattribute!
         end
 
         @testset "attributes" begin
-            @test attributes(ds) == metadata
+            @test InferenceObjects.attributes(ds) == metadata
             dscopy = deepcopy(ds)
-            setattribute!(dscopy, :prop3, "val3")
-            @test attributes(dscopy)[:prop3] == "val3"
-            @test_deprecated setattribute!(dscopy, "prop3", "val4")
-            @test attributes(dscopy)[:prop3] == "val4"
+            InferenceObjects.setattribute!(dscopy, :prop3, "val3")
+            @test InferenceObjects.attributes(dscopy)[:prop3] == "val3"
+            @test_deprecated InferenceObjects.setattribute!(dscopy, "prop3", "val4")
+            @test InferenceObjects.attributes(dscopy)[:prop3] == "val4"
         end
     end
 

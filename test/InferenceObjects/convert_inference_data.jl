@@ -1,12 +1,14 @@
 using ArviZ.InferenceObjects, DimensionalData, Test
-using ArviZ.InferenceObjects: default_var_name, groupnames
 
 @testset "conversion to InferenceData" begin
     @testset "default_var_name" begin
         x = randn(4, 5)
-        @test default_var_name(x) === :x
-        @test default_var_name(DimensionalData.DimArray(x, (:a, :b))) === :x
-        @test default_var_name(DimensionalData.DimArray(x, (:a, :b); name=:y)) === :y
+        @test InferenceObjects.default_var_name(x) === :x
+        @test InferenceObjects.default_var_name(DimensionalData.DimArray(x, (:a, :b))) ===
+            :x
+        @test InferenceObjects.default_var_name(
+            DimensionalData.DimArray(x, (:a, :b); name=:y)
+        ) === :y
     end
 
     @testset "conversion" begin
@@ -22,7 +24,7 @@ using ArviZ.InferenceObjects: default_var_name, groupnames
         @testset "convert_to_inference_data(::AbstractDimStack)" begin
             ds = namedtuple_to_dataset((x=randn(4, 10), y=randn(4, 10, 5)))
             idata1 = convert_to_inference_data(ds; group=:prior)
-            @test groupnames(idata1) == (:prior,)
+            @test InferenceObjects.groupnames(idata1) == (:prior,)
             idata2 = InferenceData(; prior=ds)
             @test idata2 == idata1
             idata3 = convert_to_inference_data(parent(ds); group=:prior)
@@ -36,13 +38,13 @@ using ArviZ.InferenceObjects: default_var_name, groupnames
             end
             idata = convert_to_inference_data(data)
             check_idata_schema(idata)
-            @test groupnames(idata) == (:posterior,)
+            @test InferenceObjects.groupnames(idata) == (:posterior,)
             posterior = idata.posterior
             @test posterior.A == data[:A]
             @test posterior.B == data[:B]
             idata2 = convert_to_inference_data(data; group=:prior)
             check_idata_schema(idata2)
-            @test groupnames(idata2) == (:prior,)
+            @test InferenceObjects.groupnames(idata2) == (:prior,)
             @test idata2.prior == idata.posterior
         end
 
@@ -54,7 +56,7 @@ using ArviZ.InferenceObjects: default_var_name, groupnames
             end
             idata = convert_to_inference_data(data)
             check_idata_schema(idata)
-            @test groupnames(idata) == (:posterior,)
+            @test InferenceObjects.groupnames(idata) == (:posterior,)
             posterior = idata.posterior
             if T <: DimensionalData.DimArray
                 @test posterior.y == data
@@ -63,7 +65,7 @@ using ArviZ.InferenceObjects: default_var_name, groupnames
             end
             idata2 = convert_to_inference_data(data; group=:prior)
             check_idata_schema(idata2)
-            @test groupnames(idata2) == (:prior,)
+            @test InferenceObjects.groupnames(idata2) == (:prior,)
             @test idata2.prior == idata.posterior
         end
     end

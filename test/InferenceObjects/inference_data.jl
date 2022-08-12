@@ -1,5 +1,4 @@
 using ArviZ.InferenceObjects, DimensionalData, Test
-using ArviZ.InferenceObjects: groupnames, groups, hasgroup
 
 @testset "InferenceData" begin
     var_names = (:a, :b)
@@ -60,7 +59,7 @@ using ArviZ.InferenceObjects: groupnames, groups, hasgroup
 
         idata_sel = idata[dima=At(2:3), dimb=At(6)]
         @test idata_sel isa InferenceData
-        @test groupnames(idata_sel) === groupnames(idata)
+        @test InferenceObjects.groupnames(idata_sel) === InferenceObjects.groupnames(idata)
         @test Dimensions.index(idata_sel.posterior, :dima) == 2:3
         @test Dimensions.index(idata_sel.prior, :dima) == 2:3
         @test Dimensions.index(idata_sel.posterior, :dimb) == [6]
@@ -69,7 +68,7 @@ using ArviZ.InferenceObjects: groupnames, groups, hasgroup
         if VERSION ≥ v"1.7"
             idata_sel = idata[(:posterior, :observed_data), dimy=1, dimb=1, shared=At("s1")]
             @test idata_sel isa InferenceData
-            @test groupnames(idata_sel) === (:posterior, :observed_data)
+            @test InferenceObjects.groupnames(idata_sel) === (:posterior, :observed_data)
             @test Dimensions.index(idata_sel.posterior, :dima) == coords.dima
             @test Dimensions.index(idata_sel.posterior, :dimb) == coords.dimb[[1]]
             @test Dimensions.index(idata_sel.posterior, :shared) == ["s1"]
@@ -92,26 +91,26 @@ using ArviZ.InferenceObjects: groupnames, groups, hasgroup
     end
 
     @testset "groups" begin
-        @test groups(idata) === group_data_ordered
-        @test groups(InferenceData(; prior)) === (; prior)
+        @test InferenceObjects.groups(idata) === group_data_ordered
+        @test InferenceObjects.groups(InferenceData(; prior)) === (; prior)
     end
 
     @testset "hasgroup" begin
-        @test hasgroup(idata, :posterior)
-        @test hasgroup(idata, :prior)
-        @test !hasgroup(idata, :prior_predictive)
+        @test InferenceObjects.hasgroup(idata, :posterior)
+        @test InferenceObjects.hasgroup(idata, :prior)
+        @test !InferenceObjects.hasgroup(idata, :prior_predictive)
     end
 
     @testset "groupnames" begin
-        @test groupnames(idata) === propertynames(group_data_ordered)
-        @test groupnames(InferenceData(; posterior)) === (:posterior,)
+        @test InferenceObjects.groupnames(idata) === propertynames(group_data_ordered)
+        @test InferenceObjects.groupnames(InferenceData(; posterior)) === (:posterior,)
     end
 
     @testset "show" begin
         @testset "plain" begin
             text = sprint(show, MIME("text/plain"), idata)
             @test text == """
-            InferenceData with groups:
+            InferenceData with InferenceObjects.groups:
               > posterior
               > prior
               > observed_data"""
