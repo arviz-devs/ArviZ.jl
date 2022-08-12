@@ -26,10 +26,3 @@ function concat(data::InferenceData...; kwargs...)
 end
 
 Docs.getdoc(::typeof(concat)) = forwardgetdoc(:concat)
-
-function rekey(data::InferenceData, keymap)
-    groups_old = groups(data)
-    names_new = map(k -> get(keymap, k, k), propertynames(groups_old))
-    groups_new = NamedTuple{names_new}(Tuple(groups_old))
-    return InferenceData(groups_new)
-end

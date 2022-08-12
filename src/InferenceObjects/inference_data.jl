@@ -243,3 +243,10 @@ See [`concat`](@ref)
 function Base.merge(data::InferenceData, others::InferenceData...)
     return InferenceData(Base.merge(groups(data), map(groups, others)...))
 end
+
+function rekey(data::InferenceData, keymap)
+    groups_old = groups(data)
+    names_new = map(k -> get(keymap, k, k), propertynames(groups_old))
+    groups_new = NamedTuple{names_new}(Tuple(groups_old))
+    return InferenceData(groups_new)
+end
