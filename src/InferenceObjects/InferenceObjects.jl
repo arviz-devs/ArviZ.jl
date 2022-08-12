@@ -1,7 +1,7 @@
 module InferenceObjects
 
 using Dates: Dates
-using DimensionalData: DimensionalData, Dimensions
+using DimensionalData: DimensionalData, Dimensions, LookupArrays
 using OrderedCollections: OrderedDict
 
 # groups that are officially listed in the schema

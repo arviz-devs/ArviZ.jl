@@ -22,7 +22,7 @@ Convert `dim`, `coords`, and `axis` to a `Dimension` object.
 function as_dimension(dim, coords, axis)
     D = Dimensions.basetypeof(Dimensions.basedims(dim))
     inds = if dim isa Dimensions.Dimension
-        vals = Dimensions.val(dim)
+        vals = LookupArrays.val(dim)
         vals isa AbstractVector ? vals : axis
     else
         axis
@@ -91,7 +91,7 @@ function array_to_dimarray(array::DimensionalData.AbstractDimArray, name; kwargs
 end
 
 """
-    AsSlice{T<:Dimensions.Selector} <: Dimensions.Selector{T}
+    AsSlice{T<:LookupArrays.Selector} <: LookupArrays.Selector{T}
 
     AsSlice(selector)
 
@@ -99,12 +99,12 @@ Selector that ensures selected indices are arrays so that slicing occurs.
 
 This is useful to ensure that selecting a single index still returns an array.
 """
-struct AsSlice{T<:Dimensions.Selector} <: Dimensions.Selector{T}
+struct AsSlice{T<:LookupArrays.Selector} <: LookupArrays.Selector{T}
     val::T
 end
 
-function Dimensions.selectindices(l::Dimensions.LookupArray, sel::AsSlice; kw...)
-    i = Dimensions.selectindices(l, Dimensions.val(sel); kw...)
+function LookupArrays.selectindices(l::LookupArrays.LookupArray, sel::AsSlice; kw...)
+    i = LookupArrays.selectindices(l, LookupArrays.val(sel); kw...)
     inds = i isa AbstractVector ? i : [i]
     return inds
 end
@@ -116,4 +116,4 @@ Convert `index` to a collection of indices or a selector representing such a col
 """
 index_to_indices(i) = i
 index_to_indices(i::Int) = [i]
-index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
+index_to_indices(sel::LookupArrays.Selector) = AsSlice(sel)
