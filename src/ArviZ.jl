@@ -139,6 +139,5 @@ include("plots.jl")
 include("bokeh.jl")
 include("stats.jl")
 include("stats_utils.jl")
-include("namedtuple.jl")
 
 end # module

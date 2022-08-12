@@ -24,7 +24,7 @@ function namedtuple_of_arrays(x::AbstractArray{<:NamedTuple{K}}) where {K}
     end
 end
 
-@doc doc"""
+"""
     from_namedtuple(posterior::NamedTuple; kwargs...) -> InferenceData
     from_namedtuple(posterior::Vector{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Matrix{<:NamedTuple}; kwargs...) -> InferenceData

@@ -27,7 +27,7 @@ const SCHEMA_GROUPS_DICT = Dict(n => i for (i, n) in enumerate(SCHEMA_GROUPS))
 const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
 
 export Dataset, InferenceData
-export convert_to_dataset, convert_to_inference_data, namedtuple_to_dataset
+export convert_to_dataset, convert_to_inference_data, from_namedtuple, namedtuple_to_dataset
 
 include("utils.jl")
 include("dimensions.jl")
@@ -35,5 +35,6 @@ include("dataset.jl")
 include("inference_data.jl")
 include("convert_dataset.jl")
 include("convert_inference_data.jl")
+include("from_namedtuple.jl")
 
 end # module

@@ -8,4 +8,5 @@ using ArviZ.InferenceObjects, Test
     include("inference_data.jl")
     include("convert_dataset.jl")
     include("convert_inference_data.jl")
+    include("from_namedtuple.jl")
 end
