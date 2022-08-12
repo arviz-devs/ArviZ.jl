@@ -65,6 +65,7 @@ using ArviZ.InferenceObjects, DimensionalData, OffsetArrays, Test
         x = OffsetArray(randn(4, 10, 2, 3), 0:3, 11:20, -1:0, 2:4)
         da = @inferred DimArray InferenceObjects.array_to_dimarray(x, :x)
         @test da == x
+        @test DimensionalData.name(da) === :x
         gdims = Dimensions.dims(da)
         @test gdims isa NTuple{4,Dim}
         @test Dimensions.name(gdims) === (:x_dim_1, :x_dim_2, :x_dim_3, :x_dim_4)
@@ -72,6 +73,7 @@ using ArviZ.InferenceObjects, DimensionalData, OffsetArrays, Test
 
         da = @inferred DimArray InferenceObjects.array_to_dimarray(x, :y; dims=(:a, :b))
         @test da == x
+        @test DimensionalData.name(da) === :y
         gdims = Dimensions.dims(da)
         @test gdims isa NTuple{4,Dim}
         @test Dimensions.name(gdims) === (:a, :b, :y_dim_3, :y_dim_4)
@@ -81,9 +83,33 @@ using ArviZ.InferenceObjects, DimensionalData, OffsetArrays, Test
             x, :z; dims=(:c, :d), default_dims=(:chain, :draw)
         )
         @test da == x
+        @test DimensionalData.name(da) === :z
         gdims = Dimensions.dims(da)
         @test gdims isa NTuple{4,Dim}
         @test Dimensions.name(gdims) === (:chain, :draw, :c, :d)
         @test Dimensions.index(gdims) == (0:3, 11:20, -1:0, 2:4)
+    end
+
+    @testset "AsSlice" begin
+        da = DimArray(randn(2), Dim{:a}(["foo", "bar"]))
+        @test da[a=At("foo")] == da[1]
+        da_sel = @inferred da[a=InferenceObjects.AsSlice(At("foo"))]
+        @test da_sel isa DimArray
+        @test Dimensions.dims(da_sel) == (Dim{:a}(["foo"]),)
+        @test da_sel == da[a=At(["foo"])]
+
+        da_sel = @inferred da[a=At(["foo", "bar"])]
+        @test da_sel isa DimArray
+        @test Dimensions.dims(da_sel) == Dimensions.dims(da)
+        @test da_sel == da
+    end
+
+    @testset "index_to_indices" begin
+        @test InferenceObjects.index_to_indices(1) == [1]
+        @test InferenceObjects.index_to_indices(2) == [2]
+        @test InferenceObjects.index_to_indices([2]) == [2]
+        @test InferenceObjects.index_to_indices(1:10) === 1:10
+        @test InferenceObjects.index_to_indices(At(1)) === InferenceObjects.AsSlice(At(1))
+        @test InferenceObjects.index_to_indices(At(1)) === InferenceObjects.AsSlice(At(1))
     end
 end
