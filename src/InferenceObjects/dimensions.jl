@@ -1,9 +1,9 @@
 has_all_sample_dims(dims) = all(Dimensions.hasdim(dims, DEFAULT_SAMPLE_DIMS))
 
 """
-    as_dimension(dim, coords, length) -> DimensionsionalData.Dimension
+    as_dimension(dim, coords, axis) -> DimensionsionalData.Dimension
 
-Convert `dim`, `coords`, and `length` to a `Dimension` object.
+Convert `dim`, `coords`, and `axis` to a `Dimension` object.
 
 # Arguments
 
@@ -17,21 +17,17 @@ Convert `dim`, `coords`, and `length` to a `Dimension` object.
   - `coords`: a collection indexable by dimension name specifying the indices of the given
     dimension. If indices are provided, they are used even if `dim` contains its own
     indices. If a dimension is missing, its indices are automatically generated.
-  - `length`: the length of the dimension. If `coords` and `dim` indices are not provided,
-    then the indices `1:n` are used.
+  - `axis`: A default axis to be used if `coords` and `dim` indices are not provided.
 """
-function as_dimension end
-function as_dimension(dim::Dimensions.Dimension, coords, n)
-    name = Dimensions.name(dim)
-    haskey(coords, name) && return Dimensions.rebuild(dim, coords[name])
-    Dimensions.val(dim) isa Colon && return Dimensions.rebuild(dim, 1:n)
-    return dim
-end
-function as_dimension(dim::Type{<:Dimensions.Dimension}, coords, n)
-    return as_dimension(dim(1:n), coords, n)
-end
-function as_dimension(dim::Symbol, coords, n)
-    return as_dimension(Dimensions.rebuild(Dimensions.key2dim(dim), 1:n), coords, n)
+function as_dimension(dim, coords, axis)
+    D = Dimensions.basetypeof(Dimensions.basedims(dim))
+    inds = if dim isa Dimensions.Dimension
+        vals = Dimensions.val(dim)
+        vals isa AbstractVector ? vals : axis
+    else
+        axis
+    end
+    return D(get(coords, Dimensions.name(D), inds))
 end
 
 """
@@ -68,7 +64,7 @@ function generate_dims(array, name; dims=(), coords=(;), default_dims=())
     end
     dims_all = (default_dims..., dims_named...)
     dims_with_coords = ntuple(ndims(array)) do i
-        return as_dimension(dims_all[i], coords, size(array, i))
+        return as_dimension(dims_all[i], coords, axes(array, i))
     end
     return Dimensions.format(dims_with_coords, array)
 end
