@@ -12,6 +12,18 @@ using ArviZ.InferenceObjects, DimensionalData, Test
     end
 
     @testset "conversion" begin
+        var_names = (:a, :b)
+        data_names = (:y,)
+        coords = (
+            chain=1:4, draw=1:100, shared=["s1", "s2", "s3"], dima=1:4, dimb=2:6, dimy=1:5
+        )
+        dims = (a=(:shared, :dima), b=(:shared, :dimb), y=(:shared, :dimy))
+        metadata = (inference_library="PPL",)
+        posterior = random_dataset(var_names, dims, coords, metadata)
+        prior = random_dataset(var_names, dims, coords, metadata)
+        observed_data = random_dataset(data_names, dims, coords, metadata)
+        group_data = (; prior, observed_data, posterior)
+        idata = InferenceData(group_data)
         @test convert(InferenceData, idata) === idata
         @test convert(NamedTuple, idata) === parent(idata)
         @test NamedTuple(idata) === parent(idata)

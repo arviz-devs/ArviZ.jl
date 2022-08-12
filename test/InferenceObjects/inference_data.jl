@@ -110,7 +110,7 @@ using ArviZ.InferenceObjects, DimensionalData, Test
         @testset "plain" begin
             text = sprint(show, MIME("text/plain"), idata)
             @test text == """
-            InferenceData with InferenceObjects.groups:
+            InferenceData with groups:
               > posterior
               > prior
               > observed_data"""
