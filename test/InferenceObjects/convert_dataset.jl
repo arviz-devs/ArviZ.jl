@@ -2,6 +2,16 @@ using ArviZ.InferenceObjects, DimensionalData, Test
 
 @testset "conversion to Dataset" begin
     @testset "conversion" begin
+        J = 8
+        K = 6
+        L = 3
+        nchains = 4
+        ndraws = 500
+        vars = (a=randn(nchains, ndraws, J), b=randn(nchains, ndraws, K, L))
+        coords = (bi=2:(K + 1), draw=1:2:1_000)
+        dims = (b=[:bi, nothing],)
+        attrs = Dict(:mykey => 5)
+        ds = namedtuple_to_dataset(vars; library="MyLib", coords, dims, attrs)
         @test convert(Dataset, ds) === ds
         ds2 = convert(Dataset, [1.0, 2.0, 3.0, 4.0])
         @test ds2 isa Dataset
