@@ -63,10 +63,10 @@ function generate_dims(array, name; dims=(), coords=(;), default_dims=())
         return dim
     end
     dims_all = (default_dims..., dims_named...)
-    dims_with_coords = ntuple(ndims(array)) do i
-        return as_dimension(dims_all[i], coords, axes(array, i))
-    end
-    return Dimensions.format(dims_with_coords, array)
+    axes_all = axes(array)
+    T = NTuple{ndims(array),Dimensions.Dimension}
+    dims_with_coords = as_dimension.(dims_all, Ref(coords), axes_all)::T
+    return Dimensions.format(dims_with_coords, array)::T
 end
 
 """
