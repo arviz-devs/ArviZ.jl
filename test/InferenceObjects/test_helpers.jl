@@ -56,3 +56,68 @@ function check_idata_schema(idata)
         end
     end
 end
+
+function test_idata_approx_equal(
+    idata1::InferenceData, idata2::InferenceData; check_metadata=true
+)
+    @test InferenceObjects.groupnames(idata1) === InferenceObjects.groupnames(idata2)
+    for (ds1, ds2) in zip(idata1, idata2)
+        @test issetequal(keys(ds1), keys(ds2))
+        for var_name in keys(ds1)
+            da1 = ds1[var_name]
+            da2 = ds2[var_name]
+            @test da1 ≈ da2
+            dims1 = DimensionalData.dims(da1)
+            dims2 = DimensionalData.dims(da2)
+            @test DimensionalData.name(dims1) == DimensionalData.name(dims2)
+            @test DimensionalData.index(dims1) == DimensionalData.index(dims2)
+        end
+        if check_metadata
+            metadata1 = DimensionalData.metadata(ds1)
+            metadata2 = DimensionalData.metadata(ds2)
+            @test issetequal(keys(metadata1), keys(metadata2))
+            for k in keys(metadata1)
+                Symbol(k) === :created_at && continue
+                @test metadata1[k] == metadata2[k]
+            end
+        end
+    end
+end
+
+function test_idata_group_correct(
+    idata,
+    group_name,
+    var_names;
+    library=nothing,
+    dims=(;),
+    coords=(;),
+    default_dims=(:chain, :draw),
+)
+    @test idata isa InferenceData
+    @test InferenceObjects.hasgroup(idata, group_name)
+    ds = getproperty(idata, group_name)
+    @test ds isa Dataset
+    @test issetequal(keys(ds), var_names)
+    for name in var_names
+        da = ds[name]
+        @test DimensionalData.name(da) === name
+        _dims = DimensionalData.dims(da)
+        _dim_names_exp = (default_dims..., get(dims, name, ())...)
+        _dim_names = DimensionalData.name(_dims)
+        @test issubset(_dim_names_exp, _dim_names)
+        for dim in _dims
+            dim_name = DimensionalData.name(dim)
+            if dim_name ∈ keys(coords)
+                @test coords[dim_name] == DimensionalData.index(dim)
+            end
+        end
+    end
+    metadata = DimensionalData.metadata(ds)
+    if library !== nothing
+        @test metadata[:inference_library] == library
+    end
+    for k in [:created_at]
+        @test k in keys(metadata)
+    end
+    return nothing
+end
