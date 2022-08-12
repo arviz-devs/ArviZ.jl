@@ -1,7 +1,7 @@
 using ArviZ.InferenceObjects, Test
 
 @testset "InferenceObjects" begin
-    include("../helpers.jl")
+    include("test_helpers.jl")
     include("utils.jl")
     include("dimensions.jl")
     include("dataset.jl")
