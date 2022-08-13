@@ -35,9 +35,13 @@ import Markdown: @doc_str
 import PyCall: PyObject
 
 include("InferenceObjects/InferenceObjects.jl")
+
 using .InferenceObjects
-using .InferenceObjects: attributes, groupnames, groups, hasgroup, setattribute!
-import .InferenceObjects: convert_to_inference_data
+import .InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
+# internal functions temporarily used/extended here
+using .InferenceObjects:
+    attributes, flatten, groupnames, groups, hasgroup, rekey, setattribute!
+import .InferenceObjects: namedtuple_of_arrays
 
 # Exports
 

@@ -1,30 +1,4 @@
 """
-    namedtuple_of_arrays(x::NamedTuple) -> NamedTuple
-    namedtuple_of_arrays(x::AbstractArray{NamedTuple}) -> NamedTuple
-    namedtuple_of_arrays(x::AbstractArray{AbstractArray{<:NamedTuple}}) -> NamedTuple
-
-Given a container of `NamedTuple`s, concatenate them, using the container dimensions as the
-dimensions of the resulting arrays.
-
-# Examples
-
-```@example
-using ArviZ
-nchains, ndraws = 4, 100
-data = [(x=rand(), y=randn(2), z=randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
-ntarray = ArviZ.namedtuple_of_arrays(data);
-```
-"""
-namedtuple_of_arrays(x::NamedTuple) = map(flatten, x)
-namedtuple_of_arrays(x::AbstractArray) = namedtuple_of_arrays(namedtuple_of_arrays.(x))
-function namedtuple_of_arrays(x::AbstractArray{<:NamedTuple{K}}) where {K}
-    return mapreduce(merge, K) do k
-        v = flatten.(getproperty.(x, k))
-        return (; k => flatten(v))
-    end
-end
-
-"""
     from_namedtuple(posterior::NamedTuple; kwargs...) -> InferenceData
     from_namedtuple(posterior::Vector{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
