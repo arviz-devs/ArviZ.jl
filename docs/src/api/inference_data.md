@@ -33,6 +33,7 @@ That is, iterating over an `InferenceData` iterates over its groups.
 
 ```@docs
 convert_to_inference_data
+from_namedtuple
 ```
 
 ## General functions
