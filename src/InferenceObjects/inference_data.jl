@@ -3,7 +3,7 @@
 
 Container for inference data storage using DimensionalData.
 
-This object implements the [InferenceData schema](https://python.arviz.org/en/v$(arviz_version())/schema/schema.html).
+This object implements the [InferenceData schema](https://python.arviz.org/en/latest/schema/schema.html).
 
 Internally, groups are stored in a `NamedTuple`, which can be accessed using
 `parent(::InferenceData)`.
@@ -34,18 +34,6 @@ InferenceData(; kwargs...) = InferenceData(NamedTuple(kwargs))
 InferenceData(data::InferenceData) = data
 
 Base.parent(data::InferenceData) = getfield(data, :groups)
-
-"""
-    convert(::Type{InferenceData}, obj)
-
-Convert `obj` to an `InferenceData`.
-
-`obj` can be any type for which [`convert_to_inference_data`](@ref) is defined.
-"""
-Base.convert(::Type{InferenceData}, obj) = convert_to_inference_data(obj)
-Base.convert(::Type{InferenceData}, obj::InferenceData) = obj
-Base.convert(::Type{NamedTuple}, data::InferenceData) = NamedTuple(data)
-NamedTuple(data::InferenceData) = parent(data)
 
 # these 3 interfaces ensure InferenceData behaves like a NamedTuple
 
@@ -80,51 +68,66 @@ exception will be raised.
 
 # Examples
 
-Select data from all groups for just the specified schools.
+Select data from all groups for just the specified id values.
 
 ```@repl getindex
 julia> using ArviZ, DimensionalData
 
-julia> idata = load_arviz_data("centered_eight");
-
-julia> idata_sel = idata[school=At(["Choate", "Deerfield"])]
+julia> idata = from_namedtuple(
+           (θ=randn(4, 100, 4), τ=randn(4, 100));
+           prior=(θ=randn(4, 100, 4), τ=randn(4, 100)),
+           observed_data=(y=randn(4),),
+           dims=(θ=[:id], y=[:id]),
+           coords=(id=["a", "b", "c", "d"],),
+       )
 InferenceData with groups:
   > posterior
-  > posterior_predictive
-  > sample_stats
+  > prior
+  > observed_data
+
+julia> idata.posterior
+Dataset with dimensions:
+  Dim{:chain} Sampled 1:4 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 1:100 ForwardOrdered Regular Points,
+  Dim{:id} Categorical String[a, b, c, d] ForwardOrdered
+and 2 layers:
+  :θ Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:id} (4×100×4)
+  :τ Float64 dims: Dim{:chain}, Dim{:draw} (4×100)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 1 entry:
+  :created_at => "2022-08-11T11:15:21.4"
+
+julia> idata_sel = idata[id=At(["a", "b"])]
+InferenceData with groups:
+  > posterior
   > prior
   > observed_data
 
 julia> idata_sel.posterior
 Dataset with dimensions:
-  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
-  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
-  Dim{:school} Categorical String[Choate, Deerfield] Unordered
-and 3 layers:
-  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
-  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×2)
-  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  Dim{:chain} Sampled 1:4 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 1:100 ForwardOrdered Regular Points,
+  Dim{:id} Categorical String[a, b] ForwardOrdered
+and 2 layers:
+  :θ Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:id} (4×100×2)
+  :τ Float64 dims: Dim{:chain}, Dim{:draw} (4×100)
 
-with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
-  :created_at                => "2019-06-21T17:36:34.398087"
-  :inference_library_version => "3.7"
-  :inference_library         => "pymc3"
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 1 entry:
+  :created_at => "2022-08-11T11:15:21.4"
 ```
 
 Select data from just the posterior, returning a `Dataset` if the indices index more than
 one element from any of the variables:
 
 ```@repl getindex
-julia> idata[:observed_data, school=At(["Choate"])]
+julia> idata[:observed_data, id=At(["a"])]
 Dataset with dimensions:
-  Dim{:school} Categorical String[Choate] Unordered
+  Dim{:id} Categorical String[a] ForwardOrdered
 and 1 layer:
-  :obs Float64 dims: Dim{:school} (1)
+  :y Float64 dims: Dim{:id} (1)
 
-with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
-  :created_at                => "2019-06-21T17:36:34.491909"
-  :inference_library_version => "3.7"
-  :inference_library         => "pymc3"
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 1 entry:
+  :created_at => "2022-08-11T11:19:25.982"
 ```
 
 Note that if a single index is provided, the behavior is still to slice so that the
@@ -151,7 +154,7 @@ function Base.getindex(data::InferenceData; kwargs...)
     # will be a `Dataset` if the group has other dimensions or `NamedTuple`
     # if it has no other dimensions.
     # So we promote to an array of indices
-    new_kwargs = map(_index_to_indices, NamedTuple(kwargs))
+    new_kwargs = map(index_to_indices, NamedTuple(kwargs))
     groups = map(parent(data)) do ds
         return getindex(ds; new_kwargs...)
     end
@@ -220,12 +223,30 @@ Return `true` if a group with name `name` is stored in `data`.
 """
 hasgroup(data::InferenceData, name::Symbol) = haskey(data, name)
 
-_index_to_indices(i) = i
-_index_to_indices(i::Int) = [i]
-_index_to_indices(sel::Dimensions.Selector) = AsSlice(sel)
-
 @generated function _reorder_group_names(::Val{names}) where {names}
-    return Tuple(sort(collect(names); by=k -> SUPPORTED_GROUPS_DICT[k]))
+    lt = (a, b) -> (a isa Integer && b isa Integer) ? a < b : string(a) < string(b)
+    return Tuple(sort(collect(names); lt, by=k -> get(SCHEMA_GROUPS_DICT, k, string(k))))
 end
 
 @generated _keys_and_types(::NamedTuple{keys,types}) where {keys,types} = (keys, types)
+
+"""
+    merge(data::InferenceData, others::InferenceData...) -> InferenceData
+
+Merge [`InferenceData`](@ref) objects.
+
+The result contains all groups in `data` and `others`.
+If a group appears more than once, the one that occurs first is kept.
+
+See [`concat`](@ref)
+"""
+function Base.merge(data::InferenceData, others::InferenceData...)
+    return InferenceData(Base.merge(groups(data), map(groups, others)...))
+end
+
+function rekey(data::InferenceData, keymap)
+    groups_old = groups(data)
+    names_new = map(k -> get(keymap, k, k), propertynames(groups_old))
+    groups_new = NamedTuple{names_new}(Tuple(groups_old))
+    return InferenceData(groups_new)
+end

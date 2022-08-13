@@ -47,8 +47,10 @@ makedocs(;
             "Stats" => "api/stats.md",
             "Diagnostics" => "api/diagnostics.md",
             "Data" => "api/data.md",
-            "InferenceData" => "api/inference_data.md",
-            "Dataset" => "api/dataset.md",
+            "InferenceObjects" => [
+                "InferenceData" => "api/inference_data.md",
+                "Dataset" => "api/dataset.md",
+            ],
         ],
     ],
     checkdocs=:exports,

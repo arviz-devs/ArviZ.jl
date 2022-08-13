@@ -2,7 +2,6 @@ __precompile__()
 module ArviZ
 
 using Base: @__doc__
-using Dates
 using Requires
 using REPL
 using DataFrames
@@ -34,6 +33,15 @@ using StatsBase: StatsBase
 import StatsBase: summarystats
 import Markdown: @doc_str
 import PyCall: PyObject
+
+include("InferenceObjects/InferenceObjects.jl")
+
+using .InferenceObjects
+import .InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
+# internal functions temporarily used/extended here
+using .InferenceObjects:
+    attributes, flatten, groupnames, groups, hasgroup, rekey, setattribute!
+import .InferenceObjects: namedtuple_of_arrays
 
 # Exports
 
@@ -129,14 +137,11 @@ end
 include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
-include("dataset.jl")
-include("inference_data.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
 include("bokeh.jl")
 include("stats.jl")
 include("stats_utils.jl")
-include("namedtuple.jl")
 
 end # module

@@ -15,7 +15,6 @@ from_samplechains
 ## IO / General conversion
 
 ```@docs
-convert_to_inference_data
 from_dict
 from_json
 from_namedtuple
@@ -28,7 +27,6 @@ to_netcdf
 ```@docs
 concat
 extract_dataset
-merge
 ```
 
 ## Example data

@@ -184,34 +184,12 @@ replacemissing(x::AbstractArray{<:AbstractArray}) = map(replacemissing, x)
 @inline replacemissing(::Missing) = NaN
 @inline replacemissing(x::Number) = x
 
-"""
-    flatten(x)
-
-If `x` is an array of arrays, flatten into a single array whose dimensions are ordered with
-dimensions of the outermost container first and innermost container last.
-"""
-flatten(x) = x
-flatten(x::AbstractArray{<:Number}) = convert(Array, x)
-function flatten(x::AbstractArray{S}) where {T<:Number,N,S<:AbstractArray{T,N}}
-    ret = Array{T}(undef, (size(x)..., size(x[1])...))
-    for k in keys(x)
-        setindex!(ret, x[k], k, (Colon() for _ in 1:N)...)
-    end
-    return ret
-end
-
 # Convert python types to Julia types if possible
 @inline frompytype(x) = x
 @inline frompytype(x::PyObject) = PyAny(x)
 frompytype(x::AbstractArray{PyObject}) = map(frompytype, x)
 frompytype(x::AbstractArray{Any}) = map(frompytype, x)
 frompytype(x::AbstractArray{<:AbstractArray}) = map(frompytype, x)
-
-rekey(d, keymap) = Dict(get(keymap, k, k) => d[k] for k in keys(d))
-function rekey(d::NamedTuple, keymap)
-    new_keys = map(k -> get(keymap, k, k), keys(d))
-    return NamedTuple{new_keys}(values(d))
-end
 
 enforce_stat_eltypes(stats) = convert_to_eltypes(stats, sample_stats_eltypes)
 
@@ -291,22 +269,4 @@ function topandas(::Val{:ELPDData}, df)
     rownames = names(df)
     colvals = Array(only(eachrow(df)))
     return ArviZ.arviz.stats.ELPDData(colvals, rownames)
-end
-
-function package_version(pkg::Module)
-    isdefined(Base, :pkgversion) && return Base.pkgversion(pkg)
-    project = joinpath(dirname(dirname(pathof(pkg))), "Project.toml")
-    toml = read(project, String)
-    m = match(r"(*ANYCRLF)^version\s*=\s\"(.*)\"$"m, toml)
-    return VersionNumber(m[1])
-end
-
-struct AsSlice{T<:Dimensions.Selector} <: Dimensions.Selector{T}
-    val::T
-end
-
-function Dimensions.selectindices(l::Dimensions.LookupArray, sel::AsSlice; kw...)
-    i = Dimensions.selectindices(l, Dimensions.val(sel); kw...)
-    inds = i isa AbstractVector ? i : [i]
-    return inds
 end
