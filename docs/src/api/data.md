@@ -12,12 +12,11 @@ from_mcmcchains
 from_samplechains
 ```
 
-## IO / General conversion
+## IO / Conversion
 
 ```@docs
 from_dict
 from_json
-from_namedtuple
 from_netcdf
 to_netcdf
 ```
