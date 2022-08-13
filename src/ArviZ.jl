@@ -36,8 +36,7 @@ import PyCall: PyObject
 
 include("InferenceObjects/InferenceObjects.jl")
 using .InferenceObjects
-using .InferenceObjects:
-    attributes, flatten, groupnames, groups, hasgroup, rekey, setattribute!
+using .InferenceObjects: attributes, groupnames, groups, hasgroup, setattribute!
 import .InferenceObjects: convert_to_inference_data
 
 # Exports
