@@ -50,7 +50,9 @@ If `pkg` does not have a version module (e.g. it is a submodule), then `nothing`
 returned.
 """
 function package_version(pkg::Module)
-    isdefined(Base, :pkgversion) && return Base.pkgversion(pkg)::VersionNumber
+    @static if isdefined(Base, :pkgversion)
+        return Base.pkgversion(pkg)
+    end
     pkg_path = pathof(pkg)
     pkg_path === nothing && return nothing
     project = joinpath(dirname(dirname(pkg_path)), "Project.toml")
