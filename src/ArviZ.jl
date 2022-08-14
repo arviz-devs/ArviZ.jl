@@ -34,14 +34,12 @@ import StatsBase: summarystats
 import Markdown: @doc_str
 import PyCall: PyObject
 
-include("InferenceObjects/InferenceObjects.jl")
-
-using .InferenceObjects
-import .InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
+using InferenceObjects
+import InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
 # internal functions temporarily used/extended here
-using .InferenceObjects:
+using InferenceObjects:
     attributes, flatten, groupnames, groups, hasgroup, rekey, setattribute!
-import .InferenceObjects: namedtuple_of_arrays
+import InferenceObjects: namedtuple_of_arrays
 
 # Exports
 
