@@ -1,7 +1,7 @@
-using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
+using ArviZ.InferenceObjects, DimensionalData, OrderedCollections, Test
 
 @testset "dataset" begin
-    @testset "ArviZ.Dataset" begin
+    @testset "Dataset" begin
         @testset "Constructors" begin
             nchains = 4
             ndraws = 100
@@ -14,8 +14,8 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
 
             @testset "from NamedTuple" begin
                 data = (; x, y)
-                ds = ArviZ.Dataset(data; metadata)
-                @test ds isa ArviZ.Dataset
+                ds = Dataset(data; metadata)
+                @test ds isa Dataset
                 @test DimensionalData.data(ds) == data
                 for dim in xdims
                     @test DimensionalData.hasdim(ds, dim)
@@ -35,8 +35,8 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
                 data = (
                     DimensionalData.rebuild(x; name=:x), DimensionalData.rebuild(y; name=:y)
                 )
-                ds = ArviZ.Dataset(data...; metadata)
-                @test ds isa ArviZ.Dataset
+                ds = Dataset(data...; metadata)
+                @test ds isa Dataset
                 @test values(DimensionalData.data(ds)) == data
                 for dim in xdims
                     @test DimensionalData.hasdim(ds, dim)
@@ -53,8 +53,8 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
             end
 
             @testset "idempotent" begin
-                ds = ArviZ.Dataset((; x, y); metadata)
-                @test ArviZ.Dataset(ds) === ds
+                ds = Dataset((; x, y); metadata)
+                @test Dataset(ds) === ds
             end
 
             @testset "errors with mismatched dimensions" begin
@@ -62,7 +62,7 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
                     x=DimArray(randn(3, 100, 3), (:chains, :draws, :shared)),
                     y=DimArray(randn(4, 100, 2, 3), (:chains, :draws, :ydim1, :shared)),
                 )
-                @test_throws Exception ArviZ.Dataset(data_bad)
+                @test_throws Exception Dataset(data_bad)
             end
         end
 
@@ -74,7 +74,7 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
         ydims = (:chain, :draw, :ydim1, :shared)
         y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
         metadata = Dict(:prop1 => "val1", :prop2 => "val2")
-        ds = ArviZ.Dataset((; x, y); metadata)
+        ds = Dataset((; x, y); metadata)
 
         @testset "parent" begin
             @test parent(ds) isa DimStack
@@ -102,69 +102,13 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
         end
 
         @testset "attributes" begin
-            @test ArviZ.attributes(ds) == metadata
+            @test InferenceObjects.attributes(ds) == metadata
             dscopy = deepcopy(ds)
-            ArviZ.setattribute!(dscopy, :prop3, "val3")
-            @test ArviZ.attributes(dscopy)[:prop3] == "val3"
-            @test_deprecated ArviZ.setattribute!(dscopy, "prop3", "val4")
-            @test ArviZ.attributes(dscopy)[:prop3] == "val4"
+            InferenceObjects.setattribute!(dscopy, :prop3, "val3")
+            @test InferenceObjects.attributes(dscopy)[:prop3] == "val3"
+            @test_deprecated InferenceObjects.setattribute!(dscopy, "prop3", "val4")
+            @test InferenceObjects.attributes(dscopy)[:prop3] == "val4"
         end
-
-        @testset "conversion" begin
-            @test convert(ArviZ.Dataset, ds) === ds
-            ds2 = convert(ArviZ.Dataset, [1.0, 2.0, 3.0, 4.0])
-            @test ds2 isa ArviZ.Dataset
-            @test ds2 == ArviZ.convert_to_dataset([1.0, 2.0, 3.0, 4.0])
-            @test convert(DimensionalData.DimStack, ds) === parent(ds)
-        end
-    end
-
-    @testset "Dataset <-> xarray" begin
-        nchains = 4
-        ndraws = 100
-        nshared = 3
-        xdims = (:chain, :draw, :shared)
-        x = DimArray(randn(nchains, ndraws, nshared), xdims)
-        ydims = (:chain, :draw, Dim{:ydim1}(Any["a", "b"]), :shared)
-        y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
-        metadata = Dict(:prop1 => "val1", :prop2 => "val2")
-        ds = ArviZ.Dataset((; x, y); metadata)
-        o = PyObject(ds)
-        @test o isa PyObject
-        @test pyisinstance(o, ArviZ.xarray.Dataset)
-
-        @test issetequal(Symbol.(o.coords.keys()), (:chain, :draw, :shared, :ydim1))
-        for (dim, coord) in o.coords.items()
-            @test collect(coord.values) == DimensionalData.index(ds, Symbol(dim))
-        end
-
-        variables = Dict(collect(o.data_vars.variables.items()))
-        @test "x" ∈ keys(variables)
-        @test x == variables["x"].values
-        @test variables["x"].dims == String.(xdims)
-
-        @test "y" ∈ keys(variables)
-        @test y == variables["y"].values
-        @test variables["y"].dims == ("chain", "draw", "ydim1", "shared")
-
-        # check that the Python object accesses the underlying Julia array
-        x[1] = 1
-        @test x == variables["x"].values
-
-        ds2 = convert(ArviZ.Dataset, o)
-        @test ds2 isa ArviZ.Dataset
-        @test ds2.x ≈ ds.x
-        @test ds2.y ≈ ds.y
-        dims1 = sort(collect(DimensionalData.dims(ds)); by=DimensionalData.name)
-        dims2 = sort(collect(DimensionalData.dims(ds2)); by=DimensionalData.name)
-        for (dim1, dim2) in zip(dims1, dims2)
-            @test DimensionalData.name(dim1) === DimensionalData.name(dim2)
-            @test DimensionalData.index(dim1) == DimensionalData.index(dim2)
-            if DimensionalData.index(dim1) isa AbstractRange
-                @test DimensionalData.index(dim2) isa AbstractRange
-            end
-        end
-        @test DimensionalData.metadata(ds2) == DimensionalData.metadata(ds)
     end
 
     @testset "namedtuple_to_dataset" begin
@@ -190,11 +134,11 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
             ),
         )
         attrs = Dict(:mykey => 5)
-        @test_broken @inferred ArviZ.namedtuple_to_dataset(
+        @test_broken @inferred namedtuple_to_dataset(
             vars; library="MyLib", coords, dims, attrs
         )
-        ds = ArviZ.namedtuple_to_dataset(vars; library="MyLib", coords, dims, attrs)
-        @test ds isa ArviZ.Dataset
+        ds = namedtuple_to_dataset(vars; library="MyLib", coords, dims, attrs)
+        @test ds isa Dataset
         for (var_name, var_data) in pairs(DimensionalData.layers(ds))
             @test var_data isa DimensionalData.DimArray
             @test var_name === DimensionalData.name(var_data)
@@ -205,41 +149,8 @@ using ArviZ, DimensionalData, OrderedCollections, PyCall, Test
         metadata = DimensionalData.metadata(ds)
         @test metadata isa OrderedDict
         @test haskey(metadata, :created_at)
-        @test haskey(metadata, :arviz_version)
-        @test metadata[:arviz_language] == "julia"
         @test metadata[:inference_library] == "MyLib"
         @test !haskey(metadata, :inference_library_version)
         @test metadata[:mykey] == 5
-    end
-
-    @testset "ArviZ.convert_to_dataset" begin
-        nchains = 4
-        ndraws = 100
-        nshared = 3
-        xdims = (:chain, :draw, :shared)
-        x = DimArray(randn(nchains, ndraws, nshared), xdims)
-        ydims = (:chain, :draw, Dim{:ydim1}(Any["a", "b"]), Dim{:shared})
-        y = DimArray(randn(nchains, ndraws, 2, nshared), ydims)
-        metadata = Dict(:prop1 => "val1", :prop2 => "val2")
-        ds = ArviZ.Dataset((; x, y); metadata)
-
-        @testset "ArviZ.convert_to_dataset(::ArviZ.Dataset; kwargs...)" begin
-            @test ArviZ.convert_to_dataset(ds) isa ArviZ.Dataset
-            @test ArviZ.convert_to_dataset(ds) === ds
-        end
-
-        @testset "ArviZ.convert_to_dataset(::$T; kwargs...)" for T in (Dict, NamedTuple)
-            data = (x=randn(4, 100), y=randn(4, 100, 2))
-            if T <: Dict
-                data = T(pairs(data))
-            end
-            ds2 = ArviZ.convert_to_dataset(data)
-            @test ds2 isa ArviZ.Dataset
-            @test ds2.x == data[:x]
-            @test DimensionalData.name(DimensionalData.dims(ds2.x)) == (:chain, :draw)
-            @test ds2.y == data[:y]
-            @test DimensionalData.name(DimensionalData.dims(ds2.y)) ==
-                (:chain, :draw, :y_dim_1)
-        end
     end
 end

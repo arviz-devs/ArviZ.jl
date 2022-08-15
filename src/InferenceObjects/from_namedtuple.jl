@@ -1,30 +1,4 @@
 """
-    namedtuple_of_arrays(x::NamedTuple) -> NamedTuple
-    namedtuple_of_arrays(x::AbstractArray{NamedTuple}) -> NamedTuple
-    namedtuple_of_arrays(x::AbstractArray{AbstractArray{<:NamedTuple}}) -> NamedTuple
-
-Given a container of `NamedTuple`s, concatenate them, using the container dimensions as the
-dimensions of the resulting arrays.
-
-# Examples
-
-```@example
-using ArviZ
-nchains, ndraws = 4, 100
-data = [(x=rand(), y=randn(2), z=randn(2, 3)) for _ in 1:nchains, _ in 1:ndraws];
-ntarray = ArviZ.namedtuple_of_arrays(data);
-```
-"""
-namedtuple_of_arrays(x::NamedTuple) = map(flatten, x)
-namedtuple_of_arrays(x::AbstractArray) = namedtuple_of_arrays(namedtuple_of_arrays.(x))
-function namedtuple_of_arrays(x::AbstractArray{<:NamedTuple{K}}) where {K}
-    return mapreduce(merge, K) do k
-        v = flatten.(getproperty.(x, k))
-        return (; k => flatten(v))
-    end
-end
-
-@doc doc"""
     from_namedtuple(posterior::NamedTuple; kwargs...) -> InferenceData
     from_namedtuple(posterior::Vector{<:NamedTuple}; kwargs...) -> InferenceData
     from_namedtuple(posterior::Matrix{<:NamedTuple}; kwargs...) -> InferenceData
@@ -45,39 +19,40 @@ whose first dimensions correspond to the dimensions of the containers.
 
 # Arguments
 
-- `posterior`: The data to be converted. It may be of the following types:
-    + `::NamedTuple`: The keys are the variable names and the values are arrays with
+  - `posterior`: The data to be converted. It may be of the following types:
+    
+      + `::NamedTuple`: The keys are the variable names and the values are arrays with
         dimensions `(nchains, ndraws, sizes...)`.
-    + `::Matrix{<:NamedTuple}`: Each element is a single draw from a single chain, with
+      + `::Matrix{<:NamedTuple}`: Each element is a single draw from a single chain, with
         array/scalar values with dimensions `sizes`. The dimensions of the matrix container
         are `(nchains, ndraws)`
-    + `::Vector{Vector{<:NamedTuple}}`: The same as the above case.
+      + `::Vector{Vector{<:NamedTuple}}`: The same as the above case.
 
 # Keywords
 
-- `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution
-- `sample_stats::Any=nothing`: Statistics of the posterior sampling process
-- `predictions::Any=nothing`: Out-of-sample predictions for the posterior.
-- `prior::Any=nothing`: Draws from the prior
-- `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
-- `sample_stats_prior::Any=nothing`: Statistics of the prior sampling process
-- `observed_data::NamedTuple`: Observed data on which the `posterior` is
-     conditional. It should only contain data which is modeled as a random variable. Keys
-     are parameter names and values.
-- `constant_data::NamedTuple`: Model constants, data included in the model
-     which is not modeled as a random variable. Keys are parameter names and values.
-- `predictions_constant_data::NamedTuple`: Constants relevant to the model
-     predictions (i.e. new `x` values in a linear regression).
-- `log_likelihood`: Pointwise log-likelihood for the data. It is recommended
-     to use this argument as a `NamedTuple` whose keys are observed variable names and whose
-     values are log likelihood arrays.
-- `library`: Name of library that generated the draws
-- `coords`: Map from named dimension to named indices
-- `dims`: Map from variable name to names of its dimensions
+  - `posterior_predictive::Any=nothing`: Draws from the posterior predictive distribution
+  - `sample_stats::Any=nothing`: Statistics of the posterior sampling process
+  - `predictions::Any=nothing`: Out-of-sample predictions for the posterior.
+  - `prior::Any=nothing`: Draws from the prior
+  - `prior_predictive::Any=nothing`: Draws from the prior predictive distribution
+  - `sample_stats_prior::Any=nothing`: Statistics of the prior sampling process
+  - `observed_data::NamedTuple`: Observed data on which the `posterior` is
+    conditional. It should only contain data which is modeled as a random variable. Keys
+    are parameter names and values.
+  - `constant_data::NamedTuple`: Model constants, data included in the model
+    which is not modeled as a random variable. Keys are parameter names and values.
+  - `predictions_constant_data::NamedTuple`: Constants relevant to the model
+    predictions (i.e. new `x` values in a linear regression).
+  - `log_likelihood`: Pointwise log-likelihood for the data. It is recommended
+    to use this argument as a `NamedTuple` whose keys are observed variable names and whose
+    values are log likelihood arrays.
+  - `library`: Name of library that generated the draws
+  - `coords`: Map from named dimension to named indices
+  - `dims`: Map from variable name to names of its dimensions
 
 # Returns
 
-- `InferenceData`: The data with groups corresponding to the provided data
+  - `InferenceData`: The data with groups corresponding to the provided data
 
 # Examples
 
@@ -86,19 +61,17 @@ using ArviZ
 nchains, ndraws = 2, 10
 
 data1 = (
-    x = rand(nchains, ndraws),
-    y = randn(nchains, ndraws, 2),
-    z = randn(nchains, ndraws, 3, 2),
+    x=rand(nchains, ndraws), y=randn(nchains, ndraws, 2), z=randn(nchains, ndraws, 3, 2)
 )
 idata1 = from_namedtuple(data1)
 
-data2 = [(x = rand(ndraws), y = randn(ndraws, 2), z = randn(ndraws, 3, 2)) for _ = 1:nchains];
+data2 = [(x=rand(ndraws), y=randn(ndraws, 2), z=randn(ndraws, 3, 2)) for _ in 1:nchains];
 idata2 = from_namedtuple(data2)
 
-data3 = [(x = rand(), y = randn(2), z = randn(3, 2)) for _ = 1:nchains, _ = 1:ndraws];
+data3 = [(x=rand(), y=randn(2), z=randn(3, 2)) for _ in 1:nchains, _ in 1:ndraws];
 idata3 = from_namedtuple(data3)
 
-data4 = [[(x = rand(), y = randn(2), z = randn(3, 2)) for _ = 1:ndraws] for _ = 1:nchains];
+data4 = [[(x=rand(), y=randn(2), z=randn(3, 2)) for _ in 1:ndraws] for _ in 1:nchains];
 idata4 = from_namedtuple(data4)
 ```
 """
