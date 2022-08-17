@@ -5,7 +5,7 @@ using Base: @__doc__
 using Requires
 using REPL
 using DataFrames
-using JSON3: JSON3
+using JSON3: JSON3, StructTypes
 using OrderedCollections: OrderedDict
 
 using PyCall

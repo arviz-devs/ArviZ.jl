@@ -1,56 +1,60 @@
 const DEPS_DATA_DIR = joinpath(pkgdir(ArviZ), "deps", "data")
 const EXAMPLE_DATA_DIR = joinpath(DEPS_DATA_DIR, "example_data")
 const LOCAL_DATA_DIR = joinpath(EXAMPLE_DATA_DIR, "data")
+const LOCAL_DATA_FILE = joinpath(EXAMPLE_DATA_DIR, "data_local.json")
+const REMOTE_DATA_FILE = joinpath(EXAMPLE_DATA_DIR, "data_remote.json")
+const DATA_HTTP_PROTOCOL = "https"
 
 abstract type AbstractFileMetadata end
+
+function StructTypes.StructType(::Type{T}) where {T<:AbstractFileMetadata}
+    return StructTypes.Struct()
+end
 
 Base.@kwdef struct LocalFileMetadata <: AbstractFileMetadata
     name::String
     filename::String
-    path::String
-    description::String = ""
+    description::Union{String,Nothing} = nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", md::LocalFileMetadata)
     println(io, md.name)
     println(io, repeat("=", length(md.name)))
     println(io)
-    println(io, md.description)
-    println(io)
-    print(io, "local: ", joinpath(md.path, md.filename))
+    if md.description !== nothing
+        println(io, md.description)
+        println(io)
+    end
+    print(io, "local: ", joinpath(LOCAL_DATA_DIR, md.filename))
     return nothing
 end
-
 Base.@kwdef struct RemoteFileMetadata <: AbstractFileMetadata
     name::String
     filename::String
     url::String
-    checksum::String = ""
-    description::String = ""
+    checksum::Union{String,Nothing} = Nothing
+    description::Union{String,Nothing} = Nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", md::RemoteFileMetadata)
     println(io, md.name)
     println(io, repeat("=", length(md.name)))
     println(io)
-    println(io, md.description)
-    println(io)
+    if md.description !== nothing
+        println(io, md.description)
+        println(io)
+    end
     print(io, "remote: ", md.url)
     return nothing
 end
 
-const LOCAL_EXAMPLE_DATA = Dict{String,LocalFileMetadata}()
-const REMOTE_EXAMPLE_DATA = Dict{String,RemoteFileMetadata}()
+const LOCAL_EXAMPLE_DATA = Dict(
+    md.name => md for md in JSON3.read(read(LOCAL_DATA_FILE), Vector{LocalFileMetadata})
+)
 
-foreach(JSON3.read(read(joinpath(EXAMPLE_DATA_DIR, "data_local.json"), String))) do entry
-    name = entry["name"]
-    path = joinpath(LOCAL_DATA_DIR, entry["filename"])
-    LOCAL_EXAMPLE_DATA[entry["name"]] = LocalFileMetadata(; path, entry...)
-end
-
-foreach(JSON3.read(read(joinpath(EXAMPLE_DATA_DIR, "data_remote.json"), String))) do entry
-    REMOTE_EXAMPLE_DATA[entry["name"]] = RemoteFileMetadata(; entry...)
-end
+const REMOTE_EXAMPLE_DATA = Dict(
+    md.name => md for md in JSON3.read(read(REMOTE_DATA_FILE), Vector{RemoteFileMetadata})
+)
 
 """
     load_example_data(name; kwargs...) -> InferenceData
@@ -92,7 +96,7 @@ InferenceData with groups:
 function load_example_data end
 function load_example_data(name::AbstractString; kwargs...)
     if haskey(LOCAL_EXAMPLE_DATA, name)
-        path = LOCAL_EXAMPLE_DATA[name].path
+        path = joinpath(LOCAL_DATA_DIR, LOCAL_EXAMPLE_DATA[name].filename)
     elseif haskey(REMOTE_EXAMPLE_DATA, name)
         metadata = REMOTE_EXAMPLE_DATA[name]
         filename = joinpath(metadata.name, metadata.filename)
@@ -116,7 +120,8 @@ function _register_data(md::LocalFileMetadata)
 end
 
 function _register_data(md::RemoteFileMetadata)
-    return DataDeps.register(DataDeps.DataDep(md.name, md.description, md.url, md.checksum))
+    url = replace(md.url, "http" => DATA_HTTP_PROTOCOL)
+    return DataDeps.register(DataDeps.DataDep(md.name, md.description, url, md.checksum))
 end
 
 _init_data_deps() = map(_register_data, values(REMOTE_EXAMPLE_DATA))
