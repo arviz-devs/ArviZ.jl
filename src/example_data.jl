@@ -107,7 +107,7 @@ function load_example_data(name::AbstractString; kwargs...)
     else
         throw(
             ArgumentError(
-                "Dataset $name not found. Valid datasets are: $(keys(EXAMPLE_DATA))"
+                "Dataset $name not found. Valid datasets are: $(keys(load_example_data()))"
             ),
         )
     end
