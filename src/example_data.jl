@@ -32,8 +32,8 @@ Base.@kwdef struct RemoteFileMetadata <: AbstractFileMetadata
     name::String
     filename::String
     url::String
-    checksum::Union{String,Nothing} = Nothing
-    description::Union{String,Nothing} = Nothing
+    checksum::Union{String,Nothing} = nothing
+    description::Union{String,Nothing} = nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", md::RemoteFileMetadata)
