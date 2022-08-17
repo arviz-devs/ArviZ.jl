@@ -1,8 +1,6 @@
 using ArviZ
 using Test
 
-include("InferenceObjects/runtests.jl")
-
 @testset "ArviZ" begin
     include("helpers.jl")
     include("test_rcparams.jl")

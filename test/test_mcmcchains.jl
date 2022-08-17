@@ -1,5 +1,5 @@
 using MCMCChains: MCMCChains
-using CmdStan
+using CmdStan, OrderedCollections
 
 const noncentered_schools_stan_model = """
     data {

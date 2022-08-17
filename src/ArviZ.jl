@@ -36,14 +36,12 @@ import StatsBase: summarystats
 import Markdown: @doc_str
 import PyCall: PyObject
 
-include("InferenceObjects/InferenceObjects.jl")
-
-using .InferenceObjects
-import .InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
+using InferenceObjects
+import InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
 # internal functions temporarily used/extended here
-using .InferenceObjects:
+using InferenceObjects:
     attributes, flatten, groupnames, groups, hasgroup, rekey, setattribute!
-import .InferenceObjects: namedtuple_of_arrays
+import InferenceObjects: namedtuple_of_arrays
 
 # Exports
 
@@ -81,20 +79,22 @@ export bfmi, ess, rhat, mcse
 
 ## Stats utils
 export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
-## Dataset
-export Dataset, convert_to_dataset, namedtuple_to_dataset
 
-## InferenceData
-export InferenceData
+## InferenceObjects
+export InferenceObjects,
+    Dataset,
+    InferenceData,
+    convert_to_dataset,
+    convert_to_inference_data,
+    from_namedtuple,
+    namedtuple_to_dataset
 
 ## Data
-export convert_to_inference_data,
-    extract_dataset,
+export extract_dataset,
     load_example_data,
     to_netcdf,
     from_json,
     from_netcdf,
-    from_namedtuple,
     from_dict,
     from_cmdstan,
     from_mcmcchains,
