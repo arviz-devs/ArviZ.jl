@@ -31,7 +31,7 @@ download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
 makedocs(;
-    modules=[ArviZ, PSIS],
+    modules=[ArviZ, InferenceObjects, PSIS],
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",
