@@ -5,8 +5,6 @@ function convert_to_inference_data(filename::AbstractString; kwargs...)
     return from_netcdf(filename)
 end
 
-@forwardfun load_arviz_data
-
 @forwardfun to_netcdf
 @forwardfun from_netcdf
 @forwardfun from_json

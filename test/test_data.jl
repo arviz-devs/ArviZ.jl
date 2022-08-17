@@ -48,14 +48,8 @@ end
     @test idata2.prior == idata.prior
 end
 
-@testset "load_arviz_data" begin
-    data = load_arviz_data("centered_eight")
-    datasets = load_arviz_data()
-    @test datasets isa Dict
-end
-
 @testset "netcdf roundtrip" begin
-    data = load_arviz_data("centered_eight")
+    data = load_example_data("centered_eight")
     mktempdir() do path
         filename = joinpath(path, "tmp.nc")
         to_netcdf(data, filename)

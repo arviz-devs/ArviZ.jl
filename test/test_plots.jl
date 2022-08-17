@@ -1,8 +1,8 @@
 using PyCall, PyPlot
 
 @testset "plots" begin
-    data = load_arviz_data("centered_eight")
-    data2 = load_arviz_data("non_centered_eight")
+    data = load_example_data("centered_eight")
+    data2 = load_example_data("non_centered_eight")
 
     rng = MersenneTwister(42)
     arr1 = randn(rng, 4, 100)
@@ -65,7 +65,7 @@ using PyCall, PyPlot
     end
 
     @testset "plot_separation" begin
-        data3 = load_arviz_data("classification10d")
+        data3 = load_example_data("classification10d")
         plot_separation(data3; y="outcome")
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin

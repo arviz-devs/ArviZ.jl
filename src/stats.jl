@@ -112,7 +112,7 @@ Compute summary statistics on `data`.
 
 ```@example summarystats
 using ArviZ
-idata = load_arviz_data("centered_eight")
+idata = load_example_data("centered_eight")
 summarystats(idata; var_names=(:mu, :tau))
 ```
 

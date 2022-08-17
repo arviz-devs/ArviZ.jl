@@ -50,7 +50,7 @@ In this parameterization, the model has some sampling issues.
 """
 
 # ╔═╡ cbd81558-e355-4e7a-ba51-0ba9299cb558
-idata = load_arviz_data("centered_eight")
+idata = load_example_data("centered_eight")
 
 # ╔═╡ 898d83d1-cd3a-47a4-84b1-f2cf0f7bf959
 idata.posterior

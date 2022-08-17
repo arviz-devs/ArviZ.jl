@@ -11,7 +11,7 @@ Let's load one of ArviZ's example datasets.
 In this HTML view, you can click a group name to expand a summary of the group.
 
 ```@example wwid
-idata = load_arviz_data("centered_eight")
+idata = load_example_data("centered_eight")
 ```
 
 !!! info

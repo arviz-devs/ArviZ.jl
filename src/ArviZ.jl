@@ -5,11 +5,13 @@ using Base: @__doc__
 using Requires
 using REPL
 using DataFrames
+using JSON3: JSON3, StructTypes
 using OrderedCollections: OrderedDict
 
 using PyCall
 using Conda
 using PyPlot
+using DataDeps: DataDeps
 using DimensionalData: DimensionalData, Dimensions
 using PSIS: PSIS, PSISResult, psis, psis!
 using LogExpFunctions: logsumexp
@@ -89,7 +91,7 @@ export InferenceObjects,
 
 ## Data
 export extract_dataset,
-    load_arviz_data,
+    load_example_data,
     to_netcdf,
     from_json,
     from_netcdf,
@@ -124,6 +126,7 @@ const _precompile_arviz_version = arviz_version()
 
 function __init__()
     initialize_arviz()
+    _init_data_deps()
     @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
         include("samplechains.jl")
     end
@@ -138,6 +141,7 @@ include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
 include("data.jl")
+include("example_data.jl")
 include("diagnostics.jl")
 include("plots.jl")
 include("bokeh.jl")

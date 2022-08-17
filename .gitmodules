@@ -1,0 +1,3 @@
+[submodule "deps/data/example_data"]
+	path = deps/data/example_data
+	url = https://github.com/arviz-devs/arviz_example_data
