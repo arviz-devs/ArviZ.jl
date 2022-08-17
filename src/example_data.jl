@@ -102,7 +102,9 @@ function load_example_data(name::AbstractString; kwargs...)
         end
     else
         throw(
-            ArgumentError("Dataset $name not found. Valid datasets are: $(keys(EXAMPLE_DATA))"),
+            ArgumentError(
+                "Dataset $name not found. Valid datasets are: $(keys(EXAMPLE_DATA))"
+            ),
         )
     end
     return from_netcdf(path; kwargs...)
