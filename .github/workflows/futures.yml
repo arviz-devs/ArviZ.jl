@@ -28,8 +28,6 @@ jobs:
             arviz_version: "release"
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
