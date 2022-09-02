@@ -20,11 +20,7 @@ let
 end;
 
 # ╔═╡ 467c2d13-6bfe-4feb-9626-fb14796168aa
-begin
-    using ArviZ, CmdStan, Distributions, LinearAlgebra, PyPlot, Random, Soss, Turing
-    using Soss.MeasureTheory: HalfCauchy
-    using SampleChainsDynamicHMC: getchains, dynamichmc
-end
+using ArviZ, CmdStan, Distributions, LinearAlgebra, PyPlot, Random, Turing
 
 # ╔═╡ 56a39a90-0594-48f4-ba04-f7b612019cd1
 using PlutoUI
@@ -382,103 +378,6 @@ begin
     gcf()
 end
 
-# ╔═╡ 2674d532-a337-471e-8ba7-02b430f49f12
-md"""
-## [Plotting with Soss.jl outputs](#Plotting-with-Soss.jl-outputs)
-
-With Soss, we can define our model for the posterior and easily use it to draw samples from the prior, prior predictive, posterior, and posterior predictive distributions.
-
-First we define our model:
-"""
-
-# ╔═╡ 14408abe-a16f-4cc0-a6f3-0bb2645653b7
-constant_data = (; J, σ);
-
-# ╔═╡ 446341da-902e-474b-b6dc-b085ef74a99b
-observed_data = (; y);
-
-# ╔═╡ 9daec35c-3d6e-443c-87f9-213d51964f75
-model_soss = Soss.@model (J, σ) begin
-    μ ~ Soss.Normal(; μ=0, σ=5)
-    τ ~ HalfCauchy(; σ=5)
-    θ ~ Soss.Normal(; μ, σ=τ) |> iid(J)
-    y ~ For(1:J) do j
-        Soss.Normal(; μ=θ[j], σ=σ[j])
-    end
-end;
-
-# ╔═╡ 6a78e4a8-86c4-4438-b9bb-7c433d2bc8c8
-param_mod_soss = model_soss(; constant_data...)
-
-# ╔═╡ a94b3ad6-2305-43f6-881f-d871286b906a
-md"Then we draw from the prior and prior predictive distributions."
-
-# ╔═╡ bfdfdff7-6551-4dd7-a7c8-69f8b57272ec
-rng3 = MersenneTwister(5298);
-
-# ╔═╡ d385ceea-beb5-4ec7-b50d-be691266440b
-prior_priorpred = let Normal = Soss.Normal
-    [rand(rng3, param_mod_soss, ndraws) for _ in 1:nchains]
-end
-
-# ╔═╡ 152822f9-20f7-4fe9-ad9f-bae31945e981
-md"""Next, we draw from the posterior using [DynamicHMC.jl](https://github.com/tpapp/DynamicHMC.jl)."""
-
-# ╔═╡ 2c44f500-c102-4a2e-980e-42afcfbba5bb
-post = Soss.sample(rng3, param_mod_soss | observed_data, dynamichmc(), ndraws, nchains)
-
-# ╔═╡ e2260ee1-c792-4b74-97c4-bbf6803a56d7
-md"Finally, we update the posterior samples with draws from the posterior predictive distribution."
-
-# ╔═╡ 0219a0d0-13ce-43d0-a048-8e95e55500db
-postpred = let
-    mod_pred = Soss.predictive(model_soss, :μ, :τ, :θ)
-    map(getchains(post)) do chain
-        [rand(rng3, mod_pred(; constant_data..., draw...)) for draw in chain]
-    end
-end
-
-# ╔═╡ 500c4b4d-25eb-4f27-8e8b-7287bfeddf92
-md"""
-Each Soss draw is a `NamedTuple`.
-We can plot the rank order statistics of the posterior to identify poor convergence:
-"""
-
-# ╔═╡ eac7b059-129d-472b-a69e-b1611c7cc703
-begin
-    plot_rank(post; var_names=(:μ, :τ))
-    gcf()
-end
-
-# ╔═╡ 17d9fff5-d8f6-42c5-8cd1-70ecb34084c7
-md"Now we combine all of the samples to an `InferenceData`:"
-
-# ╔═╡ ddb1373a-f180-4efc-9193-905d03be4d8a
-idata_soss = from_samplechains(
-    post;
-    posterior_predictive=postpred,
-    prior=prior_priorpred,
-    prior_predictive=(:y,),
-    observed_data,
-    constant_data=(; J=[J], σ),
-    coords=(; school=schools),
-    dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
-    library=Soss,
-)
-
-# ╔═╡ bfa2c30f-f50c-45de-bd2a-da199ce67cfb
-md"We can compare the prior and posterior predictive distributions:"
-
-# ╔═╡ e56ee0c8-bc4a-4b37-bfcc-9ca1c440c1f3
-begin
-    plot_density(
-        [idata_soss.posterior_predictive, idata_soss.prior_predictive];
-        data_labels=["Post-pred", "Prior-pred"],
-        var_names=(:y,),
-    )
-    gcf()
-end
-
 # ╔═╡ ac2b4378-bd1c-4164-af05-d9a35b1bb08f
 md"## [Environment](#environment)"
 
@@ -536,24 +435,6 @@ with_terminal(versioninfo)
 # ╠═020cbdc0-a0a2-4d20-838f-c99b541d5832
 # ╟─e44b260c-9d2f-43f8-a64b-04245a0a5658
 # ╠═5070bbbc-68d2-49b8-bd91-456dc0da4573
-# ╠═2674d532-a337-471e-8ba7-02b430f49f12
-# ╠═14408abe-a16f-4cc0-a6f3-0bb2645653b7
-# ╠═446341da-902e-474b-b6dc-b085ef74a99b
-# ╠═9daec35c-3d6e-443c-87f9-213d51964f75
-# ╠═6a78e4a8-86c4-4438-b9bb-7c433d2bc8c8
-# ╟─a94b3ad6-2305-43f6-881f-d871286b906a
-# ╠═bfdfdff7-6551-4dd7-a7c8-69f8b57272ec
-# ╠═d385ceea-beb5-4ec7-b50d-be691266440b
-# ╟─152822f9-20f7-4fe9-ad9f-bae31945e981
-# ╠═2c44f500-c102-4a2e-980e-42afcfbba5bb
-# ╟─e2260ee1-c792-4b74-97c4-bbf6803a56d7
-# ╠═0219a0d0-13ce-43d0-a048-8e95e55500db
-# ╟─500c4b4d-25eb-4f27-8e8b-7287bfeddf92
-# ╠═eac7b059-129d-472b-a69e-b1611c7cc703
-# ╟─17d9fff5-d8f6-42c5-8cd1-70ecb34084c7
-# ╠═ddb1373a-f180-4efc-9193-905d03be4d8a
-# ╟─bfa2c30f-f50c-45de-bd2a-da199ce67cfb
-# ╠═e56ee0c8-bc4a-4b37-bfcc-9ca1c440c1f3
 # ╟─ac2b4378-bd1c-4164-af05-d9a35b1bb08f
 # ╠═56a39a90-0594-48f4-ba04-f7b612019cd1
 # ╠═2c0f3d74-8b1e-4648-b0fa-f8050035b0fd
