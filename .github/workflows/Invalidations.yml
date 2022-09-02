@@ -9,6 +9,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
+
 jobs:
   evaluate:
     # Only run on PRs to the default branch.
