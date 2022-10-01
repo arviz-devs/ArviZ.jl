@@ -72,6 +72,8 @@ A file is downloaded only when it is requested and then cached for future use.
 # Examples
 
 ```jldoctest
+julia> using ArviZ
+
 julia> keys(load_example_data())
 KeySet for a Dict{String, ArviZ.AbstractFileMetadata} with 9 entries. Keys:
   "centered_eight"
@@ -79,8 +81,8 @@ KeySet for a Dict{String, ArviZ.AbstractFileMetadata} with 9 entries. Keys:
   "glycan_torsion_angles"
   "rugby"
   "non_centered_eight"
-  "regression10d"
   "classification1d"
+  "regression10d"
   "classification10d"
   "regression1d"
 
