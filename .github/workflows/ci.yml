@@ -24,6 +24,8 @@ jobs:
         include:
           - julia-version: "1"
             os: windows-latest
+          - julia-version: "1"
+            os: macOS-latest
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
