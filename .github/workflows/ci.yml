@@ -47,6 +47,11 @@ jobs:
         with:
           path: ${{ env.CMDSTAN_PATH }}
           key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
+      - name: Install wget for windows
+        if: matrix.os == 'windows-latest'
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: install wget
       - name: Download and build CmdStan
         if: steps.cache-cmdstan.outputs.cache-hit != 'true'
         run: |
