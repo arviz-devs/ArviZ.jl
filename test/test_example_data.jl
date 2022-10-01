@@ -54,7 +54,7 @@ using ArviZ, Test
         data = @test_deprecated load_arviz_data("centered_eight")
         datasets = @test_deprecated load_arviz_data()
         @test datasets isa Dict
-        mktempdir() do data_home
+        VERSION >= v"1.8" && mktempdir() do data_home
             @test_deprecated load_arviz_data("rugby", data_home)
             @test readdir(data_home) == ["rugby.nc"]
         end

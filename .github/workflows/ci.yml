@@ -14,13 +14,16 @@ env:
 
 jobs:
   test:
-    name: Julia ${{ matrix.julia-version }}
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        julia-version: ["1.6", "1"]
-        os: [ubuntu-latest]
+        julia-version: ["1"]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        include:
+          - julia-version: "1.6"
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -44,13 +47,17 @@ jobs:
         with:
           path: ${{ env.CMDSTAN_PATH }}
           key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
+      - name: Install wget for windows
+        if: matrix.os == 'windows-latest'
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: install wget
       - name: Download and build CmdStan
         if: steps.cache-cmdstan.outputs.cache-hit != 'true'
         run: |
           wget -P ${{ env.CMDSTAN_PATH }} https://github.com/stan-dev/cmdstan/releases/download/v${{ env.CMDSTAN_VERSION }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz
           tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
           make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
-        shell: bash
       - uses: julia-actions/julia-buildpkg@latest
       - name: Install ArviZ dependencies
         run: |

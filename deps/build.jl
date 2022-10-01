@@ -1,7 +1,6 @@
 using Conda
 
-# try to install scipy with pip if not yet installed
-# temporary workaround for https://github.com/arviz-devs/ArviZ.jl/issues/188
-Conda.pip_interop(true)
-Conda.pip("uninstall -y", "scipy")
-Conda.pip("install", "scipy")
+# temporary workaround for
+# - https://github.com/arviz-devs/ArviZ.jl/issues/188
+# - https://github.com/arviz-devs/arviz/issues/2120
+Conda.add(["matplotlib<3.6.0", "pandas<1.5.0", "scipy<=1.8.0"])
