@@ -21,6 +21,9 @@ jobs:
       matrix:
         julia-version: ["1.6", "1"]
         os: [ubuntu-latest]
+        include:
+          - version: "1"
+            os: windows-latest
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
