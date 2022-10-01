@@ -14,18 +14,16 @@ env:
 
 jobs:
   test:
-    name: Julia ${{ matrix.julia-version }}
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        julia-version: ["1.6", "1"]
-        os: [ubuntu-latest]
+        julia-version: ["1"]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
         include:
-          - julia-version: "1"
-            os: windows-latest
-          - julia-version: "1"
-            os: macOS-latest
+          - julia-version: "1.6"
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
