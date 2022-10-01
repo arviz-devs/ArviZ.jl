@@ -5,7 +5,7 @@ using ArviZ, DimensionalData, Test
     post = extract_dataset(idata, :posterior; combined=false)
     for k in keys(idata.posterior)
         @test haskey(post, k)
-        @test post[k] == idata.posterior[k]
+        @test post[k] ≈ idata.posterior[k]
         dims = DimensionalData.dims(post)
         dims_exp = DimensionalData.dims(idata.posterior)
         @test DimensionalData.name(dims) === DimensionalData.name(dims_exp)
@@ -14,7 +14,7 @@ using ArviZ, DimensionalData, Test
     prior = extract_dataset(idata, :prior; combined=false)
     for k in keys(idata.prior)
         @test haskey(prior, k)
-        @test prior[k] == idata.prior[k]
+        @test prior[k] ≈ idata.prior[k]
         dims = DimensionalData.dims(prior)
         dims_exp = DimensionalData.dims(idata.prior)
         @test DimensionalData.name(dims) === DimensionalData.name(dims_exp)
