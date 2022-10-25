@@ -90,7 +90,7 @@ export InferenceObjects,
     namedtuple_to_dataset
 
 ## Data
-export extract_dataset,
+export extract,
     load_example_data,
     to_netcdf,
     from_json,
