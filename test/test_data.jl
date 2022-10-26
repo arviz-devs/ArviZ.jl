@@ -2,7 +2,12 @@ using ArviZ, DimensionalData, Test
 
 @testset "extract_dataset" begin
     idata = random_data()
-    post = extract_dataset(idata, :posterior; combined=false)
+    @test_deprecated extract_dataset(idata, :posterior; combined=false)
+end
+
+@testset "extract" begin
+    idata = random_data()
+    post = extract(idata, :posterior; combined=false)
     for k in keys(idata.posterior)
         @test haskey(post, k)
         @test post[k] ≈ idata.posterior[k]
@@ -11,7 +16,7 @@ using ArviZ, DimensionalData, Test
         @test DimensionalData.name(dims) === DimensionalData.name(dims_exp)
         @test DimensionalData.index(dims) == DimensionalData.index(dims_exp)
     end
-    prior = extract_dataset(idata, :prior; combined=false)
+    prior = extract(idata, :prior; combined=false)
     for k in keys(idata.prior)
         @test haskey(prior, k)
         @test prior[k] ≈ idata.prior[k]

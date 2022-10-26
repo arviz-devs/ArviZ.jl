@@ -25,7 +25,7 @@ to_netcdf
 
 ```@docs
 concat
-extract_dataset
+extract
 ```
 
 ## Example data
