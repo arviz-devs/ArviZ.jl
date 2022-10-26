@@ -120,7 +120,7 @@ using PyCall, PyPlot
         plot_kde(arr1)
         close(gcf())
         ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_kde(arr1; backend=:bokeh) isa ArviZ.BokehPlot
+            @test_broken plot_kde(arr1; backend=:bokeh) isa ArviZ.BokehPlot
         end
 
         plot_kde(arr1, arr2)
