@@ -1,10 +1,12 @@
 @testset "diagnostics" begin
+    nchains = 4
+    ndraws = 100
     @testset "bfmi" begin
         idata = load_example_data("centered_eight")
         @test bfmi(idata) == ArviZ.arviz.bfmi(idata)
         rng = Random.MersenneTwister(42)
-        arr = randn(rng, 4, 100)
-        @test bfmi(arr) == ArviZ.arviz.bfmi(arr)
+        arr = randn(rng, ndraws, nchains)
+        @test bfmi(arr) ≈ ArviZ.arviz.bfmi(permutedims(arr))
     end
 
     @testset "ess" begin

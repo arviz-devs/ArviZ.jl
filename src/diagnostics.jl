@@ -8,7 +8,8 @@ function convert_arguments(::typeof(bfmi), data, args...; kwargs...)
     return tuple(dataset, args...), kwargs
 end
 function convert_arguments(::typeof(bfmi), data::AbstractArray, args...; kwargs...)
-    return tuple(data, args...), kwargs
+    dataset = convert_to_dataset((; energy=data); group=:sample_stats)
+    return tuple(dataset, args...), kwargs
 end
 
 for f in (:ess, :mcse, :rhat)
