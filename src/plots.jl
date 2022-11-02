@@ -72,7 +72,8 @@ end
 for f in (:plot_autocorr, :plot_ess, :plot_mcse, :plot_posterior, :plot_violin)
     @eval begin
         function convert_arguments(::typeof($(f)), data::AbstractArray, args...; kwargs...)
-            return tuple(data, args...), kwargs
+            idata = convert_to_inference_data(data; group=:posterior)
+            return tuple(idata, args...), kwargs
         end
     end
 end
