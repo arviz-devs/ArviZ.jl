@@ -15,14 +15,14 @@ class PyNullObject(object):
 """
 
 function random_dim_array(var_name, dims, coords, default_dims=())
-    _dims = (default_dims..., dims...)
+    _dims = (dims..., default_dims...)
     _coords = NamedTuple{_dims}(getproperty.(Ref(coords), _dims))
     size = map(length, values(_coords))
     data = randn(size)
     return DimArray(data, _coords; name=var_name)
 end
 
-function random_dim_stack(var_names, dims, coords, metadata, default_dims=(:chain, :draw))
+function random_dim_stack(var_names, dims, coords, metadata, default_dims=(:draw, :chain))
     dim_arrays = map(var_names) do k
         return random_dim_array(k, getproperty(dims, k), coords, default_dims)
     end
@@ -60,28 +60,28 @@ function create_model(seed=10)
         "sigma" => [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0],
     )
     posterior = Dict(
-        "mu" => randn(rng, nchains, ndraws),
-        "tau" => abs.(randn(rng, nchains, ndraws)),
-        "eta" => randn(rng, nchains, ndraws, J),
-        "theta" => randn(rng, nchains, ndraws, J),
+        "mu" => randn(rng, ndraws, nchains),
+        "tau" => abs.(randn(rng, ndraws, nchains)),
+        "eta" => randn(rng, J, ndraws, nchains),
+        "theta" => randn(rng, J, ndraws, nchains),
     )
-    posterior_predictive = Dict("y" => randn(rng, nchains, ndraws, J))
+    posterior_predictive = Dict("y" => randn(rng, J, ndraws, nchains))
     sample_stats = Dict(
-        "energy" => randn(rng, nchains, ndraws),
-        "diverging" => (randn(rng, nchains, ndraws) .> 0.90),
-        "max_depth" => (randn(rng, nchains, ndraws) .> 0.90),
-        "log_likelihood" => randn(rng, nchains, ndraws, J),
+        "energy" => randn(rng, ndraws, nchains),
+        "diverging" => (randn(rng, ndraws, nchains) .> 0.90),
+        "max_depth" => (randn(rng, ndraws, nchains) .> 0.90),
+        "log_likelihood" => randn(rng, J, ndraws, nchains),
     )
     prior = Dict(
-        "mu" => randn(rng, nchains, ndraws) / 2,
-        "tau" => abs.(randn(rng, nchains, ndraws)) / 2,
-        "eta" => randn(rng, nchains, ndraws, data["J"]) / 2,
-        "theta" => randn(rng, nchains, ndraws, data["J"]) / 2,
+        "mu" => randn(rng, ndraws, nchains) / 2,
+        "tau" => abs.(randn(rng, ndraws, nchains)) / 2,
+        "eta" => randn(rng, data["J"], ndraws, nchains) / 2,
+        "theta" => randn(rng, data["J"], ndraws, nchains) / 2,
     )
-    prior_predictive = Dict("y" => randn(rng, nchains, ndraws, J) / 2)
+    prior_predictive = Dict("y" => randn(rng, J, ndraws, nchains) / 2)
     sample_stats_prior = Dict(
-        "energy" => randn(rng, nchains, ndraws),
-        "diverging" => Int.(randn(rng, nchains, ndraws) .> 0.95),
+        "energy" => randn(rng, ndraws, nchains),
+        "diverging" => Int.(randn(rng, ndraws, nchains) .> 0.95),
     )
     model = from_dict(;
         posterior,
