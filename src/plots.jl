@@ -58,7 +58,6 @@ for f in (
     :plot_pair,
     :plot_parallel,
     :plot_posterior,
-    :plot_trace,
     :plot_violin,
 )
     @eval begin
@@ -67,6 +66,20 @@ for f in (
             return tuple(idata, args...), kwargs
         end
     end
+end
+
+function convert_arguments(::typeof(plot_trace), data, args...; kwargs...)
+    idata = convert_to_inference_data(data; group=:posterior)
+    # temporary workaround for https://github.com/arviz-devs/arviz/issues/2150
+    if arviz_version() ≤ v"0.13.0" &&
+        hasgroup(idata, :sample_stats) &&
+        haskey(idata.sample_stats, :diverging)
+        sample_dims = Dimensions.key2dim((:chain, :draw))
+        diverging = permutedims(idata.sample_stats.diverging, sample_dims)
+        sample_stats = merge(idata.sample_stats, (; diverging))
+        idata = merge(idata, InferenceData(; sample_stats))
+    end
+    return tuple(idata, args...), kwargs
 end
 
 for f in (:plot_autocorr, :plot_ess, :plot_mcse, :plot_posterior, :plot_violin)
