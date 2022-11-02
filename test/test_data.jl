@@ -52,19 +52,3 @@ end
     check_idata_schema(idata2)
     @test idata2.prior == idata.prior
 end
-
-@testset "netcdf roundtrip" begin
-    data = load_example_data("centered_eight")
-    mktempdir() do path
-        filename = joinpath(path, "tmp.nc")
-        to_netcdf(data, filename)
-        data2 = from_netcdf(filename)
-        @test ArviZ.groupnames(data) == ArviZ.groupnames(data2)
-        for (ds1, ds2) in zip(data, data2), k in keys(ds1)
-            @test ds1[k] ≈ ds2[k]
-        end
-        data3 = convert_to_inference_data(filename)
-        test_idata_approx_equal(data3, data2; check_metadata=false)
-        return nothing
-    end
-end
