@@ -76,7 +76,7 @@ function test_chains_data(chns, idata, group, names=names(chns); coords=(;), dim
         s = (x -> length(get(coords, x, ()))).(dim)
         @test size(ds[name]) == (s..., ndraws, nchains)
     end
-    @test ArviZ.attributes(ds)[:inference_library] == "MCMCChains"
+    @test ArviZ.attributes(ds)["inference_library"] == "MCMCChains"
     return nothing
 end
 
@@ -283,7 +283,7 @@ end
         idata = from_mcmcchains(chns; library="MyLib")
         metadata = DimensionalData.metadata(idata.posterior)
         @test metadata isa AbstractDict
-        @test metadata[:inference_library] == "MyLib"
+        @test metadata["inference_library"] == "MyLib"
     end
 
     # https://github.com/arviz-devs/ArviZ.jl/issues/140
@@ -309,7 +309,7 @@ end
     ds = ArviZ.convert_to_dataset(chns; library="MyLib")
     @test ds isa ArviZ.Dataset
     metadata = DimensionalData.metadata(ds)
-    @test metadata[:inference_library] == "MyLib"
+    @test metadata["inference_library"] == "MyLib"
 end
 
 @testset "convert_to_inference_data(::MCMCChains.Chains)" begin
