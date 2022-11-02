@@ -43,9 +43,9 @@ using InferenceObjects:
     attributes, recursive_stack, groupnames, groups, hasgroup, rekey, setattribute!
 import InferenceObjects: namedtuple_of_arrays
 
-using InferenceObjectsNetCDF: from_netcdf, to_netcdf
+using InferenceObjectsNetCDF: InferenceObjectsNetCDF, from_netcdf, to_netcdf
 
-using ArviZExampleData: describe_example_data, load_example_data
+using ArviZExampleData: ArviZExampleData, describe_example_data, load_example_data
 
 # Exports
 
@@ -97,7 +97,7 @@ export InferenceObjects,
 export InferenceObjectsNetCDF, from_netcdf, to_netcdf
 
 ## ArviZExampleData
-export describe_example_data, load_example_data
+export ArviZExampleData, describe_example_data, load_example_data
 
 ## Data
 export extract,

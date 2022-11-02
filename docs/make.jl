@@ -30,8 +30,12 @@ download_asset("ArviZ.png", "logo.png")
 download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
+DocMeta.setdocmeta!(
+    ArviZExampleData, :DocTestSetup, :(using ArviZ.ArviZExampleData); recursive=true
+)
+
 makedocs(;
-    modules=[ArviZ, InferenceObjects, PSIS],
+    modules=[ArviZ, ArviZExampleData, InferenceObjects, InferenceObjectsNetCDF, PSIS],
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",

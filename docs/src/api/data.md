@@ -31,5 +31,6 @@ extract
 ## Example data
 
 ```@docs
+describe_example_data
 load_example_data
 ```

@@ -70,7 +70,7 @@ Below, we have 10 chains of 50 draws each for four different distributions.
 
 # ╔═╡ 49f19c17-ac1d-46b5-a655-4376b7713244
 let
-    s = (10, 50)
+    s = (50, 10)
     plot_forest((
         normal=randn(rng1, s),
         gumbel=rand(rng1, Gumbel(), s),
@@ -245,8 +245,8 @@ log_likelihood = let
     # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
     ynames = string.(keys(posterior_predictive))
     log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
-    # Reshape into `(nchains, ndraws, size(y)...)`
-    (; y=permutedims(cat(log_likelihood_y...; dims=3), (2, 1, 3)))
+    # Reshape into `(size(y)..., ndraws, nchains)`
+    (; y=permutedims(cat(log_likelihood_y...; dims=3), (3, 1, 2)))
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
