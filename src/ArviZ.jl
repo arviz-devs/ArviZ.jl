@@ -45,6 +45,8 @@ import InferenceObjects: namedtuple_of_arrays
 
 using InferenceObjectsNetCDF: from_netcdf, to_netcdf
 
+using ArviZExampleData: describe_example_data, load_example_data
+
 # Exports
 
 ## Plots
@@ -94,9 +96,11 @@ export InferenceObjects,
 ## InferenceObjectsNetCDF
 export InferenceObjectsNetCDF, from_netcdf, to_netcdf
 
+## ArviZExampleData
+export describe_example_data, load_example_data
+
 ## Data
 export extract,
-    load_example_data,
     from_json, from_dict, from_cmdstan, from_mcmcchains, from_samplechains, concat
 
 ## Utils
@@ -124,7 +128,6 @@ const _precompile_arviz_version = arviz_version()
 
 function __init__()
     initialize_arviz()
-    _init_data_deps()
     @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
         include("samplechains.jl")
     end
@@ -139,7 +142,6 @@ include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
 include("data.jl")
-include("example_data.jl")
 include("diagnostics.jl")
 include("plots.jl")
 include("bokeh.jl")
