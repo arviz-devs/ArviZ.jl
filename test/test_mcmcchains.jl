@@ -74,7 +74,7 @@ function test_chains_data(chns, idata, group, names=names(chns); coords=(;), dim
         @test name in keys(ds)
         dim = get(dims, name, ())
         s = (x -> length(get(coords, x, ()))).(dim)
-        @test size(ds[name]) == (nchains, ndraws, s...)
+        @test size(ds[name]) == (s..., ndraws, nchains)
     end
     @test ArviZ.attributes(ds)[:inference_library] == "MCMCChains"
     return nothing
@@ -112,8 +112,8 @@ end
         idata = from_mcmcchains(chns; coords, dims)
         test_chains_data(chns, idata, :posterior, [:a, :b]; coords, dims)
         var_dims = DimensionalData.layerdims(idata.posterior)
-        @test Dimensions.name(var_dims[:a]) == (:chain, :draw, :ai)
-        @test Dimensions.name(var_dims[:b]) == (:chain, :draw, :bi)
+        @test Dimensions.name(var_dims[:a]) == (:ai, :draw, :chain)
+        @test Dimensions.name(var_dims[:b]) == (:bi, :draw, :chain)
     end
 
     @testset "multivariate" begin
@@ -129,10 +129,10 @@ end
         idata = from_mcmcchains(chns; coords, dims)
         test_chains_data(chns, idata, :posterior, [:a]; coords, dims)
         arr = idata.posterior.a
-        @test arr[:, :, 1, 1] == permutedims(chns.value[:, ET(var_names[1]), :], [2, 1])
-        @test arr[:, :, 2, 2] == permutedims(chns.value[:, ET(var_names[2]), :], [2, 1])
-        @test arr[:, :, 2, 1] == permutedims(chns.value[:, ET(var_names[3]), :], [2, 1])
-        @test arr[:, :, 1, 2] == permutedims(chns.value[:, ET(var_names[4]), :], [2, 1])
+        @test arr[1, 1, :, :] == chns.value[:, ET(var_names[1]), :]
+        @test arr[2, 2, :, :] == chns.value[:, ET(var_names[2]), :]
+        @test arr[2, 1, :, :] == chns.value[:, ET(var_names[3]), :]
+        @test arr[1, 2, :, :] == chns.value[:, ET(var_names[4]), :]
     end
 
     @testset "specify eltypes" begin
@@ -260,7 +260,7 @@ end
         test_chains_data(chns, idata, :posterior, names(chns))
         @test :prior_predictive ∈ ArviZ.groupnames(idata)
         @test idata.prior_predictive.var1 ≈
-            permutedims(prior_predictive.value, (:chain, :iter, :var))[:, :, [:var1]]
+            permutedims(prior_predictive.value, (:var, :iter, :chain))[:var1, :, :]
     end
 
     @testset "missing -> NaN" begin
@@ -282,7 +282,7 @@ end
         chns = makechains(nvars, ndraws, nchains)
         idata = from_mcmcchains(chns; library="MyLib")
         metadata = DimensionalData.metadata(idata.posterior)
-        @test metadata isa OrderedDict
+        @test metadata isa AbstractDict
         @test metadata[:inference_library] == "MyLib"
     end
 
@@ -375,8 +375,8 @@ end
                 da1 = ds1[var_name]
                 da2 = ds2[var_name]
                 @test Dimensions.name(Dimensions.dims(da1)) ==
-                    Dimensions.name(Dimensions.dims(da2))
-                @test da1 ≈ da2
+                    reverse(Dimensions.name(Dimensions.dims(da2)))
+                @test da1 ≈ permutedims(da2, reverse(Dimensions.dims(da2)))
             end
         end
     end
