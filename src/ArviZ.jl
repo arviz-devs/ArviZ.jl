@@ -43,6 +43,8 @@ using InferenceObjects:
     attributes, recursive_stack, groupnames, groups, hasgroup, rekey, setattribute!
 import InferenceObjects: namedtuple_of_arrays
 
+using InferenceObjectsNetCDF: from_netcdf, to_netcdf
+
 # Exports
 
 ## Plots
@@ -89,17 +91,13 @@ export InferenceObjects,
     from_namedtuple,
     namedtuple_to_dataset
 
+## InferenceObjectsNetCDF
+export InferenceObjectsNetCDF, from_netcdf, to_netcdf
+
 ## Data
 export extract,
     load_example_data,
-    to_netcdf,
-    from_json,
-    from_netcdf,
-    from_dict,
-    from_cmdstan,
-    from_mcmcchains,
-    from_samplechains,
-    concat
+    from_json, from_dict, from_cmdstan, from_mcmcchains, from_samplechains, concat
 
 ## Utils
 export with_interactive_backend
