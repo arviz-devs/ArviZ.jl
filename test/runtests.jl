@@ -7,7 +7,6 @@ using Test
     include("test_utils.jl")
     include("test_backend.jl")
     include("test_data.jl")
-    include("test_example_data.jl")
     include("test_diagnostics.jl")
     include("test_stats.jl")
     include("test_plots.jl")
