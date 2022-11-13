@@ -118,10 +118,10 @@ function check_idata_schema(idata)
             end
             @testset "attributes" begin
                 attrs = ArviZ.attributes(group)
-                @test attrs isa AbstractDict{Symbol,Any}
-                @test :created_at in keys(attrs)
-                @test_skip :inference_library in keys(attrs)
-                @test_skip :inference_library_version in keys(attrs)
+                @test attrs isa AbstractDict{String,Any}
+                @test "created_at" in keys(attrs)
+                @test_skip "inference_library" in keys(attrs)
+                @test_skip "inference_library_version" in keys(attrs)
             end
         end
     end
