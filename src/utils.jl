@@ -111,18 +111,20 @@ end
 forwardgetdoc(f::Symbol) = Docs.getdoc(getproperty(arviz, f))
 
 """
-    @forwardfun f
-    @forwardfun(f)
+    @forwardfun f [forward_docs]
+    @forwardfun(f, forward_docs=true)
 
 Wrap a function `arviz.f` in `f`, forwarding its docstrings.
 
 Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what is passed to
 and returned from `f`.
 """
-macro forwardfun(f)
+macro forwardfun(f, forward_docs=true)
     fdoc = forwarddoc(f)
     ex = quote
-        @doc $fdoc $f
+        if $forward_docs
+            @doc $fdoc $f
+        end
 
         function $(f)(args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
@@ -136,8 +138,8 @@ macro forwardfun(f)
 end
 
 """
-    @forwardplotfun f
-    @forwardplotfun(f)
+    @forwardplotfun f [forward_docs]
+    @forwardplotfun(f, forward_docs=true)
 
 Wrap a plotting function `arviz.f` in `f`, forwarding its docstrings.
 
@@ -145,10 +147,12 @@ This macro also ensures that outputs for the different backends are correctly ha
 Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what is passed to
 and returned from `f`.
 """
-macro forwardplotfun(f)
+macro forwardplotfun(f, forward_docs=true)
     fdoc = forwarddoc(f)
     ex = quote
-        @doc $fdoc $f
+        if $forward_docs
+            @doc $fdoc $f
+        end
 
         function $(f)(args...; backend=nothing, kwargs...)
             if backend === nothing
