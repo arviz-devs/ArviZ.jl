@@ -35,22 +35,3 @@ end
     new_idata2 = InferenceData(; posterior=data.posterior, prior=data.prior)
     test_idata_approx_equal(new_idata1, new_idata2)
 end
-
-@testset "from_dict" begin
-    nchains = 4
-    ndraws = 10
-    posterior = Dict(:A => randn(2, ndraws, nchains), :B => randn(5, 2, ndraws, nchains))
-    prior = Dict(:C => randn(2, ndraws, nchains), :D => randn(5, 2, ndraws, nchains))
-
-    idata = from_dict(posterior; prior)
-    check_idata_schema(idata)
-    @test ArviZ.groupnames(idata) == (:posterior, :prior)
-    @test idata.posterior.A == posterior[:A]
-    @test idata.posterior.B == posterior[:B]
-    @test idata.prior.C == prior[:C]
-    @test idata.prior.D == prior[:D]
-
-    idata2 = from_dict(; prior)
-    check_idata_schema(idata2)
-    @test idata2.prior == idata.prior
-end
