@@ -103,16 +103,12 @@ export ArviZExampleData, describe_example_data, load_example_data
 ## Data
 export extract, from_json, from_cmdstan, from_mcmcchains, from_samplechains, concat
 
-## Utils
-export with_interactive_backend
-
 ## rcParams
 export rcParams, with_rc_context
 
 const _min_arviz_version = v"0.13.0"
 const arviz = PyNULL()
 const xarray = PyNULL()
-const bokeh = PyNULL()
 const pandas = PyNULL()
 const _rcParams = PyNULL()
 const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
@@ -144,7 +140,6 @@ include("xarray.jl")
 include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
-include("bokeh.jl")
 include("stats.jl")
 include("stats_utils.jl")
 

@@ -11,36 +11,6 @@ const sample_stats_eltypes = (
     int_time=Float64,
 )
 
-@doc doc"""
-    with_interactive_backend(f; backend::Symbol = nothing)
-
-Execute the thunk `f` in a temporary interactive context with the chosen `backend`, or
-provide no arguments to use a default.
-
-# Examples
-
-```julia
-idata = load_example_data("centered_eight")
-plot_posterior(idata) # inline
-with_interactive_backend() do
-    plot_density(idata) # interactive
-end
-plot_trace(idata) # inline
-```
-"""
-with_interactive_backend
-
-function with_interactive_backend(f; backend=nothing)
-    oldisint = PyPlot.isinteractive()
-    oldgui = pygui()
-    backend === nothing || pygui(Symbol(backend))
-    pygui(true)
-    ret = f()
-    pygui(oldisint)
-    pygui(oldgui)
-    return ret
-end
-
 """
     use_style(style::String)
     use_style(style::Vector{String})
@@ -83,8 +53,6 @@ This function is used primarily for post-processing outputs of arviz before retu
 The `args` are primarily used for dispatch.
 """
 convert_result(f, result, args...) = result
-
-load_backend(backend) = nothing
 
 function forwarddoc(f::Symbol)
     pydoc = "$(Docs.getdoc(getproperty(arviz, f)))"
@@ -143,7 +111,6 @@ end
 
 Wrap a plotting function `arviz.f` in `f`, forwarding its docstrings.
 
-This macro also ensures that outputs for the different backends are correctly handled.
 Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what is passed to
 and returned from `f`.
 """
@@ -154,16 +121,10 @@ macro forwardplotfun(f, forward_docs=true)
             @doc $fdoc $f
         end
 
-        function $(f)(args...; backend=nothing, kwargs...)
-            if backend === nothing
-                backend = get(rcParams, "plot.backend", nothing)
-            end
-            backend = Symbol(backend)
-            backend_val = Val(backend)
-            load_backend(backend_val)
+        function $(f)(args...; kwargs...)
             args, kwargs = convert_arguments($(f), args...; kwargs...)
-            result = arviz.$(f)(args...; kwargs..., backend)
-            return convert_result($(f), result, backend_val)
+            result = arviz.$(f)(args...; kwargs..., backend="matplotlib")
+            return convert_result($(f), result)
         end
     end
     # make sure line number of methods are place where macro is called, not here

@@ -2,19 +2,6 @@
     rcParams
 
 Dictionary to contain ArviZ default parameters, with validation when setting items.
-
-# Examples
-
-```julia
-julia> rcParams["plot.backend"]
-"matplotlib"
-
-julia> rcParams["plot.backend"] = "bokeh"
-"bokeh"
-
-julia> rcParams["plot.backend"]
-"bokeh"
-```
 """
 rcParams
 

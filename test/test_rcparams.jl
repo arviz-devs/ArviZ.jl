@@ -27,7 +27,6 @@
 
     @testset "defaults" begin
         @test rcParams["data.index_origin"] == 1
-        @test rcParams["plot.bokeh.show"] == false
     end
 
     @testset "with_rc_context" begin

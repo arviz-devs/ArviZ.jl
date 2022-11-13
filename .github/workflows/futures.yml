@@ -77,8 +77,6 @@ jobs:
           using ArviZ, Conda
           ArviZ.initialize_arviz()
           ArviZ.initialize_pandas()
-          ArviZ.initialize_bokeh()
-          Conda.add(["selenium", "phantomjs"])
         shell: julia --color=yes --project {0}
       - uses: julia-actions/julia-runtest@latest
         env:

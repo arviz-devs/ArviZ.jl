@@ -65,9 +65,6 @@ function initialize_arviz()
     # use 1-based indexing by default within arviz
     rcParams["data.index_origin"] = 1
 
-    # handle Bokeh showing ourselves
-    rcParams["plot.bokeh.show"] = false
-
     initialize_xarray()
     initialize_numpy()
     return nothing
