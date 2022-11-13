@@ -14,9 +14,6 @@ using PyCall, PyPlot
         close(gcf())
         f((x=arr1, y=arr2); var_names=["x", "y"])
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test f((x=arr1, y=arr2); var_names=["x", "y"], backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "$(f)" for f in
@@ -27,17 +24,11 @@ using PyCall, PyPlot
         close(gcf())
         f((x=arr1, y=arr2); var_names=["x", "y"])
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test f((x=arr1, y=arr2); var_names=["x", "y"], backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "$(f)" for f in (plot_energy, plot_parallel)
         f(data)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test f(data; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "$(f)" for f in (plot_density, plot_forest)
@@ -49,9 +40,6 @@ using PyCall, PyPlot
         close(gcf())
         f((x=arr1, y=arr2); var_names=["x", "y"])
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test f((x=arr1, y=arr2); var_names=["x", "y"], backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_bpv" begin
@@ -59,18 +47,12 @@ using PyCall, PyPlot
         close(gcf())
         plot_bpv(data; kind="p_value")
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_bpv(data; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_separation" begin
         data3 = load_example_data("classification10d")
         plot_separation(data3; y="outcome")
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_separation(data3; y="outcome", backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_rank" begin
@@ -80,54 +62,30 @@ using PyCall, PyPlot
         close(gcf())
         plot_rank((x=arr1, y=arr2); var_names=["x", "y"])
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test isa(
-                plot_rank((x=arr1, y=arr2); var_names=["x", "y"], backend=:bokeh),
-                ArviZ.BokehPlot,
-            )
-        end
     end
 
     @testset "plot_compare" begin
         df = compare(Dict("a" => data, "b" => data2))
         plot_compare(df)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_compare(df; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_dist_compare" begin
         plot_dist_comparison(data; var_names=["mu"])
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test_broken isa(
-                plot_dist_comparison(data; var_names=["mu"], backend=:bokeh),
-                ArviZ.BokehPlot,
-            )
-        end
     end
 
     @testset "$(f)" for f in (plot_dist, ArviZ.plot_ecdf)
         f(arr1)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test f(arr1; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_kde" begin
         plot_kde(arr1)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_kde(arr1; backend=:bokeh) isa ArviZ.BokehPlot
-        end
 
         plot_kde(arr1, arr2)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test_broken plot_kde(arr1, arr2; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_hdi" begin
@@ -136,9 +94,6 @@ using PyCall, PyPlot
         y_data_rep = 0.5 .* randn(rng, 200, 100) .+ transpose(y_data)
         plot_hdi(x_data, y_data_rep)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_hdi(x_data, y_data_rep; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_elpd" begin
@@ -146,33 +101,21 @@ using PyCall, PyPlot
         close(gcf())
         plot_elpd(Dict("a" => loo(data; pointwise=true), "b" => loo(data2; pointwise=true)))
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_elpd(Dict("a" => data, "b" => data2); backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_khat" begin
         l = loo(data; pointwise=true)
         plot_khat(l)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_khat(l; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_loo_pit" begin
         plot_loo_pit(data; y="obs")
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_loo_pit(data; y="obs", backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 
     @testset "plot_loo_pit" begin
         plot_ppc(data)
         close(gcf())
-        ispynull(ArviZ.bokeh) || @testset "bokeh" begin
-            @test plot_ppc(data; backend=:bokeh) isa ArviZ.BokehPlot
-        end
     end
 end

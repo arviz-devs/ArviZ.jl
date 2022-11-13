@@ -2,12 +2,6 @@ using Random
 using PyCall
 using ArviZ: attributes
 
-try
-    ArviZ.initialize_bokeh()
-catch
-    @info "bokeh backend not available. bokeh tests will be skipped."
-end
-
 py"""
 class PyNullObject(object):
    def __init__(self):
