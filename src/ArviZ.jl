@@ -103,9 +103,6 @@ export ArviZExampleData, describe_example_data, load_example_data
 ## Data
 export extract, from_json, from_cmdstan, from_mcmcchains, from_samplechains, concat
 
-## Utils
-export with_interactive_backend
-
 ## rcParams
 export rcParams, with_rc_context
 
