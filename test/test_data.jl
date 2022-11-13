@@ -37,8 +37,10 @@ end
 end
 
 @testset "from_dict" begin
-    posterior = Dict(:A => randn(2, 10, 2), :B => randn(2, 10, 5, 2))
-    prior = Dict(:C => randn(2, 10, 2), :D => randn(2, 10, 5, 2))
+    nchains = 4
+    ndraws = 10
+    posterior = Dict(:A => randn(2, ndraws, nchains), :B => randn(5, 2, ndraws, nchains))
+    prior = Dict(:C => randn(2, ndraws, nchains), :D => randn(5, 2, ndraws, nchains))
 
     idata = from_dict(posterior; prior)
     check_idata_schema(idata)
