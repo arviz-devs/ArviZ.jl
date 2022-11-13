@@ -7,7 +7,6 @@ function convert_to_inference_data(filename::AbstractString; kwargs...)
 end
 
 @forwardfun from_json
-@forwardfun from_dict
 @forwardfun from_beanmachine
 @forwardfun from_cmdstan
 @forwardfun from_cmdstanpy

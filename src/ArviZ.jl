@@ -90,6 +90,7 @@ export InferenceObjects,
     InferenceData,
     convert_to_dataset,
     convert_to_inference_data,
+    from_dict,
     from_namedtuple,
     namedtuple_to_dataset
 
@@ -100,8 +101,7 @@ export InferenceObjectsNetCDF, from_netcdf, to_netcdf
 export ArviZExampleData, describe_example_data, load_example_data
 
 ## Data
-export extract,
-    from_json, from_dict, from_cmdstan, from_mcmcchains, from_samplechains, concat
+export extract, from_json, from_cmdstan, from_mcmcchains, from_samplechains, concat
 
 ## Utils
 export with_interactive_backend
