@@ -110,8 +110,9 @@ See also: [`ess`](@ref), [`plot_mcse`](@ref), [`summarystats`](@ref)
 
   - `var_names`: `Symbol` names of variables to include in the returned `Dataset`. Defaults to
     all.
-  - `method::Symbol=:bulk`: ESS method to use. Valid options are:
 
+  - `method::Symbol=:bulk`: ESS method to use. Valid options are:
+    
       + `:mean`:
       + `:sd`
       + `:median`
