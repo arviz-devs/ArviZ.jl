@@ -64,7 +64,7 @@ See also: [`rhat`](@ref), [`mcse`](@ref), [`plot_ess`](@ref),  [`summarystats`](
 
 Calculate the ESS using the default arguments:
 
-```jldoctest
+```jldoctest ess
 julia> using ArviZ
 
 julia> data = load_example_data("non_centered_eight");
@@ -81,7 +81,7 @@ and 4 layers:
 
 Calculate the ESS using the `:tail` method, leaving the `prob` argument at its default
 value:
-```jldoctest
+```jldoctest ess
 julia> ess(data; method=:tail)
 Dataset with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
@@ -123,7 +123,7 @@ See also: [`ess`](@ref), [`plot_mcse`](@ref), [`summarystats`](@ref)
 
 Calculate the MCSE using the default arguments:
 
-```jldoctest
+```jldoctest mcse
 julia> using ArviZ
 
 julia> data = load_example_data("non_centered_eight");
@@ -140,7 +140,7 @@ and 4 layers:
 
 Calculate the MCSE using the `:quantile` method:
 
-```jldoctest
+```jldoctest mcse
 julia> mcse(data; method=:quantile, prob=0.7)
 Dataset with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
