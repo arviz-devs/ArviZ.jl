@@ -76,8 +76,8 @@ end
         idata = convert_to_inference_data(multichain)
         @test ArviZ.groupnames(idata) === (:posterior, :sample_stats)
         @test issubset(expected_stats_vars, keys(idata.sample_stats))
-        @test size(idata.posterior.μ) == (4, 10, 2, 3)
-        @test size(idata.posterior.σ) == (4, 10)
+        @test size(idata.posterior.μ) == (2, 3, 10, 4)
+        @test size(idata.posterior.σ) == (10, 4)
 
         idata = convert_to_inference_data(multichain; group=:prior)
         @test ArviZ.groupnames(idata) === (:prior, :sample_stats_prior)

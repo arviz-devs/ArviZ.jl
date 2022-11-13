@@ -35,36 +35,3 @@ end
     new_idata2 = InferenceData(; posterior=data.posterior, prior=data.prior)
     test_idata_approx_equal(new_idata1, new_idata2)
 end
-
-@testset "from_dict" begin
-    posterior = Dict(:A => randn(2, 10, 2), :B => randn(2, 10, 5, 2))
-    prior = Dict(:C => randn(2, 10, 2), :D => randn(2, 10, 5, 2))
-
-    idata = from_dict(posterior; prior)
-    check_idata_schema(idata)
-    @test ArviZ.groupnames(idata) == (:posterior, :prior)
-    @test idata.posterior.A == posterior[:A]
-    @test idata.posterior.B == posterior[:B]
-    @test idata.prior.C == prior[:C]
-    @test idata.prior.D == prior[:D]
-
-    idata2 = from_dict(; prior)
-    check_idata_schema(idata2)
-    @test idata2.prior == idata.prior
-end
-
-@testset "netcdf roundtrip" begin
-    data = load_example_data("centered_eight")
-    mktempdir() do path
-        filename = joinpath(path, "tmp.nc")
-        to_netcdf(data, filename)
-        data2 = from_netcdf(filename)
-        @test ArviZ.groupnames(data) == ArviZ.groupnames(data2)
-        for (ds1, ds2) in zip(data, data2), k in keys(ds1)
-            @test ds1[k] ≈ ds2[k]
-        end
-        data3 = convert_to_inference_data(filename)
-        test_idata_approx_equal(data3, data2; check_metadata=false)
-        return nothing
-    end
-end

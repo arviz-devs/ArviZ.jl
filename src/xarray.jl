@@ -86,6 +86,10 @@ function _to_xarray(data::DimensionalData.AbstractDimArray)
     coords = Dict(zip(dims, DimensionalData.index(data_dims)))
     default_dims = String[]
     values = parent(data)
+    if Missing <: eltype(values)
+        # passing `missing` to Python causes the array to have a `PyCall.jlwrap` dtype
+        values = replace(values, missing => NaN)
+    end
     metadata = DimensionalData.metadata(data)
     da = arviz.numpy_to_data_array(values; var_name, dims, coords, default_dims)
     if !isempty(metadata)
