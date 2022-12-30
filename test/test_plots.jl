@@ -80,7 +80,7 @@ using PyCall, PyPlot
         close(gcf())
     end
 
-    VERSION > v"1.6" && @testset "plot_kde" begin
+    VERSION ≥ v"1.8" && @testset "plot_kde" begin
         plot_kde(arr1)
         close(gcf())
 
