@@ -9,7 +9,7 @@ using PyCall, PyPlot
     arr2 = randn(rng, 100, 4)
     arr3 = randn(rng, 100)
 
-    @testset "$(f)" for f in (plot_trace, plot_pair, plot_joint)
+    @testset "$(f)" for f in (plot_trace, plot_pair)
         f(data; var_names=["tau", "mu"])
         close(gcf())
         f((x=arr1, y=arr2); var_names=["x", "y"])
