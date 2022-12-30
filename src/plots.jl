@@ -32,8 +32,6 @@ function convert_arguments(::typeof(plot_kde), values, args...; values2=nothing,
     return tuple(convert(Array, values), args...), kwargs_new
 end
 
-@deprecate plot_joint(args...; kwargs...) plot_pair(args...; kwargs...)
-
 function convert_arguments(::typeof(plot_compare), df, args...; kwargs...)
     pdf = topandas(Val(:DataFrame), df; index_name=:name)
     return tuple(pdf, args...), kwargs

@@ -1,10 +1,5 @@
 using ArviZ, DimensionalData, Test
 
-@testset "extract_dataset" begin
-    idata = random_data()
-    @test_deprecated extract_dataset(idata, :posterior; combined=false)
-end
-
 @testset "extract" begin
     idata = random_data()
     post = extract(idata, :posterior; combined=false)
