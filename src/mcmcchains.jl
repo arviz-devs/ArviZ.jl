@@ -68,14 +68,14 @@ function section_namedtuple(chns::Chains, section)
         ndim = length(sizes)
         # NOTE: slicing specific entries from AxisArrays does not preserve order
         # https://github.com/JuliaArrays/AxisArrays.jl/issues/182
-        oldarr = replacemissing(permutedims(chns.value[:, loc_names, :], (2, 1, 3)))
+        oldarr = replacemissing(permutedims(chns.value[:, loc_names, :], (1, 3, 2)))
         if iszero(ndim)
-            arr = dropdims(oldarr; dims=1)
+            arr = dropdims(oldarr; dims=3)
         else
-            arr = Array{Union{typeof(NaN),eltype(oldarr)}}(undef, sizes..., ndraws, nchains)
+            arr = Array{Union{typeof(NaN),eltype(oldarr)}}(undef, ndraws, nchains, sizes...)
             fill!(arr, NaN)
             for i in eachindex(locs, loc_names)
-                @views arr[locs[i]..., :, :] = oldarr[loc_names[i], :, :]
+                @views arr[:, :, locs[i]...] = oldarr[:, :, loc_names[i]]
             end
         end
         return arr
