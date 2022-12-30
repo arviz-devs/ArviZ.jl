@@ -10,7 +10,6 @@ end
 @forwardfun from_cmdstan
 @forwardfun from_cmdstanpy
 @forwardfun from_emcee
-@forwardfun from_pymc3
 @forwardfun from_pyro
 @forwardfun from_numpyro
 @forwardfun from_pystan
