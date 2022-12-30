@@ -75,7 +75,7 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
-export PSIS, PSISResult, psis, psis!, psislw
+export PSIS, PSISResult, psis, psis!
 export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 
 ## Diagnostics
