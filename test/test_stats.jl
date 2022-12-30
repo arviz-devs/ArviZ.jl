@@ -36,28 +36,6 @@ using DataFrames: DataFrames
         @test all(df == ArviZ.todataframes(ArviZ.arviz.loo(idata; pointwise=false)))
     end
 
-    @testset "psislw" begin
-        @testset for sz in ((1000,), (10, 1000))
-            logw = randn(sz)
-            logw_smoothed, k = psislw(copy(logw), 0.9)
-
-            # check against PSIS.jl
-            result = psis(copy(logw), 0.9)
-            @test exp.(logw_smoothed) ≈ result.weights
-            @test k ≈ result.pareto_shape
-
-            # check against Python ArviZ
-            logw_smoothed2, k2 = ArviZ.arviz.psislw(copy(logw), 0.9)
-            # NOTE: sometimes the smoothed weights disagree, while the shapes agree
-            @test_skip logw_smoothed ≈ logw_smoothed2
-            if length(sz) == 1
-                @test k ≈ k2[] # k2 is a 0-dimensional array
-            else
-                @test k ≈ k2
-            end
-        end
-    end
-
     @testset "waic" begin
         df = waic(idata; pointwise=false)
         @test df isa DataFrames.DataFrame
