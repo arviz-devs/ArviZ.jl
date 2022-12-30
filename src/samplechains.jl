@@ -3,15 +3,12 @@ using .SampleChains.TupleVectors: TupleVector
 
 # TODO: supported samples with a nested structure
 
-function namedtuple_of_arrays(x::TupleVector{<:NamedTuple{K}}) where {K}
-    return NamedTuple(k => recursive_stack(getproperty(x, k)) for k in K)
-end
 function namedtuple_of_arrays(chain::SampleChains.AbstractChain)
-    return namedtuple_of_arrays(SampleChains.samples(chain))
+    return InferenceObjects.stack_draws(SampleChains.samples(chain))
 end
 function namedtuple_of_arrays(multichain::SampleChains.MultiChain)
     chains = SampleChains.getchains(multichain)
-    return namedtuple_of_arrays(map(namedtuple_of_arrays, chains))
+    return InferenceObjects.stack_chains(map(InferenceObjects.stack_draws, chains))
 end
 
 _maybe_multichain(x) = x
@@ -86,11 +83,17 @@ function from_samplechains(
     if sample_stats === nothing && posterior_mc isa SampleChains.MultiChain
         sample_stats = _samplechains_info(posterior_mc)
     end
-    if sample_stats === nothing && prior_mc isa SampleChains.MultiChain
+    if sample_stats_prior === nothing && prior_mc isa SampleChains.MultiChain
         sample_stats_prior = _samplechains_info(prior_mc)
     end
+    posterior_nt = posterior === nothing ? nothing : namedtuple_of_arrays(posterior_mc)
+    prior_nt = if prior_mc isa SampleChains.MultiChain
+        namedtuple_of_arrays(prior_mc)
+    else
+        prior_mc
+    end
     return from_namedtuple(
-        posterior_mc; prior=prior_mc, sample_stats, sample_stats_prior, library, kwargs...
+        posterior_nt; prior=prior_nt, sample_stats, sample_stats_prior, library, kwargs...
     )
 end
 
