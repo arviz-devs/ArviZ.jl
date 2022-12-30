@@ -73,7 +73,7 @@ using DataFrames: DataFrames
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
         idata = convert_to_inference_data((
-            a=randn(rng, ndraws, nchains), b=randn(rng, 3, 4, ndraws, nchains)
+            a=randn(rng, ndraws, nchains), b=randn(rng, ndraws, nchains, 3, 4)
         ),)
 
         s = summarystats(idata)
@@ -112,7 +112,7 @@ using DataFrames: DataFrames
     @testset "ArviZ.summary" begin
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
-        data = (a=randn(rng, ndraws, nchains), b=randn(rng, 3, 4, ndraws, nchains))
+        data = (a=randn(rng, ndraws, nchains), b=randn(rng, ndraws, nchains, 3, 4))
 
         @test ArviZ.summary(data) isa DataFrames.DataFrame
     end

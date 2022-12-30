@@ -1,7 +1,10 @@
+using ArviZ
+using DimensionalData
 using SampleChains: SampleChains
 using SampleChains.TupleVectors: TupleVectors
 using SampleChainsDynamicHMC: SampleChainsDynamicHMC
 using SampleChainsDynamicHMC.TransformVariables
+using Test
 
 # minimal AbstractChain implementation
 struct TestChain{T} <: SampleChains.AbstractChain{T}
@@ -76,7 +79,7 @@ end
         idata = convert_to_inference_data(multichain)
         @test ArviZ.groupnames(idata) === (:posterior, :sample_stats)
         @test issubset(expected_stats_vars, keys(idata.sample_stats))
-        @test size(idata.posterior.μ) == (2, 3, 10, 4)
+        @test size(idata.posterior.μ) == (10, 4, 2, 3)
         @test size(idata.posterior.σ) == (10, 4)
 
         idata = convert_to_inference_data(multichain; group=:prior)
