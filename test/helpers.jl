@@ -9,7 +9,7 @@ class PyNullObject(object):
 """
 
 function random_dim_array(var_name, dims, coords, default_dims=())
-    _dims = (dims..., default_dims...)
+    _dims = (default_dims..., dims...)
     _coords = NamedTuple{_dims}(getproperty.(Ref(coords), _dims))
     size = map(length, values(_coords))
     data = randn(size)
@@ -56,23 +56,23 @@ function create_model(seed=10)
     posterior = Dict(
         "mu" => randn(rng, ndraws, nchains),
         "tau" => abs.(randn(rng, ndraws, nchains)),
-        "eta" => randn(rng, J, ndraws, nchains),
-        "theta" => randn(rng, J, ndraws, nchains),
+        "eta" => randn(rng, ndraws, nchains, J),
+        "theta" => randn(rng, ndraws, nchains, J),
     )
-    posterior_predictive = Dict("y" => randn(rng, J, ndraws, nchains))
+    posterior_predictive = Dict("y" => randn(rng, ndraws, nchains, J))
     sample_stats = Dict(
         "energy" => randn(rng, ndraws, nchains),
         "diverging" => (randn(rng, ndraws, nchains) .> 0.90),
         "max_depth" => (randn(rng, ndraws, nchains) .> 0.90),
-        "log_likelihood" => randn(rng, J, ndraws, nchains),
+        "log_likelihood" => randn(rng, ndraws, nchains, J),
     )
     prior = Dict(
         "mu" => randn(rng, ndraws, nchains) / 2,
         "tau" => abs.(randn(rng, ndraws, nchains)) / 2,
-        "eta" => randn(rng, data["J"], ndraws, nchains) / 2,
-        "theta" => randn(rng, data["J"], ndraws, nchains) / 2,
+        "eta" => randn(rng, ndraws, nchains, data["J"]) / 2,
+        "theta" => randn(rng, ndraws, nchains, data["J"]) / 2,
     )
-    prior_predictive = Dict("y" => randn(rng, J, ndraws, nchains) / 2)
+    prior_predictive = Dict("y" => randn(rng, ndraws, nchains, J) / 2)
     sample_stats_prior = Dict(
         "energy" => randn(rng, ndraws, nchains),
         "diverging" => Int.(randn(rng, ndraws, nchains) .> 0.95),
@@ -155,7 +155,7 @@ function test_idata_group_correct(
     library=nothing,
     dims=(;),
     coords=(;),
-    default_dims=(:chain, :draw),
+    default_dims=(:draw, :chain),
 )
     @test idata isa InferenceData
     @test ArviZ.hasgroup(idata, group_name)

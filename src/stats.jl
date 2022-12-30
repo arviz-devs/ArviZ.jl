@@ -29,36 +29,6 @@ function convert_result(::typeof(compare), result)
     return todataframes(result; index_name=:name)
 end
 
-"""
-    psislw(log_weights, reff=1.0) -> (lw_out, kss)
-
-Pareto smoothed importance sampling (PSIS).
-
-!!! note
-    
-    This function is deprecated and is just a thin wrapper around [`psis`](@ref).
-
-# Arguments
-
-  - `log_weights`: Array of size `(nobs, ndraws)`
-  - `reff`: relative MCMC efficiency, `ess / n`
-
-# Returns
-
-  - `lw_out`: Smoothed log weights
-  - `kss`: Pareto tail indices
-"""
-function psislw(logw, reff=1)
-    @warn "`psislw(logw[, reff])` is deprecated, use `psis(logw[, reff])`" maxlog = 1
-    result = psis(logw, reff)
-    log_weights = result.log_weights
-    d = ndims(log_weights)
-    dims = d == 1 ? Colon() : ntuple(Base.Fix1(+, 1), d - 1)
-    log_norm_exp = logsumexp(log_weights; dims)
-    log_weights .-= log_norm_exp
-    return log_weights, result.pareto_shape
-end
-
 @doc doc"""
     summarystats(
         data::InferenceData;

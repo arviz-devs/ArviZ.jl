@@ -74,7 +74,7 @@ function test_chains_data(chns, idata, group, names=names(chns); coords=(;), dim
         @test name in keys(ds)
         dim = get(dims, name, ())
         s = (x -> length(get(coords, x, ()))).(dim)
-        @test size(ds[name]) == (s..., ndraws, nchains)
+        @test size(ds[name]) == (ndraws, nchains, s...)
     end
     @test ArviZ.attributes(ds)["inference_library"] == "MCMCChains"
     return nothing
@@ -112,8 +112,8 @@ end
         idata = from_mcmcchains(chns; coords, dims)
         test_chains_data(chns, idata, :posterior, [:a, :b]; coords, dims)
         var_dims = DimensionalData.layerdims(idata.posterior)
-        @test Dimensions.name(var_dims[:a]) == (:ai, :draw, :chain)
-        @test Dimensions.name(var_dims[:b]) == (:bi, :draw, :chain)
+        @test Dimensions.name(var_dims[:a]) == (:draw, :chain, :ai)
+        @test Dimensions.name(var_dims[:b]) == (:draw, :chain, :bi)
     end
 
     @testset "multivariate" begin
@@ -129,10 +129,10 @@ end
         idata = from_mcmcchains(chns; coords, dims)
         test_chains_data(chns, idata, :posterior, [:a]; coords, dims)
         arr = idata.posterior.a
-        @test arr[1, 1, :, :] == chns.value[:, ET(var_names[1]), :]
-        @test arr[2, 2, :, :] == chns.value[:, ET(var_names[2]), :]
-        @test arr[2, 1, :, :] == chns.value[:, ET(var_names[3]), :]
-        @test arr[1, 2, :, :] == chns.value[:, ET(var_names[4]), :]
+        @test arr[:, :, 1, 1] == chns.value[:, ET(var_names[1]), :]
+        @test arr[:, :, 2, 2] == chns.value[:, ET(var_names[2]), :]
+        @test arr[:, :, 2, 1] == chns.value[:, ET(var_names[3]), :]
+        @test arr[:, :, 1, 2] == chns.value[:, ET(var_names[4]), :]
     end
 
     @testset "specify eltypes" begin
@@ -374,9 +374,11 @@ end
             for var_name in keys(ds1)
                 da1 = ds1[var_name]
                 da2 = ds2[var_name]
-                @test Dimensions.name(Dimensions.dims(da1)) ==
-                    reverse(Dimensions.name(Dimensions.dims(da2)))
-                @test da1 ≈ permutedims(da2, reverse(Dimensions.dims(da2)))
+                if ndims(da1) == 3
+                    @test da1 ≈ permutedims(da2, (:draw, :chain, :school))
+                else
+                    @test da1 ≈ permutedims(da2, (:draw, :chain))
+                end
             end
         end
     end

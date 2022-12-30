@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.5
+# v0.19.16
 
 using Markdown
 using InteractiveUtils
@@ -245,8 +245,7 @@ log_likelihood = let
     # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
     ynames = string.(keys(posterior_predictive))
     log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
-    # Reshape into `(size(y)..., ndraws, nchains)`
-    (; y=permutedims(cat(log_likelihood_y...; dims=3), (3, 1, 2)))
+    (; y=cat(log_likelihood_y...; dims=3))
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
@@ -428,7 +427,7 @@ with_terminal(versioninfo)
 # ╠═f552b5b5-9744-41df-af90-46405367ea0b
 # ╟─9d3673f5-b57b-432e-944a-70b23643128a
 # ╠═05c9be29-7758-4324-971c-5579f99aaf9d
-# ╠═98acc304-22e3-4e6b-a2f4-d22f6847145b
+# ╟─98acc304-22e3-4e6b-a2f4-d22f6847145b
 # ╠═b46af168-1ce3-4058-a014-b66c645a6e0d
 # ╠═ab145e41-b230-4cad-bef5-f31e0e0770d4
 # ╟─ffc7730c-d861-48e8-b173-b03e0542f32b
