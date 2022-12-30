@@ -68,7 +68,7 @@ function forwarddoc(f::Symbol)
     $summary
 
     !!! note
-        This function is forwarded to Python's [`arviz.$(f)`](https://python.arviz.org/en/v$(arviz_version())/api/generated/arviz.$(f).html).
+        This function is forwarded to Python's [`arviz.$(f)`](https://python.arviz.org/en/$(arviz_version())/api/generated/arviz.$(f).html).
         The docstring of that function is included below.
     ```
     $body
