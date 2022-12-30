@@ -112,7 +112,7 @@ See also: [`ess`](@ref), [`plot_mcse`](@ref), [`summarystats`](@ref)
     all.
 
   - `method::Symbol=:bulk`: ESS method to use. Valid options are:
-    
+
       + `:mean`:
       + `:sd`
       + `:median`
