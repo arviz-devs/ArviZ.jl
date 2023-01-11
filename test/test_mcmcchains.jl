@@ -1,5 +1,8 @@
+using Test
+using ArviZ
+using DimensionalData
 using MCMCChains: MCMCChains
-using CmdStan, OrderedCollections
+using OrderedCollections, StanSample
 
 const noncentered_schools_stan_model = """
     data {
@@ -49,19 +52,14 @@ function makechains(nvars::Int, args...; kwargs...)
     return makechains(names, args...; kwargs...)
 end
 
-function cmdstan_noncentered_schools(data, draws, chains; tmpdir=joinpath(pwd(), "tmp"))
+function stan_noncentered_schools(data, draws, chains; tmpdir=mktempdir())
     model_name = "school8"
-    stan_model = Stanmodel(;
-        name=model_name,
-        model=noncentered_schools_stan_model,
-        nchains=chains,
-        num_warmup=draws,
-        num_samples=draws,
-        output_format=:mcmcchains,
-        tmpdir,
+    stan_model = SampleModel(model_name, noncentered_schools_stan_model, tmpdir)
+    _ = stan_sample(
+        stan_model; data=data, num_chains=chains, num_samples=draws, summary=false
     )
-    rc, chns, cnames = stan(stan_model, data; summary=false)
-    outfiles = ["$(tmpdir)/$(model_name)_samples_$(i).csv" for i in 1:chains]
+    chns = read_samples(stan_model, :mcmcchains; include_internals=true)
+    outfiles = ["$(stan_model.output_base)_chain_$(i).csv" for i in 1:chains]
     return (model=stan_model, files=outfiles, chains=chns)
 end
 
@@ -342,7 +340,7 @@ end
 @testset "from_cmdstan" begin
     data = noncentered_schools_data()
     mktempdir() do path
-        output = cmdstan_noncentered_schools(data, 500, 4; tmpdir=path)
+        output = stan_noncentered_schools(data, 500, 4; tmpdir=path)
         posterior_predictive = prior_predictive = [:y_hat]
         log_likelihood = :log_lik
         coords = (school=1:8,)
