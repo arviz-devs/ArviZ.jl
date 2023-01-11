@@ -337,7 +337,6 @@ begin
             seed=28983,
             summary=false,
         )
-        stan_model
         return StanSample.inferencedata(
             stan_model;
             posterior_predictive_var=:y_hat,
