@@ -8,7 +8,7 @@ using InteractiveUtils
 using Pkg, InteractiveUtils
 
 # ╔═╡ ac57d957-0bdd-457a-ac15-9a4f94f0c785
-# Remove this cell to use release versions of dependencies 
+# Remove this cell to use release versions of dependencies
 # hideall
 let
     docs_dir = dirname(@__DIR__)
@@ -30,7 +30,7 @@ md"""
 # [ArviZ.jl Quickstart](#quickstart)
 
 !!! note
-    
+
     This tutorial is adapted from [ArviZ's quickstart](https://python.arviz.org/en/latest/getting_started/Introduction.html).
 """
 
@@ -348,7 +348,7 @@ begin
             ),
         )
     end
-end;
+end
 
 # ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
 begin
