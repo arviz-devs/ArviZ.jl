@@ -337,7 +337,7 @@ end
     @test ArviZ.summary(chn) !== nothing
 end
 
-@testset "from_cmdstan" begin
+Sys.iswindows() || @testset "from_cmdstan" begin
     data = noncentered_schools_data()
     mktempdir() do path
         output = stan_noncentered_schools(data, 500, 4; tmpdir=path)
