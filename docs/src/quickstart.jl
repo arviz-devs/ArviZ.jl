@@ -8,7 +8,7 @@ using InteractiveUtils
 using Pkg, InteractiveUtils
 
 # ╔═╡ ac57d957-0bdd-457a-ac15-9a4f94f0c785
-# Remove this cell to use release versions of dependencies 
+# Remove this cell to use release versions of dependencies
 # hideall
 let
     docs_dir = dirname(@__DIR__)
@@ -20,7 +20,7 @@ let
 end;
 
 # ╔═╡ 467c2d13-6bfe-4feb-9626-fb14796168aa
-using ArviZ, CmdStan, Distributions, LinearAlgebra, PyPlot, Random, Turing
+using ArviZ, Distributions, LinearAlgebra, PyPlot, Random, StanSample, Turing
 
 # ╔═╡ 56a39a90-0594-48f4-ba04-f7b612019cd1
 using PlutoUI
@@ -30,7 +30,7 @@ md"""
 # [ArviZ.jl Quickstart](#quickstart)
 
 !!! note
-    
+
     This tutorial is adapted from [ArviZ's quickstart](https://python.arviz.org/en/latest/getting_started/Introduction.html).
 """
 
@@ -49,7 +49,7 @@ ArviZ.use_style("arviz-darkgrid")
 md"""
 ## [Get started with plotting](#Get-started-with-plotting)
 
-ArviZ.jl is designed to be used with libraries like [CmdStan](https://github.com/StanJulia/CmdStan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
+ArviZ.jl is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 """
 
 # ╔═╡ efb3f0af-9fac-48d8-bbb2-2dd6ebd5e4f6
@@ -286,11 +286,11 @@ end
 
 # ╔═╡ 98acc304-22e3-4e6b-a2f4-d22f6847145b
 md"""
-## [Plotting with CmdStan.jl outputs](#Plotting-with-CmdStan.jl-outputs)
+## [Plotting with Stan.jl outputs](#Plotting-with-Stan.jl-outputs)
 
-CmdStan.jl and StanSample.jl also default to producing `Chains` outputs, and we can easily plot these chains.
+StanSample.jl comes with built-in support for producing `InferenceData` outputs.
 
-Here is the same centered eight schools model:
+Here is the same centered eight schools model in Stan:
 """
 
 # ╔═╡ b46af168-1ce3-4058-a014-b66c645a6e0d
@@ -326,43 +326,35 @@ begin
     """
 
     schools_data = Dict("J" => J, "y" => y, "sigma" => σ)
-    stan_chns = mktempdir() do path
-        stan_model = Stanmodel(;
-            model=schools_code,
-            name="schools",
-            nchains,
-            num_warmup=ndraws_warmup,
+    idata_stan = mktempdir() do path
+        stan_model = SampleModel("schools", schools_code, path)
+        _ = stan_sample(
+            stan_model;
+            data=schools_data,
+            num_chains=nchains,
+            num_warmups=ndraws_warmup,
             num_samples=ndraws,
-            output_format=:mcmcchains,
-            random=CmdStan.Random(28983),
-            tmpdir=path,
+            seed=28983,
+            summary=false,
         )
-        _, chns, _ = stan(stan_model, schools_data; summary=false)
-        return chns
+        return StanSample.inferencedata(
+            stan_model;
+            posterior_predictive_var=:y_hat,
+            observed_data=(; y),
+            log_likelihood_var=:log_lik,
+            coords=(; school=schools),
+            dims=NamedTuple(
+                k => (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)
+            ),
+        )
     end
-end;
+end
 
 # ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
 begin
-    plot_density(stan_chns; var_names=(:mu, :tau))
+    plot_density(idata_stan; var_names=(:mu, :tau))
     gcf()
 end
-
-# ╔═╡ ffc7730c-d861-48e8-b173-b03e0542f32b
-md"""
-Again, converting to `InferenceData`, we can get much richer labelling and mixing of data.
-Note that we're using the same [`from_cmdstan`](https://julia.arviz.org/stable/reference/#ArviZ.from_cmdstan) function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a `Chains` object, it instead uses ArviZ.jl's overloads, which forward to `from_mcmcchains`.
-"""
-
-# ╔═╡ 020cbdc0-a0a2-4d20-838f-c99b541d5832
-idata_stan = from_cmdstan(
-    stan_chns;
-    posterior_predictive=:y_hat,
-    observed_data=(; y),
-    log_likelihood=:log_lik,
-    coords=(; school=schools),
-    dims=NamedTuple(k => (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)),
-)
 
 # ╔═╡ e44b260c-9d2f-43f8-a64b-04245a0a5658
 md"""Here is a plot showing where the Hamiltonian sampler had divergences:"""
@@ -430,8 +422,6 @@ with_terminal(versioninfo)
 # ╟─98acc304-22e3-4e6b-a2f4-d22f6847145b
 # ╠═b46af168-1ce3-4058-a014-b66c645a6e0d
 # ╠═ab145e41-b230-4cad-bef5-f31e0e0770d4
-# ╟─ffc7730c-d861-48e8-b173-b03e0542f32b
-# ╠═020cbdc0-a0a2-4d20-838f-c99b541d5832
 # ╟─e44b260c-9d2f-43f8-a64b-04245a0a5658
 # ╠═5070bbbc-68d2-49b8-bd91-456dc0da4573
 # ╟─ac2b4378-bd1c-4164-af05-d9a35b1bb08f
