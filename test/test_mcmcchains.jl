@@ -380,4 +380,3 @@ Sys.iswindows() || VERSION < v"1.8" ||  @testset "from_cmdstan" begin
             end
         end
     end
-end

@@ -31,7 +31,10 @@ download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
 DocMeta.setdocmeta!(
-    ArviZExampleData, :DocTestSetup, :(using ArviZ.ArviZExampleData); recursive=true
+    ArviZExampleData,
+    :DocTestSetup,
+    :(using ArviZ.ArviZExampleData, ArviZ.InferenceData);
+    recursive=true,
 )
 
 makedocs(;
