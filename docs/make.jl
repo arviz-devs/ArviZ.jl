@@ -33,7 +33,7 @@ download_asset("favicon.ico")
 DocMeta.setdocmeta!(
     ArviZExampleData,
     :DocTestSetup,
-    :(using ArviZ.ArviZExampleData, ArviZ.InferenceData);
+    :(using ArviZ.ArviZExampleData, ArviZ.InferenceObjects);
     recursive=true,
 )
 
