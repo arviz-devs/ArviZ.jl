@@ -1,9 +1,5 @@
 # [ArviZ.jl: Exploratory analysis of Bayesian models in Julia](@id arvizjl)
 
-![CI](https://github.com/arviz-devs/ArviZ.jl/workflows/CI/badge.svg)
-[![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=main)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=main)
-[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
-
 ArviZ.jl is a Julia package for exploratory analysis of Bayesian models.
 It is codeveloped with the Python package [ArviZ](https://python.arviz.org/) and in some cases temporarily relies on the Python package for functionality.
 
