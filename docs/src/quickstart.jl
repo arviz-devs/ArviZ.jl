@@ -160,7 +160,7 @@ md"""
 For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert `Chains` objects to multidimensional data structures with named dimensions and indices.
 Note that for such dimensions, the information is not contained in `Chains`, so we need to provide it.
 
-ArviZ is built to work with [`InferenceData`](https://julia.arviz.org/stable/reference/#ArviZ.InferenceData), and the more *groups* it has access to, the more powerful analyses it can perform.
+ArviZ is built to work with [`InferenceData`](https://julia.arviz.org/InferenceObjects/stable/inference_data), and the more *groups* it has access to, the more powerful analyses it can perform.
 """
 
 # ╔═╡ 803efdd8-656e-4e37-ba36-81195d064972
@@ -173,7 +173,7 @@ idata_turing_post = from_mcmcchains(
 
 # ╔═╡ 79f342c8-0738-432b-bfd7-2da25e50fa91
 md"""
-Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/stable/reference/#ArviZ.Dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.DimStack).
+Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/InferenceObjects/stable/dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.DimStack).
 We can view a summary of the dataset.
 """
 
@@ -234,7 +234,7 @@ end;
 
 # ╔═╡ 4d2fdcbe-c1d4-43b6-b382-f2e956b952a1
 md"""
-And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](https://julia.arviz.org/stable/reference/#ArviZ.loo),
+And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](https://julia.arviz.org/ArviZ/stable/api/stats/#ArviZ.loo),
 """
 
 # ╔═╡ 5a075722-232f-40fc-a499-8dc5b0c2424a
@@ -249,7 +249,7 @@ log_likelihood = let
 end;
 
 # ╔═╡ 1b5af2c3-f2ce-4e9d-9ad7-ac287a9178e2
-md"This can then be included in the [`from_mcmcchains`](https://julia.arviz.org/stable/reference/#ArviZ.from_mcmcchains) call from above:"
+md"This can then be included in the [`from_mcmcchains`](https://julia.arviz.org/ArviZ/stable/api/data/#ArviZ.from_mcmcchains) call from above:"
 
 # ╔═╡ b38c7a43-f00c-43c0-aa6b-9c581d6d0c73
 idata_turing = from_mcmcchains(
