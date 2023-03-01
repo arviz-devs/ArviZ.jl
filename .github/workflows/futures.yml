@@ -9,8 +9,6 @@ on:
 
 env:
   PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
-  CMDSTAN_VERSION: "2.25.0"
-  CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
 
 jobs:
   test:
@@ -43,19 +41,6 @@ jobs:
             ${{ runner.os }}-test-${{ env.cache-name }}-
             ${{ runner.os }}-test-
             ${{ runner.os }}-
-      - name: Cache CmdStan
-        id: cache-cmdstan
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.CMDSTAN_PATH }}
-          key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
-      - name: Download and build CmdStan
-        if: steps.cache-cmdstan.outputs.cache-hit != 'true'
-        run: |
-          wget -P ${{ env.CMDSTAN_PATH }} https://github.com/stan-dev/cmdstan/releases/download/v${{ env.CMDSTAN_VERSION }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz
-          tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
-          make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
-        shell: bash
       - uses: julia-actions/julia-buildpkg@latest
         if: matrix.arviz_version != 'main' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/v')
       - name: "Install arviz#main"
@@ -79,5 +64,3 @@ jobs:
           ArviZ.initialize_pandas()
         shell: julia --color=yes --project {0}
       - uses: julia-actions/julia-runtest@latest
-        env:
-          JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
