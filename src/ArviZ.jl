@@ -82,7 +82,7 @@ export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 export bfmi, ess, rhat, mcse
 
 ## Stats utils
-export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
+export autocov, autocorr
 
 ## InferenceObjects
 export InferenceObjects,
