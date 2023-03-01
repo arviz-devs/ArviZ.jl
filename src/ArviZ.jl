@@ -101,7 +101,7 @@ export InferenceObjectsNetCDF, from_netcdf, to_netcdf
 export ArviZExampleData, describe_example_data, load_example_data
 
 ## Data
-export extract, from_json, from_cmdstan, from_mcmcchains, from_samplechains, concat
+export from_json, from_cmdstan, from_mcmcchains, from_samplechains
 
 ## rcParams
 export rcParams, with_rc_context
@@ -137,7 +137,6 @@ end
 include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
-include("data.jl")
 include("diagnostics.jl")
 include("plots.jl")
 include("stats.jl")

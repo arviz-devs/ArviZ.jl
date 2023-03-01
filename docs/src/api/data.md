@@ -20,13 +20,6 @@ from_netcdf
 to_netcdf
 ```
 
-## General functions
-
-```@docs
-concat
-extract
-```
-
 ## Example data
 
 ```@docs
