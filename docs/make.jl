@@ -38,7 +38,14 @@ DocMeta.setdocmeta!(
 )
 
 makedocs(;
-    modules=[ArviZ, ArviZExampleData, InferenceObjects, InferenceObjectsNetCDF, PSIS],
+    modules=[
+        ArviZ,
+        ArviZExampleData,
+        InferenceObjects,
+        InferenceObjectsNetCDF,
+        MCMCDiagnosticTools,
+        PSIS,
+    ],
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",
