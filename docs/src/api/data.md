@@ -7,7 +7,6 @@ Pages = ["data.md"]
 ## Inference library converters
 
 ```@docs
-from_cmdstan
 from_mcmcchains
 from_samplechains
 ```

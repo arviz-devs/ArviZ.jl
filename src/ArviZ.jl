@@ -101,7 +101,7 @@ export InferenceObjectsNetCDF, from_netcdf, to_netcdf
 export ArviZExampleData, describe_example_data, load_example_data
 
 ## Data
-export from_json, from_cmdstan, from_mcmcchains, from_samplechains
+export from_json, from_mcmcchains, from_samplechains
 
 ## rcParams
 export rcParams, with_rc_context
