@@ -40,5 +40,6 @@ from_namedtuple
 ## General functions
 
 ```@docs
+cat
 merge
 ```
