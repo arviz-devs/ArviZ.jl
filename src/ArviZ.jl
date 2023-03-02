@@ -46,6 +46,17 @@ import InferenceObjects: namedtuple_of_arrays
 using InferenceObjectsNetCDF: InferenceObjectsNetCDF, from_netcdf, to_netcdf
 
 using ArviZExampleData: ArviZExampleData, describe_example_data, load_example_data
+using MCMCDiagnosticTools:
+    MCMCDiagnosticTools,
+    AutocovMethod,
+    FFTAutocovMethod,
+    BDAAutocovMethod,
+    bfmi,
+    ess,
+    ess_rhat,
+    mcse,
+    rhat,
+    rstar
 
 # Exports
 
@@ -79,7 +90,8 @@ export PSIS, PSISResult, psis, psis!
 export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 
 ## Diagnostics
-export bfmi, ess, rhat, mcse
+export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
+export bfmi, ess, ess_rhat, mcse, rhat, rstar
 
 ## InferenceObjects
 export InferenceObjects,
@@ -134,7 +146,6 @@ end
 include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
-include("diagnostics.jl")
 include("plots.jl")
 include("stats.jl")
 
