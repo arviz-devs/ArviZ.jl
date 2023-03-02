@@ -30,12 +30,15 @@ download_asset("ArviZ.png", "logo.png")
 download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
+DocMeta.setdocmeta!(ArviZ.ArviZExampleData, :DocTestSetup, :(using ArviZ.ArviZExampleData);)
 DocMeta.setdocmeta!(
-    ArviZExampleData,
-    :DocTestSetup,
-    :(using ArviZ.ArviZExampleData, ArviZ.InferenceObjects);
-    recursive=true,
+    ArviZ.MCMCDiagnosticTools, :DocTestSetup, :(using ArviZ.MCMCDiagnosticTools);
 )
+DocMeta.setdocmeta!(ArviZ.InferenceObjects, :DocTestSetup, :(using ArviZ.InferenceObjects);)
+
+doctestfilters = [
+    r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
+]
 
 makedocs(;
     modules=[
@@ -49,12 +52,6 @@ makedocs(;
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",
-        "Getting Started" => [
-            "Quickstart" => "quickstart.md",
-            "Working with `InferenceData`" => "working_with_inference_data.md",
-            "Creating custom plots" => "creating_custom_plots.md",
-        ],
-        "Example Gallery" => ["Matplotlib" => "mpl_examples.md"],
         "API" => [
             hide("api/index.md"),
             "Plots" => "api/plots.md",
@@ -74,6 +71,7 @@ makedocs(;
         sidebar_sitename=false,
         canonical="stable",
     ),
+    doctestfilters=doctestfilters,
     linkcheck=true,
     analytics="G-W1G68W77YV",
 )

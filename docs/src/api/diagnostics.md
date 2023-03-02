@@ -10,6 +10,7 @@ Pages = ["diagnostics.md"]
 MCMCDiagnosticTools.bfmi
 MCMCDiagnosticTools.ess
 MCMCDiagnosticTools.ess_rhat
+MCMCDiagnosticTools.mcse
 MCMCDiagnosticTools.rhat
 MCMCDiagnosticTools.rstar
 MCMCDiagnosticTools.AutocovMethod
