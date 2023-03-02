@@ -1,2 +1,0 @@
-@forwardfun autocov
-@forwardfun autocorr

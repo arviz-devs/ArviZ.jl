@@ -81,9 +81,6 @@ export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 ## Diagnostics
 export bfmi, ess, rhat, mcse
 
-## Stats utils
-export autocov, autocorr
-
 ## InferenceObjects
 export InferenceObjects,
     Dataset,
@@ -140,6 +137,5 @@ include("xarray.jl")
 include("diagnostics.jl")
 include("plots.jl")
 include("stats.jl")
-include("stats_utils.jl")
 
 end # module
