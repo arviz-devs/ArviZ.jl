@@ -13,6 +13,11 @@ MCMCDiagnosticTools.ess_rhat
 MCMCDiagnosticTools.mcse
 MCMCDiagnosticTools.rhat
 MCMCDiagnosticTools.rstar
+```
+
+The following autocovariance methods are supported:
+
+```@docs
 MCMCDiagnosticTools.AutocovMethod
 MCMCDiagnosticTools.FFTAutocovMethod
 MCMCDiagnosticTools.BDAAutocovMethod
