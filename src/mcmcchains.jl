@@ -269,12 +269,3 @@ function from_mcmcchains(
 
     return all_idata
 end
-
-"""
-    from_cmdstan(posterior::Chains; kwargs...) -> InferenceData
-
-Call [`from_mcmcchains`](@ref) on output of `CmdStan`.
-"""
-function from_cmdstan(posterior::Chains; kwargs...)
-    return from_mcmcchains(posterior; library="CmdStan", kwargs...)
-end

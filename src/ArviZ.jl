@@ -93,9 +93,6 @@ export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
 export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
 export bfmi, ess, ess_rhat, mcse, rhat, rstar
 
-## Stats utils
-export autocov, autocorr, make_ufunc, wrap_xarray_ufunc
-
 ## InferenceObjects
 export InferenceObjects,
     Dataset,
@@ -113,7 +110,7 @@ export InferenceObjectsNetCDF, from_netcdf, to_netcdf
 export ArviZExampleData, describe_example_data, load_example_data
 
 ## Data
-export extract, from_json, from_cmdstan, from_mcmcchains, from_samplechains, concat
+export from_mcmcchains, from_samplechains
 
 ## rcParams
 export rcParams, with_rc_context
@@ -149,9 +146,7 @@ end
 include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
-include("data.jl")
 include("plots.jl")
 include("stats.jl")
-include("stats_utils.jl")
 
 end # module

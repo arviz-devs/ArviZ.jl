@@ -7,7 +7,6 @@ Pages = ["data.md"]
 ## Inference library converters
 
 ```@docs
-from_cmdstan
 from_mcmcchains
 from_samplechains
 ```
@@ -15,16 +14,8 @@ from_samplechains
 ## IO / Conversion
 
 ```@docs
-from_json
 from_netcdf
 to_netcdf
-```
-
-## General functions
-
-```@docs
-concat
-extract
 ```
 
 ## Example data

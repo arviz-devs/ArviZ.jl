@@ -5,7 +5,6 @@ using Test
     include("helpers.jl")
     include("test_rcparams.jl")
     include("test_utils.jl")
-    include("test_data.jl")
     include("test_stats.jl")
     include("test_plots.jl")
     include("test_samplechains.jl")

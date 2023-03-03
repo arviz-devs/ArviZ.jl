@@ -40,15 +40,24 @@ doctestfilters = [
     r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
 ]
 
+modules = [
+    ArviZ,
+    ArviZExampleData,
+    InferenceObjects,
+    InferenceObjectsNetCDF,
+    MCMCDiagnosticTools,
+    PSIS,
+]
+if isdefined(Base, :get_extension)
+    # using Requires, these docstrings are automatically loaded, but as an extension we need
+    # to manually specify the module
+    push!(
+        modules, Base.get_extension(InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt)
+    )
+end
+
 makedocs(;
-    modules=[
-        ArviZ,
-        ArviZExampleData,
-        InferenceObjects,
-        InferenceObjectsNetCDF,
-        MCMCDiagnosticTools,
-        PSIS,
-    ],
+    modules,
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",
@@ -71,7 +80,7 @@ makedocs(;
         sidebar_sitename=false,
         canonical="stable",
     ),
-    doctestfilters=doctestfilters,
+    doctestfilters,
     linkcheck=true,
     analytics="G-W1G68W77YV",
 )

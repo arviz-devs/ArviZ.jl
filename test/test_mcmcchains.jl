@@ -2,39 +2,7 @@ using Test
 using ArviZ
 using DimensionalData
 using MCMCChains: MCMCChains
-using OrderedCollections, StanSample
-
-const noncentered_schools_stan_model = """
-    data {
-        int<lower=0> J;
-        real y[J];
-        real<lower=0> sigma[J];
-    }
-    parameters {
-        real mu;
-        real<lower=0> tau;
-        real eta[J];
-    }
-    transformed parameters {
-        real theta[J];
-        for (j in 1:J)
-            theta[j] = mu + tau * eta[j];
-    }
-    model {
-        mu ~ normal(0, 5);
-        tau ~ cauchy(0, 5);
-        eta ~ normal(0, 1);
-        y ~ normal(theta, sigma);
-    }
-    generated quantities {
-        vector[J] log_lik;
-        vector[J] y_hat;
-        for (j in 1:J) {
-            log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
-            y_hat[j] = normal_rng(theta[j], sigma[j]);
-        }
-    }
-"""
+using OrderedCollections
 
 function makechains(
     names, ndraws, nchains, domains=[Float64 for _ in names]; seed=42, internal_names=[]
@@ -50,17 +18,6 @@ end
 function makechains(nvars::Int, args...; kwargs...)
     names = [Symbol("var$(i)") for i in 1:nvars]
     return makechains(names, args...; kwargs...)
-end
-
-function stan_noncentered_schools(data, draws, chains; tmpdir=mktempdir())
-    model_name = "school8"
-    stan_model = SampleModel(model_name, noncentered_schools_stan_model, tmpdir)
-    _ = stan_sample(
-        stan_model; data=data, num_chains=chains, num_samples=draws, summary=false
-    )
-    chns = read_samples(stan_model, :mcmcchains; include_internals=true)
-    outfiles = ["$(stan_model.output_base)_chain_$(i).csv" for i in 1:chains]
-    return (model=stan_model, files=outfiles, chains=chns)
 end
 
 function test_chains_data(chns, idata, group, names=names(chns); coords=(;), dims=(;))
@@ -335,49 +292,4 @@ end
     chn = MCMCChains.Chains(val)  # According to version, this may introduce String or Symbol name
 
     @test ArviZ.summary(chn) !== nothing
-end
-
-Sys.iswindows() || VERSION < v"1.8" ||  @testset "from_cmdstan" begin
-    data = noncentered_schools_data()
-    mktempdir() do path
-        output = stan_noncentered_schools(data, 500, 4; tmpdir=path)
-        posterior_predictive = prior_predictive = [:y_hat]
-        log_likelihood = :log_lik
-        coords = (school=1:8,)
-        dims = (
-            theta=[:school], y=[:school], log_lik=[:school], y_hat=[:school], eta=[:school]
-        )
-        idata1 = from_cmdstan(
-            output.chains;
-            posterior_predictive,
-            log_likelihood,
-            prior=output.chains,
-            prior_predictive,
-            coords,
-            dims,
-        )
-        idata2 = from_cmdstan(
-            output.files;
-            posterior_predictive,
-            log_likelihood,
-            prior=output.files,
-            prior_predictive,
-            coords=Dict(pairs(coords)),
-            dims=Dict(pairs(dims)),
-        )
-        @testset "idata.$(group)" for group in ArviZ.groupnames(idata2)
-            ds1 = idata1[group]
-            ds2 = idata2[group]
-
-            for var_name in keys(ds1)
-                da1 = ds1[var_name]
-                da2 = ds2[var_name]
-                if ndims(da1) == 3
-                    @test da1 ≈ permutedims(da2, (:draw, :chain, :school))
-                else
-                    @test da1 ≈ permutedims(da2, (:draw, :chain))
-                end
-            end
-        end
-    end
 end
