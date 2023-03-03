@@ -4,15 +4,18 @@
 Pages = ["diagnostics.md"]
 ```
 
-## Reference
+## [Bayesian fraction of missing information](@id bfmi)
 
 ```@docs
 MCMCDiagnosticTools.bfmi
+```
+
+## [Effective sample size and $\widehat{R}$ diagnostic](@id ess_rhat)
+
+```@docs
 MCMCDiagnosticTools.ess
-MCMCDiagnosticTools.ess_rhat
-MCMCDiagnosticTools.mcse
 MCMCDiagnosticTools.rhat
-MCMCDiagnosticTools.rstar
+MCMCDiagnosticTools.ess_rhat
 ```
 
 The following autocovariance methods are supported:
@@ -21,4 +24,16 @@ The following autocovariance methods are supported:
 MCMCDiagnosticTools.AutocovMethod
 MCMCDiagnosticTools.FFTAutocovMethod
 MCMCDiagnosticTools.BDAAutocovMethod
+```
+
+## [Monte Carlo standard error](@id mcse)
+
+```@docs
+MCMCDiagnosticTools.mcse
+```
+
+## [$R^*$ diagnostic](@id rstar)
+
+```@docs
+MCMCDiagnosticTools.rstar
 ```
