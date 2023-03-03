@@ -14,7 +14,6 @@ from_samplechains
 ## IO / Conversion
 
 ```@docs
-from_json
 from_netcdf
 to_netcdf
 ```
