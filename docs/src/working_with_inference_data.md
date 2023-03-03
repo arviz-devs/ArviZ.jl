@@ -232,5 +232,5 @@ idata_rerun = InferenceData(; posterior=set(post[chain=At([0, 1])]; chain=[4, 5]
 You can combine the two using [`cat`](@ref).
 
 ```@example wwid
-cat(idata[[:posterior]], idata_rerun; dim=:chain)
+cat(idata[[:posterior]], idata_rerun; dims=:chain)
 ```
