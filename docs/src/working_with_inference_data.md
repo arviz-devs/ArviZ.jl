@@ -221,7 +221,7 @@ school_bis_idx = ["Deerfield", "Choate", "Lawrenceville"]
 theta_school_diff[school=At(school_idx), school_bis=At(school_bis_idx)]
 ```
 
-## Add new chains using `concat`
+## Add new chains using `cat`
 
 Suppose after checking the `mcse` and realizing you need more samples, you rerun the model with two chains and obtain an `idata_rerun` object.
 
@@ -229,8 +229,8 @@ Suppose after checking the `mcse` and realizing you need more samples, you rerun
 idata_rerun = InferenceData(; posterior=set(post[chain=At([0, 1])]; chain=[4, 5]))
 ```
 
-You can combine the two using [`concat`](@ref).
+You can combine the two using [`cat`](@ref).
 
 ```@example wwid
-concat(idata[[:posterior]], idata_rerun; dim=:chain)
+cat(idata[[:posterior]], idata_rerun; dim=:chain)
 ```
