@@ -52,7 +52,8 @@ if isdefined(Base, :get_extension)
     # using Requires, these docstrings are automatically loaded, but as an extension we need
     # to manually specify the module
     push!(
-        modules, Base.get_extension(InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt)
+        modules,
+        Base.get_extension(InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt),
     )
 end
 

@@ -87,7 +87,7 @@ export plot_autocorr,
 
 ## Stats
 export PSIS, PSISResult, psis, psis!
-export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
+export summarystats, compare, hdi, kde, loo, loo_pit, r2_score, waic
 
 ## Diagnostics
 export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
@@ -147,6 +147,9 @@ include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
 include("plots.jl")
-include("stats.jl")
+include("ArviZStats/ArviZStats.jl")
+
+using .ArviZStats
+using .ArviZStats: summary
 
 end # module

@@ -1,7 +1,7 @@
 using ArviZ, Random, Statistics, Test
 using DataFrames: DataFrames
 
-@testset "stats" begin
+@testset "ArviZStats" begin
     idata = load_example_data("centered_eight")
 
     @testset "compare" begin
