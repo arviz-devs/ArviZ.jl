@@ -1,29 +1,30 @@
 module ArviZStats
 
 using ArviZ: ArviZ, arviz, @forwardfun
+using DimensionalData: DimensionalData, Dimensions
 using InferenceObjects: InferenceObjects
+using LogExpFunctions: LogExpFunctions
+using Markdown: @doc_str
+using MCMCDiagnosticTools: MCMCDiagnosticTools
 using PSIS: PSIS, PSISResult, psis, psis!
+using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
 
 export PSIS, PSISResult, psis, psis!
 export compare, hdi, kde, loo, loo_pit, r2_score, summary, summarystats, waic
 
+const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
+
 @forwardfun compare
 @forwardfun hdi
 @forwardfun kde
-@forwardfun loo
 @forwardfun loo_pit
 @forwardfun r2_score
-@forwardfun waic
 
-for f in (:loo, :waic)
-    @eval begin
-        function ArviZ.convert_arguments(::typeof($(f)), data, args...; kwargs...)
-            idata = InferenceObjects.convert_to_inference_data(data)
-            return tuple(idata, args...), kwargs
-        end
-    end
-end
+include("utils.jl")
+include("loo.jl")
+include("waic.jl")
+
 function ArviZ.convert_arguments(::typeof(compare), data, args...; kwargs...)
     dict = Dict(
         k => try
