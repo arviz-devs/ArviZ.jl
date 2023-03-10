@@ -2,8 +2,10 @@ module ArviZStats
 
 using ArviZ: ArviZ, arviz, @forwardfun
 using InferenceObjects: InferenceObjects
+using PSIS: PSIS, PSISResult, psis, psis!
 using StatsBase: StatsBase, summarystats
 
+export PSIS, PSISResult, psis, psis!
 export compare, hdi, kde, loo, loo_pit, r2_score, summary, summarystats, waic
 
 @forwardfun compare
