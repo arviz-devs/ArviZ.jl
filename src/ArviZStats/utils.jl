@@ -1,8 +1,3 @@
-function relative_efficiency(data; kwargs...)
-    return MCMCDiagnosticTools.ess(data; kwargs...) /
-           (size(data, :draw) * size(data, :chain))
-end
-
 function _get_log_likelihood(data::InferenceObjects.InferenceData; kwargs...)
     return _get_log_likelihood(data.log_likelihood; kwargs...)
 end

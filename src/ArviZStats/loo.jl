@@ -8,14 +8,23 @@ function loo(
     scale ∈ keys(INFORMATION_CRITERION_SCALES) || throw(
         ArgumentError("Valid `scale` values are $(keys(INFORMATION_CRITERION_SCALES))")
     )
+    log_like, reff_new, psis_result = _psis_loo_setup(data, var_name, reff; kwargs...)
+    return _loo(log_like, reff_new, scale, psis_result)
+end
+
+function _psis_loo_setup(data, var_name, _reff; kwargs...)
     ll_orig = _get_log_likelihood(data; var_name)
     log_like = _draw_chains_params_array(ll_orig)
-    if reff === nothing
+    if _reff === nothing
         # normalize log likelihoods to improve numerical stability of ESS estimate
         like = LogExpFunctions.softmax(log_like; dims=InferenceObjects.DEFAULT_SAMPLE_DIMS)
-        reff = relative_efficiency(like; kind=:basic, split_chains=1)
+        reff = ess(like; kind=:basic, split_chains=1, relative=true)
+    else
+        reff = _reff
     end
-    return _loo(log_like, reff, scale; kwargs...)
+    # smooth importance weights
+    psis_result = PSIS.psis(-log_like, reff; kwargs...)
+    return log_like, reff, psis_result
 end
 
 function _loo(log_like, reff, scale; kwargs...)
