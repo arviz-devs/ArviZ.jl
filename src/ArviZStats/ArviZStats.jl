@@ -6,6 +6,8 @@ using InferenceObjects: InferenceObjects
 using LogExpFunctions: LogExpFunctions
 using Markdown: @doc_str
 using MCMCDiagnosticTools: MCMCDiagnosticTools
+using PrettyTables: PrettyTables
+using Printf: Printf
 using PSIS: PSIS, PSISResult, psis, psis!
 using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
