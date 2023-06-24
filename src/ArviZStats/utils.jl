@@ -17,7 +17,9 @@ end
 function _draw_chains_params_array(x::DimensionalData.AbstractDimArray)
     sample_dims = Dimensions.dims(x, InferenceObjects.DEFAULT_SAMPLE_DIMS)
     param_dims = Dimensions.otherdims(x, sample_dims)
-    return PermutedDimsArray(x, Dimensions.combinedims(sample_dims, param_dims))
+    dims_combined = Dimensions.combinedims(sample_dims, param_dims)
+    Dimensions.dimsmatch(Dimensions.dims(x), dims_combined) && return x
+    return PermutedDimsArray(x, dims_combined)
 end
 
 # compute sum and estimate of standard error of sum
