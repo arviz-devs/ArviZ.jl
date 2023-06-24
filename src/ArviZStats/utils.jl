@@ -1,5 +1,13 @@
-function _get_log_likelihood(data::InferenceObjects.InferenceData; kwargs...)
-    return _get_log_likelihood(data.log_likelihood; kwargs...)
+function _get_log_likelihood(
+    data::InferenceObjects.InferenceData; var_name::Union{Symbol,Nothing}=nothing, kwargs...
+)
+    if haskey(data, :log_likelihood)
+        return _get_log_likelihood(data.log_likelihood; kwargs...)
+    else
+        # for old InferenceData versions, log-likelihood was stored in sample_stats
+        _var_name = var_name === nothing ? :log_likelihood : var_name
+        return _get_log_likelihood(data.sample_stats; var_name=_var_name, kwargs...)
+    end
 end
 function _get_log_likelihood(
     log_likelihood::InferenceObjects.Dataset; var_name::Union{Symbol,Nothing}=nothing
