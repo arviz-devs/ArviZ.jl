@@ -38,14 +38,34 @@ function _sum_and_se(x; dims=:)
     return s, se
 end
 
-# compute lpogsumexp and estimate of standard error of lpogsumexp
-function _logsumexp_and_se(x; dims=:)
-    # use the delta method to approximate the standard error of logsumexp
-    # i.e. if z ~ N(μ, σ²/n), then log(z) ~ N(log(μ), (σ / μ)² / n)
-    logs = LogExpFunctions.logsumexp(x; dims)
-    logs2 = LogExpFunctions.logsumexp(2x; dims)
-    n = dims isa Colon ? length(x) : prod(Base.Fix1(size, x), dims)
-    invn = 1//n
-    logs_se = @. sqrt(exp(logs2 - 2logs) - invn)
-    return logs, logs_se
+function _log_mean(logx, log_weights; dims=:)
+    log_expectand = logx .+ log_weights
+    return LogExpFunctions.logsumexp(log_expectand; dims)
+end
+
+function _se_log_mean(logx, log_weights; dims=:, log_mean=log_mean(logx, log_weights; dims))
+    # variance of mean estimated using self-normalized importance weighting
+    # Art B. Owen. (2013) Monte Carlo theory, methods and examples. eq. 9.9
+    log_expectand = @. 2 * (log_weights + _logabssubexp(logx, log_mean))
+    log_var_mean = LogExpFunctions.logsumexp(log_expectand; dims)
+    # use delta method to asymptotically map variance of mean to variance of logarithm of mean
+    se_log_mean = @. exp(log_var_mean / 2 - log_mean)
+    return se_log_mean
+end
+
+_logabssubexp(x, y) = LogExpFunctions.logsubexp(reverse(minmax(x, y))...)
+
+"""
+    sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
+
+Get number of significant digits of `x` so that the last digit of `x` is the first digit of
+`se*scale`.
+"""
+function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
+    iszero(x) && return 0
+    iszero(se) && return sigdigits_max
+    first_digit_x = floor(Int, log10(abs(x)))
+    last_digit_x = floor(Int, log10(se * scale))
+    sigdigits_x = first_digit_x - last_digit_x + 1
+    return clamp(sigdigits_x, 0, sigdigits_max)
 end
