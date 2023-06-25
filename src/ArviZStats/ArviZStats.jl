@@ -13,8 +13,15 @@ using PSIS: PSIS, PSISResult, psis, psis!
 using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
 
+# PSIS
 export PSIS, PSISResult, psis, psis!
-export compare, hdi, kde, loo, loo_pit, r2_score, summary, summarystats, waic
+
+# LOO-CV
+export ELPDResult, PSISLOOResult, WAICResult
+export effective_number_of_parameters, elbo_estimates, information_criterion, loo, waic
+
+# Others
+export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
 
 const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
