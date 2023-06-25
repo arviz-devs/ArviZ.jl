@@ -2,7 +2,7 @@ function _get_log_likelihood(
     data::InferenceObjects.InferenceData; var_name::Union{Symbol,Nothing}=nothing, kwargs...
 )
     if haskey(data, :log_likelihood)
-        return _get_log_likelihood(data.log_likelihood; kwargs...)
+        return _get_log_likelihood(data.log_likelihood; var_name, kwargs...)
     else
         # for old InferenceData versions, log-likelihood was stored in sample_stats
         _var_name = var_name === nothing ? :log_likelihood : var_name
