@@ -56,12 +56,12 @@ end
 _logabssubexp(x, y) = LogExpFunctions.logsubexp(reverse(minmax(x, y))...)
 
 """
-    sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
+    _sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
 
 Get number of significant digits of `x` so that the last digit of `x` is the first digit of
 `se*scale`.
 """
-function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
+function _sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
     iszero(x) && return 0
     iszero(se) && return sigdigits_max
     first_digit_x = floor(Int, log10(abs(x)))
