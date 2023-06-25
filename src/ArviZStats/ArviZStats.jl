@@ -40,8 +40,6 @@ function ArviZ.convert_arguments(::typeof(compare), data, args...; kwargs...)
     return tuple(dict, args...), kwargs
 end
 
-ArviZ.convert_result(::typeof(loo), result) = ArviZ.todataframes(result)
-ArviZ.convert_result(::typeof(waic), result) = ArviZ.todataframes(result)
 ArviZ.convert_result(::typeof(r2_score), result) = ArviZ.todataframes(result)
 function ArviZ.convert_result(::typeof(compare), result)
     return ArviZ.todataframes(result; index_name=:name)
