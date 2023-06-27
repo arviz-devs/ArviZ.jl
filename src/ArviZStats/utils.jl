@@ -94,13 +94,3 @@ function _se_log_mean(
     se_log_mean = @. exp(log_var_mean / 2 - log_mean)
     return se_log_mean
 end
-
-"""
-    smooth_data(y; dims=:, interp_method=BSpline(Cubic()), offset_frac=0.01)
-
-Smooth `y` using `interp_method` along `dims`.
-
-`interp_method` is an Interpolations.jl interpolation method. `offset_frac` is the fraction
-of the length of `y` to use as an offset when interpolating.
-"""
-end
