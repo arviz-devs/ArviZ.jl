@@ -8,9 +8,9 @@ See also: [`waic`](@ref), [`ELPDResult`](@ref)
 $(FIELDS)
 """
 struct WAICResult{E,P} <: AbstractELPDResult
-    "(E)LPD estimates"
+    "Estimates"
     estimates::E
-    "Pointwise (E)LPD estimates"
+    "Pointwise estimates"
     pointwise::P
 end
 
@@ -67,7 +67,7 @@ function _waic(log_like, dims=(1, 2))
     lpd_i = _lpd_pointwise(log_like, dims)
     p_i = dropdims(Statistics.var(log_like; corrected=true, dims); dims)
     elpd_i = lpd_i - p_i
-    pointwise = (elpd=elpd_i, lpd=lpd_i)
+    pointwise = (elpd=elpd_i, p=p_i)
 
     # combine estimates
     estimates = _elpd_estimates_from_pointwise(pointwise)

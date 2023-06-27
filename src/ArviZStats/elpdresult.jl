@@ -3,13 +3,12 @@ $(TYPEDEF)
 
 An abstract type representing the result of an ELPD computation.
 
-Every subtype stores estimates of both the expected log predictive density (ELPD) and the
-log pointwise predictive density (LPD), as well as pointwise estimates of each, from which
-other relevant estimates can be computed.
+Every subtype stores estimates of both the expected log predictive density (`elpd`) and the
+effective number of parameters `p`, as well as standard errors and pointwise estimates of
+each, from which other relevant estimates can be computed.
 
 Subtypes implement the following functions:
 - [`elpd_estimates`](@ref)
-- [`effective_number_of_parameters`](@ref)
 - [`information_criterion`](@ref)
 """
 abstract type AbstractELPDResult end
@@ -19,8 +18,7 @@ function _print_elpd_estimates(
 )
     estimates = elpd_estimates(r)
     elpd, elpd_mcse = estimates.elpd, estimates.elpd_mcse
-    p_pointwise = effective_number_of_parameters(r; pointwise=true)
-    p, p_mcse = _sum_and_se(p_pointwise)
+    p, p_mcse = estimates.p, estimates.p_mcse
     table = (; Estimate=[elpd, p], SE=[elpd_mcse, p_mcse])
     formatters = function (v, i, j)
         sigdigits = j == 1 ? sigdigits_matching_error(v, table.SE[i]) : sigdigits_se
@@ -74,30 +72,6 @@ function information_criterion(
     return information_criterion(elpd_estimates(result; pointwise), scale)
 end
 
-"""
-    $(FUNCTIONNAME)(elpd, lpd, scale::Symbol)
-
-Compute the effective number of parameters ``p`` for the given `scale` from `elpd` and `lpd`
-estimates.
-
-`scale` must be one of $(keys(INFORMATION_CRITERION_SCALES)).
-
-See also: [`information_criterion`](@ref), [`loo`](@ref), [`waic`](@ref)
-"""
-effective_number_of_parameters(elpd, lpd) = lpd - elpd
-
-"""
-    $(FUNCTIONNAME)(result::AbstractELPDResult; pointwise=false) -> Real
-
-Compute the effective number of parameters ``p`` from the ELPD `result`.
-
-If `pointwise=true`, then pointwise estimates are returned.
-"""
-function effective_number_of_parameters(result::AbstractELPDResult; pointwise::Bool=false)
-    estimates = elpd_estimates(result; pointwise)
-    return effective_number_of_parameters(estimates.elpd, estimates.lpd)
-end
-
 function _lpd_pointwise(log_likelihood, dims)
     ndraws = prod(Base.Fix1(size, log_likelihood), dims)
     lpd = LogExpFunctions.logsumexp(log_likelihood; dims)
@@ -107,6 +81,6 @@ end
 
 function _elpd_estimates_from_pointwise(pointwise)
     elpd, elpd_mcse = _sum_and_se(pointwise.elpd)
-    lpd = sum(pointwise.lpd)
-    return (; elpd, elpd_mcse, lpd)
+    p, p_mcse = _sum_and_se(pointwise.p)
+    return (; elpd, elpd_mcse, p, p_mcse)
 end

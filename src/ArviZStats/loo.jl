@@ -8,9 +8,9 @@ See also: [`loo`](@ref), [`ELPDResult`](@ref)
 $(FIELDS)
 """
 struct PSISLOOResult{E,P,R<:PSIS.PSISResult} <: AbstractELPDResult
-    "(E)LPD estimates"
+    "Estimates"
     estimates::E
-    "Pointwise (E)LPD estimates"
+    "Pointwise estimates"
     pointwise::P
     "Pareto-smoothed importance sampling results"
     psis_result::R
@@ -100,12 +100,9 @@ function _loo(log_like, reff, psis_result, dims=(1, 2))
     # compute pointwise estimates
     lpd_i = _lpd_pointwise(log_like, dims)
     elpd_i, elpd_se_i = _elpd_loo_pointwise_and_se(psis_result, log_like, dims)
+    p_i = elpd_i - lpd_i
     pointwise = (;
-        elpd=elpd_i,
-        elpd_mcse=elpd_se_i,
-        lpd=lpd_i,
-        reff,
-        pareto_shape=psis_result.pareto_shape,
+        elpd=elpd_i, elpd_mcse=elpd_se_i, p=p_i, reff, pareto_shape=psis_result.pareto_shape
     )
 
     # combine estimates
