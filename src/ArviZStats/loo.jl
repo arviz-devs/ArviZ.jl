@@ -70,7 +70,7 @@ function loo(
 end
 
 function _psis_loo_setup(data, var_name, _reff; kwargs...)
-    ll_orig = get_log_likelihood(data; var_name)
+    ll_orig = log_likelihood(data, var_name)
     log_like = _draw_chains_params_array(ll_orig)
     if _reff === nothing
         # normalize log likelihoods to improve numerical stability of ESS estimate

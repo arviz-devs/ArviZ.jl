@@ -1,6 +1,6 @@
 """
-    get_log_likelihood(data::InferenceData; [var_name,]) -> DimArray
-    get_log_likelihood(data::Dataset; [var_name,]) -> DimArray
+    log_likelihood(data::InferenceData[, var_name]) -> DimArray
+    log_likelihood(data::Dataset[, var_name]) -> DimArray
 
 Get the log-likelihood array for the specified variable in `data`.
 
@@ -10,38 +10,36 @@ To support older InferenceData versions, if the `log_likelihood` group is not pr
 the `sample_stats` group is checked for a `log_likelihood` variable or for `var_name` if
 provided
 """
-function get_log_likelihood(
-    data::InferenceObjects.InferenceData; var_name::Union{Symbol,Nothing}=nothing
+function log_likelihood(
+    data::InferenceObjects.InferenceData, var_name::Union{Symbol,Nothing}=nothing
 )
     if haskey(data, :log_likelihood)
-        return get_log_likelihood(data.log_likelihood; var_name)
+        return log_likelihood(data.log_likelihood, var_name)
     elseif haskey(data, :sample_stats)
         # for old InferenceData versions, log-likelihood was stored in sample_stats
         _var_name = var_name === nothing ? :log_likelihood : var_name
-        return get_log_likelihood(data.sample_stats; var_name=_var_name)
+        return log_likelihood(data.sample_stats, _var_name)
     else
         throw(ArgumentError("Data must contain `log_likelihood` or `sample_stats` group"))
     end
 end
-function get_log_likelihood(
-    log_likelihood::InferenceObjects.Dataset; var_name::Union{Symbol,Nothing}=nothing
+function log_likelihood(
+    log_like::InferenceObjects.Dataset, var_name::Union{Symbol,Nothing}=nothing
 )
     if var_name !== nothing
-        if haskey(log_likelihood, var_name)
-            return log_likelihood[var_name]
+        if haskey(log_like, var_name)
+            return log_like[var_name]
         else
-            throw(
-                ArgumentError("Variable `$(var_name)` not found in `log_likelihood` group")
-            )
+            throw(ArgumentError("Variable `$(var_name)` not found in group"))
         end
     end
-    var_names = keys(log_likelihood)
+    var_names = keys(log_like)
     length(var_names) == 1 || throw(
         ArgumentError(
-            "`var_name` must be specified if there are multiple variables in `log_likelihood`",
+            "`var_name` must be specified if there are multiple variables in group"
         ),
     )
-    return log_likelihood[first(var_names)]
+    return log_like[first(var_names)]
 end
 
 function _draw_chains_params_array(x::DimensionalData.AbstractDimArray)

@@ -53,7 +53,7 @@ function waic(
     data::Union{InferenceObjects.InferenceData,InferenceObjects.Dataset};
     var_name::Union{Symbol,Nothing}=nothing,
 )
-    ll_orig = get_log_likelihood(data; var_name)
+    ll_orig = log_likelihood(data, var_name)
     log_like = _draw_chains_params_array(ll_orig)
     return _waic(log_like)
 end
