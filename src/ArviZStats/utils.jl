@@ -42,6 +42,24 @@ function log_likelihood(
     return log_like[first(var_names)]
 end
 
+"""
+    sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
+
+Get number of significant digits of `x` so that the last digit of `x` is the first digit of
+`se*scale`.
+"""
+function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
+    (iszero(x) || !isfinite(x) || !isfinite(se) || !isfinite(scale)) && return 0
+    sigdigits_max ≥ 0 || throw(ArgumentError("`sigdigits_max` must be non-negative"))
+    se ≥ 0 || throw(ArgumentError("`se` must be non-negative"))
+    iszero(se) && return sigdigits_max
+    scale > 0 || throw(ArgumentError("`scale` must be positive"))
+    first_digit_x = floor(Int, log10(abs(x)))
+    last_digit_x = floor(Int, log10(se * scale))
+    sigdigits_x = first_digit_x - last_digit_x + 1
+    return clamp(sigdigits_x, 0, sigdigits_max)
+end
+
 function _draw_chains_params_array(x::DimensionalData.AbstractDimArray)
     sample_dims = Dimensions.dims(x, InferenceObjects.DEFAULT_SAMPLE_DIMS)
     param_dims = Dimensions.otherdims(x, sample_dims)
@@ -49,6 +67,8 @@ function _draw_chains_params_array(x::DimensionalData.AbstractDimArray)
     Dimensions.dimsmatch(Dimensions.dims(x), dims_combined) && return x
     return PermutedDimsArray(x, dims_combined)
 end
+
+_logabssubexp(x, y) = LogExpFunctions.logsubexp(reverse(minmax(x, y))...)
 
 # compute sum and estimate of standard error of sum
 function _sum_and_se(x; dims=:)
@@ -63,7 +83,9 @@ function _log_mean(logx, log_weights; dims=:)
     return LogExpFunctions.logsumexp(log_expectand; dims)
 end
 
-function _se_log_mean(logx, log_weights; dims=:, log_mean=log_mean(logx, log_weights; dims))
+function _se_log_mean(
+    logx, log_weights; dims=:, log_mean=_log_mean(logx, log_weights; dims)
+)
     # variance of mean estimated using self-normalized importance weighting
     # Art B. Owen. (2013) Monte Carlo theory, methods and examples. eq. 9.9
     log_expectand = @. 2 * (log_weights + _logabssubexp(logx, log_mean))
@@ -73,19 +95,12 @@ function _se_log_mean(logx, log_weights; dims=:, log_mean=log_mean(logx, log_wei
     return se_log_mean
 end
 
-_logabssubexp(x, y) = LogExpFunctions.logsubexp(reverse(minmax(x, y))...)
-
 """
-    sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
+    smooth_data(y; dims=:, interp_method=BSpline(Cubic()), offset_frac=0.01)
 
-Get number of significant digits of `x` so that the last digit of `x` is the first digit of
-`se*scale`.
+Smooth `y` using `interp_method` along `dims`.
+
+`interp_method` is an Interpolations.jl interpolation method. `offset_frac` is the fraction
+of the length of `y` to use as an offset when interpolating.
 """
-function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
-    iszero(x) && return 0
-    iszero(se) && return sigdigits_max
-    first_digit_x = floor(Int, log10(abs(x)))
-    last_digit_x = floor(Int, log10(se * scale))
-    sigdigits_x = first_digit_x - last_digit_x + 1
-    return clamp(sigdigits_x, 0, sigdigits_max)
 end
