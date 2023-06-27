@@ -30,27 +30,24 @@ function Base.show(io::IO, mime::MIME"text/plain", result::PSISLOOResult)
 end
 
 """
-    loo(data; var_name=nothing, reff=nothing, kwargs...) -> PSISLOOResult
+    loo(log_likelihood; reff=nothing, kwargs...) -> PSISLOOResult
 
 Compute the Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO).
 [^Vehtari2017][^LOOFAQ]
 
-`data` is either an [`InferenceData`](@ref) or a [`Dataset`](@ref) containing log-likelihood
-values.
+`log_likelihood` must be an array of log-likelihood values with shape
+`(chains, draws[, params...])`. If it is an `AbstractDimArray`, then these dimensions may
+be arbitrarily ordered.
 
 # Keywords
 
-  - `var_name::Union{Nothing,Symbol}`: Name of the variable in `data` containing the
-    log-likelihood values. This must be provided if more than one variable is present.
   - `reff::Union{Real,AbstractArray{<:Real}}`: The relative effective sample size(s) of the
     _likelihood_ values. If an array, it must have the same data dimensions as the
     corresponding log-likelihood variable. If not provided, then this is estimated using
     [`ess`](@ref).
   - `kwargs`: Remaining keywords are forwarded to [`psis`](@ref).
 
-# Returns
-
-  - [`PSISLOOResult`](@ref)
+See also: [`PSISLOOResult`](@ref), [`waic`](@ref)
 
 [^Vehtari2017]: Vehtari, A., Gelman, A. & Gabry, J.
     Practical Bayesian model evaluation using leave-one-out cross-validation and WAIC.
@@ -59,22 +56,33 @@ values.
     arXiv: [1507.04544](https://arxiv.org/abs/1507.04544)
 [^LOOFAQ]: Aki Vehtari. Cross-validation FAQ. https://mc-stan.org/loo/articles/online-only/faq.html
 """
+loo(ll::AbstractArray; kwargs...) = _loo(ll; kwargs...)
+function loo(ll::DimensionalData.AbstractDimArray; kwargs...)
+    return _loo(_draw_chains_params_array(ll); kwargs...)
+end
+
+"""
+    loo(data::Dataset; [var_name::Symbol,] kwargs...) -> PSISLOOResult
+    loo(data::InferenceData; [var_name::Symbol,] kwargs...) -> PSISLOOResult
+
+Compute PSIS-LOO from log-likelihood values in `data`.
+
+If more than one log-likelihood variable is present, then `var_name` must be provided.
+"""
 function loo(
     data::Union{InferenceObjects.InferenceData,InferenceObjects.Dataset};
     var_name::Union{Symbol,Nothing}=nothing,
-    reff=nothing,
     kwargs...,
 )
-    log_like, reff_new, psis_result = _psis_loo_setup(data, var_name, reff; kwargs...)
-    return _loo(log_like, reff_new, psis_result)
+    result = loo(log_likelihood(data, var_name); kwargs...)
+    pointwise = ArviZ.convert_to_dataset(result.pointwise)
+    return PSISLOOResult(result.estimates, pointwise, result.psis_result)
 end
 
-function _psis_loo_setup(data, var_name, _reff; kwargs...)
-    ll_orig = log_likelihood(data, var_name)
-    log_like = _draw_chains_params_array(ll_orig)
+function _psis_loo_setup(log_like, _reff; kwargs...)
     if _reff === nothing
         # normalize log likelihoods to improve numerical stability of ESS estimate
-        like = LogExpFunctions.softmax(log_like; dims=InferenceObjects.DEFAULT_SAMPLE_DIMS)
+        like = LogExpFunctions.softmax(log_like; dims=(1, 2))
         reff = MCMCDiagnosticTools.ess(like; kind=:basic, split_chains=1, relative=true)
     else
         reff = _reff
@@ -84,19 +92,21 @@ function _psis_loo_setup(data, var_name, _reff; kwargs...)
     return log_like, reff, psis_result
 end
 
-function _loo(log_like, reff, psis_result)
-    sample_dims = Dimensions.dims(log_like, InferenceObjects.DEFAULT_SAMPLE_DIMS)
-
+function _loo(log_like, dims=(1, 2); reff=nothing, kwargs...)
+    log_like, _reff, psis_result = _psis_loo_setup(log_like, reff; kwargs...)
+    return _loo(log_like, _reff, psis_result)
+end
+function _loo(log_like, reff, psis_result, dims=(1, 2))
     # compute pointwise estimates
-    lpd_i = _lpd_pointwise(log_like, sample_dims)
-    elpd_i, elpd_se_i = _elpd_loo_pointwise_and_se(psis_result, log_like, sample_dims)
-    pointwise = InferenceObjects.convert_to_dataset((
+    lpd_i = _lpd_pointwise(log_like, dims)
+    elpd_i, elpd_se_i = _elpd_loo_pointwise_and_se(psis_result, log_like, dims)
+    pointwise = (;
         elpd=elpd_i,
         elpd_mcse=elpd_se_i,
         lpd=lpd_i,
         reff,
         pareto_shape=psis_result.pareto_shape,
-    ))
+    )
 
     # combine estimates
     estimates = _elpd_estimates_from_pointwise(pointwise)
