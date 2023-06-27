@@ -23,7 +23,7 @@ function _print_elpd_estimates(
     p, p_mcse = _sum_and_se(p_pointwise)
     table = (; Estimate=[elpd, p], SE=[elpd_mcse, p_mcse])
     formatters = function (v, i, j)
-        sigdigits = j == 1 ? _sigdigits_matching_error(v, table.SE[i]) : sigdigits_se
+        sigdigits = j == 1 ? sigdigits_matching_error(v, table.SE[i]) : sigdigits_se
         return sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
     end
     PrettyTables.pretty_table(
