@@ -11,7 +11,7 @@ the `sample_stats` group is checked for a `log_likelihood` variable or for `var_
 provided
 """
 function get_log_likelihood(
-    data::InferenceObjects.InferenceData; var_name::Union{Symbol,Nothing}=nothing,
+    data::InferenceObjects.InferenceData; var_name::Union{Symbol,Nothing}=nothing
 )
     if haskey(data, :log_likelihood)
         return get_log_likelihood(data.log_likelihood; var_name)
@@ -30,7 +30,9 @@ function get_log_likelihood(
         if haskey(log_likelihood, var_name)
             return log_likelihood[var_name]
         else
-            throw(ArgumentError("Variable `$(var_name)` not found in `log_likelihood` group"))
+            throw(
+                ArgumentError("Variable `$(var_name)` not found in `log_likelihood` group")
+            )
         end
     end
     var_names = keys(log_likelihood)
