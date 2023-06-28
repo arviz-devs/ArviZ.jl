@@ -121,3 +121,42 @@ function _elpd_loo_pointwise_and_se(psis_result::PSIS.PSISResult, log_likelihood
         elpd_se=dropdims(elpd_i_se; dims) ./ sqrt.(psis_result.reff),
     )
 end
+
+function ArviZ.topandas(::Val{:ELPDData}, d::PSISLOOResult)
+    estimates = elpd_estimates(d)
+    pointwise = elpd_estimates(d; pointwise=true)
+    psis_result = d.psis_result
+    n_samples = psis_result.nchains * psis_result.ndraws
+    n_data_points = psis_result.nparams
+    warn_mg = ""
+    ds = ArviZ.convert_to_dataset((
+        loo_i=pointwise.elpd, pareto_shape=pointwise.pareto_shape
+    ))
+    pyds = PyCall.PyObject(ds)
+    return PyCall.pycall(
+        ArviZ.arviz.stats.ELPDData,
+        PyCall.PyObject;
+        data=[
+            estimates.elpd,
+            estimates.elpd_mcse,
+            estimates.p,
+            n_samples,
+            n_data_points,
+            warn_mg,
+            pyds.loo_i,
+            pyds.pareto_shape,
+            "log",
+        ],
+        index=[
+            "elpd_loo",
+            "se",
+            "p_loo",
+            "n_samples",
+            "n_data_points",
+            "warning",
+            "loo_i",
+            "pareto_k",
+            "scale",
+        ],
+    )
+end

@@ -230,10 +230,3 @@ function topandas(::Val{:Series}, df)
     colvals = Array(only(eachrow(df)))
     return pandas.Series(colvals, rownames)
 end
-function topandas(::Val{:ELPDData}, df)
-    initialize_pandas()
-    df = DataFrames.DataFrame(df)
-    rownames = names(df)
-    colvals = Array(only(eachrow(df)))
-    return ArviZ.arviz.stats.ELPDData(colvals, rownames)
-end

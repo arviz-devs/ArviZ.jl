@@ -10,6 +10,7 @@ using MCMCDiagnosticTools: MCMCDiagnosticTools
 using PrettyTables: PrettyTables
 using Printf: Printf
 using PSIS: PSIS, PSISResult, psis, psis!
+using PyCall: PyCall
 using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
 
