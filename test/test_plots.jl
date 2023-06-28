@@ -99,12 +99,12 @@ using PyCall, PyPlot
     @testset "plot_elpd" begin
         plot_elpd(Dict("a" => data, "b" => data2))
         close(gcf())
-        plot_elpd(Dict("a" => loo(data; pointwise=true), "b" => loo(data2; pointwise=true)))
+        plot_elpd(Dict("a" => loo(data), "b" => loo(data2)))
         close(gcf())
     end
 
     @testset "plot_khat" begin
-        l = loo(data; pointwise=true)
+        l = loo(data)
         plot_khat(l)
         close(gcf())
     end

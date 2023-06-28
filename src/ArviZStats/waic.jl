@@ -94,14 +94,6 @@ function ArviZ.topandas(::Val{:ELPDData}, d::WAICResult)
             pyds.waic_i,
             "log",
         ],
-        index=[
-            "elpd_waic",
-            "se",
-            "p_waic",
-            "n_data_points",
-            "warning",
-            "waic_i",
-            "scale",
-        ],
+        index=["elpd_waic", "se", "p_waic", "n_data_points", "warning", "waic_i", "scale"],
     )
 end
