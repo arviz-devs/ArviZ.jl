@@ -59,7 +59,10 @@ jobs:
         run: |
           using Pkg
           Pkg.instantiate()
-          using ArviZ, Conda
+          using Conda
+          # https://discourse.julialang.org/t/conda-not-installing-matplotlib-for-pyplot/96813/2
+          Conda.add("conda==23.1.0")
+          using ArviZ
           ArviZ.initialize_arviz()
           ArviZ.initialize_pandas()
         shell: julia --color=yes --project {0}
