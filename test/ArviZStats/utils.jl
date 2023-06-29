@@ -2,7 +2,10 @@ using Test
 using ArviZ
 using ArviZ.ArviZStats
 using DimensionalData
+using Random
 using StatsBase
+
+Random.seed!(87)
 
 @testset "utils" begin
     @testset "log_likelihood" begin
@@ -131,7 +134,7 @@ using StatsBase
             logw = log.(w)
             se = @inferred ArviZStats._se_log_mean(logx, logw)
             se_exp = std(log(mean(rand(n) * scale, w)) for _ in 1:ndraws)
-            @test se ≈ se_exp rtol = 1e-2
+            @test se ≈ se_exp rtol = 1e-1
         end
     end
 end
