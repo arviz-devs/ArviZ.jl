@@ -36,8 +36,7 @@ Compute the Pareto-smoothed importance sampling leave-one-out cross-validation (
 [^Vehtari2017][^LOOFAQ]
 
 `log_likelihood` must be an array of log-likelihood values with shape
-`(chains, draws[, params...])`. If it is an `AbstractDimArray`, then these dimensions may
-be arbitrarily ordered.
+`(chains, draws[, params...])`.
 
 # Keywords
 
@@ -57,9 +56,6 @@ See also: [`PSISLOOResult`](@ref), [`waic`](@ref)
 [^LOOFAQ]: Aki Vehtari. Cross-validation FAQ. https://mc-stan.org/loo/articles/online-only/faq.html
 """
 loo(ll::AbstractArray; kwargs...) = _loo(ll; kwargs...)
-function loo(ll::DimensionalData.AbstractDimArray; kwargs...)
-    return _loo(_draw_chains_params_array(ll); kwargs...)
-end
 
 """
     loo(data::Dataset; [var_name::Symbol,] kwargs...) -> PSISLOOResult
@@ -74,7 +70,8 @@ function loo(
     var_name::Union{Symbol,Nothing}=nothing,
     kwargs...,
 )
-    result = loo(log_likelihood(data, var_name); kwargs...)
+    log_like = _draw_chains_params_array(log_likelihood(data, var_name))
+    result = loo(log_like; kwargs...)
     pointwise = ArviZ.convert_to_dataset(result.pointwise)
     return PSISLOOResult(result.estimates, pointwise, result.psis_result)
 end

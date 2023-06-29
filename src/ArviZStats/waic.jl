@@ -30,8 +30,7 @@ end
 Compute the widely applicable information criterion (WAIC).[^Watanabe2010][^Vehtari2017][^LOOFAQ]
 
 `log_likelihood` must be an array of log-likelihood values with shape
-`(chains, draws[, params...])`. If it is an `AbstractDimArray`, then these dimensions may
-be arbitrarily ordered.
+`(chains, draws[, params...])`.
 
 See also: [`WAICResult`](@ref), [`loo`](@ref)
 
@@ -44,7 +43,6 @@ See also: [`WAICResult`](@ref), [`loo`](@ref)
 [^LOOFAQ]: Aki Vehtari. Cross-validation FAQ. https://mc-stan.org/loo/articles/online-only/faq.html
 """
 waic(ll::AbstractArray) = _waic(ll)
-waic(ll::DimensionalData.AbstractDimArray) = _waic(_draw_chains_params_array(ll))
 
 """
     waic(data::Dataset; [var_name::Symbol]) -> WAICResult
@@ -59,7 +57,10 @@ function waic(
     var_name::Union{Symbol,Nothing}=nothing,
 )
     result = waic(log_likelihood(data, var_name))
-    return WAICResult(result.estimates, ArviZ.convert_to_dataset(result.pointwise))
+    log_like = _draw_chains_params_array(log_likelihood(data, var_name))
+    result = waic(log_like)
+    pointwise = ArviZ.convert_to_dataset(result.pointwise)
+    return WAICResult(result.estimates, pointwise)
 end
 
 function _waic(log_like, dims=(1, 2))
