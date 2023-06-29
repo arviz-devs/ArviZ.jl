@@ -94,5 +94,8 @@ using DataFrames: DataFrames
         @test ArviZ.summary(data) isa DataFrames.DataFrame
     end
 
+    include("helpers.jl")
     include("utils.jl")
+    include("loo.jl")
+    include("waic.jl")
 end
