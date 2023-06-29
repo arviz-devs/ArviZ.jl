@@ -123,7 +123,7 @@ using StatsBase
 
     @testset "_se_log_mean" begin
         ndraws = 1_000
-        @testset for n in (100, 1000, 10_000), scale in (1, 5)
+        @testset for n in (1_000, 10_000), scale in (1, 5)
             x = rand(n) * scale
             w = rand(n)
             w = StatsBase.weights(w ./ sum(w))
@@ -131,7 +131,7 @@ using StatsBase
             logw = log.(w)
             se = @inferred ArviZStats._se_log_mean(logx, logw)
             se_exp = std(log(mean(rand(n) * scale, w)) for _ in 1:ndraws)
-            @test se ≈ se_exp rtol = 1e-1
+            @test se ≈ se_exp rtol = 1e-2
         end
     end
 end
