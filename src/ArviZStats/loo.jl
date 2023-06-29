@@ -86,20 +86,24 @@ function _psis_loo_setup(log_like, _reff; kwargs...)
     end
     # smooth importance weights
     psis_result = PSIS.psis(-log_like, reff; kwargs...)
-    return log_like, reff, psis_result
+    return psis_result
 end
 
-function _loo(log_like, dims=(1, 2); reff=nothing, kwargs...)
-    log_like, _reff, psis_result = _psis_loo_setup(log_like, reff; kwargs...)
-    return _loo(log_like, _reff, psis_result)
+function _loo(log_like; reff=nothing, kwargs...)
+    psis_result = _psis_loo_setup(log_like, reff; kwargs...)
+    return _loo(log_like, psis_result)
 end
-function _loo(log_like, reff, psis_result, dims=(1, 2))
+function _loo(log_like, psis_result, dims=(1, 2))
     # compute pointwise estimates
     lpd_i = _lpd_pointwise(log_like, dims)
     elpd_i, elpd_se_i = _elpd_loo_pointwise_and_se(psis_result, log_like, dims)
     p_i = elpd_i - lpd_i
     pointwise = (;
-        elpd=elpd_i, elpd_mcse=elpd_se_i, p=p_i, reff, pareto_shape=psis_result.pareto_shape
+        elpd=elpd_i,
+        elpd_mcse=elpd_se_i,
+        p=p_i,
+        reff=psis_result.reff,
+        pareto_shape=psis_result.pareto_shape,
     )
 
     # combine estimates
