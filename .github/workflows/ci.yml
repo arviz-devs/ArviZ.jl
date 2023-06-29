@@ -33,7 +33,6 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           install.packages("remotes")
-          require(remotes)
           remotes::install_github("stan-dev/loo")
         shell: Rscript {0}
         env:
