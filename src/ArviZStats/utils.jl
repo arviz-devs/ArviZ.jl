@@ -26,20 +26,19 @@ end
 function log_likelihood(
     log_like::InferenceObjects.Dataset, var_name::Union{Symbol,Nothing}=nothing
 )
-    if var_name !== nothing
-        if haskey(log_like, var_name)
-            return log_like[var_name]
-        else
+    if !(var_name === nothing)
+        haskey(log_like, var_name) ||
             throw(ArgumentError("Variable `$(var_name)` not found in group"))
-        end
+        return log_like[var_name]
+    else
+        var_names = keys(log_like)
+        length(var_names) == 1 || throw(
+            ArgumentError(
+                "`var_name` must be specified if there are multiple variables in group"
+            ),
+        )
+        return log_like[first(var_names)]
     end
-    var_names = keys(log_like)
-    length(var_names) == 1 || throw(
-        ArgumentError(
-            "`var_name` must be specified if there are multiple variables in group"
-        ),
-    )
-    return log_like[first(var_names)]
 end
 
 """
