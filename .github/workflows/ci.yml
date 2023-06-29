@@ -36,6 +36,8 @@ jobs:
           require(remotes)
           remotes::install_github("stan-dev/loo")
         shell: Rscript {0}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
