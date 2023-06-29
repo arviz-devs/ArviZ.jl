@@ -97,7 +97,7 @@ function _loo(log_like, psis_result, dims=(1, 2))
     # compute pointwise estimates
     lpd_i = _lpd_pointwise(log_like, dims)
     elpd_i, elpd_se_i = _elpd_loo_pointwise_and_se(psis_result, log_like, dims)
-    p_i = elpd_i - lpd_i
+    p_i = lpd_i - elpd_i
     pointwise = (;
         elpd=elpd_i,
         elpd_mcse=elpd_se_i,
