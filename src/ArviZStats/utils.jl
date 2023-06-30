@@ -59,6 +59,9 @@ function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale
     return clamp(sigdigits_x, 0, sigdigits_max)
 end
 
+_maybe_scalar(x) = x
+_maybe_scalar(x::AbstractArray{<:Any,0}) = x[]
+
 function _draw_chains_params_array(x::DimensionalData.AbstractDimArray)
     sample_dims = Dimensions.dims(x, InferenceObjects.DEFAULT_SAMPLE_DIMS)
     param_dims = Dimensions.otherdims(x, sample_dims)

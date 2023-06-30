@@ -118,8 +118,8 @@ function _elpd_loo_pointwise_and_se(psis_result::PSIS.PSISResult, log_likelihood
     elpd_i = _log_mean(log_likelihood, log_weights; dims)
     elpd_i_se = _se_log_mean(log_likelihood, log_weights; dims, log_mean=elpd_i)
     return (
-        elpd=dropdims(elpd_i; dims),
-        elpd_se=dropdims(elpd_i_se; dims) ./ sqrt.(psis_result.reff),
+        elpd=_maybe_scalar(dropdims(elpd_i; dims)),
+        elpd_se=_maybe_scalar(dropdims(elpd_i_se; dims) ./ sqrt.(psis_result.reff)),
     )
 end
 
