@@ -76,6 +76,7 @@ function _sum_and_se(x; dims=:)
     se = StatsBase.std(x; dims) * sqrt(oftype(one(eltype(s)), n))
     return s, se
 end
+_sum_and_se(x::Number; kwargs...) = (x, oftype(float(x), NaN))
 
 function _log_mean(logx, log_weights; dims=:)
     log_expectand = logx .+ log_weights

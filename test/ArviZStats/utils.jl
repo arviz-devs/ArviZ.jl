@@ -109,6 +109,10 @@ Random.seed!(87)
             @test s ≈ sum(x; dims=2)
             @test se ≈ mapslices(StatsBase.sem, x; dims=2) * n
         end
+        @testset "::Number" begin
+            @test isequal(ArviZ.ArviZStats._sum_and_se(2), (2, NaN))
+            @test isequal(ArviZ.ArviZStats._sum_and_se(3.5f0; dims=()), (3.5f0, NaN32))
+        end
     end
 
     @testset "_log_mean" begin
