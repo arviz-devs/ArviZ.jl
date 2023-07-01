@@ -2,10 +2,146 @@ using Test
 using ArviZ
 using ArviZ.ArviZStats
 using DimensionalData
+using Logging: SimpleLogger, with_logger
 
 include("helpers.jl")
 
 @testset "loo" begin
+    @testset "core functionality" begin
+        @testset for sz in ((1000, 4), (1000, 4, 2), (100, 4, 2, 3)),
+            T in (Float32, Float64),
+            TA in (Array, DimArray)
+
+            log_likelihood = randn(T, sz)
+            if TA === DimArray
+                log_likelihood = DimArray(
+                    log_likelihood, (:draw, :chain, :param1, :param2)[1:length(sz)]
+                )
+            end
+            loo_result =
+                TA === DimArray ? loo(log_likelihood) : @inferred(loo(log_likelihood))
+            @test loo_result isa ArviZStats.PSISLOOResult
+            estimates = ArviZStats.elpd_estimates(loo_result)
+            pointwise = ArviZStats.elpd_estimates(loo_result; pointwise=true)
+            @testset "return types and values as expected" begin
+                @test estimates isa NamedTuple{(:elpd, :elpd_mcse, :p, :p_mcse),NTuple{4,T}}
+                @test pointwise isa
+                    NamedTuple{(:elpd, :elpd_mcse, :p, :reff, :pareto_shape)}
+                if length(sz) == 2
+                    @test eltype(pointwise) === T
+                else
+                    @test eltype(pointwise) <: TA{T,length(sz) - 2}
+                end
+                @test loo_result.psis_result isa PSIS.PSISResult
+                @test loo_result.psis_result.reff == pointwise.reff
+                @test loo_result.psis_result.pareto_shape == pointwise.pareto_shape
+            end
+            @testset "information criterion" begin
+                @test ArviZStats.information_criterion(loo_result, :log) == estimates.elpd
+                @test ArviZStats.information_criterion(loo_result, :negative_log) ==
+                    -estimates.elpd
+                @test ArviZStats.information_criterion(loo_result, :deviance) ==
+                    -2 * estimates.elpd
+                @test ArviZStats.information_criterion(loo_result, :log; pointwise=true) ==
+                    pointwise.elpd
+                @test ArviZStats.information_criterion(
+                    loo_result, :negative_log; pointwise=true
+                ) == -pointwise.elpd
+                @test ArviZStats.information_criterion(
+                    loo_result, :deviance; pointwise=true
+                ) == -2 * pointwise.elpd
+            end
+
+            TA === DimArray && @testset "consistency with InferenceData argument" begin
+                idata1 = InferenceData(; log_likelihood=Dataset((; x=log_likelihood)))
+                loo_result1 = loo(idata1)
+                @test isequal(loo_result1.estimates, loo_result.estimates)
+                @test loo_result1.pointwise isa Dataset
+                if length(sz) == 2
+                    @test issetequal(
+                        keys(loo_result1.pointwise),
+                        (:elpd, :elpd_mcse, :p, :reff, :pareto_shape),
+                    )
+                else
+                    @test loo_result1.pointwise.elpd == loo_result.pointwise.elpd
+                    @test loo_result1.pointwise.elpd_mcse == loo_result.pointwise.elpd_mcse
+                    @test loo_result1.pointwise.p == loo_result.pointwise.p
+                    @test loo_result1.pointwise.reff == loo_result.pointwise.reff
+                    @test loo_result1.pointwise.pareto_shape ==
+                        loo_result.pointwise.pareto_shape
+                end
+
+                ll_perm = permutedims(
+                    log_likelihood, (ntuple(x -> x + 2, length(sz) - 2)..., 2, 1)
+                )
+                idata2 = InferenceData(; log_likelihood=Dataset((; y=ll_perm)))
+                loo_result2 = loo(idata2)
+                @test loo_result2.estimates.elpd ≈ loo_result1.estimates.elpd
+                @test isapprox(
+                    loo_result2.estimates.elpd_mcse,
+                    loo_result1.estimates.elpd_mcse,
+                    nans=true,
+                )
+                @test loo_result2.estimates.p ≈ loo_result1.estimates.p
+                @test isapprox(
+                    loo_result2.estimates.p_mcse,
+                    loo_result1.estimates.p_mcse;
+                    nans=true,
+                )
+                @test isapprox(
+                    loo_result2.pointwise.elpd_mcse,
+                    loo_result1.pointwise.elpd_mcse,
+                    nans=true,
+                )
+                @test loo_result2.pointwise.p ≈ loo_result1.pointwise.p
+                @test loo_result2.pointwise.reff ≈ loo_result1.pointwise.reff
+                @test loo_result2.pointwise.pareto_shape ≈
+                    loo_result1.pointwise.pareto_shape
+            end
+        end
+    end
+    @testset "keywords forwarded" begin
+        log_likelihood = convert_to_dataset((x=randn(1000, 4, 2, 3), y=randn(1000, 4, 3)))
+        @test loo(log_likelihood; var_name=:x).estimates == loo(log_likelihood.x).estimates
+        @test loo(log_likelihood; var_name=:y).estimates == loo(log_likelihood.y).estimates
+        @test loo(log_likelihood; var_name=:x, reff=0.5).pointwise.reff == fill(0.5, 2, 3)
+    end
+    @testset "errors" begin
+        log_likelihood = convert_to_dataset((x=randn(1000, 4, 2, 3), y=randn(1000, 4, 3)))
+        @test_throws ArgumentError loo(log_likelihood)
+        @test_throws ArgumentError loo(log_likelihood; var_name=:z)
+        @test_throws DimensionMismatch loo(log_likelihood; var_name=:x, reff=rand(2))
+    end
+    @testset "warnings" begin
+        io = IOBuffer()
+        log_likelihood = randn(100, 4)
+        @testset for bad_val in (NaN, -Inf, Inf)
+            log_likelihood[1] = bad_val
+            result = with_logger(SimpleLogger(io)) do
+                loo(log_likelihood)
+            end
+            msg = String(take!(io))
+            @test occursin("Warning:", msg)
+        end
+
+        io = IOBuffer()
+        log_likelihood = randn(100, 4)
+        @testset for bad_reff in (NaN, 0, Inf)
+            result = with_logger(SimpleLogger(io)) do
+                loo(log_likelihood; reff=bad_reff)
+            end
+            msg = String(take!(io))
+            @test occursin("Warning:", msg)
+        end
+
+        io = IOBuffer()
+        log_likelihood = randn(5, 1)
+        result = with_logger(SimpleLogger(io)) do
+            loo(log_likelihood)
+        end
+        msg = String(take!(io))
+        @test occursin("Warning:", msg)
+    end
     @testset "agrees with R loo" begin
         if r_loo_installed()
             @testset for ds_name in ["centered_eight", "non_centered_eight"]
