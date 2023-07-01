@@ -41,6 +41,13 @@ function log_likelihood(
     end
 end
 
+function _check_log_likelihood(x)
+    if any(!isfinite, x)
+        @warn "All log likelihood values must be finite, but some are not."
+    end
+    return nothing
+end
+
 """
     sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
 

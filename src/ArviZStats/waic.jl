@@ -67,6 +67,8 @@ function waic(
 end
 
 function _waic(log_like, dims=(1, 2))
+    _check_log_likelihood(log_like)
+
     # compute pointwise estimates
     lpd_i = _lpd_pointwise(log_like, dims)
     p_i = _maybe_scalar(dropdims(Statistics.var(log_like; corrected=true, dims); dims))

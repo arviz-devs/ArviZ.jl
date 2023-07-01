@@ -93,6 +93,7 @@ function _psis_loo_setup(log_like, _reff; kwargs...)
 end
 
 function _loo(log_like; reff=nothing, kwargs...)
+    _check_log_likelihood(log_like)
     psis_result = _psis_loo_setup(log_like, reff; kwargs...)
     return _loo(log_like, psis_result)
 end
