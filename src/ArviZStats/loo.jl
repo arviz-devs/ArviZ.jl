@@ -72,7 +72,10 @@ function loo(
 )
     log_like = _draw_chains_params_array(log_likelihood(data, var_name))
     result = loo(log_like; kwargs...)
-    pointwise = ArviZ.convert_to_dataset(result.pointwise)
+    pointwise = Dimensions.rebuild(
+        ArviZ.convert_to_dataset(result.pointwise; default_dims=());
+        metadata=DimensionalData.NoMetadata(),
+    )
     return PSISLOOResult(result.estimates, pointwise, result.psis_result)
 end
 
@@ -95,8 +98,10 @@ function _loo(log_like; reff=nothing, kwargs...)
 end
 function _loo(log_like, psis_result, dims=(1, 2))
     # compute pointwise estimates
-    lpd_i = _lpd_pointwise(log_like, dims)
-    elpd_i, elpd_se_i = _elpd_loo_pointwise_and_se(psis_result, log_like, dims)
+    lpd_i = _maybe_scalar(_lpd_pointwise(log_like, dims))
+    elpd_i, elpd_se_i = map(
+        _maybe_scalar, _elpd_loo_pointwise_and_se(psis_result, log_like, dims)
+    )
     p_i = lpd_i - elpd_i
     pointwise = (;
         elpd=elpd_i,

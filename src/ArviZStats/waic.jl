@@ -59,14 +59,17 @@ function waic(
     result = waic(log_likelihood(data, var_name))
     log_like = _draw_chains_params_array(log_likelihood(data, var_name))
     result = waic(log_like)
-    pointwise = ArviZ.convert_to_dataset(result.pointwise)
+    pointwise = Dimensions.rebuild(
+        ArviZ.convert_to_dataset(result.pointwise; default_dims=());
+        metadata=DimensionalData.NoMetadata(),
+    )
     return WAICResult(result.estimates, pointwise)
 end
 
 function _waic(log_like, dims=(1, 2))
     # compute pointwise estimates
     lpd_i = _lpd_pointwise(log_like, dims)
-    p_i = dropdims(Statistics.var(log_like; corrected=true, dims); dims)
+    p_i = _maybe_scalar(dropdims(Statistics.var(log_like; corrected=true, dims); dims))
     elpd_i = lpd_i - p_i
     pointwise = (elpd=elpd_i, p=p_i)
 
