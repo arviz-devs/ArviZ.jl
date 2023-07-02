@@ -30,7 +30,7 @@ function Base.show(io::IO, mime::MIME"text/plain", result::PSISLOOResult)
 end
 
 """
-    loo(log_likelihood; reff=nothing, kwargs...) -> PSISLOOResult
+    loo(log_likelihood; reff=nothing, kwargs...) -> PSISLOOResult{<:NamedTuple,<:NamedTuple}
 
 Compute the Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO).
 [^Vehtari2017][^LOOFAQ]
@@ -58,8 +58,8 @@ See also: [`PSISLOOResult`](@ref), [`waic`](@ref)
 loo(ll::AbstractArray; kwargs...) = _loo(ll; kwargs...)
 
 """
-    loo(data::Dataset; [var_name::Symbol,] kwargs...) -> PSISLOOResult
-    loo(data::InferenceData; [var_name::Symbol,] kwargs...) -> PSISLOOResult
+    loo(data::Dataset; [var_name::Symbol,] kwargs...) -> PSISLOOResult{<:NamedTuple,<:Dataset}
+    loo(data::InferenceData; [var_name::Symbol,] kwargs...) -> PSISLOOResult{<:NamedTuple,<:Dataset}
 
 Compute PSIS-LOO from log-likelihood values in `data`.
 

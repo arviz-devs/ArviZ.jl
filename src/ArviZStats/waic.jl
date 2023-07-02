@@ -25,7 +25,7 @@ function Base.show(io::IO, mime::MIME"text/plain", result::WAICResult)
 end
 
 """
-    waic(log_likelihood::AbstractArray) -> WAICResult
+    waic(log_likelihood::AbstractArray) -> WAICResult{<:NamedTuple,<:NamedTuple}
 
 Compute the widely applicable information criterion (WAIC).[^Watanabe2010][^Vehtari2017][^LOOFAQ]
 
@@ -45,8 +45,8 @@ See also: [`WAICResult`](@ref), [`loo`](@ref)
 waic(ll::AbstractArray) = _waic(ll)
 
 """
-    waic(data::Dataset; [var_name::Symbol]) -> WAICResult
-    waic(data::InferenceData; [var_name::Symbol]) -> WAICResult
+    waic(data::Dataset; [var_name::Symbol]) -> WAICResult{<:NamedTuple,<:Dataset}
+    waic(data::InferenceData; [var_name::Symbol]) -> WAICResult{<:NamedTuple,<:Dataset}
 
 Compute WAIC from log-likelihood values in `data`.
 
