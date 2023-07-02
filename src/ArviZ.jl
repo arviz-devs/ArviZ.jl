@@ -85,6 +85,7 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
+export ArviZStats
 export AbstractELPDResult, PSISLOOResult, WAICResult
 export PSIS, PSISResult, psis, psis!
 export elbo_estimates, information_criterion, loo, waic
