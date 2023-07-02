@@ -85,8 +85,10 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
+export AbstractELPDResult, PSISLOOResult, WAICResult
 export PSIS, PSISResult, psis, psis!
-export summarystats, compare, hdi, kde, loo, loo_pit, r2_score, waic
+export elbo_estimates, information_criterion, loo, waic
+export summarystats, compare, hdi, kde, loo_pit, r2_score
 
 ## Diagnostics
 export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
