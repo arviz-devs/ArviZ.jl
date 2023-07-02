@@ -23,9 +23,21 @@ PSIS.psis!
 
 ## Model assessment and selection
 
+### LOO and WAIC
+
+```@docs
+AbstractELPDResult
+PSISLOOResult
+WAICResult
+elpd_estimates
+information_criterion
+loo
+waic
+```
+
+### Others
+
 ```@docs
 compare
-loo
 loo_pit
-waic
 ```
