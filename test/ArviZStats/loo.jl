@@ -167,6 +167,7 @@ include("helpers.jl")
                 end
             end
         else
+            @warn "Skipping consistency tests against R loo::loo, since loo is not installed."
             @test_broken false
         end
     end

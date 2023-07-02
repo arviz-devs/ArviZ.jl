@@ -1,6 +1,6 @@
 using RCall
 
-r_loo_installed() = !isempty(R"system.file(package='loo')")
+r_loo_installed() = !isempty(rcopy(R"system.file(package='loo')"))
 
 # R loo with our API
 function loo_r(log_likelihood; reff=nothing)

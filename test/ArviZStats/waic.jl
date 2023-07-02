@@ -24,6 +24,7 @@ include("helpers.jl")
                 @test result.pointwise.p ≈ result_r.pointwise.p
             end
         else
+            @warn "Skipping consistency tests against R loo::waic, since loo is not installed."
             @test_broken false
         end
     end
