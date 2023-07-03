@@ -49,6 +49,41 @@ function _check_log_likelihood(x)
 end
 
 """
+    smooth_data(y; dims=:, interp_method=BSpline(Cubic()), offset_frac=0.01)
+
+Smooth `y` using `interp_method` along `dims`.
+
+`interp_method` is an Interpolations.jl interpolation method. `offset_frac` is the fraction
+of the length of `y` to use as an offset when interpolating.
+"""
+function smooth_data(
+    y;
+    dims::Union{Int,Tuple{Int,Vararg{Int}},Colon}=Colon(),
+    interp_method=Interpolations.BSpline(Interpolations.Cubic()),
+    offset_frac=1//100,
+)
+    T = float(eltype(y))
+    y_interp = similar(y, T)
+
+    # don't interpolate on other dimensions
+    interp_methods = ntuple(ndims(y)) do i
+        return (dims isa Colon || i ∈ dims) ? interp_method : Interpolations.NoInterp()
+    end
+    interp_ranges = ntuple(ndims(y)) do i
+        diminds = axes(y, i)
+        dims isa Colon || i ∈ dims || return diminds
+        n = length(diminds)
+        offset = T(offset_frac * n)
+        return range(first(diminds) + offset, last(diminds) - offset; length=n)
+    end
+
+    # perform interpolation
+    interp = Interpolations.interpolate(y, interp_methods)
+    copyto!(y_interp, interp(interp_ranges...))
+
+    return y_interp
+end
+"""
     sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
 
 Get number of significant digits of `x` so that the last digit of `x` is the first digit of
@@ -65,6 +100,10 @@ function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale
     sigdigits_x = first_digit_x - last_digit_x + 1
     return clamp(sigdigits_x, 0, sigdigits_max)
 end
+
+_alldims(x) = ntuple(identity, ndims(x))
+
+_otherdims(x, dims) = filter(∉(dims), _alldims(x))
 
 _maybe_scalar(x) = x
 _maybe_scalar(x::AbstractArray{<:Any,0}) = x[]

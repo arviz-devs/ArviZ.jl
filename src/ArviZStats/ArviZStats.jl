@@ -4,6 +4,7 @@ using ArviZ: ArviZ, arviz, @forwardfun
 using DimensionalData: DimensionalData, Dimensions
 using DocStringExtensions: FIELDS, FUNCTIONNAME, TYPEDEF, SIGNATURES
 using InferenceObjects: InferenceObjects
+using Interpolations: Interpolations
 using LogExpFunctions: LogExpFunctions
 using Markdown: @doc_str
 using MCMCDiagnosticTools: MCMCDiagnosticTools
@@ -29,12 +30,12 @@ const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 @forwardfun compare
 @forwardfun hdi
 @forwardfun kde
-@forwardfun loo_pit
 @forwardfun r2_score
 
 include("utils.jl")
 include("elpdresult.jl")
 include("loo.jl")
+include("loo_pit.jl")
 include("waic.jl")
 
 function ArviZ.convert_arguments(::typeof(compare), data, args...; kwargs...)
