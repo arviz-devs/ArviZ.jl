@@ -108,10 +108,10 @@ include("helpers.jl")
         waic_py_result = ArviZ.arviz.waic(idata; pointwise=true)
         py_waic_result = ArviZ.topandas(Val(:ELPDData), waic_result)
         @test all(py_waic_result.keys() == waic_py_result.keys())
-        @test py_waic_result.elpd_waic ≈ waic_py_result.elpd_waic rtol=1e-3
-        @test py_waic_result.se ≈ waic_py_result.se rtol=1e-1
-        @test py_waic_result.p_waic ≈ waic_py_result.p_waic rtol=1e-3
-        @test py_waic_result.waic_i.values ≈ waic_py_result.waic_i.values rtol=1e-3
+        @test py_waic_result.elpd_waic ≈ waic_py_result.elpd_waic rtol = 1e-3
+        @test py_waic_result.se ≈ waic_py_result.se rtol = 1e-1
+        @test py_waic_result.p_waic ≈ waic_py_result.p_waic rtol = 1e-3
+        @test py_waic_result.waic_i.values ≈ waic_py_result.waic_i.values rtol = 1e-3
     end
     @testset "agrees with R waic" begin
         if r_loo_installed()
