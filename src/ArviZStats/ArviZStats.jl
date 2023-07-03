@@ -18,8 +18,8 @@ using StatsBase: StatsBase, summarystats
 export PSIS, PSISResult, psis, psis!
 
 # LOO-CV
-export ELPDResult, PSISLOOResult, WAICResult
-export effective_number_of_parameters, elbo_estimates, information_criterion, loo, waic
+export AbstractELPDResult, PSISLOOResult, WAICResult
+export elbo_estimates, information_criterion, loo, waic
 
 # Others
 export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
