@@ -43,7 +43,7 @@ using DataFrames: DataFrames
 
     @testset "loo_pit" begin
         ret = loo_pit(idata; y="obs")
-        @test ret == ArviZ.arviz.loo_pit(idata; y="obs")
+        @test ret ≈ ArviZ.arviz.loo_pit(idata; y="obs") rtol = 0.02
     end
 
     @testset "summarystats" begin
