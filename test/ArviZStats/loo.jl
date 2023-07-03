@@ -157,6 +157,18 @@ include("helpers.jl")
              (-Inf, 0.5]  good  6 (75.0%)  135
               (0.5, 0.7]  okay  2 (25.0%)  421"""
     end
+    @testset "topandas" begin
+        idata = load_example_data("centered_eight")
+        loo_result = loo(idata; reff=1)
+        loo_py_result = ArviZ.arviz.loo(idata; pointwise=true, reff=1)
+        py_loo_result = ArviZ.topandas(Val(:ELPDData), loo_result)
+        @test all(py_loo_result.keys() == loo_py_result.keys())
+        @test py_loo_result.elpd_loo ≈ loo_py_result.elpd_loo rtol=1e-3
+        @test py_loo_result.se ≈ loo_py_result.se rtol=1e-1
+        @test py_loo_result.p_loo ≈ loo_py_result.p_loo rtol=1e-3
+        @test py_loo_result.loo_i.values ≈ loo_py_result.loo_i.values rtol=1e-3
+        @test py_loo_result.pareto_k.values ≈ loo_py_result.pareto_k.values rtol=1e-1
+    end
     @testset "agrees with R loo" begin
         if r_loo_installed()
             @testset for ds_name in ["centered_eight", "non_centered_eight"]

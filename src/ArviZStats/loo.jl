@@ -3,16 +3,16 @@ $(SIGNATURES)
 
 Results of Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO).
 
-See also: [`loo`](@ref), [`ELPDResult`](@ref)
+See also: [`loo`](@ref), [`AbstractELPDResult`](@ref)
 
 $(FIELDS)
 """
 struct PSISLOOResult{E,P,R<:PSIS.PSISResult} <: AbstractELPDResult
-    "Estimates"
+    "Estimates of the expected log pointwise predictive density (ELPD) and effective number of parameters (p)"
     estimates::E
     "Pointwise estimates"
     pointwise::P
-    "Pareto-smoothed importance sampling results"
+    "Pareto-smoothed importance sampling (PSIS) results"
     psis_result::R
 end
 
@@ -134,37 +134,25 @@ function ArviZ.topandas(::Val{:ELPDData}, d::PSISLOOResult)
     estimates = elpd_estimates(d)
     pointwise = elpd_estimates(d; pointwise=true)
     psis_result = d.psis_result
-    n_samples = psis_result.nchains * psis_result.ndraws
-    n_data_points = psis_result.nparams
-    warn_mg = ""
     ds = ArviZ.convert_to_dataset((
         loo_i=pointwise.elpd, pareto_shape=pointwise.pareto_shape
     ))
     pyds = PyCall.PyObject(ds)
+    entries = (
+        elpd_loo=estimates.elpd,
+        se=estimates.elpd_mcse,
+        p_loo=estimates.p,
+        n_samples=psis_result.nchains * psis_result.ndraws,
+        n_data_points=psis_result.nparams,
+        warning=false,
+        loo_i=pyds.loo_i,
+        pareto_k=pyds.pareto_shape,
+        scale="log",
+    )
     return PyCall.pycall(
         ArviZ.arviz.stats.ELPDData,
         PyCall.PyObject;
-        data=[
-            estimates.elpd,
-            estimates.elpd_mcse,
-            estimates.p,
-            n_samples,
-            n_data_points,
-            warn_mg,
-            pyds.loo_i,
-            pyds.pareto_shape,
-            "log",
-        ],
-        index=[
-            "elpd_loo",
-            "se",
-            "p_loo",
-            "n_samples",
-            "n_data_points",
-            "warning",
-            "loo_i",
-            "pareto_k",
-            "scale",
-        ],
+        data=values(entries),
+        index=keys(entries),
     )
 end

@@ -3,12 +3,12 @@ $(SIGNATURES)
 
 Results of computing the widely applicable information criterion (WAIC).
 
-See also: [`waic`](@ref), [`ELPDResult`](@ref)
+See also: [`waic`](@ref), [`AbstractELPDResult`](@ref)
 
 $(FIELDS)
 """
 struct WAICResult{E,P} <: AbstractELPDResult
-    "Estimates"
+    "Estimates of the expected log pointwise predictive density (ELPD) and effective number of parameters (p)"
     estimates::E
     "Pointwise estimates"
     pointwise::P
@@ -84,22 +84,22 @@ end
 function ArviZ.topandas(::Val{:ELPDData}, d::WAICResult)
     estimates = elpd_estimates(d)
     pointwise = elpd_estimates(d; pointwise=true)
-    n_data_points = length(pointwise.elpd)
-    warn_mg = ""
     ds = ArviZ.convert_to_dataset((waic_i=pointwise.elpd,))
     pyds = PyCall.PyObject(ds)
+    entries = (
+        elpd_waic=estimates.elpd,
+        se=estimates.elpd_mcse,
+        p_waic=estimates.p,
+        n_samples="unknown",
+        n_data_points=length(pointwise.elpd),
+        warning=false,
+        waic_i=pyds.waic_i,
+        scale="log",
+    )
     return PyCall.pycall(
         ArviZ.arviz.stats.ELPDData,
         PyCall.PyObject;
-        data=[
-            estimates.elpd,
-            estimates.elpd_mcse,
-            estimates.p,
-            n_data_points,
-            warn_mg,
-            pyds.waic_i,
-            "log",
-        ],
-        index=["elpd_waic", "se", "p_waic", "n_data_points", "warning", "waic_i", "scale"],
+        data=values(entries),
+        index=keys(entries),
     )
 end
