@@ -142,6 +142,21 @@ include("helpers.jl")
         msg = String(take!(io))
         @test occursin("Warning:", msg)
     end
+    @testset "show" begin
+        idata = load_example_data("centered_eight")
+        # regression test
+        @test sprint(show, "text/plain", loo(idata)) == """
+            PSISLOOResult with estimates
+                   Estimate    SE
+             elpd       -31   1.4
+                p       0.9  0.34
+
+            and PSISResult with 500 draws, 4 chains, and 8 parameters
+            Pareto shape (k) diagnostic values:
+                                Count      Min. ESS
+             (-Inf, 0.5]  good  6 (75.0%)  135
+              (0.5, 0.7]  okay  2 (25.0%)  421"""
+    end
     @testset "agrees with R loo" begin
         if r_loo_installed()
             @testset for ds_name in ["centered_eight", "non_centered_eight"]

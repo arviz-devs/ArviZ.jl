@@ -32,6 +32,7 @@ function _print_elpd_estimates(
         hlines=:none,
         vlines=:none,
         formatters,
+        newline_at_end=false,
     )
     return nothing
 end

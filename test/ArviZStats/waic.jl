@@ -81,6 +81,27 @@ include("helpers.jl")
             end
         end
     end
+    @testset "warnings" begin
+        io = IOBuffer()
+        log_likelihood = randn(100, 4)
+        @testset for bad_val in (NaN, -Inf, Inf)
+            log_likelihood[1] = bad_val
+            result = with_logger(SimpleLogger(io)) do
+                waic(log_likelihood)
+            end
+            msg = String(take!(io))
+            @test occursin("Warning:", msg)
+        end
+    end
+    @testset "show" begin
+        idata = load_example_data("centered_eight")
+        # regression test
+        @test sprint(show, "text/plain", waic(idata)) == """
+            WAICResult with estimates
+                   Estimate    SE
+             elpd       -31   1.4
+                p       0.9  0.33"""
+    end
     @testset "agrees with R waic" begin
         if r_loo_installed()
             @testset for ds_name in ["centered_eight", "non_centered_eight"]
@@ -101,18 +122,6 @@ include("helpers.jl")
         else
             @warn "Skipping consistency tests against R loo::waic, since loo is not installed."
             @test_broken false
-        end
-    end
-    @testset "warnings" begin
-        io = IOBuffer()
-        log_likelihood = randn(100, 4)
-        @testset for bad_val in (NaN, -Inf, Inf)
-            log_likelihood[1] = bad_val
-            result = with_logger(SimpleLogger(io)) do
-                waic(log_likelihood)
-            end
-            msg = String(take!(io))
-            @test occursin("Warning:", msg)
         end
     end
 end

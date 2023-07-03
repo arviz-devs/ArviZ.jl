@@ -24,6 +24,7 @@ function Base.show(io::IO, mime::MIME"text/plain", result::PSISLOOResult)
     println(io, "PSISLOOResult with estimates")
     _print_elpd_estimates(io, mime, result)
     println(io)
+    println(io)
     print(io, "and ")
     show(io, mime, result.psis_result)
     return nothing
