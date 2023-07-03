@@ -40,8 +40,11 @@ Random.seed!(87)
 
         sample_stats = convert_to_dataset((; lp=randn(ndraws, nchains), log_like=x))
         idata = InferenceData(; sample_stats)
-        @test_throws Exception ArviZStats.log_likelihood(idata)
+        @test_throws ArgumentError ArviZStats.log_likelihood(idata)
         @test ArviZStats.log_likelihood(idata, :log_like) == x
+
+        idata = InferenceData()
+        @test_throws ArgumentError ArviZStats.log_likelihood(idata)
     end
 
     @testset "sigdigits_matching_error" begin
