@@ -64,16 +64,6 @@ pandas = ArviZ.pandas
             ps_exp = pandas.Series([1.0, 2.0, 3.0], [:a, :b, :c])
             @test py"($(ps) == $(ps_exp)).all()"
         end
-
-        @testset "DataFrames.DataFrame -> ELPDData" begin
-            idata = load_example_data("centered_eight")
-            df = loo(idata; pointwise=false)
-            elpd_data = ArviZ.arviz.loo(idata; pointwise=false)
-            @test all(df == ArviZ.todataframes(elpd_data))
-            ps = ArviZ.topandas(Val(:ELPDData), df)
-            @test pyisinstance(ps, ArviZ.arviz.stats.ELPDData)
-            @test py"($(ps) == $(elpd_data)).all()"
-        end
     end
 
     @testset "todataframes" begin

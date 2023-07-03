@@ -1,32 +1,56 @@
+module ArviZStats
+
+using ArviZ: ArviZ, arviz, @forwardfun
+using DimensionalData: DimensionalData, Dimensions
+using DocStringExtensions: FIELDS, FUNCTIONNAME, TYPEDEF, SIGNATURES
+using InferenceObjects: InferenceObjects
+using LogExpFunctions: LogExpFunctions
+using Markdown: @doc_str
+using MCMCDiagnosticTools: MCMCDiagnosticTools
+using PrettyTables: PrettyTables
+using Printf: Printf
+using PSIS: PSIS, PSISResult, psis, psis!
+using PyCall: PyCall
+using Statistics: Statistics
+using StatsBase: StatsBase, summarystats
+
+# PSIS
+export PSIS, PSISResult, psis, psis!
+
+# LOO-CV
+export AbstractELPDResult, PSISLOOResult, WAICResult
+export elpd_estimates, information_criterion, loo, waic
+
+# Others
+export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
+
+const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
+
 @forwardfun compare
 @forwardfun hdi
-@forwardfun loo
+@forwardfun kde
 @forwardfun loo_pit
 @forwardfun r2_score
-@forwardfun waic
 
-for f in (:loo, :waic)
-    @eval begin
-        function convert_arguments(::typeof($(f)), data, args...; kwargs...)
-            idata = convert_to_inference_data(data)
-            return tuple(idata, args...), kwargs
-        end
-    end
-end
-function convert_arguments(::typeof(compare), data, args...; kwargs...)
-    dict = Dict(k => try
-        topandas(Val(:ELPDData), v)
-    catch
-        convert_to_inference_data(v)
-    end for (k, v) in pairs(data))
+include("utils.jl")
+include("elpdresult.jl")
+include("loo.jl")
+include("waic.jl")
+
+function ArviZ.convert_arguments(::typeof(compare), data, args...; kwargs...)
+    dict = Dict(
+        k => try
+            ArviZ.topandas(Val(:ELPDData), v)
+        catch
+            InferenceObjects.convert_to_inference_data(v)
+        end for (k, v) in pairs(data)
+    )
     return tuple(dict, args...), kwargs
 end
 
-convert_result(::typeof(loo), result) = todataframes(result)
-convert_result(::typeof(waic), result) = todataframes(result)
-convert_result(::typeof(r2_score), result) = todataframes(result)
-function convert_result(::typeof(compare), result)
-    return todataframes(result; index_name=:name)
+ArviZ.convert_result(::typeof(r2_score), result) = ArviZ.todataframes(result)
+function ArviZ.convert_result(::typeof(compare), result)
+    return ArviZ.todataframes(result; index_name=:name)
 end
 
 @doc doc"""
@@ -108,17 +132,19 @@ func_dict = Dict(
 summarystats(idata; var_names = (:mu, :tau), stat_funcs = func_dict, extend = false)
 ```
 """
-function StatsBase.summarystats(data::InferenceData; group::Symbol=:posterior, kwargs...)
+function StatsBase.summarystats(
+    data::InferenceObjects.InferenceData; group::Symbol=:posterior, kwargs...
+)
     dataset = getproperty(data, group)
-    return summarystats(dataset; kwargs...)
+    return StatsBase.summarystats(dataset; kwargs...)
 end
 function StatsBase.summarystats(
-    data::Dataset; var_names=nothing, digits::Int=typemax(Int), kwargs...
+    data::InferenceObjects.Dataset; var_names=nothing, digits::Int=typemax(Int), kwargs...
 )
     var_names = var_names === nothing ? var_names : collect(var_names)
     round_to = digits == typemax(Int) ? nothing : digits
     s = arviz.summary(data; var_names, round_to, kwargs...)
-    return todataframes(s; index_name=:variable)
+    return ArviZ.todataframes(s; index_name=:variable)
 end
 
 """
@@ -135,6 +161,8 @@ Compute summary statistics on any object that can be passed to [`convert_to_data
   - `kwargs`: Keyword arguments passed to [`summarystats`](@ref).
 """
 function summary(data; group=:posterior, coords=(;), dims=(;), kwargs...)
-    dataset = convert_to_dataset(data; group, coords, dims)
-    return summarystats(dataset; kwargs...)
+    dataset = InferenceObjects.convert_to_dataset(data; group, coords, dims)
+    return StatsBase.summarystats(dataset; kwargs...)
 end
+
+end  # module

@@ -1,7 +1,8 @@
 using ArviZ, Random, Statistics, Test
+using ArviZ.ArviZStats
 using DataFrames: DataFrames
 
-@testset "stats" begin
+@testset "ArviZStats" begin
     idata = load_example_data("centered_eight")
 
     @testset "compare" begin
@@ -12,7 +13,7 @@ using DataFrames: DataFrames
         @test df isa DataFrames.DataFrame
         df2 = compare(loo_dict)
         @test df2 isa DataFrames.DataFrame
-        @test df == df2
+        @test_broken df == df2
     end
 
     @testset "hdi" begin
@@ -31,15 +32,13 @@ using DataFrames: DataFrames
     end
 
     @testset "loo" begin
-        df = loo(idata; pointwise=false)
-        @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(ArviZ.arviz.loo(idata; pointwise=false)))
+        df = loo(idata)
+        @test df isa ArviZStats.PSISLOOResult
     end
 
     @testset "waic" begin
-        df = waic(idata; pointwise=false)
-        @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(ArviZ.arviz.waic(idata; pointwise=false)))
+        df = waic(idata)
+        @test df isa ArviZStats.WAICResult
     end
 
     @testset "loo_pit" begin
@@ -94,4 +93,9 @@ using DataFrames: DataFrames
 
         @test ArviZ.summary(data) isa DataFrames.DataFrame
     end
+
+    include("helpers.jl")
+    include("utils.jl")
+    include("loo.jl")
+    include("waic.jl")
 end

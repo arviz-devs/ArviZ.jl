@@ -32,6 +32,14 @@ jobs:
           make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
         shell: bash
       - uses: julia-actions/julia-buildpkg@latest
+      - name: Setup Conda
+        run: |
+          using Pkg
+          Pkg.instantiate()
+          using Conda
+          # https://discourse.julialang.org/t/conda-not-installing-matplotlib-for-pyplot/96813/2
+          Conda.add("conda==23.1.0")
+        shell: julia --color=yes --project {0}
       - uses: julia-actions/julia-docdeploy@v1
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl

@@ -52,7 +52,8 @@ if isdefined(Base, :get_extension)
     # using Requires, these docstrings are automatically loaded, but as an extension we need
     # to manually specify the module
     push!(
-        modules, Base.get_extension(InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt)
+        modules,
+        Base.get_extension(InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt),
     )
 end
 
@@ -61,6 +62,12 @@ makedocs(;
     sitename="ArviZ.jl",
     pages=[
         "Home" => "index.md",
+        "Getting Started" => [
+            "Quickstart" => "quickstart.md",
+            "Working with `InferenceData`" => "working_with_inference_data.md",
+            "Creating custom plots" => "creating_custom_plots.md",
+        ],
+        "Example Gallery" => ["Matplotlib" => "mpl_examples.md"],
         "API" => [
             hide("api/index.md"),
             "Plots" => "api/plots.md",

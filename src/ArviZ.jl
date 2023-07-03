@@ -13,7 +13,6 @@ using Conda
 using PyPlot
 using DataDeps: DataDeps
 using DimensionalData: DimensionalData, Dimensions
-using PSIS: PSIS, PSISResult, psis, psis!
 using LogExpFunctions: logsumexp
 
 import Base:
@@ -86,8 +85,11 @@ export plot_autocorr,
     plot_violin
 
 ## Stats
+export ArviZStats
+export AbstractELPDResult, PSISLOOResult, WAICResult
 export PSIS, PSISResult, psis, psis!
-export summarystats, compare, hdi, loo, loo_pit, r2_score, waic
+export elpd_estimates, information_criterion, loo, waic
+export summarystats, compare, hdi, kde, loo_pit, r2_score
 
 ## Diagnostics
 export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
@@ -147,6 +149,9 @@ include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
 include("plots.jl")
-include("stats.jl")
+include("ArviZStats/ArviZStats.jl")
+
+using .ArviZStats
+using .ArviZStats: summary
 
 end # module

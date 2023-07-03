@@ -88,21 +88,22 @@ Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what i
 and returned from `f`.
 """
 macro forwardfun(f, forward_docs=true)
+    fesc = esc(f)
     fdoc = forwarddoc(f)
     ex = quote
         if $forward_docs
             @doc $fdoc $f
         end
 
-        function $(f)(args...; kwargs...)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
+        function $(fesc)(args...; kwargs...)
+            args, kwargs = convert_arguments($(fesc), args...; kwargs...)
             result = arviz.$(f)(args...; kwargs...)
-            return convert_result($(f), result)
+            return convert_result($(fesc), result)
         end
     end
     # make sure line number of methods are place where macro is called, not here
     _replace_line_number!(ex, __source__)
-    return esc(ex)
+    return ex
 end
 
 """
@@ -115,21 +116,22 @@ Use [`convert_arguments`](@ref) and [`convert_result`](@ref) to customize what i
 and returned from `f`.
 """
 macro forwardplotfun(f, forward_docs=true)
+    fesc = esc(f)
     fdoc = forwarddoc(f)
     ex = quote
         if $forward_docs
             @doc $fdoc $f
         end
 
-        function $(f)(args...; kwargs...)
-            args, kwargs = convert_arguments($(f), args...; kwargs...)
+        function $(fesc)(args...; kwargs...)
+            args, kwargs = convert_arguments($(fesc), args...; kwargs...)
             result = arviz.$(f)(args...; kwargs..., backend="matplotlib")
-            return convert_result($(f), result)
+            return convert_result($(fesc), result)
         end
     end
     # make sure line number of methods are place where macro is called, not here
     _replace_line_number!(ex, __source__)
-    return esc(ex)
+    return ex
 end
 
 function _replace_line_number!(ex, source)
@@ -227,11 +229,4 @@ function topandas(::Val{:Series}, df)
     rownames = names(df)
     colvals = Array(only(eachrow(df)))
     return pandas.Series(colvals, rownames)
-end
-function topandas(::Val{:ELPDData}, df)
-    initialize_pandas()
-    df = DataFrames.DataFrame(df)
-    rownames = names(df)
-    colvals = Array(only(eachrow(df)))
-    return ArviZ.arviz.stats.ELPDData(colvals, rownames)
 end
