@@ -21,8 +21,8 @@ include("helpers.jl")
             loo_result =
                 TA === DimArray ? loo(log_likelihood) : @inferred(loo(log_likelihood))
             @test loo_result isa ArviZStats.PSISLOOResult
-            estimates = ArviZStats.elpd_estimates(loo_result)
-            pointwise = ArviZStats.elpd_estimates(loo_result; pointwise=true)
+            estimates = elpd_estimates(loo_result)
+            pointwise = elpd_estimates(loo_result; pointwise=true)
             @testset "return types and values as expected" begin
                 @test estimates isa NamedTuple{(:elpd, :elpd_mcse, :p, :p_mcse),NTuple{4,T}}
                 @test pointwise isa
@@ -37,19 +37,15 @@ include("helpers.jl")
                 @test loo_result.psis_result.pareto_shape == pointwise.pareto_shape
             end
             @testset "information criterion" begin
-                @test ArviZStats.information_criterion(loo_result, :log) == estimates.elpd
-                @test ArviZStats.information_criterion(loo_result, :negative_log) ==
-                    -estimates.elpd
-                @test ArviZStats.information_criterion(loo_result, :deviance) ==
-                    -2 * estimates.elpd
-                @test ArviZStats.information_criterion(loo_result, :log; pointwise=true) ==
+                @test information_criterion(loo_result, :log) == estimates.elpd
+                @test information_criterion(loo_result, :negative_log) == -estimates.elpd
+                @test information_criterion(loo_result, :deviance) == -2 * estimates.elpd
+                @test information_criterion(loo_result, :log; pointwise=true) ==
                     pointwise.elpd
-                @test ArviZStats.information_criterion(
-                    loo_result, :negative_log; pointwise=true
-                ) == -pointwise.elpd
-                @test ArviZStats.information_criterion(
-                    loo_result, :deviance; pointwise=true
-                ) == -2 * pointwise.elpd
+                @test information_criterion(loo_result, :negative_log; pointwise=true) ==
+                    -pointwise.elpd
+                @test information_criterion(loo_result, :deviance; pointwise=true) ==
+                    -2 * pointwise.elpd
             end
 
             TA === DimArray && @testset "consistency with InferenceData argument" begin

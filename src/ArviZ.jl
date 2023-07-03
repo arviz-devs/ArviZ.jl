@@ -88,7 +88,7 @@ export plot_autocorr,
 export ArviZStats
 export AbstractELPDResult, PSISLOOResult, WAICResult
 export PSIS, PSISResult, psis, psis!
-export elbo_estimates, information_criterion, loo, waic
+export elpd_estimates, information_criterion, loo, waic
 export summarystats, compare, hdi, kde, loo_pit, r2_score
 
 ## Diagnostics

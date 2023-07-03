@@ -19,7 +19,7 @@ export PSIS, PSISResult, psis, psis!
 
 # LOO-CV
 export AbstractELPDResult, PSISLOOResult, WAICResult
-export elbo_estimates, information_criterion, loo, waic
+export elpd_estimates, information_criterion, loo, waic
 
 # Others
 export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
