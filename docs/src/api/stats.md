@@ -41,3 +41,10 @@ waic
 compare
 loo_pit
 ```
+
+
+### Utilities
+
+```@docs
+ArviZStats.smooth_data
+```
