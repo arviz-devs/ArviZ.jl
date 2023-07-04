@@ -1,5 +1,5 @@
 """
-    loo_pit(y, y_pred, log_weights; [is_discrete,] kwargs...) -> AbstractArray
+    loo_pit(y, y_pred, log_weights; kwargs...) -> AbstractArray
 
 Compute leave-one-out probability integral transform (LOO-PIT) checks.
 
@@ -34,6 +34,34 @@ LOO-PIT values should be approximately uniformly distributed on ``[0, 1]``.[^Gab
     J. R. Stat. Soc. Ser. A Stat. Soc. 182, 389–402 (2019).
     doi: [10.1111/rssa.12378](https://doi.org/10.1111/rssa.12378)
     arXiv: [1709.01449](https://arxiv.org/abs/1709.01449)
+
+# Examples
+
+Calculate LOO-PIT values using as test quantity the observed values themselves.
+
+```@example loo_pit1
+using ArviZ
+idata = load_example_data("centered_eight")
+log_weights = loo(idata; var_name=:obs).psis_result.log_weights
+loo_pit(
+    idata.observed_data.obs,
+    permutedims(idata.posterior_predictive.obs, (:draw, :chain, :school)),
+    log_weights,
+)
+```
+
+Calculate LOO-PIT values using as test quantity the square of the difference between
+each observation and `mu`.
+
+```@example loo_pit1
+using DimensionalData, Statistics
+T = idata.observed_data.obs .- only(median(idata.posterior.mu; dims=(:draw, :chain)))
+T_pred = permutedims(
+    broadcast_dims(-, idata.posterior_predictive.obs, idata.posterior.mu),
+    (:draw, :chain, :school)
+)
+loo_pit(T.^2, T_pred.^2, log_weights)
+```
 """
 function loo_pit(
     y::Union{AbstractArray,Number},
@@ -97,6 +125,8 @@ _get_observed_data_key(observed_data::InferenceObjects.Dataset) = only(keys(obse
 
 Compute LOO-PIT from groups in `idata` using PSIS-LOO.
 
+See also: [`loo`](@ref), [`psis`](@ref)
+
 # Keywords
 
   - `y_name`: Name of observed data variable in `idata.observed_data`. If not provided, then
@@ -112,27 +142,32 @@ Compute LOO-PIT from groups in `idata` using PSIS-LOO.
     [`ess`](@ref).
   - `kwargs`: Remaining keywords are forwarded to [`loo_pit`](@ref).
 
-See also: [`loo`](@ref), [`psis`](@ref)
+# Examples
+
+Calculate LOO-PIT values using as test quantity the observed values themselves.
+
+```@example
+using ArviZ
+idata = load_example_data("centered_eight")
+loo_pit(idata; y_name=:obs)
+```
 """
 function loo_pit(
     idata::InferenceObjects.InferenceData;
     y_name::Union{Symbol,Nothing}=nothing,
-    log_likelihood_name::Union{Symbol,Nothing}=(
-        haskey(idata, :log_likelihood) ? y_name : nothing
-    ),
+    log_likelihood_name::Union{Symbol,Nothing}=nothing,
     reff=nothing,
     kwargs...,
 )
     _y_name = y_name === nothing ? _get_observed_data_key(idata) : y_name
-    log_like = _draw_chains_params_array(log_likelihood(idata, log_likelihood_name))
+    _log_like_name = log_likelihood_name === nothing ? _y_name : log_likelihood_name
+    log_like = _draw_chains_params_array(log_likelihood(idata, _log_like_name))
     psis_result = _psis_loo_setup(log_like, reff)
-    return loo_pit(idata, psis_result; y_name=_y_name, kwargs...)
+    return loo_pit(idata, psis_result.log_weights; y_name=_y_name, kwargs...)
 end
 
 """
     loo_pit(idata::InferenceData, log_weights; kwargs...)
-    loo_pit(idata::InferenceData, psis_result::PSISResult; kwargs...)
-    loo_pit(idata::InferenceData, loo_result::PSISLOOResult; kwargs...)
 
 Compute LOO-PIT values using existing normalized log LOO importance weights.
 
@@ -143,6 +178,17 @@ Compute LOO-PIT values using existing normalized log LOO importance weights.
   - `y_pred_name`: Name of posterior predictive variable in `idata.posterior_predictive`.
     If not provided, then `y_name` is used.
   - `kwargs`: Remaining keywords are forwarded to [`loo_pit`](@ref).
+
+# Examples
+
+Calculate LOO-PIT values using already computed log weights.
+
+```@example
+using ArviZ
+idata = load_example_data("centered_eight")
+loo_result = loo(idata; var_name=:obs)
+loo_pit(idata, loo_result.psis_result.log_weights; y_name=:obs)
+```
 """
 function loo_pit(
     idata::InferenceObjects.InferenceData,
@@ -160,14 +206,4 @@ function loo_pit(
     y_pred = _draw_chains_params_array(idata.posterior_predictive[_y_pred_name])
     pitvals = loo_pit(y, y_pred, log_weights; kwargs...)
     return DimensionalData.rebuild(pitvals; name=Symbol("loo_pit_$(_y_name)"))
-end
-function loo_pit(
-    idata::InferenceObjects.InferenceData, psis_result::PSIS.PSISResult; kwargs...
-)
-    return loo_pit(idata, _draw_chains_params_array(psis_result.log_weights); kwargs...)
-end
-function loo_pit(
-    idata::InferenceObjects.InferenceData, loo_result::PSISLOOResult; kwargs...
-)
-    return loo_pit(idata, loo_result.psis_result; kwargs...)
 end
