@@ -182,10 +182,9 @@ end
 function _loo_pit(y, y_pred, log_weights)
     sample_dims = (1, 2)
     param_dims = _otherdims(log_weights, sample_dims)
-    # TODO: raise error message if sizes incompatible
     T = typeof(exp(zero(float(eltype(log_weights)))))
     if isempty(param_dims)
-        return exp.(LogExpFunctions.logsumexp(log_weights[y_pred .≤ y]))
+        return @views exp.(LogExpFunctions.logsumexp(log_weights[y_pred .≤ y]))
     else
         pitvals = similar(y, T)
         map!(
