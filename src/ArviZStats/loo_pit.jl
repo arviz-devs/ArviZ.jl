@@ -74,7 +74,10 @@ function _loo_pit(y, y_pred, log_weights)
             eachslice(y_pred; dims=param_dims),
             eachslice(log_weights; dims=param_dims),
         ) do yi, yi_hat, lw
-            sel_iter = (lw_j for (lw_j, yi_hat_j) in zip(lw, yi_hat) if yi_hat_j ≤ yi)
+            init = T(-Inf)
+            sel_iter = Iterators.flatten((
+                init, (lw_j for (lw_j, yi_hat_j) in zip(lw, yi_hat) if yi_hat_j ≤ yi)
+            ))
             return exp(LogExpFunctions.logsumexp(sel_iter))
         end
     end
