@@ -18,6 +18,7 @@ Compute leave-one-out probability integral transform (LOO-PIT) checks.
   - `kwargs`: Remaining keywords are forwarded to [`smooth_data`](@ref) if data is discrete.
 
 # Returns
+
   - `pitvals`: LOO-PIT values with same size as `y`. If `y` is a scalar, then `pitvals` is a
     scalar.
 
@@ -38,7 +39,6 @@ LOO-PIT values should be approximately uniformly distributed on ``[0, 1]``.[^Gab
     J. R. Stat. Soc. Ser. A Stat. Soc. 182, 389–402 (2019).
     doi: [10.1111/rssa.12378](https://doi.org/10.1111/rssa.12378)
     arXiv: [1709.01449](https://arxiv.org/abs/1709.01449)
-
 # Examples
 
 Calculate LOO-PIT values using as test quantity the observed values themselves.
@@ -62,9 +62,9 @@ using DimensionalData, Statistics
 T = idata.observed_data.obs .- only(median(idata.posterior.mu; dims=(:draw, :chain)))
 T_pred = permutedims(
     broadcast_dims(-, idata.posterior_predictive.obs, idata.posterior.mu),
-    (:draw, :chain, :school)
+    (:draw, :chain, :school),
 )
-loo_pit(T.^2, T_pred.^2, log_weights)
+loo_pit(T .^ 2, T_pred .^ 2, log_weights)
 ```
 """
 function loo_pit(
@@ -90,7 +90,6 @@ function loo_pit(
         return _loo_pit(y, y_pred, log_weights)
     end
 end
-
 
 """
     loo_pit(idata::InferenceData, log_weights; kwargs...) -> DimArray
@@ -204,8 +203,13 @@ function _loo_pit(y, y_pred, log_weights)
 end
 
 function _only_observed_data_key(idata::InferenceObjects.InferenceData)
-    haskey(idata, :observed_data) || throw(ArgumentError("No `observed_data` group in `idata`"))
+    haskey(idata, :observed_data) ||
+        throw(ArgumentError("No `observed_data` group in `idata`"))
     ks = keys(idata.observed_data)
-    length(ks) == 1 || throw(ArgumentError("More than one observed data variable: $(ks). `y_name` must be provided"))
+    length(ks) == 1 || throw(
+        ArgumentError(
+            "More than one observed data variable: $(ks). `y_name` must be provided"
+        ),
+    )
     return first(ks)
 end
