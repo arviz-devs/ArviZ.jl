@@ -1,5 +1,5 @@
 """
-    loo_pit(y, y_pred, log_weights; kwargs...) -> AbstractArray
+    loo_pit(y, y_pred, log_weights; kwargs...) -> Union{Real,AbstractArray}
 
 Compute leave-one-out probability integral transform (LOO-PIT) checks.
 
@@ -16,6 +16,10 @@ Compute leave-one-out probability integral transform (LOO-PIT) checks.
     are all integer-valued. If `true`, then data are smoothed using [`smooth_data`](@ref) to
     make them non-discrete before estimating LOO-PIT values.
   - `kwargs`: Remaining keywords are forwarded to [`smooth_data`](@ref) if data is discrete.
+
+# Returns
+  - `pitvals`: LOO-PIT values with same size as `y`. If `y` is a scalar, then `pitvals` is a
+    scalar.
 
 LOO-PIT is a marginal posterior predictive check. If ``y_{-i}`` is the array ``y`` of
 observations with the ``i``th observation left out, and ``y_i^*`` is a posterior prediction
@@ -89,7 +93,7 @@ end
 
 
 """
-    loo_pit(idata::InferenceData, log_weights; kwargs...)
+    loo_pit(idata::InferenceData, log_weights; kwargs...) -> DimArray
 
 Compute LOO-PIT values using existing normalized log LOO importance weights.
 
@@ -130,7 +134,7 @@ function loo_pit(
 end
 
 """
-    loo_pit(idata::InferenceData; kwargs...)
+    loo_pit(idata::InferenceData; kwargs...) -> DimArray
 
 Compute LOO-PIT from groups in `idata` using PSIS-LOO.
 
