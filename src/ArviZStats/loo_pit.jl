@@ -87,38 +87,47 @@ function loo_pit(
     end
 end
 
-function _loo_pit(y, y_pred, log_weights)
-    sample_dims = (1, 2)
-    param_dims = _otherdims(log_weights, sample_dims)
-    # TODO: raise error message if sizes incompatible
-    T = typeof(exp(zero(float(eltype(log_weights)))))
-    if isempty(param_dims)
-        return exp.(LogExpFunctions.logsumexp(log_weights[y_pred .≤ y]))
-    else
-        pitvals = similar(y, T)
-        map!(
-            pitvals,
-            y,
-            eachslice(y_pred; dims=param_dims),
-            eachslice(log_weights; dims=param_dims),
-        ) do yi, yi_hat, lw
-            init = T(-Inf)
-            sel_iter = Iterators.flatten((
-                init, (lw_j for (lw_j, yi_hat_j) in zip(lw, yi_hat) if yi_hat_j ≤ yi)
-            ))
-            return exp(LogExpFunctions.logsumexp(sel_iter))
-        end
-    end
-    return pitvals
-end
 
-# convenience methods converting from InferenceData
+"""
+    loo_pit(idata::InferenceData, log_weights; kwargs...)
 
-function _get_observed_data_key(idata::InferenceObjects.InferenceData)
-    haskey(idata, :observed_data) || throw(ArgumentError("No `observed_data` group"))
-    return _get_observed_data_key(idata.observed_data)
+Compute LOO-PIT values using existing normalized log LOO importance weights.
+
+# Keywords
+
+  - `y_name`: Name of observed data variable in `idata.observed_data`. If not provided, then
+    the only observed data variable is used.
+  - `y_pred_name`: Name of posterior predictive variable in `idata.posterior_predictive`.
+    If not provided, then `y_name` is used.
+  - `kwargs`: Remaining keywords are forwarded to [`loo_pit`](@ref).
+
+# Examples
+
+Calculate LOO-PIT values using already computed log weights.
+
+```@example
+using ArviZ
+idata = load_example_data("centered_eight")
+loo_result = loo(idata; var_name=:obs)
+loo_pit(idata, loo_result.psis_result.log_weights; y_name=:obs)
+```
+"""
+function loo_pit(
+    idata::InferenceObjects.InferenceData,
+    log_weights::AbstractArray;
+    y_name::Union{Symbol,Nothing}=nothing,
+    y_pred_name::Union{Symbol,Nothing}=nothing,
+    kwargs...,
+)
+    _y_name = y_name === nothing ? _only_observed_data_key(idata) : y_name
+    _y_pred_name = y_pred_name === nothing ? _y_name : y_pred_name
+    haskey(idata, :posterior_predictive) ||
+        throw(ArgumentError("No `posterior_predictive` group"))
+    y = idata.observed_data[_y_name]
+    y_pred = _draw_chains_params_array(idata.posterior_predictive[_y_pred_name])
+    pitvals = loo_pit(y, y_pred, log_weights; kwargs...)
+    return DimensionalData.rebuild(pitvals; name=Symbol("loo_pit_$(_y_name)"))
 end
-_get_observed_data_key(observed_data::InferenceObjects.Dataset) = only(keys(observed_data))
 
 """
     loo_pit(idata::InferenceData; kwargs...)
@@ -159,51 +168,41 @@ function loo_pit(
     reff=nothing,
     kwargs...,
 )
-    _y_name = y_name === nothing ? _get_observed_data_key(idata) : y_name
+    _y_name = y_name === nothing ? _only_observed_data_key(idata) : y_name
     _log_like_name = log_likelihood_name === nothing ? _y_name : log_likelihood_name
     log_like = _draw_chains_params_array(log_likelihood(idata, _log_like_name))
     psis_result = _psis_loo_setup(log_like, reff)
     return loo_pit(idata, psis_result.log_weights; y_name=_y_name, kwargs...)
 end
 
-"""
-    loo_pit(idata::InferenceData, log_weights; kwargs...)
+function _loo_pit(y, y_pred, log_weights)
+    sample_dims = (1, 2)
+    param_dims = _otherdims(log_weights, sample_dims)
+    # TODO: raise error message if sizes incompatible
+    T = typeof(exp(zero(float(eltype(log_weights)))))
+    if isempty(param_dims)
+        return exp.(LogExpFunctions.logsumexp(log_weights[y_pred .≤ y]))
+    else
+        pitvals = similar(y, T)
+        map!(
+            pitvals,
+            y,
+            eachslice(y_pred; dims=param_dims),
+            eachslice(log_weights; dims=param_dims),
+        ) do yi, yi_hat, lw
+            init = T(-Inf)
+            sel_iter = Iterators.flatten((
+                init, (lw_j for (lw_j, yi_hat_j) in zip(lw, yi_hat) if yi_hat_j ≤ yi)
+            ))
+            return exp(LogExpFunctions.logsumexp(sel_iter))
+        end
+    end
+    return pitvals
+end
 
-Compute LOO-PIT values using existing normalized log LOO importance weights.
-
-# Keywords
-
-  - `y_name`: Name of observed data variable in `idata.observed_data`. If not provided, then
-    the only observed data variable is used.
-  - `y_pred_name`: Name of posterior predictive variable in `idata.posterior_predictive`.
-    If not provided, then `y_name` is used.
-  - `kwargs`: Remaining keywords are forwarded to [`loo_pit`](@ref).
-
-# Examples
-
-Calculate LOO-PIT values using already computed log weights.
-
-```@example
-using ArviZ
-idata = load_example_data("centered_eight")
-loo_result = loo(idata; var_name=:obs)
-loo_pit(idata, loo_result.psis_result.log_weights; y_name=:obs)
-```
-"""
-function loo_pit(
-    idata::InferenceObjects.InferenceData,
-    log_weights::AbstractArray;
-    y_name::Union{Symbol,Nothing}=nothing,
-    y_pred_name::Union{Symbol,Nothing}=nothing,
-    kwargs...,
-)
-    haskey(idata, :observed_data) || throw(ArgumentError("No `observed_data` group"))
-    haskey(idata, :posterior_predictive) ||
-        throw(ArgumentError("No `posterior_predictive` group"))
-    _y_name = y_name === nothing ? _get_observed_data_key(idata) : y_name
-    _y_pred_name = y_pred_name === nothing ? _y_name : y_pred_name
-    y = idata.observed_data[_y_name]
-    y_pred = _draw_chains_params_array(idata.posterior_predictive[_y_pred_name])
-    pitvals = loo_pit(y, y_pred, log_weights; kwargs...)
-    return DimensionalData.rebuild(pitvals; name=Symbol("loo_pit_$(_y_name)"))
+function _only_observed_data_key(idata::InferenceObjects.InferenceData)
+    haskey(idata, :observed_data) || throw(ArgumentError("No `observed_data` group in `idata`"))
+    ks = keys(idata.observed_data)
+    length(ks) == 1 || throw(ArgumentError("More than one observed data variable: $(ks). `y_name` must be provided"))
+    return first(ks)
 end
