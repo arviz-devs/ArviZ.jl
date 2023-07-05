@@ -41,11 +41,6 @@ using DataFrames: DataFrames
         @test df isa ArviZStats.WAICResult
     end
 
-    @testset "loo_pit" begin
-        ret = loo_pit(idata; y="obs")
-        @test ret ≈ ArviZ.arviz.loo_pit(idata; y="obs") rtol = 0.02
-    end
-
     @testset "summarystats" begin
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
@@ -97,5 +92,6 @@ using DataFrames: DataFrames
     include("helpers.jl")
     include("utils.jl")
     include("loo.jl")
+    include("loo_pit.jl")
     include("waic.jl")
 end
