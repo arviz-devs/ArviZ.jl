@@ -1,0 +1,6 @@
+/.CondaPkg
+/src/.quarto/
+/src/_freeze/
+
+/src/quickstart.md
+/src/quickstart_files
