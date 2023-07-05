@@ -1,0 +1,16 @@
+project:
+  title: "ArviZ.jl"
+  output-dir: .
+  render:
+    - "*.qmd"
+
+execute:
+  freeze: auto
+  eval: true
+  echo: true
+  output: true
+
+format:
+  commonmark:
+    variant: -raw_html+tex_math_dollars
+    wrap: preserve
