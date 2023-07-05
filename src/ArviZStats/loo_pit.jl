@@ -178,26 +178,25 @@ function loo_pit(
     return loo_pit(idata, psis_result.log_weights; y_name=_y_name, kwargs...)
 end
 
-function _loo_pit(y, y_pred, log_weights)
+function _loo_pit(y::Number, y_pred, log_weights)
+    return @views exp.(LogExpFunctions.logsumexp(log_weights[y_pred .≤ y]))
+end
+function _loo_pit(y::AbstractArray, y_pred, log_weights)
     sample_dims = (1, 2)
-    param_dims = _otherdims(log_weights, sample_dims)
     T = typeof(exp(zero(float(eltype(log_weights)))))
-    if isempty(param_dims)
-        return @views exp.(LogExpFunctions.logsumexp(log_weights[y_pred .≤ y]))
-    else
-        pitvals = similar(y, T)
-        map!(
-            pitvals,
-            y,
-            eachslice(y_pred; dims=param_dims),
-            eachslice(log_weights; dims=param_dims),
-        ) do yi, yi_pred, lw
-            init = T(-Inf)
-            sel_iter = Iterators.flatten((
-                init, (lw_j for (lw_j, yi_pred_j) in zip(lw, yi_pred) if yi_pred_j ≤ yi)
-            ))
-            return exp(LogExpFunctions.logsumexp(sel_iter))
-        end
+    pitvals = similar(y, T)
+    param_dims = _otherdims(log_weights, sample_dims)
+    map!(
+        pitvals,
+        y,
+        eachslice(y_pred; dims=param_dims),
+        eachslice(log_weights; dims=param_dims),
+    ) do yi, yi_pred, lw
+        init = T(-Inf)
+        sel_iter = Iterators.flatten((
+            init, (lw_j for (lw_j, yi_pred_j) in zip(lw, yi_pred) if yi_pred_j ≤ yi)
+        ))
+        return exp(LogExpFunctions.logsumexp(sel_iter))
     end
     return pitvals
 end
