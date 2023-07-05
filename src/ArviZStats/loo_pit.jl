@@ -186,15 +186,18 @@ function _loo_pit(y::AbstractArray, y_pred, log_weights)
     T = typeof(exp(zero(float(eltype(log_weights)))))
     pitvals = similar(y, T)
     param_dims = _otherdims(log_weights, sample_dims)
+    # work around for `eachslices` not supporting multiple dims in older Julia versions
     map!(
         pitvals,
         y,
-        eachslice(y_pred; dims=param_dims),
-        eachslice(log_weights; dims=param_dims),
-    ) do yi, yi_pred, lw
+        CartesianIndices(map(Base.Fix1(axes, y_pred), param_dims)),
+        CartesianIndices(map(Base.Fix1(axes, log_weights), param_dims)),
+    ) do yi, i1, i2
+        yi_pred = @views y_pred[:, :, i1]
+        lwi = @views log_weights[:, :, i2]
         init = T(-Inf)
         sel_iter = Iterators.flatten((
-            init, (lw_j for (lw_j, yi_pred_j) in zip(lw, yi_pred) if yi_pred_j ≤ yi)
+            init, (lwi_j for (lwi_j, yi_pred_j) in zip(lwi, yi_pred) if yi_pred_j ≤ yi)
         ))
         return exp(LogExpFunctions.logsumexp(sel_iter))
     end
