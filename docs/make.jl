@@ -15,7 +15,6 @@ else
     @warn "Quarto not found, skipping rendering Quarto files"
 end
 
-
 function wrap_html_divs_in_raw_block(out_io, in_io)
     level = 0
     for line in eachline(in_io)
