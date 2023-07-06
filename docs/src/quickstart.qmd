@@ -26,7 +26,7 @@ ArviZ.use_style("arviz-darkgrid")
 
 ## Get started with plotting
 
-ArviZ.jl is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
+ArviZ.jl is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turinglang.org), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 
 ```{julia}
 rng1 = Random.MersenneTwister(37772);
