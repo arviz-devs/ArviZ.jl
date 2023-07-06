@@ -1,15 +1,20 @@
-using Documenter, Downloads, ArviZ
+using Pkg, CondaPkg, Documenter, Downloads, ArviZ
 using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
 using SampleChains: SampleChains # make `from_samplechains` available for API docs
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
 
 # generate markdown from Quarto files
-using CondaPkg
-CondaPkg.withenv() do
-    @info "Rendering Quarto files"
-    run(`quarto render $(DOCS_SRC_PATH)`)
+if Sys.which("quarto") !== nothing
+    CondaPkg.withenv() do
+        @info "Rendering Quarto files"
+        Pkg.build("IJulia")
+        run(`quarto render $(DOCS_SRC_PATH)`)
+    end
+else
+    @warn "Quarto not found, skipping rendering Quarto files"
 end
+
 
 function wrap_html_divs_in_raw_block(out_io, in_io)
     level = 0
