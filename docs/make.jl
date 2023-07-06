@@ -5,10 +5,11 @@ using SampleChains: SampleChains # make `from_samplechains` available for API do
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
 
 # generate markdown from Quarto files
-using CondaPkg
-CondaPkg.withenv() do
+if Sys.which("quarto") !== nothing
     @info "Rendering Quarto files"
     run(`quarto render $(DOCS_SRC_PATH)`)
+else
+    @warn "Quarto not found, skipping rendering Quarto files"
 end
 
 function wrap_html_divs_in_raw_block(out_io, in_io)
