@@ -1,0 +1,3 @@
+[deps]
+jupyter = "1"
+quarto = ">=1.3"
