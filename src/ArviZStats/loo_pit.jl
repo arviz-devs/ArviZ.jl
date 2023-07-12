@@ -75,6 +75,8 @@ function loo_pit(
     kwargs...,
 )
     sample_dims = (1, 2)
+    size(y) == size(y_pred)[3:end] ||
+        throw(ArgumentError("data dimensions of `y` and `y_pred` must have the size"))
     size(log_weights) == size(y_pred) ||
         throw(ArgumentError("`log_weights` and `y_pred` must have same size"))
     _is_discrete = if is_discrete === nothing
@@ -172,8 +174,18 @@ function loo_pit(
     kwargs...,
 )
     _y_name = y_name === nothing ? _only_observed_data_key(idata) : y_name
-    _log_like_name = log_likelihood_name === nothing ? _y_name : log_likelihood_name
-    log_like = _draw_chains_params_array(log_likelihood(idata, _log_like_name))
+    if log_likelihood_name === nothing
+        if haskey(idata, :log_likelihood)
+            _log_like = log_likelihood(idata.log_likelihood, _y_name)
+        elseif haskey(idata, :sample_stats) && haskey(idata.sample_stats, :log_likelihood)
+            _log_like = idata.sample_stats.log_likelihood
+        else
+            throw(ArgumentError("There must be a `log_likelihood` group in `idata`"))
+        end
+    else
+        _log_like = log_likelihood(idata.log_likelihood, log_likelihood_name)
+    end
+    log_like = _draw_chains_params_array(_log_like)
     psis_result = _psis_loo_setup(log_like, reff)
     return loo_pit(idata, psis_result.log_weights; y_name=_y_name, kwargs...)
 end
