@@ -53,13 +53,14 @@ using StatsBase
             ArviZStats.smooth_data(y_pred; dims=3),
             log_weights,
         )
+        ϵ = sqrt(eps())
         @test loo_pit(y, y_pred, log_weights) == pit_vals
         @test loo_pit(y, y_pred, log_weights; is_discrete=true) == pit_vals
         @test loo_pit(y, y_pred, log_weights; is_discrete=false) != pit_vals
-        @test !(loo_pit(y .+ eps(), y_pred, log_weights) ≈ pit_vals)
-        @test loo_pit(y .+ eps(), y_pred, log_weights; is_discrete=true) ≈ pit_vals
-        @test !(loo_pit(y, y_pred .+ eps(), log_weights) ≈ pit_vals)
-        @test loo_pit(y, y_pred .+ eps(), log_weights; is_discrete=true) ≈ pit_vals
+        @test !(loo_pit(y .+ ϵ, y_pred, log_weights) ≈ pit_vals)
+        @test loo_pit(y .+ ϵ, y_pred, log_weights; is_discrete=true) ≈ pit_vals
+        @test !(loo_pit(y, y_pred .+ ϵ, log_weights) ≈ pit_vals)
+        @test loo_pit(y, y_pred .+ ϵ, log_weights; is_discrete=true) ≈ pit_vals
     end
     @testset "DimArray data" begin
         draw_dim = Dim{:draw}(1:100)
