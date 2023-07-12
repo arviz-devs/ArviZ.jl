@@ -25,6 +25,9 @@ export elpd_estimates, information_criterion, loo, waic
 # Others
 export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
 
+# load for docstrings
+using ArviZ: InferenceData, convert_to_dataset, ess
+
 const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
 @forwardfun compare
