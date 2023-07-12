@@ -2,6 +2,7 @@ using Test
 using ArviZ
 using ArviZ.ArviZStats
 using DimensionalData
+using Distributions
 using StatsBase
 
 @testset "loo_pit" begin
@@ -36,6 +37,29 @@ using StatsBase
             )
             @test pitvals ≈ pitvals_exp
         end
+    end
+    @testset "discrete data" begin
+        ndraws = 1_000
+        nchains = 3
+        dists = Binomial.(10:10:100, 0.25)
+        d = product_distribution(dists)
+        y = rand(d)
+        y_sample = rand(d, ndraws * nchains)
+        y_pred = reshape(transpose(y_sample), ndraws, nchains, length(y))
+        loglike = mapslices(yi -> logpdf.(dists, yi), y_pred; dims=3)
+        log_weights = psis(loglike).log_weights
+        pit_vals = loo_pit(
+            ArviZStats.smooth_data(y; dims=1),
+            ArviZStats.smooth_data(y_pred; dims=3),
+            log_weights,
+        )
+        @test loo_pit(y, y_pred, log_weights) == pit_vals
+        @test loo_pit(y, y_pred, log_weights; is_discrete=true) == pit_vals
+        @test loo_pit(y, y_pred, log_weights; is_discrete=false) != pit_vals
+        @test !(loo_pit(y .+ eps(), y_pred, log_weights) ≈ pit_vals)
+        @test loo_pit(y .+ eps(), y_pred, log_weights; is_discrete=true) ≈ pit_vals
+        @test !(loo_pit(y, y_pred .+ eps(), log_weights) ≈ pit_vals)
+        @test loo_pit(y, y_pred .+ eps(), log_weights; is_discrete=true) ≈ pit_vals
     end
     @testset "DimArray data" begin
         draw_dim = Dim{:draw}(1:100)
