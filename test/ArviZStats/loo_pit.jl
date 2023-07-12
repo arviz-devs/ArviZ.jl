@@ -3,7 +3,6 @@ using ArviZ
 using ArviZ.ArviZStats
 using DimensionalData
 using StatsBase
-# using Logging: SimpleLogger, with_logger
 
 @testset "loo_pit" begin
     @testset "scalar data" begin
