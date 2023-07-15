@@ -100,7 +100,8 @@ using StatsBase
         @test_throws ArgumentError loo_pit(idata1; y_name=:z)
         @test_throws Exception loo_pit(idata1; y_pred_name=:z)
         @test_throws Exception loo_pit(idata1; log_likelihood_name=:z)
-        @test @inferred(loo_pit(idata1)) == pit_vals
+        @test loo_pit(idata1) == pit_vals
+        VERSION ≥ v"1.7" && @inferred loo_pit(idata1)
         @test loo_pit(idata1; y_name=:y) == pit_vals
         @test loo_pit(idata1; y_name=:y, y_pred_name=:y, log_likelihood_name=:y) == pit_vals
 
@@ -115,16 +116,16 @@ using StatsBase
         )
         @test_throws Exception loo_pit(idata2; y_name=:y, log_likelihood_name=:log_like)
         @test_throws ArgumentError loo_pit(idata2; y_name=:y, y_pred_name=:y_pred)
-        @test @inferred(
-            loo_pit(idata2; y_name=:y, y_pred_name=:y_pred, log_likelihood_name=:log_like)
+        @test loo_pit(
+            idata2; y_name=:y, y_pred_name=:y_pred, log_likelihood_name=:log_like
         ) == pit_vals
-
         idata3 = InferenceData(;
             observed_data=Dataset((; y)),
             posterior_predictive=Dataset((; y=y_pred)),
             sample_stats=Dataset((; log_likelihood=log_like)),
         )
-        @test @inferred(loo_pit(idata3)) == pit_vals
+        @test loo_pit(idata3) == pit_vals
+        VERSION ≥ v"1.7" && @inferred loo_pit(idata3)
 
         all_dims_perm = (param_dims..., reverse(sample_dims)...)
         idata4 = InferenceData(;
@@ -132,7 +133,8 @@ using StatsBase
             posterior_predictive=Dataset((; y=permutedims(y_pred, all_dims_perm))),
             log_likelihood=Dataset((; y=permutedims(log_like, all_dims_perm))),
         )
-        @test @inferred(loo_pit(idata4)) ≈ pit_vals
+        @test loo_pit(idata4) ≈ pit_vals
+        VERSION ≥ v"1.7" && @inferred loo_pit(idata4)
 
         idata5 = InferenceData(;
             observed_data=Dataset((; y)), posterior_predictive=Dataset((; y=y_pred))
