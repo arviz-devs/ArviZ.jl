@@ -111,6 +111,8 @@ function loo_pit(
         is_discrete
     end
     if _is_discrete
+        is_discrete === nothing &&
+            @warn "All data and predictions are integer-valued. Smoothing data before running `loo_pit`."
         y_smooth = smooth_data(y; kwargs...)
         y_pred_smooth = smooth_data(y_pred; dims=_otherdims(y_pred, sample_dims), kwargs...)
         return _loo_pit(y_smooth, y_pred_smooth, log_weights)
