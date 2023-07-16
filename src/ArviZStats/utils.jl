@@ -101,6 +101,27 @@ function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale
     return clamp(sigdigits_x, 0, sigdigits_max)
 end
 
+_astuple(x) = (x,)
+_astuple(x::Tuple) = x
+
+# eachslice-like iterator that accepts multiple dimensions and has a `size` even for older
+# Julia versions
+@static if VERSION ≥ v"1.9-"
+    _eachslice(x; dims) = eachslice(x; dims)
+else
+    function _eachslice(x; dims)
+        _dims = _astuple(dims)
+        alldims_perm = (_otherdims(x, _dims)..., _dims...)
+        dims_axes = map(Base.Fix1(axes, x), _dims)
+        other_dims = ntuple(_ -> Colon(), ndims(x) - length(_dims))
+        xperm = PermutedDimsArray(x, alldims_perm)
+        return Base.Iterators.map(CartesianIndices(dims_axes)) do i
+            return view(xperm, other_dims..., i)
+        end
+    end
+end
+_eachslice(x::DimensionalData.AbstractDimArray; dims) = eachslice(x; dims)
+
 _alldims(x) = ntuple(identity, ndims(x))
 
 _otherdims(x, dims) = filter(∉(dims), _alldims(x))
