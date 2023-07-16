@@ -1,10 +1,10 @@
 module ArviZStats
 
 using ArviZ: ArviZ, arviz, @forwardfun
+using DataInterpolations: DataInterpolations
 using DimensionalData: DimensionalData, Dimensions
 using DocStringExtensions: FIELDS, FUNCTIONNAME, TYPEDEF, SIGNATURES
 using InferenceObjects: InferenceObjects
-using Interpolations: Interpolations
 using LogExpFunctions: LogExpFunctions
 using Markdown: @doc_str
 using MCMCDiagnosticTools: MCMCDiagnosticTools
