@@ -1,6 +1,7 @@
 module ArviZStats
 
 using ArviZ: ArviZ, arviz, @forwardfun
+using DataInterpolations: DataInterpolations
 using DimensionalData: DimensionalData, Dimensions
 using DocStringExtensions: FIELDS, FUNCTIONNAME, TYPEDEF, SIGNATURES
 using InferenceObjects: InferenceObjects
@@ -24,17 +25,20 @@ export elpd_estimates, information_criterion, loo, waic
 # Others
 export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
 
+# load for docstrings
+using ArviZ: InferenceData, convert_to_dataset, ess
+
 const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
 @forwardfun compare
 @forwardfun hdi
 @forwardfun kde
-@forwardfun loo_pit
 @forwardfun r2_score
 
 include("utils.jl")
 include("elpdresult.jl")
 include("loo.jl")
+include("loo_pit.jl")
 include("waic.jl")
 
 function ArviZ.convert_arguments(::typeof(compare), data, args...; kwargs...)

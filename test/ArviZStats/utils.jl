@@ -74,6 +74,29 @@ Random.seed!(87)
         @test ArviZStats.sigdigits_matching_error(100, 0; sigdigits_max=2) == 2
     end
 
+    @testset "_eachslice" begin
+        x = randn(2, 3, 4)
+        slices = ArviZStats._eachslice(x; dims=(3, 1))
+        @test size(slices) == (size(x, 3), size(x, 1))
+        slices = collect(slices)
+        for i in axes(x, 3), j in axes(x, 1)
+            @test slices[i, j] == x[j, :, i]
+        end
+
+        @test ArviZStats._eachslice(x; dims=2) == ArviZStats._eachslice(x; dims=(2,))
+
+        if VERSION ≥ v"1.9-"
+            for dims in ((3, 1), (2, 3), 3)
+                @test ArviZStats._eachslice(x; dims) === eachslice(x; dims)
+            end
+        end
+
+        da = DimArray(x, (Dim{:a}(1:2), Dim{:b}(['x', 'y', 'z']), Dim{:c}(0:3)))
+        for dims in (2, (1, 3), (3, 1), (2, 3), (:c, :a))
+            @test ArviZStats._eachslice(da; dims) === eachslice(da; dims)
+        end
+    end
+
     @testset "_draw_chains_params_array" begin
         chaindim = Dim{:chain}(1:4)
         drawdim = Dim{:draw}(1:2:200)

@@ -49,6 +49,47 @@ function _check_log_likelihood(x)
 end
 
 """
+    smooth_data(y; dims=:, interp_method=CubicSpline, offset_frac=0.01)
+
+Smooth `y` along `dims` using `interp_method`.
+
+`interp_method` is a 2-argument callabale that takes the arguments `y` and `x` and returns
+a DataInterpolations.jl interpolation method, defaulting to a cubic spline interpolator.
+
+`offset_frac` is the fraction of the length of `y` to use as an offset when interpolating.
+"""
+function smooth_data(
+    y;
+    dims::Union{Int,Tuple{Int,Vararg{Int}},Colon}=Colon(),
+    interp_method=DataInterpolations.CubicSpline,
+    offset_frac=1//100,
+)
+    T = float(eltype(y))
+    y_interp = similar(y, T)
+    n = dims isa Colon ? length(y) : prod(Base.Fix1(size, y), dims)
+    x = range(0, 1; length=n)
+    x_interp = range(0 + offset_frac, 1 - offset_frac; length=n)
+    _smooth_data!(y_interp, interp_method, y, x, x_interp, dims)
+    return y_interp
+end
+
+function _smooth_data!(y_interp, interp_method, y, x, x_interp, ::Colon)
+    interp = interp_method(vec(y), x)
+    interp(vec(y_interp), x_interp)
+    return y_interp
+end
+function _smooth_data!(y_interp, interp_method, y, x, x_interp, dims)
+    for (y_interp_i, y_i) in zip(
+        _eachslice(y_interp; dims=_otherdims(y_interp, dims)),
+        _eachslice(y; dims=_otherdims(y, dims)),
+    )
+        interp = interp_method(vec(y_i), x)
+        interp(vec(y_interp_i), x_interp)
+    end
+    return y_interp
+end
+
+"""
     sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
 
 Get number of significant digits of `x` so that the last digit of `x` is the first digit of
@@ -65,6 +106,31 @@ function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale
     sigdigits_x = first_digit_x - last_digit_x + 1
     return clamp(sigdigits_x, 0, sigdigits_max)
 end
+
+_astuple(x) = (x,)
+_astuple(x::Tuple) = x
+
+# eachslice-like iterator that accepts multiple dimensions and has a `size` even for older
+# Julia versions
+@static if VERSION ≥ v"1.9-"
+    _eachslice(x; dims) = eachslice(x; dims)
+else
+    function _eachslice(x; dims)
+        _dims = _astuple(dims)
+        alldims_perm = (_otherdims(x, _dims)..., _dims...)
+        dims_axes = map(Base.Fix1(axes, x), _dims)
+        other_dims = ntuple(_ -> Colon(), ndims(x) - length(_dims))
+        xperm = PermutedDimsArray(x, alldims_perm)
+        return Base.Iterators.map(CartesianIndices(dims_axes)) do i
+            return view(xperm, other_dims..., i)
+        end
+    end
+end
+_eachslice(x::DimensionalData.AbstractDimArray; dims) = eachslice(x; dims)
+
+_alldims(x) = ntuple(identity, ndims(x))
+
+_otherdims(x, dims) = filter(∉(dims), _alldims(x))
 
 _maybe_scalar(x) = x
 _maybe_scalar(x::AbstractArray{<:Any,0}) = x[]
