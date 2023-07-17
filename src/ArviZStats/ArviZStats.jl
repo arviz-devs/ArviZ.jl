@@ -5,6 +5,7 @@ using DataInterpolations: DataInterpolations
 using DimensionalData: DimensionalData, Dimensions
 using DocStringExtensions: FIELDS, FUNCTIONNAME, TYPEDEF, SIGNATURES
 using InferenceObjects: InferenceObjects
+using LinearAlgebra: mul!
 using LogExpFunctions: LogExpFunctions
 using Markdown: @doc_str
 using MCMCDiagnosticTools: MCMCDiagnosticTools
