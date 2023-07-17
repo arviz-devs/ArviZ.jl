@@ -31,7 +31,6 @@ using ArviZ: InferenceData, convert_to_dataset, ess
 
 const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
-@forwardfun compare
 @forwardfun hdi
 @forwardfun kde
 @forwardfun r2_score
@@ -39,24 +38,11 @@ const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 include("utils.jl")
 include("elpdresult.jl")
 include("loo.jl")
-include("loo_pit.jl")
 include("waic.jl")
-
-function ArviZ.convert_arguments(::typeof(compare), data, args...; kwargs...)
-    dict = Dict(
-        k => try
-            ArviZ.topandas(Val(:ELPDData), v)
-        catch
-            InferenceObjects.convert_to_inference_data(v)
-        end for (k, v) in pairs(data)
-    )
-    return tuple(dict, args...), kwargs
-end
+include("compare.jl")
+include("loo_pit.jl")
 
 ArviZ.convert_result(::typeof(r2_score), result) = ArviZ.todataframes(result)
-function ArviZ.convert_result(::typeof(compare), result)
-    return ArviZ.todataframes(result; index_name=:name)
-end
 
 @doc doc"""
     summarystats(
