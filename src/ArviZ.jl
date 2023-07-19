@@ -89,7 +89,9 @@ export ArviZStats
 export AbstractELPDResult, PSISLOOResult, WAICResult
 export PSIS, PSISResult, psis, psis!
 export elpd_estimates, information_criterion, loo, waic
-export summarystats, compare, hdi, kde, loo_pit, r2_score
+export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
+export compare
+export summarystats, hdi, kde, loo_pit, r2_score
 
 ## Diagnostics
 export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
