@@ -35,13 +35,26 @@ loo
 waic
 ```
 
-### Others
+## Predictive checks
 
 ```@docs
-compare
 loo_pit
 ```
 
+## Model comparison
+
+```@docs
+compare
+model_weights
+```
+
+The following model weighting methods are available
+```@docs
+AbstractModelWeightsMethod
+BootstrappedPseudoBMA
+PseudoBMA
+Stacking
+```
 
 ### Utilities
 
