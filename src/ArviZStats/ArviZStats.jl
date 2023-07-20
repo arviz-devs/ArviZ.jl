@@ -16,6 +16,7 @@ using Printf: Printf
 using PSIS: PSIS, PSISResult, psis, psis!
 using PyCall: PyCall
 using Random: Random
+using Setfield: Setfield
 using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
 

@@ -121,9 +121,12 @@ $(TYPEDEF)
 
 Model weighting using stacking of predictive distributions[^YaoVehtari2018].
 
-    Stacking()
+    Stacking(; optimizer=Optim.LBFGS(), options=Optim.Options()
+    Stacking(optimizer[, options])
 
-Construct the method.
+Construct the method, optionally customizing the optimization.
+
+$(TYPEDFIELDS)
 
 See also: [`BootstrappedPseudoBMA`](@ref)
 
@@ -133,18 +136,32 @@ See also: [`BootstrappedPseudoBMA`](@ref)
     doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
 """
-struct Stacking <: AbstractModelWeightsMethod end
+Base.@kwdef struct Stacking{O<:Optim.AbstractOptimizer} <: AbstractModelWeightsMethod
+    """The optimizer to use for the optimization of the weights. The optimizer must support
+    projected gradient optimization viae a `manifold` field."""
+    optimizer::O = Optim.LBFGS(; manifold=Optim.Sphere())
+    """The Optim options to use for the optimization of the weights."""
+    options::Optim.Options = Optim.Options()
 
-function model_weights(::Stacking, elpd_pairs)
+    function Stacking(
+        optimizer::Optim.AbstractOptimizer, options::Optim.Options=Optim.Options()
+    )
+        hasfield(typeof(optimizer), :manifold) ||
+            throw(ArgumentError("The optimizer must have a `manifold` field."))
+        _optimizer = Setfield.@set optimizer.manifold = Optim.Sphere()
+        return new{typeof(_optimizer)}(_optimizer, options)
+    end
+end
+
+function model_weights(method::Stacking, elpd_pairs)
     ic_mat = _elpd_matrix(elpd_pairs)
     exp_ic_mat = exp.(ic_mat)
-    _, weights = _model_weights_stacking(exp_ic_mat)
+    _, weights = _model_weights_stacking(exp_ic_mat, method.optimizer, method.options)
     return weights
 end
-function _model_weights_stacking(exp_ic_mat)
+function _model_weights_stacking(exp_ic_mat, optimizer, options)
     # set up optimization objective
-    manifold = Optim.Sphere()
-    objective = InplaceStackingOptimObjective(manifold, exp_ic_mat)
+    objective = InplaceStackingOptimObjective(optimizer.manifold, exp_ic_mat)
 
     # set up initial point on optimization manifold
     w0 = similar(exp_ic_mat, axes(exp_ic_mat, 2))
@@ -152,7 +169,7 @@ function _model_weights_stacking(exp_ic_mat)
     x0 = _initial_point(objective, w0)
 
     # optimize
-    sol = Optim.optimize(Optim.only_fg!(objective), x0, Optim.LBFGS(; manifold))
+    sol = Optim.optimize(Optim.only_fg!(objective), x0, optimizer, options)
 
     # check convergence
     Optim.converged(sol) ||
