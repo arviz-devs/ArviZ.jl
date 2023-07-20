@@ -188,9 +188,6 @@ function _elpd_matrix(elpd_results)
     return elpd_mat
 end
 
-# if x ∈ 𝕊ⁿ, then x.^2 ∈ Δⁿ. This transformation is bijective if x is further
-# constrained to the positive orthant of the sphere, but it is sufficient to solve the
-# problem on any orthant.
 struct InplaceStackingOptimObjective{M<:Optim.Manifold,E,C}
     manifold::M
     exp_ic_mat::E
@@ -200,6 +197,14 @@ function InplaceStackingOptimObjective(manifold, exp_ic_mat)
     return InplaceStackingOptimObjective(manifold, exp_ic_mat, nothing)
 end
 
+# Optimize on the probability simplex by converting the problem to optimization on the unit
+# sphere, optimizing with projected gradients, and mapping the solution back to the sphere.
+# When the objective function on the simplex is convex, each global minimizer on the sphere
+# maps to the global minimizer on the simplex, but the optimization manifold is simple, and
+# no inequality constraints exist.
+# Q Li, D McKenzie, W Yin. "From the simplex to the sphere: faster constrained optimization
+# using the Hadamard parametrization." Inf. Inference. 12.3 (2023): iaad017.
+# doi: 10.1093/imaiai/iaad017. arXiv: 2112.05273
 function InplaceStackingOptimObjective(manifold::Optim.Sphere, exp_ic_mat)
     cache = similar(exp_ic_mat, axes(exp_ic_mat, 1))
     return InplaceStackingOptimObjective(manifold, exp_ic_mat, cache)
