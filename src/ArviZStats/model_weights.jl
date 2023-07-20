@@ -165,7 +165,7 @@ function _model_weights_stacking(exp_ic_mat, optimizer, options)
 
     # set up initial point on optimization manifold
     w0 = similar(exp_ic_mat, axes(exp_ic_mat, 2))
-    w0 .= 1//length(w0)
+    fill!(w0, 1//length(w0))
     x0 = _initial_point(objective, w0)
 
     # optimize
