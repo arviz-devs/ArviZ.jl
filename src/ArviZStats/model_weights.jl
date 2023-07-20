@@ -34,7 +34,7 @@ $(TYPEDEF)
 Model weighting method using pseudo Bayesian Model Averaging (pseudo-BMA) and Akaike-type
 weighting.
 
-    PseudoBMA(; regularized=true)
+    PseudoBMA(; regularized=false)
 
 Construct the method with optional regularization of the weights using the standard error of
 the ELPD estimate.
@@ -52,7 +52,7 @@ the ELPD estimate.
 See also: [`Stacking`](@ref)
 """
 @kwdef struct PseudoBMA <: AbstractModelWeightsMethod
-    regularized::Bool = true
+    regularized::Bool = false
 end
 
 function model_weights(method::PseudoBMA, elpd_results)
