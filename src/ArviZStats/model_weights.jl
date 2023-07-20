@@ -10,6 +10,7 @@ Subtypes implement [`model_weights`](@ref)`(method, elpd_results)`.
 abstract type AbstractModelWeightsMethod end
 
 """
+    model_weights(elpd_results; method=Stacking())
     model_weights(method::AbstractModelWeightsMethod, elpd_results)
 
 Compute weights for each model in `elpd_results` using `method`.
@@ -17,16 +18,21 @@ Compute weights for each model in `elpd_results` using `method`.
 `elpd_results` is any iterator with `keys` and `values` methods, where each value is an
 [`AbstractELPDResult`](@ref).
 
+[`Stacking`](@ref) is the recommended approach, as it performs well even when the true data
+generating process is not included among the candidate models. See [^YaoVehtari2018] for
+details.
+
 See also: [`AbstractModelWeightsMethod`](@ref), [`compare`](@ref)
-"""
-function model_weights end
 
+[^YaoVehtari2018]: Yuling Yao, Aki Vehtari, Daniel Simpson, and Andrew Gelman.
+    Using Stacking to Average Bayesian Predictive Distributions.
+    2018. Bayesian Analysis. 13, 3, 917–1007.
+    doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
+    arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
 """
-    model_weights(elpd_results)
-
-Compute weights for each model in `elpd_results` using [`Stacking`](@ref).
-"""
-model_weights(elpd_results) = model_weights(Stacking(), elpd_results)
+function model_weights(elpd_results; method::AbstractModelWeightsMethod=Stacking())
+    return model_weights(method, elpd_results)
+end
 
 """
 $(TYPEDEF)
@@ -42,14 +48,16 @@ the ELPD estimate.
 
 !!! note
 
-    It is recommended to instead use [`BootstrappedPseudoBMA`](@ref), which produces more
-    stable estimates of model weights. For details, see [^YaoVehtari2018].
+    This approach is not recommended, as it produces unstable weight estimates. It is
+    recommended to instead use [`BootstrappedPseudoBMA`](@ref) to stabilize the weights
+    or [`Stacking`](@ref). For details, see [^YaoVehtari2018].
 
 [^YaoVehtari2018]: Yuling Yao, Aki Vehtari, Daniel Simpson, and Andrew Gelman.
     Using Stacking to Average Bayesian Predictive Distributions.
     2018. Bayesian Analysis. 13, 3, 917–1007.
     doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
+
 See also: [`Stacking`](@ref)
 """
 @kwdef struct PseudoBMA <: AbstractModelWeightsMethod
@@ -82,6 +90,12 @@ Construct the method.
 $(TYPEDFIELDS)
 
 See also: [`Stacking`](@ref)
+
+[^YaoVehtari2018]: Yuling Yao, Aki Vehtari, Daniel Simpson, and Andrew Gelman.
+    Using Stacking to Average Bayesian Predictive Distributions.
+    2018. Bayesian Analysis. 13, 3, 917–1007.
+    doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
+    arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
 """
 @kwdef struct BootstrappedPseudoBMA{R<:Random.AbstractRNG,T<:Real} <:
               AbstractModelWeightsMethod
