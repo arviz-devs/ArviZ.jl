@@ -1,3 +1,5 @@
+const DEFAULT_STACKING_OPTIMIZER = Optim.LBFGS()
+
 """
 $(TYPEDEF)
 
@@ -139,7 +141,7 @@ See also: [`BootstrappedPseudoBMA`](@ref)
 Base.@kwdef struct Stacking{O<:Optim.AbstractOptimizer} <: AbstractModelWeightsMethod
     """The optimizer to use for the optimization of the weights. The optimizer must support
     projected gradient optimization viae a `manifold` field."""
-    optimizer::O = Optim.LBFGS(; manifold=Optim.Sphere())
+    optimizer::O = DEFAULT_STACKING_OPTIMIZER
     """The Optim options to use for the optimization of the weights."""
     options::Optim.Options = Optim.Options()
 
