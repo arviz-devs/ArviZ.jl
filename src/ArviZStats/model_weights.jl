@@ -129,7 +129,7 @@ See also: [`Stacking`](@ref)
 end
 
 function model_weights(method::BootstrappedPseudoBMA, elpd_results)
-    _elpd = elpd_estimates(first(values(elpd_results)); pointwise=true).elpd
+    _elpd = vec(elpd_estimates(first(values(elpd_results)); pointwise=true).elpd)
     α = similar(_elpd)
     n = length(α)
     rng = method.rng
