@@ -93,5 +93,6 @@ using DataFrames: DataFrames
     include("utils.jl")
     include("loo.jl")
     include("loo_pit.jl")
+    include("model_weights.jl")
     include("waic.jl")
 end
