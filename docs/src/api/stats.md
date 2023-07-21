@@ -35,12 +35,6 @@ loo
 waic
 ```
 
-## Predictive checks
-
-```@docs
-loo_pit
-```
-
 ## Model comparison
 
 ```@docs
@@ -57,7 +51,13 @@ PseudoBMA
 Stacking
 ```
 
-### Utilities
+## Predictive checks
+
+```@docs
+loo_pit
+```
+
+## Utilities
 
 ```@docs
 ArviZStats.smooth_data
