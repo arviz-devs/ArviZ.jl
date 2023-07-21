@@ -21,9 +21,7 @@ PSIS.psis
 PSIS.psis!
 ```
 
-## Model assessment and selection
-
-### LOO and WAIC
+## LOO and WAIC
 
 ```@docs
 AbstractELPDResult
