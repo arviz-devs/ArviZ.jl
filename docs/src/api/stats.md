@@ -44,6 +44,7 @@ loo_pit
 ## Model comparison
 
 ```@docs
+ModelComparisonResult
 compare
 model_weights
 ```

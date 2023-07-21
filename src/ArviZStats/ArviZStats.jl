@@ -19,6 +19,7 @@ using Random: Random
 using Setfield: Setfield
 using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
+using Tables: Tables
 
 # PSIS
 export PSIS, PSISResult, psis, psis!
@@ -29,7 +30,7 @@ export elpd_estimates, information_criterion, loo, waic
 
 # Model weighting and comparison
 export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
-export compare
+export ModelComparisonResult, compare
 
 # Others
 export hdi, kde, loo_pit, r2_score, summary, summarystats

@@ -90,7 +90,7 @@ export AbstractELPDResult, PSISLOOResult, WAICResult
 export PSIS, PSISResult, psis, psis!
 export elpd_estimates, information_criterion, loo, waic
 export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
-export compare
+export ModelComparisonResult, compare
 export summarystats, hdi, kde, loo_pit, r2_score
 
 ## Diagnostics

@@ -168,6 +168,17 @@ function _assimilar(x::NamedTuple, y)
     return z
 end
 
+_sortperm(x; kwargs...) = sortperm(collect(x); kwargs...)
+
+_permute(x::AbstractVector, p::AbstractVector) = x[p]
+_permute(x::Tuple, p::Tuple) = x[collect(p)]
+_permute(x::Tuple, p::AbstractVector) = x[p]
+_permute(x::NamedTuple, p) = NamedTuple{_permute(keys(x), p)}(_permute(values(x), p))
+
+# TODO: try to find a way to do this that works for more arrays with coordinates
+_indices(x) = keys(x)
+_indices(x::DimensionalData.AbstractDimArray{1}) = DimensionalData.lookup(x, 1)
+
 # compute sum and estimate of standard error of sum
 function _sum_and_se(x; dims=:)
     s = sum(x; dims)
