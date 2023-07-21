@@ -15,8 +15,9 @@ abstract type AbstractModelWeightsMethod end
 
 Compute weights for each model in `elpd_results` using `method`.
 
-`elpd_results` is any iterator with `keys` and `values` methods, where each value is an
-[`AbstractELPDResult`](@ref).
+`elpd_results` is a `Tuple`, `NamedTuple`, or `AbstractVector` with
+[`AbstractELPDResult`](@ref) entries. The weights are returned in the same type of
+collection.
 
 [`Stacking`](@ref) is the recommended approach, as it performs well even when the true data
 generating process is not included among the candidate models. See [^YaoVehtari2018] for
@@ -29,10 +30,30 @@ See also: [`AbstractModelWeightsMethod`](@ref), [`compare`](@ref)
     2018. Bayesian Analysis. 13, 3, 917–1007.
     doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
+# Examples
+
+```jldoctest
+using ArviZ
+models = (
+    centered=load_example_data("centered_eight"),
+    non_centered=load_example_data("non_centered_eight"),
+)
+elpd_results = map(loo, models)
+model_weights(elpd_results)
+
+# output
+
+(centered = 5.341753943391326e-19, non_centered = 1.0)
+```
 """
 function model_weights(elpd_results; method::AbstractModelWeightsMethod=Stacking())
     return model_weights(method, elpd_results)
 end
+
+# Akaike-type weights are defined as exp(-AIC/2), normalized to 1, which on the log-score
+# IC scale is equivalent to softmax
+akaike_weights!(w, elpds) = LogExpFunctions.softmax!(w, elpds)
+_akaike_weights(elpds) = _softmax(elpds)
 
 """
 $(TYPEDEF)
@@ -65,13 +86,12 @@ See also: [`Stacking`](@ref)
 end
 
 function model_weights(method::PseudoBMA, elpd_results)
-    return LogExpFunctions.softmax(collect(
-        Iterators.map(values(elpd_results)) do result
-            est = elpd_estimates(result)
-            method.regularize || return est.elpd
-            return est.elpd - est.elpd_mcse / 2
-        end,
-    ))
+    elpds = map(elpd_results) do result
+        est = elpd_estimates(result)
+        method.regularize || return est.elpd
+        return est.elpd - est.elpd_mcse / 2
+    end
+    return _akaike_weights(elpds)
 end
 
 """
@@ -123,14 +143,14 @@ function model_weights(method::BootstrappedPseudoBMA, elpd_results)
         weights_mean .+= w
     end
     weights_mean ./= method.samples
-    return weights_mean
+    return _assimilar(elpd_results, weights_mean)
 end
 
 function _model_weights_bootstrap!(w, elpd_mean, α, rng, α_dist, ic_mat)
     Random.rand!(rng, α_dist, α)
     mul!(elpd_mean, ic_mat', α)
     elpd_mean .*= length(α)
-    LogExpFunctions.softmax!(w, elpd_mean)
+    akaike_weights!(w, elpd_mean)
     return w
 end
 
@@ -175,7 +195,7 @@ function model_weights(method::Stacking, elpd_pairs)
     ic_mat = _elpd_matrix(elpd_pairs)
     exp_ic_mat = exp.(ic_mat)
     _, weights = _model_weights_stacking(exp_ic_mat, method.optimizer, method.options)
-    return weights
+    return _assimilar(elpd_pairs, weights)
 end
 function _model_weights_stacking(exp_ic_mat, optimizer, options)
     # set up optimization objective
@@ -199,7 +219,7 @@ function _model_weights_stacking(exp_ic_mat, optimizer, options)
 end
 
 function _elpd_matrix(elpd_results)
-    elpd_values = Iterators.map(values(elpd_results)) do result
+    elpd_values = map(elpd_results) do result
         return vec(elpd_estimates(result; pointwise=true).elpd)
     end
     elpd_mat = reduce(hcat, elpd_values)
@@ -246,6 +266,7 @@ end
 _initial_point(::InplaceStackingOptimObjective{Optim.Sphere}, w0) = _simplex_to_sphere(w0)
 _final_point(::InplaceStackingOptimObjective{Optim.Sphere}, x) = _sphere_to_simplex(x)
 
+# if ∑xᵢ² = 1, then if wᵢ = xᵢ², then w is on the probability simplex
 _sphere_to_simplex(x) = x .^ 2
 _simplex_to_sphere(x) = sqrt.(x)
 function _∇sphere_to_simplex!(∂x, x)

@@ -145,6 +145,29 @@ end
 
 _logabssubexp(x, y) = LogExpFunctions.logsubexp(reverse(minmax(x, y))...)
 
+# softmax with support for other mappable iterators
+_softmax(x::AbstractArray) = LogExpFunctions.softmax(x)
+function _softmax(x)
+    nrm = LogExpFunctions.logsumexp(x)
+    return map(x) do xi
+        return exp(xi - nrm)
+    end
+end
+
+function _assimilar(x::AbstractVector, y)
+    z = similar(x, eltype(y))
+    z .= y
+    return z
+end
+function _assimilar(x::Tuple, y)
+    z = NTuple{length(x),eltype(y)}(y)
+    return z
+end
+function _assimilar(x::NamedTuple, y)
+    z = NamedTuple{fieldnames(typeof(x))}(_assimilar(values(x), y))
+    return z
+end
+
 # compute sum and estimate of standard error of sum
 function _sum_and_se(x; dims=:)
     s = sum(x; dims)
