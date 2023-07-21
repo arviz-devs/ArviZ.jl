@@ -177,7 +177,7 @@ _permute(x::NamedTuple, p) = NamedTuple{_permute(keys(x), p)}(_permute(values(x)
 
 # TODO: try to find a way to do this that works for more arrays with coordinates
 _indices(x) = keys(x)
-_indices(x::DimensionalData.AbstractDimArray{1}) = DimensionalData.lookup(x, 1)
+_indices(x::DimensionalData.AbstractDimArray{<:Any,1}) = DimensionalData.lookup(x, 1)
 
 # compute sum and estimate of standard error of sum
 function _sum_and_se(x; dims=:)

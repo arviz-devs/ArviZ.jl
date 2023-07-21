@@ -30,6 +30,15 @@ end
         @test mc1.elpd_result == reverse(eight_schools_loo_results)
     end
 
+    @testset "DimArray inputs" begin
+        dim = Dim{:model}(collect(keys(eight_schools_loo_results)))
+        da = DimArray(collect(eight_schools_loo_results), dim)
+        dim = Dimensions.dims(da, :model)
+        mc2 = compare(da)
+        @test mc2.name == [:non_centered, :centered]
+        @test Dimensions.dimsmatch(dims(mc2.weight, :model), reverse(dim))
+    end
+
     @testset "keywords are forwarded" begin
         @test _isequal(compare(eight_schools_data), mc1)
         mc2 = compare(eight_schools_loo_results; weights_method=PseudoBMA())
