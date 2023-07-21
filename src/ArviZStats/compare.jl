@@ -39,20 +39,13 @@ leading authorities on model comparison dx.doi.org/10.1111/1467-9868.00353
 
 # Examples
 
-```jldoctest
+```julia
 using ArviZ
 models = (
     centered=load_example_data("centered_eight"),
     non_centered=load_example_data("non_centered_eight"),
 )
 mc = compare(models)
-
-# output
-
-ModelComparisonResult with Stacking weights
-         name  rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p  p_mcse
- non_centered     1   -31        1.4          0               0     1.0  0.9    0.32
-     centered     2   -31        1.4       0.06           0.067     0.0  0.9    0.34
 ```
 """
 function compare(

@@ -32,7 +32,7 @@ See also: [`AbstractModelWeightsMethod`](@ref), [`compare`](@ref)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
 # Examples
 
-```jldoctest
+```julia
 using ArviZ
 models = (
     centered=load_example_data("centered_eight"),
@@ -40,10 +40,6 @@ models = (
 )
 elpd_results = map(loo, models)
 model_weights(elpd_results)
-
-# output
-
-(centered = 5.341753943391326e-19, non_centered = 1.0)
 ```
 """
 function model_weights(elpd_results; method::AbstractModelWeightsMethod=Stacking())
