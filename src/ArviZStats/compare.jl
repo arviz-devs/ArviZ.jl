@@ -158,15 +158,11 @@ function _print_comparison_results(
 end
 
 function Base.show(io::IO, mime::MIME"text/plain", result::ModelComparisonResult)
-    # elpd_result_type = _typename(eltype(result.elpd_result))
     weights_method_name = _typename(result.weights_method)
     println(io, "ModelComparisonResult with $(weights_method_name) weights")
     _print_comparison_results(io, mime, result)
     return nothing
 end
-
-Base.@pure _typename(::T) where {T} = only(T.name.Typeofwrapper.parameters)
-_typename(T::Type) = only(T.name.Typeofwrapper.parameters)
 
 function _permute(r::ModelComparisonResult, perm)
     return ModelComparisonResult(
