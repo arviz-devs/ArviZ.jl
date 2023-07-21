@@ -150,10 +150,11 @@ end
 include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
-include("plots.jl")
-include("ArviZStats/ArviZStats.jl")
 
+include("ArviZStats/ArviZStats.jl")
 using .ArviZStats
 using .ArviZStats: summary
+
+include("plots.jl")
 
 end # module
