@@ -120,7 +120,7 @@ See also: [`Stacking`](@ref)
     "The number of samples to draw for bootstrapping"
     samples::Int = 1_000
     """The shape parameter in the Dirichlet distribution used for the Bayesian bootstrap.
-    `alpha < 1` favors more uniform weights."""
+    The default (1) corresponds to a uniform distribution on the simplex."""
     alpha::T = 1
 end
 
