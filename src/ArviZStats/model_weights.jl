@@ -206,7 +206,7 @@ function model_weights(method::Stacking, elpd_pairs)
 end
 function _model_weights_stacking(exp_ic_mat, optimizer, options)
     # set up optimization objective
-    objective = InplaceStackingOptimObjective(optimizer.manifold, exp_ic_mat)
+    objective = InplaceStackingOptimObjective(exp_ic_mat)
 
     # set up initial point on optimization manifold
     w0 = similar(exp_ic_mat, axes(exp_ic_mat, 2))
@@ -233,15 +233,6 @@ function _elpd_matrix(elpd_results)
     return elpd_mat
 end
 
-struct InplaceStackingOptimObjective{M<:Optim.Manifold,E,C}
-    manifold::M
-    exp_ic_mat::E
-    cache::C
-end
-function InplaceStackingOptimObjective(manifold, exp_ic_mat)
-    return InplaceStackingOptimObjective(manifold, exp_ic_mat, nothing)
-end
-
 # Optimize on the probability simplex by converting the problem to optimization on the unit
 # sphere, optimizing with projected gradients, and mapping the solution back to the sphere.
 # When the objective function on the simplex is convex, each global minimizer on the sphere
@@ -250,11 +241,15 @@ end
 # Q Li, D McKenzie, W Yin. "From the simplex to the sphere: faster constrained optimization
 # using the Hadamard parametrization." Inf. Inference. 12.3 (2023): iaad017.
 # doi: 10.1093/imaiai/iaad017. arXiv: 2112.05273
-function InplaceStackingOptimObjective(manifold::Optim.Sphere, exp_ic_mat)
-    cache = similar(exp_ic_mat, axes(exp_ic_mat, 1))
-    return InplaceStackingOptimObjective(manifold, exp_ic_mat, cache)
+struct InplaceStackingOptimObjective{E,C}
+    exp_ic_mat::E
+    cache::C
 end
-function (obj::InplaceStackingOptimObjective{Optim.Sphere})(F, G, x)
+function InplaceStackingOptimObjective(exp_ic_mat)
+    cache = similar(exp_ic_mat, axes(exp_ic_mat, 1))
+    return InplaceStackingOptimObjective(exp_ic_mat, cache)
+end
+function (obj::InplaceStackingOptimObjective)(F, G, x)
     exp_ic_mat = obj.exp_ic_mat
     cache = obj.cache
     w = _sphere_to_simplex(x)
@@ -270,8 +265,8 @@ function (obj::InplaceStackingOptimObjective{Optim.Sphere})(F, G, x)
     end
     return nothing
 end
-_initial_point(::InplaceStackingOptimObjective{Optim.Sphere}, w0) = _simplex_to_sphere(w0)
-_final_point(::InplaceStackingOptimObjective{Optim.Sphere}, x) = _sphere_to_simplex(x)
+_initial_point(::InplaceStackingOptimObjective, w0) = _simplex_to_sphere(w0)
+_final_point(::InplaceStackingOptimObjective, x) = _sphere_to_simplex(x)
 
 # if ∑xᵢ² = 1, then if wᵢ = xᵢ², then w is on the probability simplex
 _sphere_to_simplex(x) = x .^ 2
