@@ -74,6 +74,29 @@ Random.seed!(87)
         @test ArviZStats.sigdigits_matching_error(100, 0; sigdigits_max=2) == 2
     end
 
+    @testset "_assimilar" begin
+        @testset for x in ([8, 2, 5], (8, 2, 5), (; a=8, b=2, c=5))
+            @test @inferred(ArviZStats._assimilar((x=1.0, y=2.0, z=3.0), x)) ==
+                (x=8, y=2, z=5)
+            @test @inferred(ArviZStats._assimilar((randn(3)...,), x)) == (8, 2, 5)
+            dim = Dim{:foo}(["a", "b", "c"])
+            y = DimArray(randn(3), dim)
+            @test @inferred(ArviZStats._assimilar(y, x)) == DimArray([8, 2, 5], dim)
+        end
+    end
+
+    @testset "_sortperm/_permute" begin
+        @testset for (x, y) in (
+            [3, 1, 4, 2] => [1, 2, 3, 4],
+            (3, 1, 4, 2) => (1, 2, 3, 4),
+            (x=3, y=1, z=4, w=2) => (y=1, w=2, x=3, z=4),
+        )
+            perm = ArviZStats._sortperm(x)
+            @test perm == [2, 4, 1, 3]
+            @test ArviZStats._permute(x, perm) == y
+        end
+    end
+
     @testset "_eachslice" begin
         x = randn(2, 3, 4)
         slices = ArviZStats._eachslice(x; dims=(3, 1))
