@@ -110,6 +110,31 @@ end
 _astuple(x) = (x,)
 _astuple(x::Tuple) = x
 
+function _assimilar(x::AbstractVector, y)
+    z = similar(x, eltype(y))
+    z .= y
+    return z
+end
+function _assimilar(x::Tuple, y)
+    z = NTuple{length(x),eltype(y)}(y)
+    return z
+end
+function _assimilar(x::NamedTuple, y)
+    z = NamedTuple{fieldnames(typeof(x))}(_assimilar(values(x), y))
+    return z
+end
+
+_sortperm(x; kwargs...) = sortperm(collect(x); kwargs...)
+
+_permute(x::AbstractVector, p::AbstractVector) = x[p]
+_permute(x::Tuple, p::Tuple) = x[collect(p)]
+_permute(x::Tuple, p::AbstractVector) = x[p]
+_permute(x::NamedTuple, p) = NamedTuple{_permute(keys(x), p)}(_permute(values(x), p))
+
+# TODO: try to find a way to do this that works for more arrays with coordinates
+_indices(x) = keys(x)
+_indices(x::DimensionalData.AbstractDimArray{<:Any,1}) = DimensionalData.lookup(x, 1)
+
 # eachslice-like iterator that accepts multiple dimensions and has a `size` even for older
 # Julia versions
 @static if VERSION ≥ v"1.9-"
@@ -153,31 +178,6 @@ function _softmax(x)
         return exp(xi - nrm)
     end
 end
-
-function _assimilar(x::AbstractVector, y)
-    z = similar(x, eltype(y))
-    z .= y
-    return z
-end
-function _assimilar(x::Tuple, y)
-    z = NTuple{length(x),eltype(y)}(y)
-    return z
-end
-function _assimilar(x::NamedTuple, y)
-    z = NamedTuple{fieldnames(typeof(x))}(_assimilar(values(x), y))
-    return z
-end
-
-_sortperm(x; kwargs...) = sortperm(collect(x); kwargs...)
-
-_permute(x::AbstractVector, p::AbstractVector) = x[p]
-_permute(x::Tuple, p::Tuple) = x[collect(p)]
-_permute(x::Tuple, p::AbstractVector) = x[p]
-_permute(x::NamedTuple, p) = NamedTuple{_permute(keys(x), p)}(_permute(values(x), p))
-
-# TODO: try to find a way to do this that works for more arrays with coordinates
-_indices(x) = keys(x)
-_indices(x::DimensionalData.AbstractDimArray{<:Any,1}) = DimensionalData.lookup(x, 1)
 
 # compute sum and estimate of standard error of sum
 function _sum_and_se(x; dims=:)
