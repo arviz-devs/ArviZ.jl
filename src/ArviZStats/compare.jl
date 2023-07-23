@@ -189,3 +189,10 @@ function Tables.getcolumn(r::ModelComparisonResult, nm::Symbol)
     end
     throw(ArgumentError("Unrecognized column name $nm"))
 end
+
+IteratorInterfaceExtensions.isiterable(::ModelComparisonResult) = true
+function IteratorInterfaceExtensions.getiterator(r::ModelComparisonResult)
+    return Tables.datavaluerows(Tables.columntable(r))
+end
+
+TableTraits.isiterabletable(::ModelComparisonResult) = true

@@ -20,6 +20,7 @@ using Setfield: Setfield
 using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
 using Tables: Tables
+using TableTraits: TableTraits
 
 # PSIS
 export PSIS, PSISResult, psis, psis!
