@@ -8,6 +8,8 @@ using Random
 
 Random.seed!(97)
 
+struct DummyOptimizer <: Optim.AbstractOptimizer end
+
 @testset "model_weights" begin
     function test_model_weights(weights_method)
         @testset "weights are same collection as arguments" begin
@@ -112,6 +114,10 @@ Random.seed!(97)
 
             @test @allocated(obj(true, nothing, x)) ≤ 16
             @test @allocated(obj(true, grad, x)) == @allocated(obj(true, nothing, x))
+        end
+
+        @testset "constructor errors if invalid optimizer provided" begin
+            @test_throws ArgumentError Stacking(; optimizer=DummyOptimizer())
         end
 
         @testset "stacking is default" begin
