@@ -246,13 +246,15 @@ struct InplaceStackingOptimObjective{E,C}
     cache::C
 end
 function InplaceStackingOptimObjective(exp_ic_mat)
-    cache = similar(exp_ic_mat, axes(exp_ic_mat, 1))
+    cache = (
+        similar(exp_ic_mat, axes(exp_ic_mat, 1)), similar(exp_ic_mat, axes(exp_ic_mat, 2))
+    )
     return InplaceStackingOptimObjective(exp_ic_mat, cache)
 end
 function (obj::InplaceStackingOptimObjective)(F, G, x)
     exp_ic_mat = obj.exp_ic_mat
-    cache = obj.cache
-    w = _sphere_to_simplex(x)
+    cache, w = obj.cache
+    _sphere_to_simplex!(w, x)
     mul!(cache, exp_ic_mat, w)
     cache .= inv.(cache)
     if G !== nothing
@@ -270,6 +272,10 @@ _final_point(::InplaceStackingOptimObjective, x) = _sphere_to_simplex(x)
 
 # if ∑xᵢ² = 1, then if wᵢ = xᵢ², then w is on the probability simplex
 _sphere_to_simplex(x) = x .^ 2
+function _sphere_to_simplex!(w, x)
+    w .= x .^ 2
+    return w
+end
 _simplex_to_sphere(x) = sqrt.(x)
 function _∇sphere_to_simplex!(∂x, x)
     ∂x .*= 2 .* x

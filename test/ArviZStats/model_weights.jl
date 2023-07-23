@@ -1,6 +1,8 @@
 using Test
 using ArviZ
 using DimensionalData
+using FiniteDifferences
+using LinearAlgebra
 using Optim
 using Random
 
@@ -87,6 +89,31 @@ Random.seed!(97)
         end
     end
     @testset "Stacking" begin
+        @testset "InplaceStackingOptimObjective" begin
+            E = rand(20, 10)
+            obj = ArviZStats.InplaceStackingOptimObjective(E)
+            @test obj.cache isa NTuple{2,Vector{Float64}}
+            @test length(obj.cache[1]) == size(E, 1)
+            @test length(obj.cache[2]) == size(E, 2)
+
+            x = normalize(randn(size(E, 2)))
+
+            # test derivatives with finite differences
+            grad_exp = FiniteDifferences.grad(
+                central_fdm(5, 1), x -> obj(true, nothing, x), x
+            )[1]
+            grad = similar(x)
+            obj(true, grad, x)
+            @test grad ≈ grad_exp
+
+            grad = similar(x)
+            obj(nothing, grad, x)
+            @test grad ≈ grad_exp
+
+            @test @allocated(obj(true, nothing, x)) ≤ 16
+            @test @allocated(obj(true, grad, x)) == @allocated(obj(true, nothing, x))
+        end
+
         @testset "stacking is default" begin
             elpd_results = map(waic, [randn(1000, 4, 2, 3) for _ in 1:2])
             @test model_weights(elpd_results) == model_weights(Stacking(), elpd_results)
