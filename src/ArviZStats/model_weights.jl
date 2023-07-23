@@ -77,9 +77,10 @@ the ELPD estimate.
 
 See also: [`Stacking`](@ref)
 """
-@kwdef struct PseudoBMA <: AbstractModelWeightsMethod
-    regularize::Bool = false
+struct PseudoBMA <: AbstractModelWeightsMethod
+    regularize::Bool
 end
+PseudoBMA(; regularize::Bool=false) = PseudoBMA(regularize)
 
 function model_weights(method::PseudoBMA, elpd_results)
     elpds = map(elpd_results) do result
@@ -113,15 +114,19 @@ See also: [`Stacking`](@ref)
     doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
 """
-@kwdef struct BootstrappedPseudoBMA{R<:Random.AbstractRNG,T<:Real} <:
-              AbstractModelWeightsMethod
+struct BootstrappedPseudoBMA{R<:Random.AbstractRNG,T<:Real} <: AbstractModelWeightsMethod
     "The random number generator to use for the Bayesian bootstrap"
-    rng::R = Random.default_rng()
+    rng::R
     "The number of samples to draw for bootstrapping"
-    samples::Int = 1_000
+    samples::Int
     """The shape parameter in the Dirichlet distribution used for the Bayesian bootstrap.
     The default (1) corresponds to a uniform distribution on the simplex."""
-    alpha::T = 1
+    alpha::T
+end
+function BootstrappedPseudoBMA(;
+    rng::Random.AbstractRNG=Random.default_rng(), samples::Int=1_000, alpha::Real=1
+)
+    return BootstrappedPseudoBMA(rng, samples, alpha)
 end
 
 function model_weights(method::BootstrappedPseudoBMA, elpd_results)
@@ -170,12 +175,12 @@ See also: [`BootstrappedPseudoBMA`](@ref)
     doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
 """
-Base.@kwdef struct Stacking{O<:Optim.AbstractOptimizer} <: AbstractModelWeightsMethod
+struct Stacking{O<:Optim.AbstractOptimizer} <: AbstractModelWeightsMethod
     """The optimizer to use for the optimization of the weights. The optimizer must support
     projected gradient optimization viae a `manifold` field."""
-    optimizer::O = DEFAULT_STACKING_OPTIMIZER
+    optimizer::O
     """The Optim options to use for the optimization of the weights."""
-    options::Optim.Options = Optim.Options()
+    options::Optim.Options
 
     function Stacking(
         optimizer::Optim.AbstractOptimizer, options::Optim.Options=Optim.Options()
@@ -185,6 +190,12 @@ Base.@kwdef struct Stacking{O<:Optim.AbstractOptimizer} <: AbstractModelWeightsM
         _optimizer = Setfield.@set optimizer.manifold = Optim.Sphere()
         return new{typeof(_optimizer)}(_optimizer, options)
     end
+end
+function Stacking(;
+    optimizer::Optim.AbstractOptimizer=DEFAULT_STACKING_OPTIMIZER,
+    options::Optim.Options=Optim.Options(),
+)
+    return Stacking(optimizer, options)
 end
 
 function model_weights(method::Stacking, elpd_pairs)
