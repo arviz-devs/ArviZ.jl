@@ -6,9 +6,6 @@ using Random
 
 Random.seed!(97)
 
-_isapprox(x::AbstractArray, y::AbstractArray; kwargs...) = isapprox(x, y; kwargs...)
-_isapprox(x, y; kwargs...) = all(isapprox.(x, y; kwargs...))
-
 @testset "model_weights" begin
     function test_model_weights(weights_method)
         @testset "weights are same collection as arguments" begin

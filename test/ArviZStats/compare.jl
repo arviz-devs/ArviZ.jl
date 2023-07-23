@@ -2,10 +2,6 @@ using Test
 using ArviZ
 using Tables
 
-function _isequal(x::ModelComparisonResult, y::ModelComparisonResult)
-    return Tables.columntable(x) == Tables.columntable(y)
-end
-
 @testset "compare" begin
     eight_schools_data = (
         centered=load_example_data("centered_eight"),
