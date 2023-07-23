@@ -43,9 +43,5 @@ function waic_r(log_likelihood)
     return (; estimates, pointwise)
 end
 
-function _isequal(x::ModelComparisonResult, y::ModelComparisonResult)
-    return Tables.columntable(x) == Tables.columntable(y)
-end
-
 _isapprox(x::AbstractArray, y::AbstractArray; kwargs...) = isapprox(x, y; kwargs...)
-_isapprox(x, y; kwargs...) = all(isapprox.(x, y; kwargs...))
+_isapprox(x, y; kwargs...) = all(map((x, y) -> isapprox(x, y; kwargs...), x, y))

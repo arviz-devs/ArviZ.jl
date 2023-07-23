@@ -1,6 +1,11 @@
 using Test
 using ArviZ
+using DimensionalData
 using Tables
+
+function _isequal(x::ModelComparisonResult, y::ModelComparisonResult)
+    return Tables.columntable(x) == Tables.columntable(y)
+end
 
 @testset "compare" begin
     eight_schools_data = (
@@ -27,6 +32,9 @@ using Tables
         @test mc1.elpd_diff.centered > 0
         @test mc1.weight == reverse(model_weights(eight_schools_loo_results))
         @test mc1.elpd_result == reverse(eight_schools_loo_results)
+
+        @test_throws ArgumentError compare(eight_schools_loo_results; model_names=[:foo])
+        @test_throws ErrorException compare(eight_schools_data; elpd_method=x -> nothing)
     end
 
     @testset "DimArray inputs" begin
@@ -80,6 +88,7 @@ using Tables
             for (i, k) in enumerate(Tables.columnnames(mc1))
                 @test Tables.getcolumn(mc1, i) == Tables.getcolumn(mc1, k)
             end
+            @test_throws ArgumentError Tables.getcolumn(mc1, :foo)
         end
 
         @testset "show" begin

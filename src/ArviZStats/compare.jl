@@ -58,11 +58,6 @@ function compare(
     length(model_names) === length(inputs) ||
         throw(ArgumentError("Length of `model_names` must match length of `inputs`"))
     elpd_results = map(Base.Fix1(_maybe_elpd_results, elpd_method), inputs)
-    if inputs != elpd_results && !(eltype(elpd_results) <: AbstractELPDResult)
-        throw(
-            ErrorException("Return value of `elpd_method` must be an `AbstractELPDResult`.")
-        )
-    end
     weights = model_weights(weights_method, elpd_results)
     perm = _sortperm(elpd_results; by=x -> elpd_estimates(x).elpd, rev=true)
     i_elpd_max = first(perm)
@@ -85,7 +80,15 @@ function compare(
 end
 
 _maybe_elpd_results(elpd_method, x::AbstractELPDResult; kwargs...) = x
-_maybe_elpd_results(elpd_method, x; kwargs...) = elpd_method(x; kwargs...)
+function _maybe_elpd_results(elpd_method, x; kwargs...)
+    elpd_result = elpd_method(x; kwargs...)
+    elpd_result isa AbstractELPDResult && return elpd_result
+    throw(
+        ErrorException(
+            "Return value of `elpd_method` must be an `AbstractELPDResult`, not `$(typeof(elpd_result))`.",
+        ),
+    )
+end
 
 """
     ModelComparisonResult
