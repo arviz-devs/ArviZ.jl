@@ -13,11 +13,14 @@ using Tables
     @testset "basic checks" begin
         @test mc1.name == (:non_centered, :centered)
         @test mc1.rank == (non_centered=1, centered=2)
-        @test mc1.elpd_diff == (
-            non_centered=0.0,
-            centered=(
-                eight_schools_loo_results.non_centered.estimates.elpd -
-                eight_schools_loo_results.centered.estimates.elpd
+        @test _isapprox(
+            mc1.elpd_diff,
+            (
+                non_centered=0.0,
+                centered=(
+                    eight_schools_loo_results.non_centered.estimates.elpd -
+                    eight_schools_loo_results.centered.estimates.elpd
+                ),
             ),
         )
         @test mc1.elpd_diff.non_centered == 0.0
