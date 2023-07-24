@@ -95,7 +95,7 @@ end
 
 Result of model comparison using ELPD.
 
-This struct implements the Tables interface.
+This struct implements the Tables and TableTraits interfaces.
 
 Each field returns a collection of the corresponding entry for each model:
 $(FIELDS)

@@ -1,7 +1,9 @@
 using Test
 using ArviZ
 using DimensionalData
+using IteratorInterfaceExtensions
 using Tables
+using TableTraits
 
 function _isequal(x::ModelComparisonResult, y::ModelComparisonResult)
     return Tables.columntable(x) == Tables.columntable(y)
@@ -80,6 +82,21 @@ end
                 @test Tables.getcolumn(mc1, i) == Tables.getcolumn(mc1, k)
             end
             @test_throws ArgumentError Tables.getcolumn(mc1, :foo)
+        end
+
+        @testset "TableTraits interface" begin
+            @test IteratorInterfaceExtensions.isiterable(mc1)
+            @test TableTraits.isiterabletable(mc1)
+            nt = collect(Iterators.take(IteratorInterfaceExtensions.getiterator(mc1), 1))[1]
+            @test isequal(
+                nt,
+                (; (k => Tables.getcolumn(mc1, k)[1] for k in Tables.columnnames(mc1))...),
+            )
+            nt = collect(Iterators.take(IteratorInterfaceExtensions.getiterator(mc1), 2))[2]
+            @test isequal(
+                nt,
+                (; (k => Tables.getcolumn(mc1, k)[2] for k in Tables.columnnames(mc1))...),
+            )
         end
 
         @testset "show" begin
