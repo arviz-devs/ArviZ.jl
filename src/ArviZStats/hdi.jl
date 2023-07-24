@@ -114,16 +114,22 @@ and 3 layers:
 We can also calculate the HDI for a subset of variables:
 
 ```jldoctest hdi_infdata
-hdi(idata.posterior[(:mu, :theta)])
+hdi(idata.posterior[(:theta,)]).theta
 
 # output
 
-Dataset with dimensions:
-  Dim{:hdi_bound} Categorical{Symbol} Symbol[:lower, :upper] ForwardOrdered,
-  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
-and 2 layers:
-  :mu    Float64 dims: Dim{:hdi_bound} (2)
-  :theta Float64 dims: Dim{:school}, Dim{:hdi_bound} (8×2)
+8×2 DimArray{Float64,2} theta with dimensions:
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  Dim{:hdi_bound} Categorical{Symbol} Symbol[:lower, :upper] ForwardOrdered
+                        :lower    :upper
+  "Choate"            -4.56375  17.0405
+  "Deerfield"         -4.2566   14.2535
+  "Phillips Andover"  -7.75054  13.6755
+  "Phillips Exeter"   -4.41919  14.6635
+  "Hotchkiss"         -6.45033  11.7191
+  "Lawrenceville"     -7.07965  12.1161
+  "St. Paul's"        -3.09262  16.1241
+  "Mt. Hermon"        -5.82697  16.0143
 ```
 """
 hdi(data::InferenceObjects.InferenceData; kwargs...) = hdi(data.posterior; kwargs...)
