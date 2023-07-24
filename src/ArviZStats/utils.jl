@@ -132,6 +132,25 @@ _alldims(x) = ntuple(identity, ndims(x))
 
 _otherdims(x, dims) = filter(∉(dims), _alldims(x))
 
+_param_dims(x::AbstractArray) = ntuple(i -> i + 2, max(0, ndims(x) - 2))
+
+_param_axes(x::AbstractArray) = map(Base.Fix1(axes, x), _param_dims(x))
+
+function _params_array(x::AbstractArray, param_dim::Int=3)
+    param_dim > 0 || throw(ArgumentError("param_dim must be positive"))
+    sample_sizes = ntuple(Base.Fix1(size, x), param_dim - 1)
+    return reshape(x, sample_sizes..., :)
+end
+
+function _eachparam(x::AbstractArray, param_dim::Int=3)
+    return eachslice(_params_array(x, param_dim); dims=param_dim)
+end
+
+_as_dimarray(x::DimensionalData.AbstractDimArray, ::DimensionalData.AbstractDimArray) = x
+function _as_dimarray(x::Union{Real,Missing}, arr::DimensionalData.AbstractDimArray)
+    return Dimensions.rebuild(arr, fill(x), ())
+end
+
 _maybe_scalar(x) = x
 _maybe_scalar(x::AbstractArray{<:Any,0}) = x[]
 
