@@ -4,16 +4,25 @@ const HDI_BOUND_DIM = Dimensions.Dim{:hdi_bound}([:lower, :upper])
 """
     hdi(samples::AbstractArray{<:Real}; prob=$(HDI_DEFAULT_PROB)) -> (; lower, upper)
 
-Calculate the highest density interval (HDI) of `samples` for the probability `prob`.
+Calculate the unimodal highest density interval (HDI) of `samples` for the probability
+`prob`.[^Hyndman1996]
 
-The HDI is the minimum width Bayesian credible interval (BCI).[REF]
+The HDI is the minimum width Bayesian credible interval (BCI). That is, it is the smallest
+possible interval containing `(100*prob)`% of the draws.[^Hyndman1996]
 
 `samples` is an array of shape `(draws[, chains[, params...]])`. If multiple parameters are
 present, then `lower` and `upper` are arrays with the shape `(params...,)`, computed
 separately for each marginal.
 
-The ``p``-HDI of a univariate parameter is the interval containing at least ``100p\\%`` of
-the draws.
+!!! note
+    Any default value of `prob` is arbitrary. The default value of
+    `prob=$(HDI_DEFAULT_PROB)` instead of a more common default like `prob=0.95` is chosen
+    to reminder the user of this arbitrariness.
+
+[^Hyndman1996]: Rob J. Hyndman. Computing and Graphing Highest Density Regions. (1996).
+                Amer. Stat., 50(2): 120-6.
+                doi: [10.1080/00031305.1996.10474359](https://doi.org/10.1080/00031305.1996.10474359)
+                [jstor](https://doi.org/10.2307/2684423).
 
 # Examples
 
@@ -37,6 +46,7 @@ pairs(hdi(x))
 pairs(::NamedTuple) with 2 entries:
   :lower => [-1.9505, 3.0495, 8.0495]
   :upper => [1.90028, 6.90028, 11.9003]
+```
 """
 function hdi(x::AbstractArray{<:Real}; kwargs...)
     xcopy = similar(x)
