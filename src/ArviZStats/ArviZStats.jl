@@ -108,7 +108,7 @@ Compute summary statistics on `data`.
 # Examples
 
 ```@example summarystats
-using ArviZ
+using ArviZ, ArviZExampleData
 idata = load_example_data("centered_eight")
 summarystats(idata; var_names=(:mu, :tau))
 ```

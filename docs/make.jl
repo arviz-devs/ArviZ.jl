@@ -30,7 +30,6 @@ download_asset("ArviZ.png", "logo.png")
 download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
-DocMeta.setdocmeta!(ArviZ.ArviZExampleData, :DocTestSetup, :(using ArviZ.ArviZExampleData);)
 DocMeta.setdocmeta!(
     ArviZ.MCMCDiagnosticTools, :DocTestSetup, :(using ArviZ.MCMCDiagnosticTools);
 )
@@ -40,14 +39,7 @@ doctestfilters = [
     r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
 ]
 
-modules = [
-    ArviZ,
-    ArviZExampleData,
-    InferenceObjects,
-    InferenceObjectsNetCDF,
-    MCMCDiagnosticTools,
-    PSIS,
-]
+modules = [ArviZ, InferenceObjects, MCMCDiagnosticTools, PSIS]
 if isdefined(Base, :get_extension)
     # using Requires, these docstrings are automatically loaded, but as an extension we need
     # to manually specify the module

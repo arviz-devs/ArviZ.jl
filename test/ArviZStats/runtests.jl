@@ -1,5 +1,6 @@
 using ArviZ, Random, Statistics, Test
 using ArviZ.ArviZStats
+using ArviZExampleData
 using DataFrames: DataFrames
 using Random
 
