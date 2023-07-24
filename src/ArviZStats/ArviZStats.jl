@@ -31,11 +31,11 @@ using ArviZ: InferenceData, convert_to_dataset, ess
 const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
 @forwardfun compare
-@forwardfun hdi
 @forwardfun kde
 @forwardfun r2_score
 
 include("utils.jl")
+include("hdi.jl")
 include("elpdresult.jl")
 include("loo.jl")
 include("loo_pit.jl")
