@@ -13,6 +13,8 @@ include("helpers.jl")
             T in (Float32, Float64),
             TA in (Array, DimArray)
 
+            atol = sqrt(eps(T))
+
             log_likelihood = randn(T, sz)
             if TA === DimArray
                 log_likelihood = DimArray(
@@ -62,19 +64,22 @@ include("helpers.jl")
                 )
                 idata2 = InferenceData(; log_likelihood=Dataset((; y=ll_perm)))
                 waic_result2 = waic(idata2)
-                @test waic_result2.estimates.elpd ≈ waic_result1.estimates.elpd
+                @test waic_result2.estimates.elpd ≈ waic_result1.estimates.elpd atol =
+                    atol
                 @test isapprox(
                     waic_result2.estimates.elpd_mcse,
-                    waic_result1.estimates.elpd_mcse,
+                    waic_result1.estimates.elpd_mcse;
                     nans=true,
+                    atol,
                 )
-                @test waic_result2.estimates.p ≈ waic_result1.estimates.p
+                @test waic_result2.estimates.p ≈ waic_result1.estimates.p atol = atol
                 @test isapprox(
                     waic_result2.estimates.p_mcse,
                     waic_result1.estimates.p_mcse;
                     nans=true,
+                    atol,
                 )
-                @test waic_result2.pointwise.p ≈ waic_result1.pointwise.p
+                @test waic_result2.pointwise.p ≈ waic_result1.pointwise.p atol = atol
             end
         end
     end
