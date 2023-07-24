@@ -3,17 +3,25 @@ module ArviZStats
 using ArviZ: ArviZ, arviz, @forwardfun
 using DataInterpolations: DataInterpolations
 using DimensionalData: DimensionalData, Dimensions
-using DocStringExtensions: FIELDS, FUNCTIONNAME, TYPEDEF, SIGNATURES
+using Distributions: Distributions
+using DocStringExtensions: FIELDS, FUNCTIONNAME, TYPEDEF, TYPEDFIELDS, SIGNATURES
 using InferenceObjects: InferenceObjects
+using IteratorInterfaceExtensions: IteratorInterfaceExtensions
+using LinearAlgebra: mul!, norm
 using LogExpFunctions: LogExpFunctions
 using Markdown: @doc_str
 using MCMCDiagnosticTools: MCMCDiagnosticTools
+using Optim: Optim
 using PrettyTables: PrettyTables
 using Printf: Printf
 using PSIS: PSIS, PSISResult, psis, psis!
 using PyCall: PyCall
+using Random: Random
+using Setfield: Setfield
 using Statistics: Statistics
 using StatsBase: StatsBase, summarystats
+using Tables: Tables
+using TableTraits: TableTraits
 
 # PSIS
 export PSIS, PSISResult, psis, psis!
@@ -22,15 +30,18 @@ export PSIS, PSISResult, psis, psis!
 export AbstractELPDResult, PSISLOOResult, WAICResult
 export elpd_estimates, information_criterion, loo, waic
 
+# Model weighting and comparison
+export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
+export ModelComparisonResult, compare
+
 # Others
-export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
+export hdi, kde, loo_pit, r2_score, summary, summarystats
 
 # load for docstrings
 using ArviZ: InferenceData, convert_to_dataset, ess
 
 const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
-@forwardfun compare
 @forwardfun hdi
 @forwardfun kde
 @forwardfun r2_score
@@ -38,24 +49,12 @@ const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 include("utils.jl")
 include("elpdresult.jl")
 include("loo.jl")
-include("loo_pit.jl")
 include("waic.jl")
-
-function ArviZ.convert_arguments(::typeof(compare), data, args...; kwargs...)
-    dict = Dict(
-        k => try
-            ArviZ.topandas(Val(:ELPDData), v)
-        catch
-            InferenceObjects.convert_to_inference_data(v)
-        end for (k, v) in pairs(data)
-    )
-    return tuple(dict, args...), kwargs
-end
+include("model_weights.jl")
+include("compare.jl")
+include("loo_pit.jl")
 
 ArviZ.convert_result(::typeof(r2_score), result) = ArviZ.todataframes(result)
-function ArviZ.convert_result(::typeof(compare), result)
-    return ArviZ.todataframes(result; index_name=:name)
-end
 
 @doc doc"""
     summarystats(

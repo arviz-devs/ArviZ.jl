@@ -265,7 +265,7 @@ function _loo_pit(y::AbstractArray, y_pred, log_weights)
         sel_iter = Iterators.flatten((
             init, (lwi_j for (lwi_j, yi_pred_j) in zip(lwi, yi_pred) if yi_pred_j ≤ yi)
         ))
-        return exp(LogExpFunctions.logsumexp(sel_iter))
+        return clamp(exp(LogExpFunctions.logsumexp(sel_iter)), 0, 1)
     end
     return pitvals
 end

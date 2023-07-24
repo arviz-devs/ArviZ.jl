@@ -87,7 +87,9 @@ export ArviZStats
 export AbstractELPDResult, PSISLOOResult, WAICResult
 export PSIS, PSISResult, psis, psis!
 export elpd_estimates, information_criterion, loo, waic
-export summarystats, compare, hdi, kde, loo_pit, r2_score
+export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
+export ModelComparisonResult, compare
+export summarystats, hdi, kde, loo_pit, r2_score
 
 ## Diagnostics
 export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
@@ -143,10 +145,11 @@ end
 include("utils.jl")
 include("rcparams.jl")
 include("xarray.jl")
-include("plots.jl")
-include("ArviZStats/ArviZStats.jl")
 
+include("ArviZStats/ArviZStats.jl")
 using .ArviZStats
 using .ArviZStats: summary
+
+include("plots.jl")
 
 end # module

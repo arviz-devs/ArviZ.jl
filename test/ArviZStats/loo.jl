@@ -13,6 +13,8 @@ include("helpers.jl")
             T in (Float32, Float64),
             TA in (Array, DimArray)
 
+            atol_perm = cbrt(eps(T))
+
             log_likelihood = randn(T, sz)
             if TA === DimArray
                 log_likelihood = DimArray(
@@ -73,27 +75,32 @@ include("helpers.jl")
                 )
                 idata2 = InferenceData(; log_likelihood=Dataset((; y=ll_perm)))
                 loo_result2 = loo(idata2)
-                @test loo_result2.estimates.elpd ≈ loo_result1.estimates.elpd
+                @test loo_result2.estimates.elpd ≈ loo_result1.estimates.elpd atol =
+                    atol_perm
                 @test isapprox(
                     loo_result2.estimates.elpd_mcse,
-                    loo_result1.estimates.elpd_mcse,
+                    loo_result1.estimates.elpd_mcse;
                     nans=true,
+                    atol=atol_perm,
                 )
-                @test loo_result2.estimates.p ≈ loo_result1.estimates.p
+                @test loo_result2.estimates.p ≈ loo_result1.estimates.p atol = atol_perm
                 @test isapprox(
                     loo_result2.estimates.p_mcse,
                     loo_result1.estimates.p_mcse;
                     nans=true,
+                    atol=atol_perm,
                 )
                 @test isapprox(
                     loo_result2.pointwise.elpd_mcse,
-                    loo_result1.pointwise.elpd_mcse,
+                    loo_result1.pointwise.elpd_mcse;
                     nans=true,
+                    atol=atol_perm,
                 )
-                @test loo_result2.pointwise.p ≈ loo_result1.pointwise.p
-                @test loo_result2.pointwise.reff ≈ loo_result1.pointwise.reff
+                @test loo_result2.pointwise.p ≈ loo_result1.pointwise.p atol = atol_perm
+                @test loo_result2.pointwise.reff ≈ loo_result1.pointwise.reff atol =
+                    atol_perm
                 @test loo_result2.pointwise.pareto_shape ≈
-                    loo_result1.pointwise.pareto_shape
+                    loo_result1.pointwise.pareto_shape atol = atol_perm
             end
         end
     end

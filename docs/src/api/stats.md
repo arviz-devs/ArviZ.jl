@@ -21,9 +21,7 @@ PSIS.psis
 PSIS.psis!
 ```
 
-## Model assessment and selection
-
-### LOO and WAIC
+## LOO and WAIC
 
 ```@docs
 AbstractELPDResult
@@ -35,15 +33,29 @@ loo
 waic
 ```
 
-### Others
+## Model comparison
 
 ```@docs
+ModelComparisonResult
 compare
+model_weights
+```
+
+The following model weighting methods are available
+```@docs
+AbstractModelWeightsMethod
+BootstrappedPseudoBMA
+PseudoBMA
+Stacking
+```
+
+## Predictive checks
+
+```@docs
 loo_pit
 ```
 
-
-### Utilities
+## Utilities
 
 ```@docs
 ArviZStats.smooth_data

@@ -42,3 +42,6 @@ function waic_r(log_likelihood)
     pointwise = (elpd=pointwise[:, 1], p=pointwise[:, 2])
     return (; estimates, pointwise)
 end
+
+_isapprox(x::AbstractArray, y::AbstractArray; kwargs...) = isapprox(x, y; kwargs...)
+_isapprox(x, y; kwargs...) = all(map((x, y) -> isapprox(x, y; kwargs...), x, y))
