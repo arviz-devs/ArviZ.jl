@@ -1,7 +1,7 @@
 # [Working with `InferenceData`](@id working-with-inference-data)
 
 ```@example wwid
-using ArviZ, DimensionalData, Statistics
+using ArviZ, ArviZExampleData, DimensionalData, Statistics
 ```
 
 Here we present a collection of common manipulations you can use while working with [`InferenceData`](@ref).

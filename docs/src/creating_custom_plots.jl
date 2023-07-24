@@ -8,7 +8,7 @@ using InteractiveUtils
 using Pkg, InteractiveUtils
 
 # ╔═╡ b1784f52-0cf2-11ed-32ba-69a8f63b48a9
-# Remove this cell to use release versions of dependencies 
+# Remove this cell to use release versions of dependencies
 # hideall
 let
     docs_dir = dirname(@__DIR__)
@@ -21,7 +21,8 @@ end;
 
 # ╔═╡ 34ee7907-49e7-4e32-9bd5-1c5d490a13d8
 begin
-    using ArviZ, DimensionalData, DataFrames, Statistics, AlgebraOfGraphics, CairoMakie
+    using ArviZ, ArviZExampleData, DimensionalData, DataFrames, Statistics
+    using AlgebraOfGraphics, CairoMakie
     using AlgebraOfGraphics: density
     set_aog_theme!()
 end;

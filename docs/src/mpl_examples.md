@@ -5,7 +5,7 @@
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -22,7 +22,7 @@ See [`plot_autocorr`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -39,7 +39,7 @@ See [`plot_bpv`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -56,7 +56,7 @@ See [`plot_bpv`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -78,7 +78,7 @@ See [`compare`](@ref), [`plot_compare`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -125,7 +125,7 @@ See [`plot_dist`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -143,7 +143,7 @@ See [`plot_elpd`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -160,7 +160,7 @@ See [`plot_energy`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -177,7 +177,7 @@ See [`plot_ess`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -194,7 +194,7 @@ See [`plot_ess`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -211,7 +211,7 @@ See [`plot_ess`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -234,7 +234,7 @@ See [`plot_forest`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -284,7 +284,7 @@ See [`plot_hdi`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -308,7 +308,7 @@ See [`plot_pair`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -377,7 +377,7 @@ See [`plot_kde`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -395,7 +395,7 @@ See [`loo`](@ref), [`plot_khat`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -413,7 +413,7 @@ See [`psis`](@ref), [`plot_loo_pit`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -430,7 +430,7 @@ See [`plot_loo_pit`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -447,7 +447,7 @@ See [`plot_mcse`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -464,7 +464,7 @@ See [`plot_mcse`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -484,7 +484,7 @@ See [`plot_pair`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -509,7 +509,7 @@ See [`plot_pair`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -534,7 +534,7 @@ See [`plot_pair`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -561,7 +561,7 @@ See [`plot_pair`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -580,7 +580,7 @@ See [`plot_parallel`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -598,7 +598,7 @@ See [`plot_posterior`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -615,7 +615,7 @@ See [`plot_ppc`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -632,7 +632,7 @@ See [`plot_ppc`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -649,7 +649,7 @@ See [`plot_rank`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -666,7 +666,7 @@ See [`plot_separation`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
@@ -683,7 +683,7 @@ See [`plot_trace`](@ref)
 ```@example
 using PyPlot
 figure() #hide
-using ArviZ
+using ArviZ, ArviZExampleData
 
 ArviZ.use_style("arviz-darkgrid")
 
