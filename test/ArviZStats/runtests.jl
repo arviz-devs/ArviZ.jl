@@ -2,20 +2,12 @@ using ArviZ, Random, Statistics, Test
 using ArviZ.ArviZStats
 using ArviZExampleData
 using DataFrames: DataFrames
+using Random
+
+Random.seed!(97)
 
 @testset "ArviZStats" begin
     idata = load_example_data("centered_eight")
-
-    @testset "compare" begin
-        idata2 = load_example_data("non_centered_eight")
-        model_dict = Dict("a" => idata, "b" => idata2)
-        loo_dict = Dict("a" => loo(idata), "b" => loo(idata2))
-        df = compare(model_dict)
-        @test df isa DataFrames.DataFrame
-        df2 = compare(loo_dict)
-        @test df2 isa DataFrames.DataFrame
-        @test_broken df == df2
-    end
 
     @testset "hdi" begin
         rng = Random.MersenneTwister(42)
@@ -30,16 +22,6 @@ using DataFrames: DataFrames
         df = r2_score(ytrue, ypred)
         @test df isa DataFrames.DataFrame
         @test all(df == ArviZ.todataframes(ArviZ.arviz.r2_score(ytrue, ypred)))
-    end
-
-    @testset "loo" begin
-        df = loo(idata)
-        @test df isa ArviZStats.PSISLOOResult
-    end
-
-    @testset "waic" begin
-        df = waic(idata)
-        @test df isa ArviZStats.WAICResult
     end
 
     @testset "summarystats" begin
@@ -95,4 +77,6 @@ using DataFrames: DataFrames
     include("loo.jl")
     include("loo_pit.jl")
     include("waic.jl")
+    include("model_weights.jl")
+    include("compare.jl")
 end

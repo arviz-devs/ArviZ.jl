@@ -61,9 +61,9 @@ using ArviZ, ArviZExampleData
 ArviZ.use_style("arviz-darkgrid")
 
 model_compare = compare(
-    Dict(
-        "Centered 8 schools" => load_example_data("centered_eight"),
-        "Non-centered 8 schools" => load_example_data("non_centered_eight"),
+    (
+        var"Centered 8 schools" = load_example_data("centered_eight"),
+        var"Non-centered 8 schools" = load_example_data("non_centered_eight"),
     ),
 )
 plot_compare(model_compare; figsize=(12, 4))

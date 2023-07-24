@@ -32,7 +32,18 @@ function convert_arguments(::typeof(plot_kde), values, args...; values2=nothing,
     return tuple(convert(Array, values), args...), kwargs_new
 end
 
-function convert_arguments(::typeof(plot_compare), df, args...; kwargs...)
+function convert_arguments(
+    ::typeof(plot_compare), mc::ModelComparisonResult, args...; kwargs...
+)
+    df = DataFrame(mc)
+    rename!(df, :elpd_mcse => :se, :elpd_diff_mcse => :dse)
+    if eltype(mc.elpd_result) <: PSISLOOResult
+        rename!(df, :elpd => :elpd_loo, :p => :p_loo)
+    elseif eltype(mc.elpd_result) <: WAICResult
+        rename!(df, :elpd => :elpd_waic, :p => :p_waic)
+    end
+    df.warning = map(_ -> false, df.name)
+    df.scale = map(_ -> "log", df.name)
     pdf = topandas(Val(:DataFrame), df; index_name=:name)
     return tuple(pdf, args...), kwargs
 end

@@ -69,8 +69,8 @@ using Test
     end
 
     @testset "plot_compare" begin
-        df = compare(Dict("a" => data, "b" => data2))
-        plot_compare(df)
+        mc = compare((a=data, b=data2))
+        plot_compare(mc)
         close(gcf())
     end
 
