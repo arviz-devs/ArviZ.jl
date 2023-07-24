@@ -53,6 +53,12 @@ function hdi(x::AbstractArray{<:Real}; kwargs...)
     copyto!(xcopy, x)
     return hdi!(xcopy; kwargs...)
 end
+
+"""
+    hdi!(samples::AbstractArray{<:Real}; prob=$(HDI_DEFAULT_PROB)) -> (; lower, upper)
+
+A version of [hdi](@ref) that sorts `samples` in-place while computing the HDI.
+"""
 function hdi!(x::AbstractArray{<:Real}; prob::Real=HDI_DEFAULT_PROB)
     0 < prob ≤ 1 || throw(ArgumentError("HDI `prob` must be between 0 and 1."))
     return _hdi!(x, prob)

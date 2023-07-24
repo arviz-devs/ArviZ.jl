@@ -8,6 +8,7 @@ Pages = ["stats.md"]
 
 ```@docs
 hdi
+hdi!
 ArviZ.summary
 summarystats
 r2_score
@@ -41,7 +42,6 @@ waic
 compare
 loo_pit
 ```
-
 
 ### Utilities
 

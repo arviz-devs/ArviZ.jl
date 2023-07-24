@@ -23,7 +23,7 @@ export AbstractELPDResult, PSISLOOResult, WAICResult
 export elpd_estimates, information_criterion, loo, waic
 
 # Others
-export compare, hdi, kde, loo_pit, r2_score, summary, summarystats
+export compare, hdi, hdi!, kde, loo_pit, r2_score, summary, summarystats
 
 # load for docstrings
 using ArviZ: InferenceData, convert_to_dataset, ess
