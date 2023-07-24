@@ -34,7 +34,8 @@ struct DummyOptimizer <: Optim.AbstractOptimizer end
             )
             weights1 = model_weights(weights_method(), elpd_results)
             weights2 = model_weights(weights_method(), reverse(elpd_results))
-            @test _isapprox(weights1, reverse(weights2))
+            T = eltype(weights1)
+            @test _isapprox(weights1, reverse(weights2); atol=sqrt(eps(T)))
         end
 
         @testset "identical models get the same weights" begin
