@@ -1,4 +1,8 @@
-using PyCall, PyPlot
+using ArviZ
+using ArviZExampleData
+using PyCall
+using PyPlot
+using Test
 
 @testset "plots" begin
     data = load_example_data("centered_eight")

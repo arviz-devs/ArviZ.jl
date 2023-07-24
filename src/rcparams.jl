@@ -69,6 +69,7 @@ See [`rcParams`](@ref) for supported params or to modify params long-term.
 # Examples
 
 ```julia
+using ArviZExampleData
 with_rc_context(fname = "pystan.rc") do
     idata = load_example_data("radon")
     plot_posterior(idata; var_names=["gamma"])

@@ -1,6 +1,7 @@
 using Test
 using ArviZ
 using ArviZ.ArviZStats
+using ArviZExampleData
 using DimensionalData
 using Logging: SimpleLogger, with_logger
 
