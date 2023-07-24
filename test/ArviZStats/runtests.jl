@@ -1,6 +1,9 @@
 using ArviZ, Random, Statistics, Test
 using ArviZ.ArviZStats
 using DataFrames: DataFrames
+using Random
+
+Random.seed!(97)
 
 @testset "ArviZStats" begin
     idata = load_example_data("centered_eight")

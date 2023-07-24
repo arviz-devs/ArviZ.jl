@@ -5,8 +5,6 @@ using DimensionalData
 using Random
 using StatsBase
 
-Random.seed!(87)
-
 @testset "utils" begin
     @testset "log_likelihood" begin
         ndraws = 100

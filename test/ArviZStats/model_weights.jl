@@ -6,8 +6,6 @@ using LinearAlgebra
 using Optim
 using Random
 
-Random.seed!(97)
-
 struct DummyOptimizer <: Optim.AbstractOptimizer end
 
 @testset "model_weights" begin
