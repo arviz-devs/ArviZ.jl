@@ -44,7 +44,7 @@ LOO-PIT values should be approximately uniformly distributed on ``[0, 1]``.[^Gab
 Calculate LOO-PIT values using as test quantity the observed values themselves.
 
 ```jldoctest loo_pit1
-using ArviZ
+using ArviZ, ArviZExampleData
 idata = load_example_data("centered_eight")
 log_weights = loo(idata; var_name=:obs).psis_result.log_weights
 loo_pit(
@@ -139,7 +139,7 @@ Compute LOO-PIT values using existing normalized log LOO importance weights.
 Calculate LOO-PIT values using already computed log weights.
 
 ```jldoctest
-using ArviZ
+using ArviZ, ArviZExampleData
 idata = load_example_data("centered_eight")
 loo_result = loo(idata; var_name=:obs)
 loo_pit(idata, loo_result.psis_result.log_weights; y_name=:obs)
@@ -202,7 +202,7 @@ See also: [`loo`](@ref), [`psis`](@ref)
 Calculate LOO-PIT values using as test quantity the observed values themselves.
 
 ```jldoctest
-using ArviZ
+using ArviZ, ArviZExampleData
 idata = load_example_data("centered_eight")
 loo_pit(idata; y_name=:obs)
 
