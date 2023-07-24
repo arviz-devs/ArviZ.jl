@@ -13,8 +13,6 @@ include("helpers.jl")
             T in (Float32, Float64),
             TA in (Array, DimArray)
 
-            atol = sqrt(eps(T))
-
             log_likelihood = randn(T, sz)
             if TA === DimArray
                 log_likelihood = DimArray(
@@ -78,28 +76,24 @@ include("helpers.jl")
                 @test loo_result2.estimates.elpd ≈ loo_result1.estimates.elpd
                 @test isapprox(
                     loo_result2.estimates.elpd_mcse,
-                    loo_result1.estimates.elpd_mcse;
+                    loo_result1.estimates.elpd_mcse,
                     nans=true,
-                    atol,
                 )
-                @test loo_result2.estimates.p ≈ loo_result1.estimates.p atol = atol
+                @test loo_result2.estimates.p ≈ loo_result1.estimates.p
                 @test isapprox(
                     loo_result2.estimates.p_mcse,
                     loo_result1.estimates.p_mcse;
                     nans=true,
-                    atol,
                 )
                 @test isapprox(
                     loo_result2.pointwise.elpd_mcse,
                     loo_result1.pointwise.elpd_mcse,
                     nans=true,
-                    atol,
                 )
-                @test loo_result2.pointwise.p ≈ loo_result1.pointwise.p atol = atol
-                @test loo_result2.pointwise.reff ≈ loo_result1.pointwise.reff atol =
-                    atol
+                @test loo_result2.pointwise.p ≈ loo_result1.pointwise.p
+                @test loo_result2.pointwise.reff ≈ loo_result1.pointwise.reff
                 @test loo_result2.pointwise.pareto_shape ≈
-                    loo_result1.pointwise.pareto_shape atol = atol
+                    loo_result1.pointwise.pareto_shape
             end
         end
     end
