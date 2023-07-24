@@ -32,14 +32,14 @@ See also: [`AbstractModelWeightsMethod`](@ref), [`compare`](@ref)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
 # Examples
 
-```julia
-using ArviZ
+```jldoctest
+using ArviZ, ArviZExampleData
 models = (
     centered=load_example_data("centered_eight"),
     non_centered=load_example_data("non_centered_eight"),
 )
 elpd_results = map(loo, models)
-model_weights(elpd_results)
+model_weights(elpd_results);
 ```
 """
 function model_weights(elpd_results; method::AbstractModelWeightsMethod=Stacking())

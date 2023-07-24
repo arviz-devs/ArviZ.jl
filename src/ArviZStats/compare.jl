@@ -40,12 +40,12 @@ leading authorities on model comparison dx.doi.org/10.1111/1467-9868.00353
 # Examples
 
 ```julia
-using ArviZ
+using ArviZ, ArviZExampleData
 models = (
     centered=load_example_data("centered_eight"),
     non_centered=load_example_data("non_centered_eight"),
 )
-mc = compare(models)
+mc = compare(models);
 ```
 """
 function compare(
