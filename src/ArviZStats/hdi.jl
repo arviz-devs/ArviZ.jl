@@ -8,7 +8,7 @@ Calculate the unimodal highest density interval (HDI) of `samples` for the proba
 `prob`.[^Hyndman1996]
 
 The HDI is the minimum width Bayesian credible interval (BCI). That is, it is the smallest
-possible interval containing `(100*prob)`% of the draws.[^Hyndman1996]
+possible interval containing at least `(100*prob)`% of the draws.[^Hyndman1996]
 
 `samples` is an array of shape `(draws[, chains[, params...]])`. If multiple parameters are
 present, then `lower` and `upper` are arrays with the shape `(params...,)`, computed
@@ -58,16 +58,21 @@ function hdi!(x::AbstractArray{<:Real}; prob::Real=HDI_DEFAULT_PROB)
     return _hdi!(x, prob)
 end
 
-function _hdi!(x::AbstractVecOrMat{<:Real}, prob::Real)
-    xvec = vec(x)
-    n = length(xvec)
-    tail_length = max(1, ceil(Int, (1 - prob) * n))
-    # for prob ⪆ 0.7, performing 2 partialsorts is faster than sorting the whole array
-    lower_tail = partialsort!(xvec, 1:tail_length)
-    upper_tail = partialsort!(xvec, (n - tail_length + 1):n)
+function _hdi!(x::AbstractVector{<:Real}, prob::Real)
+    n = length(x)
+    sort!(x)
+    tail_length = floor(Int, (1 - prob) * n)
+    tail_length > 0 || throw(
+        ArgumentError(
+            "Insufficient length $n to estimate HDI with `prob=$prob`. At least length $(ceil(Int, inv(1 - prob))) is needed.",
+        ),
+    )
+    lower_tail = @views x[begin:(begin + tail_length - 1)]
+    upper_tail = @views x[(end - (tail_length - 1)):end]
     upper, lower = argmin(Base.splat(-), zip(upper_tail, lower_tail))
     return (; lower, upper)
 end
+_hdi!(x::AbstractMatrix{<:Real}, prob::Real) = _hdi!(vec(x), prob)
 function _hdi!(x::AbstractArray{<:Real}, prob::Real)
     axes_out = _param_axes(x)
     lower = similar(x, axes_out)
