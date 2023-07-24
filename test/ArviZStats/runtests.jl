@@ -9,12 +9,6 @@ Random.seed!(97)
 @testset "ArviZStats" begin
     idata = load_example_data("centered_eight")
 
-    @testset "hdi" begin
-        rng = Random.MersenneTwister(42)
-        x = randn(rng, 100)
-        @test hdi(x) == ArviZ.arviz.hdi(x)
-    end
-
     @testset "r2_score" begin
         rng = Random.MersenneTwister(42)
         ytrue = randn(rng, 100)
@@ -74,6 +68,7 @@ Random.seed!(97)
 
     include("helpers.jl")
     include("utils.jl")
+    include("hdi.jl")
     include("loo.jl")
     include("loo_pit.jl")
     include("waic.jl")
