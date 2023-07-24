@@ -39,12 +39,7 @@ doctestfilters = [
     r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
 ]
 
-modules = [
-    ArviZ,
-    InferenceObjects,
-    MCMCDiagnosticTools,
-    PSIS,
-]
+modules = [ArviZ, InferenceObjects, MCMCDiagnosticTools, PSIS]
 if isdefined(Base, :get_extension)
     # using Requires, these docstrings are automatically loaded, but as an extension we need
     # to manually specify the module
