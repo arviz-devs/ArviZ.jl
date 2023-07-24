@@ -68,9 +68,9 @@ function _hdi!(x::AbstractVector{<:Real}, prob::Real)
     n = length(x)
     sort!(x)
     interval_length = ceil(Int, prob * n)
-    tail_length = max(1, n - interval_length)
+    tail_length = n - interval_length + 1
     lower_tail = @views x[begin:(begin + tail_length - 1)]
-    upper_tail = @views x[(end - (tail_length - 1)):end]
+    upper_tail = @views x[(begin + interval_length - 1):end]
     upper, lower = argmin(Base.splat(-), zip(upper_tail, lower_tail))
     return (; lower, upper)
 end
