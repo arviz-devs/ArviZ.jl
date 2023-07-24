@@ -61,12 +61,8 @@ end
 function _hdi!(x::AbstractVector{<:Real}, prob::Real)
     n = length(x)
     sort!(x)
-    tail_length = floor(Int, (1 - prob) * n)
-    tail_length > 0 || throw(
-        ArgumentError(
-            "Insufficient length $n to estimate HDI with `prob=$prob`. At least length $(ceil(Int, inv(1 - prob))) is needed.",
-        ),
-    )
+    interval_length = ceil(Int, prob * n)
+    tail_length = max(1, n - interval_length)
     lower_tail = @views x[begin:(begin + tail_length - 1)]
     upper_tail = @views x[(end - (tail_length - 1)):end]
     upper, lower = argmin(Base.splat(-), zip(upper_tail, lower_tail))
