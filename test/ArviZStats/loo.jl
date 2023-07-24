@@ -91,7 +91,7 @@ include("helpers.jl")
                 )
                 @test isapprox(
                     loo_result2.pointwise.elpd_mcse,
-                    loo_result1.pointwise.elpd_mcse,
+                    loo_result1.pointwise.elpd_mcse;
                     nans=true,
                     atol,
                 )
