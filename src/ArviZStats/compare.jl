@@ -160,8 +160,6 @@ function Base.show(io::IO, mime::MIME"text/plain", result::ModelComparisonResult
     return nothing
 end
 
-Base.@pure _typename(::T) where {T} = only(T.name.Typeofwrapper.parameters)
-
 function _permute(r::ModelComparisonResult, perm)
     return ModelComparisonResult(
         (_permute(getfield(r, k), perm) for k in fieldnames(typeof(r))[1:(end - 1)])...,

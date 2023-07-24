@@ -32,8 +32,11 @@ end
         )
         @test mc1.elpd_diff.non_centered == 0.0
         @test mc1.elpd_diff.centered > 0
-        @test mc1.weight == reverse(model_weights(eight_schools_loo_results))
-        @test mc1.elpd_result == reverse(eight_schools_loo_results)
+        @test mc1.weight == NamedTuple{(:non_centered, :centered)}(
+            model_weights(eight_schools_loo_results)
+        )
+        @test mc1.elpd_result ==
+            NamedTuple{(:non_centered, :centered)}(eight_schools_loo_results)
 
         @test_throws ArgumentError compare(eight_schools_loo_results; model_names=[:foo])
         @test_throws ErrorException compare(eight_schools_data; elpd_method=x -> nothing)
@@ -46,7 +49,12 @@ end
         @test mc2.weights_method === PseudoBMA()
         mc3 = compare(eight_schools_loo_results; sort=false)
         for k in filter(!=(:weights_method), propertynames(mc1))
-            @test getproperty(mc3, k) == reverse(getproperty(mc1, k))
+            if k === :name
+                @test getproperty(mc3, k) == reverse(getproperty(mc1, k))
+            else
+                @test getproperty(mc3, k) ==
+                    NamedTuple{(:centered, :non_centered)}(getproperty(mc1, k))
+            end
         end
         mc3 = compare(eight_schools_loo_results; model_names=[:a, :b])
         @test mc3.name == [:b, :a]

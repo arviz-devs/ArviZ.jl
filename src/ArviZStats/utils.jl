@@ -107,6 +107,8 @@ function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale
     return clamp(sigdigits_x, 0, sigdigits_max)
 end
 
+Base.@pure _typename(::T) where {T} = T.name.name
+
 _astuple(x) = (x,)
 _astuple(x::Tuple) = x
 
