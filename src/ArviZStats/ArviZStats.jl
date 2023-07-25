@@ -35,18 +35,18 @@ export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, m
 export ModelComparisonResult, compare
 
 # Others
-export hdi, kde, loo_pit, r2_score, summary, summarystats
+export hdi, hdi!, kde, loo_pit, r2_score, summary, summarystats
 
 # load for docstrings
 using ArviZ: InferenceData, convert_to_dataset, ess
 
 const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
-@forwardfun hdi
 @forwardfun kde
 @forwardfun r2_score
 
 include("utils.jl")
+include("hdi.jl")
 include("elpdresult.jl")
 include("loo.jl")
 include("waic.jl")

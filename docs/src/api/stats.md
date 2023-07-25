@@ -8,6 +8,7 @@ Pages = ["stats.md"]
 
 ```@docs
 hdi
+hdi!
 ArviZ.summary
 summarystats
 r2_score
@@ -55,7 +56,7 @@ Stacking
 loo_pit
 ```
 
-## Utilities
+### Utilities
 
 ```@docs
 ArviZStats.smooth_data
