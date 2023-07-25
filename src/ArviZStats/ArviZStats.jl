@@ -44,7 +44,6 @@ const INFORMATION_CRITERION_SCALES = (deviance=-2, log=1, negative_log=-1)
 
 @forwardfun hdi
 @forwardfun kde
-@forwardfun r2_score
 
 include("utils.jl")
 include("elpdresult.jl")
@@ -53,8 +52,7 @@ include("waic.jl")
 include("model_weights.jl")
 include("compare.jl")
 include("loo_pit.jl")
-
-ArviZ.convert_result(::typeof(r2_score), result) = ArviZ.todataframes(result)
+include("r2_score.jl")
 
 @doc doc"""
     summarystats(
