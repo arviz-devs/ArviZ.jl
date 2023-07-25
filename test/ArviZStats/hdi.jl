@@ -23,7 +23,7 @@ using Test
             xsort = sort(x)
             lind = 1:(n - interval_length + 1)
             uind = interval_length:n
-            @assert all(uind .- lind .+ 1 .== interval_length)
+            @assert all(collect(uind) .- collect(lind) .+ 1 .== interval_length)
             @test minimum(xsort[uind] - xsort[lind]) ≈ u - l
 
             @test hdi!(copy(x); prob) == r
@@ -102,7 +102,11 @@ using Test
         ))
         idata = InferenceData(; posterior)
         @testset for prob in (0.76, 0.93)
-            r1 = @inferred hdi(posterior; prob)
+            if VERSION ≥ v"1.9"
+                r1 = @inferred hdi(posterior; prob)
+            else
+                r1 = hdi(posterior; prob)
+            end
             r1_perm = hdi(posterior_perm; prob)
             for k in (:x, :y, :z)
                 rk = hdi(posterior[k]; prob)
@@ -112,7 +116,11 @@ using Test
                 @test r1_perm[k][hdi_bound=At(:lower)] == rk.lower
                 @test r1_perm[k][hdi_bound=At(:upper)] == rk.upper
             end
-            r2 = @inferred hdi(idata; prob)
+            if VERSION ≥ v"1.9"
+                r2 = @inferred hdi(idata; prob)
+            else
+                r2 = hdi(idata; prob)
+            end
             @test r1 == r2
         end
     end
