@@ -1,5 +1,8 @@
 const HDI_DEFAULT_PROB = 0.94
-const HDI_BOUND_DIM = Dimensions.Dim{:hdi_bound}([:lower, :upper])
+# this pattern ensures that the type is completely specified at compile time
+const HDI_BOUND_DIM = Dimensions.format(
+    Dimensions.Dim{:hdi_bound}([:lower, :upper]), Base.OneTo(2)
+)
 
 """
     hdi(samples::AbstractArray{<:Real}; prob=$(HDI_DEFAULT_PROB)) -> (; lower, upper)
@@ -134,9 +137,21 @@ hdi(idata.posterior[(:theta,)]).theta
 """
 hdi(data::InferenceObjects.InferenceData; kwargs...) = hdi(data.posterior; kwargs...)
 function hdi(data::InferenceObjects.Dataset; kwargs...)
-    ds = map(DimensionalData.layers(data)) do var
-        lower, upper = hdi(_draw_chains_params_array(var); kwargs...)
-        return cat(_as_dimarray(lower, var), _as_dimarray(upper, var); dims=HDI_BOUND_DIM)
+    results = map(DimensionalData.data(data), DimensionalData.layerdims(data)) do var, dims
+        x = _draw_chains_params_array(DimensionalData.DimArray(var, dims))
+        r = hdi(x; kwargs...)
+        lower, upper = map(Base.Fix2(_as_dimarray, x), r)
+        return cat(lower, upper; dims=HDI_BOUND_DIM)
     end
-    return InferenceObjects.Dataset(ds)
+    dims = Dimensions.combinedims(
+        Dimensions.otherdims(data, InferenceObjects.DEFAULT_SAMPLE_DIMS), HDI_BOUND_DIM
+    )
+    return DimensionalData.rebuild(
+        data;
+        data=map(parent, results),
+        dims,
+        layerdims=map(Dimensions.dims, results),
+        refdims=(),
+        metadata=DimensionalData.NoMetadata(),
+    )
 end
