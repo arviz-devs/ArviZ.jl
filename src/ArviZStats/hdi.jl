@@ -7,8 +7,7 @@ const HDI_BOUND_DIM = Dimensions.format(
 """
     hdi(samples::AbstractArray{<:Real}; prob=$(HDI_DEFAULT_PROB)) -> (; lower, upper)
 
-Calculate the unimodal highest density interval (HDI) of `samples` for the probability
-`prob`.[^Hyndman1996]
+Estimate the unimodal highest density interval (HDI) of `samples` for the probability `prob`.
 
 The HDI is the minimum width Bayesian credible interval (BCI). That is, it is the smallest
 possible interval containing at least `(100*prob)`% of the draws.[^Hyndman1996]
@@ -17,15 +16,22 @@ possible interval containing at least `(100*prob)`% of the draws.[^Hyndman1996]
 present, then `lower` and `upper` are arrays with the shape `(params...,)`, computed
 separately for each marginal.
 
+This implementation uses the algorithm of [^ChenShao1999].
+
 !!! note
     Any default value of `prob` is arbitrary. The default value of
     `prob=$(HDI_DEFAULT_PROB)` instead of a more common default like `prob=0.95` is chosen
     to reminder the user of this arbitrariness.
 
-[^Hyndman1996]: Rob J. Hyndman. Computing and Graphing Highest Density Regions. (1996).
+[^Hyndman1996]: Rob J. Hyndman (1996) Computing and Graphing Highest Density Regions,
                 Amer. Stat., 50(2): 120-6.
-                doi: [10.1080/00031305.1996.10474359](https://doi.org/10.1080/00031305.1996.10474359)
+                DOI: [10.1080/00031305.1996.10474359](https://doi.org/10.1080/00031305.1996.10474359)
                 [jstor](https://doi.org/10.2307/2684423).
+[^ChenShao1999]: Ming-Hui Chen & Qi-Man Shao (1999)
+                 Monte Carlo Estimation of Bayesian Credible and HPD Intervals,
+                 J Comput. Graph. Stat., 8:1, 69-92.
+                 DOI: [10.1080/10618600.1999.10474802](https://doi.org/10.1080/00031305.1996.10474359)
+                 [jstor](https://doi.org/10.2307/1390921).
 
 # Examples
 
@@ -37,7 +43,7 @@ hdi(x; prob=0.83)
 
 # output
 
-(lower = -1.3826605224220527, upper = 1.2580552089709671)
+(lower = -1.3826605224220527, upper = 1.259817149822839)
 ```
 
 ```jldoctest; setup = :(using Random; Random.seed!(67))
@@ -47,7 +53,7 @@ pairs(hdi(x))
 # output
 
 pairs(::NamedTuple) with 2 entries:
-  :lower => [-1.9505, 3.0495, 8.0495]
+  :lower => [-1.9674, 3.0326, 8.0326]
   :upper => [1.90028, 6.90028, 11.9003]
 ```
 """
@@ -63,22 +69,22 @@ end
 A version of [hdi](@ref) that sorts `samples` in-place while computing the HDI.
 """
 function hdi!(x::AbstractArray{<:Real}; prob::Real=HDI_DEFAULT_PROB)
-    0 < prob ≤ 1 || throw(DomainError(prob, "HDI `prob` must be between 0 and 1."))
+    0 < prob < 1 || throw(DomainError(prob, "HDI `prob` must be in the range `(0, 1)`.]"))
     return _hdi!(x, prob)
 end
 
 function _hdi!(x::AbstractVector{<:Real}, prob::Real)
     isempty(x) && throw(ArgumentError("HDI cannot be computed for an empty array."))
     n = length(x)
-    interval_length = ceil(Int, prob * n)
+    interval_length = floor(Int, prob * n) + 1
     if any(isnan, x) || interval_length == n
         lower, upper = extrema(x)
     else
-        tail_length = n - interval_length + 1
+        npoints_to_check = n - interval_length + 1
         sort!(x)
-        lower_tail = @views x[begin:(begin + tail_length - 1)]
-        upper_tail = @views x[(begin + interval_length - 1):end]
-        upper, lower = argmin(Base.splat(-), zip(upper_tail, lower_tail))
+        lower_range = @views x[begin:(begin - 1 + npoints_to_check)]
+        upper_range = @views x[(begin - 1 + interval_length):end]
+        lower, upper = argmax(Base.splat(-), zip(lower_range, upper_range))
     end
     return (; lower, upper)
 end
@@ -132,14 +138,14 @@ hdi(idata.posterior[(:theta,)]).theta
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
   Dim{:hdi_bound} Categorical{Symbol} Symbol[:lower, :upper] ForwardOrdered
                         :lower    :upper
-  "Choate"            -4.56375  17.0405
-  "Deerfield"         -4.2566   14.2535
-  "Phillips Andover"  -7.75054  13.6755
-  "Phillips Exeter"   -4.41919  14.6635
-  "Hotchkiss"         -6.45033  11.7191
-  "Lawrenceville"     -7.07965  12.1161
-  "St. Paul's"        -3.09262  16.1241
-  "Mt. Hermon"        -5.82697  16.0143
+  "Choate"            -4.56375  17.1324
+  "Deerfield"         -4.31055  14.2535
+  "Phillips Andover"  -7.76922  13.6755
+  "Phillips Exeter"   -4.48955  14.6635
+  "Hotchkiss"         -6.46991  11.7191
+  "Lawrenceville"     -7.04111  12.2087
+  "St. Paul's"        -3.09262  16.2685
+  "Mt. Hermon"        -5.85834  16.0143
 ```
 """
 hdi(data::InferenceObjects.InferenceData; kwargs...) = hdi(data.posterior; kwargs...)

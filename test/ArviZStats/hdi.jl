@@ -7,14 +7,14 @@ using Test
 @testset "hdi/hdi!" begin
     @testset "AbstractVector" begin
         @testset for n in (10, 100, 1_000),
-            prob in (eps(), 0.5, 0.73, 0.96, 1.0),
+            prob in (1 / n, 0.5, 0.73, 0.96, (n - 1 + 0.1) / n),
             T in (Float32, Float64, Int64)
 
             x = T <: Integer ? rand(T(1):T(30), n) : randn(T, n)
             r = @inferred hdi(x; prob)
             @test r isa NamedTuple{(:lower, :upper),NTuple{2,T}}
             l, u = r
-            interval_length = ceil(Int, prob * n)
+            interval_length = floor(Int, prob * n) + 1
             if T <: Integer
                 @test sum(x -> l ≤ x ≤ u, x) ≥ interval_length
             else
@@ -47,9 +47,9 @@ using Test
             @test_throws ArgumentError hdi(x)
         end
 
-        @testset "test errors when prob is not in (0, 1]" begin
+        @testset "test errors when prob is not in (0, 1)" begin
             x = randn(1_000)
-            @testset for prob in (0, -0.1, 1.1, NaN)
+            @testset for prob in (0, 1, -0.1, 1.1, NaN)
                 @test_throws DomainError hdi(x; prob)
             end
         end
