@@ -30,6 +30,44 @@ function r2_score(y_true, y_pred)
 end
 
 """
+    r2_score(idata::InferenceData; y_name, y_pred_name) -> (; r2, r2_std)
+
+Compute ``R²`` from `idata`, automatically formatting the predictions to the correct shape.
+
+# Keywords
+
+  - `y_name`: Name of observed data variable in `idata.observed_data`. If not provided, then
+    the only observed data variable is used.
+  - `y_pred_name`: Name of posterior predictive variable in `idata.posterior_predictive`.
+    If not provided, then `y_name` is used.
+
+# Examples
+
+```jldoctest
+using ArviZ, ArviZExampleData
+idata = load_arviz_data("regression1d")
+r2_score(idata)
+
+# output
+
+(r2 = 0.683196996216511, r2_std = 0.036883777654323734)
+```
+"""
+function r2_score(
+    idata::InferenceObjects.InferenceData;
+    y_name::Union{Symbol,Nothing}=nothing,
+    y_pred_name::Union{Symbol,Nothing}=nothing,
+)
+    _y_name = y_name === nothing ? _only_observed_data_key(idata) : y_name
+    _y_pred_name = y_pred_name === nothing ? _y_name : y_pred_name
+    haskey(idata, :posterior_predictive) ||
+        throw(ArgumentError("No `posterior_predictive` group"))
+    y = idata.observed_data[_y_name]
+    y_pred = _draw_chains_params_array(idata.posterior_predictive[_y_pred_name])
+    return r2_score(y, y_pred)
+end
+
+"""
     r2_samples(y_true::AbstractVector, y_pred::AbstractMatrix) -> AbstractVector
 
 ``R²`` samples for Bayesian regression models. Only valid for linear models.
