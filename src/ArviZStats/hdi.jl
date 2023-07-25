@@ -35,7 +35,7 @@ This implementation uses the algorithm of [^ChenShao1999].
 
 # Examples
 
-Here we calculate the 83% HDI for a normal random variable
+Here we calculate the 83% HDI for a normal random variable:
 
 ```jldoctest; setup = :(using Random; Random.seed!(78))
 x = randn(2_000)
@@ -45,6 +45,8 @@ hdi(x; prob=0.83)
 
 (lower = -1.3826605224220527, upper = 1.259817149822839)
 ```
+
+We can also calculate the HDI for a 3-dimensional array of samples:
 
 ```jldoctest; setup = :(using Random; Random.seed!(67))
 x = randn(1_000, 1, 1) .+ reshape(0:5:10, 1, 1, :)
@@ -102,8 +104,8 @@ function _hdi!(x::AbstractArray{<:Real}, prob::Real)
 end
 
 """
-    hdi(data::InferenceData; kwargs...) -> Dataset
-    hdi(data::Dataset; kwargs...) -> Dataset
+    hdi(data::InferenceData; prob=$HDI_DEFAULT_PROB) -> Dataset
+    hdi(data::Dataset; prob=$HDI_DEFAULT_PROB) -> Dataset
 
 Calculate the highest density interval (HDI) for each parameter in the data.
 
