@@ -14,8 +14,9 @@ See also [`r2_samples`](@ref).
 
 ```jldoctest
 using ArviZ, ArviZExampleData
-y_true = data.observed_data.y
-y_pred = PermutedDimsArray(data.posterior_predictive.y, (:draw, :chain, :y_dim_0))
+idata = load_example_data("regression1d")
+y_true = idata.observed_data.y
+y_pred = PermutedDimsArray(idata.posterior_predictive.y, (:draw, :chain, :y_dim_0))
 r2_score(y_true, y_pred)
 
 # output
