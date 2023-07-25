@@ -28,16 +28,34 @@ using Test
 
             @test hdi!(copy(x); prob) == r
         end
+    end
+
+    @testset "edge cases and errors" begin
+        @testset "NaNs returned if contains NaNs" begin
+            x = randn(1000)
+            x[3] = NaN
+            @test isequal(hdi(x), (lower=NaN, upper=NaN))
+        end
+
+        @testset "errors for empty array" begin
+            x = Float64[]
+            @test_throws ArgumentError hdi(x)
+        end
+
+        @testset "errors for 0-dimensional array" begin
+            x = fill(1.0)
+            @test_throws ArgumentError hdi(x)
+        end
 
         @testset "test errors when prob is not in (0, 1]" begin
             x = randn(1_000)
             @testset for prob in (0, -0.1, 1.1, NaN)
-                @test_throws ArgumentError hdi(x; prob)
+                @test_throws DomainError hdi(x; prob)
             end
         end
     end
 
-    @testset "AbstractArray constistent with AbstractVector" begin
+    @testset "AbstractArray consistent with AbstractVector" begin
         @testset for sz in ((100, 2), (100, 2, 3), (100, 2, 3, 4)),
             prob in (0.72, 0.81),
             T in (Float32, Float64, Int64)

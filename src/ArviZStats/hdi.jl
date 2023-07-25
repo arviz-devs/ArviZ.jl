@@ -63,22 +63,29 @@ end
 A version of [hdi](@ref) that sorts `samples` in-place while computing the HDI.
 """
 function hdi!(x::AbstractArray{<:Real}; prob::Real=HDI_DEFAULT_PROB)
-    0 < prob ≤ 1 || throw(ArgumentError("HDI `prob` must be between 0 and 1."))
+    0 < prob ≤ 1 || throw(DomainError(prob, "HDI `prob` must be between 0 and 1."))
     return _hdi!(x, prob)
 end
 
 function _hdi!(x::AbstractVector{<:Real}, prob::Real)
+    isempty(x) && throw(ArgumentError("HDI cannot be computed for an empty array."))
     n = length(x)
-    sort!(x)
     interval_length = ceil(Int, prob * n)
-    tail_length = n - interval_length + 1
-    lower_tail = @views x[begin:(begin + tail_length - 1)]
-    upper_tail = @views x[(begin + interval_length - 1):end]
-    upper, lower = argmin(Base.splat(-), zip(upper_tail, lower_tail))
+    if any(isnan, x) || interval_length == n
+        lower, upper = extrema(x)
+    else
+        tail_length = n - interval_length + 1
+        sort!(x)
+        lower_tail = @views x[begin:(begin + tail_length - 1)]
+        upper_tail = @views x[(begin + interval_length - 1):end]
+        upper, lower = argmin(Base.splat(-), zip(upper_tail, lower_tail))
+    end
     return (; lower, upper)
 end
 _hdi!(x::AbstractMatrix{<:Real}, prob::Real) = _hdi!(vec(x), prob)
 function _hdi!(x::AbstractArray{<:Real}, prob::Real)
+    ndims(x) > 0 ||
+        throw(ArgumentError("HDI cannot be computed for a 0-dimensional array."))
     axes_out = _param_axes(x)
     lower = similar(x, axes_out)
     upper = similar(x, axes_out)
