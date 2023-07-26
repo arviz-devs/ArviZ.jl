@@ -12,7 +12,6 @@
     R-squared for Bayesian Regression Models, The American Statistician,
     73:3, 307-9,
     DOI: [10.1080/00031305.2018.1549100](https://doi.org/10.1080/00031305.2018.1549100).
-
 # Examples
 
 ```jldoctest

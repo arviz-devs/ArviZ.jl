@@ -33,14 +33,15 @@ using Test
     @testset "InferenceData inputs" begin
         @testset for name in ("regression1d", "regression10d")
             idata = load_example_data(name)
-            r2_val = @inferred r2_score(idata)
+            VERSION ≥ v"1.9" && @inferred r2_score(idata)
+            r2_val = r2_score(idata)
             @test r2_val == r2_score(
                 idata.observed_data.y,
                 PermutedDimsArray(idata.posterior_predictive.y, (:draw, :chain, :y_dim_0)),
             )
-            @test r2_val == @inferred r2_score(idata; y_name=:y)
-            @test r2_val == @inferred r2_score(idata; y_pred_name=:y)
-            @test r2_val == @inferred r2_score(idata; y_name=:y, y_pred_name=:y)
+            @test r2_val == r2_score(idata; y_name=:y)
+            @test r2_val == r2_score(idata; y_pred_name=:y)
+            @test r2_val == r2_score(idata; y_name=:y, y_pred_name=:y)
             @test_throws Exception r2_score(idata; y_name=:z)
             @test_throws Exception r2_score(idata; y_pred_name=:z)
         end

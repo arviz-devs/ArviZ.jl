@@ -52,9 +52,9 @@ using StatsBase
                 y_pred_name in (y_name, Symbol("$(y_name)_pred"))
 
                 observed_data = namedtuple_to_dataset(
-                    (; y_name => randn(10)); default_dims=()
+                    (; (y_name => randn(10),)...); default_dims=()
                 )
-                pred = namedtuple_to_dataset((; y_pred_name => randn(100, 4, 10)))
+                pred = namedtuple_to_dataset((; (y_pred_name => randn(100, 4, 10),)...))
                 y = observed_data[y_name]
                 y_pred = pred[y_pred_name]
                 idata = InferenceData(; observed_data, pred_group => pred)
@@ -87,10 +87,10 @@ using StatsBase
                 y_pred_name in (y_name, Symbol("$(y_name)_pred"))
 
                 observed_data = namedtuple_to_dataset(
-                    (; y_name => randn(10), :w => randn(3)); default_dims=()
+                    (; (y_name => randn(10), :w => randn(3))...); default_dims=()
                 )
                 pred = namedtuple_to_dataset((;
-                    y_pred_name => randn(100, 4, 10), :q => randn(100, 4, 2)
+                    (y_pred_name => randn(100, 4, 10), :q => randn(100, 4, 2))...
                 ))
                 y = observed_data[y_name]
                 y_pred = pred[y_pred_name]
@@ -126,10 +126,10 @@ using StatsBase
                 y_pred_name = Symbol("y$pred_suffix")
                 z_pred_name = Symbol("z$pred_suffix")
                 observed_data = namedtuple_to_dataset(
-                    (; :y => randn(10), :z => randn(5)); default_dims=()
+                    (; (:y => randn(10), :z => randn(5))...); default_dims=()
                 )
                 pred = namedtuple_to_dataset((;
-                    z_pred_name => randn(100, 4, 5), y_pred_name => randn(100, 4, 10)
+                    (z_pred_name => randn(100, 4, 5), y_pred_name => randn(100, 4, 10))...
                 ))
                 y = observed_data.y
                 z = observed_data.z
