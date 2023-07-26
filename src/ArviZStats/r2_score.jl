@@ -47,7 +47,7 @@ Compute ``R²`` from `idata`, automatically formatting the predictions to the co
 
 ```jldoctest
 using ArviZ, ArviZExampleData
-idata = load_arviz_data("regression10d")
+idata = load_example_data("regression10d")
 r2_score(idata)
 
 # output
