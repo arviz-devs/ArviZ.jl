@@ -41,6 +41,24 @@ See also: [`WAICResult`](@ref), [`loo`](@ref)
     doi: [10.1007/s11222-016-9696-4](https://doi.org/10.1007/s11222-016-9696-4)
     arXiv: [1507.04544](https://arxiv.org/abs/1507.04544)
 [^LOOFAQ]: Aki Vehtari. Cross-validation FAQ. https://mc-stan.org/loo/articles/online-only/faq.html
+
+# Examples
+
+Calculate WAIC of a model:
+
+```jldoctest
+using ArviZ, ArviZExampleData
+idata = load_example_data("centered_eight")
+log_like = PermutedDimsArray(idata.log_likelihood.obs, (:draw, :chain, :school))
+waic(log_like)
+
+# output
+
+WAICResult with estimates
+       Estimate    SE
+ elpd       -31   1.4
+    p       0.9  0.33
+```
 """
 waic(ll::AbstractArray) = _waic(ll)
 
@@ -51,6 +69,23 @@ waic(ll::AbstractArray) = _waic(ll)
 Compute WAIC from log-likelihood values in `data`.
 
 If more than one log-likelihood variable is present, then `var_name` must be provided.
+
+# Examples
+
+Calculate WAIC of a model:
+
+```jldoctest
+using ArviZ, ArviZExampleData
+idata = load_example_data("centered_eight")
+waic(idata)
+
+# output
+
+WAICResult with estimates
+       Estimate    SE
+ elpd       -31   1.4
+    p       0.9  0.33
+```
 """
 function waic(
     data::Union{InferenceObjects.InferenceData,InferenceObjects.Dataset};
