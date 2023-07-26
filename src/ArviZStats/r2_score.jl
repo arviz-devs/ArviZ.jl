@@ -1,13 +1,17 @@
 """
     r2_score(y_true::AbstractVector, y_pred::AbstractVecOrMat) -> (; r2, r2_std)
 
-``R²`` for Bayesian regression models. Only valid for linear models.
+``R²`` for linear Bayesian regression models.[^GelmanGoodrich2019]
 
 # Arguments
 
   - `y_true`: Ground truth (correct) target values of length `noutputs`
   - `y_pred`: Estimated target values with size `(ndraws[, nchains], noutputs)`
 
+[^GelmanGoodrich2019]: Andrew Gelman, Ben Goodrich, Jonah Gabry & Aki Vehtari (2019)
+                       R-squared for Bayesian Regression Models, The American Statistician,
+                       73:3, 307-9,
+                       DOI: [10.1080/00031305.2018.1549100](https://doi.org/10.1080/00031305.2018.1549100).
 
 # Example
 
