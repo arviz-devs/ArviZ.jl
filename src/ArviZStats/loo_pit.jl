@@ -39,6 +39,7 @@ LOO-PIT values should be approximately uniformly distributed on ``[0, 1]``.[^Gab
     J. R. Stat. Soc. Ser. A Stat. Soc. 182, 389–402 (2019).
     doi: [10.1111/rssa.12378](https://doi.org/10.1111/rssa.12378)
     arXiv: [1709.01449](https://arxiv.org/abs/1709.01449)
+
 # Examples
 
 Calculate LOO-PIT values using as test quantity the observed values themselves.

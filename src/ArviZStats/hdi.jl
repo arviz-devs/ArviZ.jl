@@ -110,7 +110,7 @@ end
 
 Calculate the highest density interval (HDI) for each parameter in the data.
 
-# Example
+# Examples
 
 Calculate HDI for all parameters in the `posterior` group of an `InferenceData`:
 

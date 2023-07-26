@@ -30,6 +30,7 @@ See also: [`AbstractModelWeightsMethod`](@ref), [`compare`](@ref)
     2018. Bayesian Analysis. 13, 3, 917–1007.
     doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
+
 # Examples
 
 Compute [`Stacking`](@ref) weights for two models:
