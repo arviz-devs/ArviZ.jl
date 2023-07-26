@@ -165,12 +165,8 @@ function loo_pit(
     y_pred_name::Union{Symbol,Nothing}=nothing,
     kwargs...,
 )
-    _y_name = y_name === nothing ? _only_observed_data_key(idata) : y_name
-    _y_pred_name = y_pred_name === nothing ? _y_name : y_pred_name
-    haskey(idata, :posterior_predictive) ||
-        throw(ArgumentError("No `posterior_predictive` group"))
-    y = idata.observed_data[_y_name]
-    y_pred = _draw_chains_params_array(idata.posterior_predictive[_y_pred_name])
+    (_y_name, y), (_, _y_pred) = observations_and_predictions(idata, y_name, y_pred_name)
+    y_pred = _draw_chains_params_array(_y_pred)
     pitvals = loo_pit(y, y_pred, log_weights; kwargs...)
     return DimensionalData.rebuild(pitvals; name=Symbol("loo_pit_$(_y_name)"))
 end
@@ -223,11 +219,13 @@ loo_pit(idata; y_name=:obs)
 function loo_pit(
     idata::InferenceObjects.InferenceData;
     y_name::Union{Symbol,Nothing}=nothing,
+    y_pred_name::Union{Symbol,Nothing}=nothing,
     log_likelihood_name::Union{Symbol,Nothing}=nothing,
     reff=nothing,
     kwargs...,
 )
-    _y_name = y_name === nothing ? _only_observed_data_key(idata) : y_name
+    (_y_name, y), (_, _y_pred) = observations_and_predictions(idata, y_name, y_pred_name)
+    y_pred = _draw_chains_params_array(_y_pred)
     if log_likelihood_name === nothing
         if haskey(idata, :log_likelihood)
             _log_like = log_likelihood(idata.log_likelihood, _y_name)
@@ -241,7 +239,8 @@ function loo_pit(
     end
     log_like = _draw_chains_params_array(_log_like)
     psis_result = _psis_loo_setup(log_like, reff)
-    return loo_pit(idata, psis_result.log_weights; y_name=_y_name, kwargs...)
+    pitvals = loo_pit(y, y_pred, psis_result.log_weights; kwargs...)
+    return DimensionalData.rebuild(pitvals; name=Symbol("loo_pit_$(_y_name)"))
 end
 
 function _loo_pit(y::Number, y_pred, log_weights)
