@@ -65,5 +65,5 @@ Random.seed!(97)
     include("waic.jl")
     include("model_weights.jl")
     include("compare.jl")
-    include("r2_score")
+    include("r2_score.jl")
 end
