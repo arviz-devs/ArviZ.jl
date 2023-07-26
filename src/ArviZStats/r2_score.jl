@@ -5,8 +5,8 @@
 
 # Arguments
 
-  - `y_true`: Ground truth (correct) target values of length `noutputs`
-  - `y_pred`: Estimated target values with size `(ndraws[, nchains], noutputs)`
+  - `y_true`: Observed data of length `noutputs`
+  - `y_pred`: Predicted data with size `(ndraws[, nchains], noutputs)`
 
 [^GelmanGoodrich2019]: Andrew Gelman, Ben Goodrich, Jonah Gabry & Aki Vehtari (2019)
                        R-squared for Bayesian Regression Models, The American Statistician,
@@ -74,8 +74,8 @@ See also [`r2_score`](@ref).
 
 # Arguments
 
-  - `y_true`: Ground truth (correct) target values of length `noutputs`
-  - `y_pred`: Estimated target values with size `(ndraws[, nchains], noutputs)`
+  - `y_true`: Observed data of length `noutputs`
+  - `y_pred`: Predicted data with size `(ndraws[, nchains], noutputs)`
 """
 function r2_samples(y_true::AbstractVector, y_pred::AbstractArray)
     @assert ndims(y_pred) ∈ (2, 3)
