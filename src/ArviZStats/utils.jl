@@ -48,15 +48,18 @@ function _check_log_likelihood(x)
     return nothing
 end
 
-function _only_observed_data_key(idata::InferenceObjects.InferenceData)
+function _only_observed_data_key(idata::InferenceObjects.InferenceData; var_name=nothing)
     haskey(idata, :observed_data) ||
-        throw(ArgumentError("No `observed_data` group in `idata`"))
+        throw(ArgumentError("Data must contain an `observed_data` group."))
     ks = keys(idata.observed_data)
-    length(ks) == 1 || throw(
-        ArgumentError(
-            "More than one observed data variable: $(ks). `y_name` must be provided"
-        ),
-    )
+    isempty(ks) && throw(ArgumentError("`observed_data` group must not be empty."))
+    if length(ks) > 1
+        msg = "More than one observed data variable: $(ks)."
+        if var_name !== nothing
+            msg *= " `$var_name` must be specified."
+        end
+        throw(ArgumentError(msg))
+    end
     return first(ks)
 end
 
