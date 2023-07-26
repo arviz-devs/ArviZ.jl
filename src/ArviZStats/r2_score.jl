@@ -82,12 +82,12 @@ function r2_samples(y_true::AbstractVector, y_pred::AbstractArray)
 
     var_y_est = dropdims(Statistics.var(y_pred; corrected, dims); dims)
     y_true_reshape = reshape(y_true, ntuple(one, ndims(y_pred) - 1)..., :)
-    var_e = dropdims(Statistics.var(y_pred .- y_true_reshape; corrected, dims); dims)
+    var_residual = dropdims(Statistics.var(y_pred .- y_true_reshape; corrected, dims); dims)
 
     # allocate storage for type-stability
-    T = typeof(first(var_y_est) / first(var_e))
+    T = typeof(first(var_y_est) / first(var_residual))
     sample_axes = ntuple(Base.Fix1(axes, y_pred), ndims(y_pred) - 1)
     r_squared = similar(y_pred, T, sample_axes)
-    r_squared .= var_y_est ./ (var_y_est .+ var_e)
+    r_squared .= var_y_est ./ (var_y_est .+ var_residual)
     return r_squared
 end
