@@ -48,6 +48,18 @@ function _check_log_likelihood(x)
     return nothing
 end
 
+function _only_observed_data_key(idata::InferenceObjects.InferenceData)
+    haskey(idata, :observed_data) ||
+        throw(ArgumentError("No `observed_data` group in `idata`"))
+    ks = keys(idata.observed_data)
+    length(ks) == 1 || throw(
+        ArgumentError(
+            "More than one observed data variable: $(ks). `y_name` must be provided"
+        ),
+    )
+    return first(ks)
+end
+
 """
     smooth_data(y; dims=:, interp_method=CubicSpline, offset_frac=0.01)
 

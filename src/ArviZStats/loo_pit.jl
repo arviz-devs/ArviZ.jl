@@ -269,15 +269,3 @@ function _loo_pit(y::AbstractArray, y_pred, log_weights)
     end
     return pitvals
 end
-
-function _only_observed_data_key(idata::InferenceObjects.InferenceData)
-    haskey(idata, :observed_data) ||
-        throw(ArgumentError("No `observed_data` group in `idata`"))
-    ks = keys(idata.observed_data)
-    length(ks) == 1 || throw(
-        ArgumentError(
-            "More than one observed data variable: $(ks). `y_name` must be provided"
-        ),
-    )
-    return first(ks)
-end
