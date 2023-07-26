@@ -77,8 +77,7 @@ See also [`r2_score`](@ref).
 function r2_samples(y_true::AbstractVector, y_pred::AbstractArray)
     @assert ndims(y_pred) ∈ (2, 3)
     corrected = false
-    dims = output_dim = ndims(y_pred)
-    sample_dims = ntuple(identity, ndims(y_pred) - 1)
+    dims = ndims(y_pred)
 
     var_y_est = dropdims(Statistics.var(y_pred; corrected, dims); dims)
     y_true_reshape = reshape(y_true, ntuple(one, ndims(y_pred) - 1)..., :)
