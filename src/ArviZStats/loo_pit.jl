@@ -45,17 +45,17 @@ LOO-PIT values should be approximately uniformly distributed on ``[0, 1]``.[^Gab
 Calculate LOO-PIT values using as test quantity the observed values themselves.
 
 ```jldoctest loo_pit1
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-log_weights = loo(idata; var_name=:obs).psis_result.log_weights
-loo_pit(
-    idata.observed_data.obs,
-    permutedims(idata.posterior_predictive.obs, (:draw, :chain, :school)),
-    log_weights,
-)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> log_weights = loo(idata; var_name=:obs).psis_result.log_weights;
+
+julia> loo_pit(
+            idata.observed_data.obs,
+            permutedims(idata.posterior_predictive.obs, (:draw, :chain, :school)),
+            log_weights,
+        )
 8-element DimArray{Float64,1} with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
  "Choate"            0.943511
@@ -72,16 +72,16 @@ Calculate LOO-PIT values using as test quantity the square of the difference bet
 each observation and `mu`.
 
 ```jldoctest loo_pit1
-using DimensionalData, Statistics
-T = idata.observed_data.obs .- only(median(idata.posterior.mu; dims=(:draw, :chain)))
-T_pred = permutedims(
-    broadcast_dims(-, idata.posterior_predictive.obs, idata.posterior.mu),
-    (:draw, :chain, :school),
-)
-loo_pit(T .^ 2, T_pred .^ 2, log_weights)
+julia> using DimensionalData, Statistics
 
-# output
+julia> T = idata.observed_data.obs .- only(median(idata.posterior.mu; dims=(:draw, :chain)));
 
+julia> T_pred = permutedims(
+           broadcast_dims(-, idata.posterior_predictive.obs, idata.posterior.mu),
+           (:draw, :chain, :school),
+       );
+
+julia> loo_pit(T .^ 2, T_pred .^ 2, log_weights)
 8-element DimArray{Float64,1} with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
  "Choate"            0.873577
@@ -140,13 +140,13 @@ Compute LOO-PIT values using existing normalized log LOO importance weights.
 Calculate LOO-PIT values using already computed log weights.
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-loo_result = loo(idata; var_name=:obs)
-loo_pit(idata, loo_result.psis_result.log_weights; y_name=:obs)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> loo_result = loo(idata; var_name=:obs);
+
+julia> loo_pit(idata, loo_result.psis_result.log_weights; y_name=:obs)
 8-element DimArray{Float64,1} loo_pit_obs with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
  "Choate"            0.943511
@@ -199,12 +199,11 @@ See also: [`loo`](@ref), [`psis`](@ref)
 Calculate LOO-PIT values using as test quantity the observed values themselves.
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-loo_pit(idata; y_name=:obs)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> loo_pit(idata; y_name=:obs)
 8-element DimArray{Float64,1} loo_pit_obs with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
  "Choate"            0.943511

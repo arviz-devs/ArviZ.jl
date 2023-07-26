@@ -61,14 +61,15 @@ See also: [`PSISLOOResult`](@ref), [`waic`](@ref)
 Manually compute ``R_\\mathrm{eff}`` and calculate PSIS-LOO of a model:
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-log_like = PermutedDimsArray(idata.log_likelihood.obs, (:draw, :chain, :school))
-reff = ess(log_like; kind=:basic, split_chains=1, relative=true)
-loo(log_like; reff)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> log_like = PermutedDimsArray(idata.log_likelihood.obs, (:draw, :chain, :school));
+
+julia> reff = ess(log_like; kind=:basic, split_chains=1, relative=true);
+
+julia> loo(log_like; reff)
 PSISLOOResult with estimates
        Estimate    SE
  elpd       -31   1.4
@@ -96,12 +97,11 @@ If more than one log-likelihood variable is present, then `var_name` must be pro
 Calculate PSIS-LOO of a model:
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-loo(idata)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> loo(idata)
 PSISLOOResult with estimates
        Estimate    SE
  elpd       -31   1.4

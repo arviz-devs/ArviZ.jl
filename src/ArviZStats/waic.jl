@@ -47,13 +47,13 @@ See also: [`WAICResult`](@ref), [`loo`](@ref)
 Calculate WAIC of a model:
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-log_like = PermutedDimsArray(idata.log_likelihood.obs, (:draw, :chain, :school))
-waic(log_like)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> log_like = PermutedDimsArray(idata.log_likelihood.obs, (:draw, :chain, :school));
+
+julia> waic(log_like)
 WAICResult with estimates
        Estimate    SE
  elpd       -31   1.4
@@ -75,12 +75,11 @@ If more than one log-likelihood variable is present, then `var_name` must be pro
 Calculate WAIC of a model:
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-waic(idata)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> waic(idata)
 WAICResult with estimates
        Estimate    SE
  elpd       -31   1.4

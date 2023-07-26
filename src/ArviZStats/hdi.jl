@@ -38,23 +38,20 @@ This implementation uses the algorithm of [^ChenShao1999].
 Here we calculate the 83% HDI for a normal random variable:
 
 ```jldoctest hdi; setup = :(using Random; Random.seed!(78))
-using ArviZ
-x = randn(2_000)
-hdi(x; prob=0.83)
+julia> using ArviZ
 
-# output
+julia> x = randn(2_000);
 
+julia> hdi(x; prob=0.83)
 (lower = -1.3826605224220527, upper = 1.259817149822839)
 ```
 
 We can also calculate the HDI for a 3-dimensional array of samples:
 
 ```jldoctest hdi; setup = :(using Random; Random.seed!(67))
-x = randn(1_000, 1, 1) .+ reshape(0:5:10, 1, 1, :)
-pairs(hdi(x))
+julia> x = randn(1_000, 1, 1) .+ reshape(0:5:10, 1, 1, :);
 
-# output
-
+julia> hdi(x) |> pairs
 pairs(::NamedTuple) with 2 entries:
   :lower => [-1.9674, 3.0326, 8.0326]
   :upper => [1.90028, 6.90028, 11.9003]
@@ -115,12 +112,11 @@ Calculate the highest density interval (HDI) for each parameter in the data.
 Calculate HDI for all parameters in the `posterior` group of an `InferenceData`:
 
 ```jldoctest hdi_infdata
-using ArviZ, ArviZExampleData
-idata = load_example_data("centered_eight")
-hdi(idata)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("centered_eight");
 
+julia> hdi(idata)
 Dataset with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
   Dim{:hdi_bound} Categorical{Symbol} Symbol[:lower, :upper] ForwardOrdered
@@ -133,10 +129,7 @@ and 3 layers:
 We can also calculate the HDI for a subset of variables:
 
 ```jldoctest hdi_infdata
-hdi(idata.posterior[(:theta,)]).theta
-
-# output
-
+julia> hdi(idata.posterior[(:theta,)]).theta
 8×2 DimArray{Float64,2} theta with dimensions:
   Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
   Dim{:hdi_bound} Categorical{Symbol} Symbol[:lower, :upper] ForwardOrdered
