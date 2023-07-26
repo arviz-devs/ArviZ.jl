@@ -8,7 +8,6 @@
   - `y_true`: Ground truth (correct) target values of length `noutputs`
   - `y_pred`: Estimated target values with size `(ndraws[, nchains], noutputs)`
 
-See also [`r2_samples`](@ref).
 
 # Example
 
