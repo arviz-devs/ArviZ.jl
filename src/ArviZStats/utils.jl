@@ -90,10 +90,6 @@ function observations_and_predictions(
 )
     return observations_and_predictions(idata, y_name, nothing)
 end
-function observations_and_predictions(idata::InferenceObjects.InferenceData)
-    return observations_and_predictions(idata, nothing)
-end
-
 function observations_and_predictions(
     idata::InferenceObjects.InferenceData, y_name::Symbol, y_pred_name::Symbol
 )
