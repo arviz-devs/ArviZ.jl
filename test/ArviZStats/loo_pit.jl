@@ -97,7 +97,7 @@ using StatsBase
             posterior_predictive=Dataset((; y=y_pred)),
             log_likelihood=Dataset((; y=log_like)),
         )
-        @test_throws ArgumentError loo_pit(idata1; y_name=:z)
+        @test_throws Exception loo_pit(idata1; y_name=:z)
         @test_throws Exception loo_pit(idata1; y_pred_name=:z)
         @test_throws Exception loo_pit(idata1; log_likelihood_name=:z)
         @test loo_pit(idata1) == pit_vals
@@ -114,8 +114,8 @@ using StatsBase
         @test_throws ArgumentError loo_pit(
             idata2; y_name=:z, y_pred_name=:y_pred, log_likelihood_name=:log_like
         )
-        @test_throws Exception loo_pit(idata2; y_name=:y, log_likelihood_name=:log_like)
         @test_throws ArgumentError loo_pit(idata2; y_name=:y, y_pred_name=:y_pred)
+        @test loo_pit(idata2; y_name=:y, log_likelihood_name=:log_like) == pit_vals
         @test loo_pit(
             idata2; y_name=:y, y_pred_name=:y_pred, log_likelihood_name=:log_like
         ) == pit_vals

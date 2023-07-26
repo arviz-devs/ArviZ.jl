@@ -37,7 +37,8 @@ This implementation uses the algorithm of [^ChenShao1999].
 
 Here we calculate the 83% HDI for a normal random variable:
 
-```jldoctest; setup = :(using Random; Random.seed!(78))
+```jldoctest hdi; setup = :(using Random; Random.seed!(78))
+using ArviZ
 x = randn(2_000)
 hdi(x; prob=0.83)
 
@@ -48,7 +49,7 @@ hdi(x; prob=0.83)
 
 We can also calculate the HDI for a 3-dimensional array of samples:
 
-```jldoctest; setup = :(using Random; Random.seed!(67))
+```jldoctest hdi; setup = :(using Random; Random.seed!(67))
 x = randn(1_000, 1, 1) .+ reshape(0:5:10, 1, 1, :)
 pairs(hdi(x))
 
@@ -121,8 +122,8 @@ hdi(idata)
 # output
 
 Dataset with dimensions:
-  Dim{:hdi_bound} Categorical{Symbol} Symbol[:lower, :upper] ForwardOrdered,
-  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  Dim{:hdi_bound} Categorical{Symbol} Symbol[:lower, :upper] ForwardOrdered
 and 3 layers:
   :mu    Float64 dims: Dim{:hdi_bound} (2)
   :theta Float64 dims: Dim{:school}, Dim{:hdi_bound} (8×2)

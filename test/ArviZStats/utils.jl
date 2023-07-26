@@ -45,6 +45,148 @@ using StatsBase
         @test_throws ArgumentError ArviZStats.log_likelihood(idata)
     end
 
+    @testset "observations_and_predictions" begin
+        @testset "unique names" begin
+            @testset for pred_group in (:posterior, :posterior_predictive),
+                y_name in (:y, :z),
+                y_pred_name in (y_name, Symbol("$(y_name)_pred"))
+
+                observed_data = namedtuple_to_dataset(
+                    (; (y_name => randn(10),)...); default_dims=()
+                )
+                pred = namedtuple_to_dataset((; (y_pred_name => randn(100, 4, 10),)...))
+                y = observed_data[y_name]
+                y_pred = pred[y_pred_name]
+                idata = InferenceData(; observed_data, pred_group => pred)
+
+                obs_pred_exp = (y_name => y, y_pred_name => y_pred)
+                @testset for y_name_hint in (y_name, nothing),
+                    y_pred_name_hint in (y_pred_name, nothing)
+
+                    obs_pred = @inferred ArviZStats.observations_and_predictions(
+                        idata, y_name_hint, y_pred_name_hint
+                    )
+                    @test obs_pred == obs_pred_exp
+                end
+
+                @test_throws Exception ArviZStats.observations_and_predictions(
+                    idata, :foo, :bar
+                )
+                @test_throws Exception ArviZStats.observations_and_predictions(
+                    idata, :foo, nothing
+                )
+                @test_throws Exception ArviZStats.observations_and_predictions(
+                    idata, nothing, :bar
+                )
+            end
+        end
+
+        @testset "unique pairs" begin
+            @testset for pred_group in (:posterior, :posterior_predictive),
+                y_name in (:y, :z),
+                y_pred_name in (y_name, Symbol("$(y_name)_pred"))
+
+                observed_data = namedtuple_to_dataset(
+                    (; (y_name => randn(10), :w => randn(3))...); default_dims=()
+                )
+                pred = namedtuple_to_dataset((;
+                    (y_pred_name => randn(100, 4, 10), :q => randn(100, 4, 2))...
+                ))
+                y = observed_data[y_name]
+                y_pred = pred[y_pred_name]
+                idata = InferenceData(; observed_data, pred_group => pred)
+
+                obs_pred_exp = (y_name => y, y_pred_name => y_pred)
+                @testset for y_name_hint in (y_name, nothing),
+                    y_pred_name_hint in (y_pred_name, nothing)
+
+                    y_name_hint === nothing && y_pred_name_hint !== nothing && continue
+                    obs_pred = ArviZStats.observations_and_predictions(
+                        idata, y_name_hint, y_pred_name_hint
+                    )
+                    @test obs_pred == obs_pred_exp
+                end
+
+                @test_throws Exception ArviZStats.observations_and_predictions(
+                    idata, :foo, :bar
+                )
+                @test_throws Exception ArviZStats.observations_and_predictions(
+                    idata, :foo, nothing
+                )
+                @test_throws Exception ArviZStats.observations_and_predictions(
+                    idata, nothing, :bar
+                )
+            end
+        end
+
+        @testset "non-unique names" begin
+            @testset for pred_group in (:posterior, :posterior_predictive),
+                pred_suffix in ("", "_pred")
+
+                y_pred_name = Symbol("y$pred_suffix")
+                z_pred_name = Symbol("z$pred_suffix")
+                observed_data = namedtuple_to_dataset(
+                    (; (:y => randn(10), :z => randn(5))...); default_dims=()
+                )
+                pred = namedtuple_to_dataset((;
+                    (z_pred_name => randn(100, 4, 5), y_pred_name => randn(100, 4, 10))...
+                ))
+                y = observed_data.y
+                z = observed_data.z
+                y_pred = pred[y_pred_name]
+                z_pred = pred[z_pred_name]
+                idata = InferenceData(; observed_data, pred_group => pred)
+
+                @testset for (name, pred_name) in ((:y, y_pred_name), (:z, z_pred_name)),
+                    pred_name_hint in (pred_name, nothing)
+
+                    @test ArviZStats.observations_and_predictions(
+                        idata, name, pred_name_hint
+                    ) == (name => observed_data[name], pred_name => pred[pred_name])
+                end
+
+                @test_throws ArgumentError ArviZStats.observations_and_predictions(idata)
+                @test_throws ArgumentError ArviZStats.observations_and_predictions(
+                    idata, nothing, nothing
+                )
+                @test_throws ErrorException ArviZStats.observations_and_predictions(
+                    idata, :foo, :bar
+                )
+                @test_throws ErrorException ArviZStats.observations_and_predictions(
+                    idata, :foo, nothing
+                )
+            end
+        end
+
+        @testset "missing groups" begin
+            observed_data = namedtuple_to_dataset((; y=randn(10)); default_dims=())
+            idata = InferenceData(; observed_data)
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(idata)
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(
+                idata, :y, :y_pred
+            )
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(
+                idata, :y, nothing
+            )
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(
+                idata, nothing, :y_pred
+            )
+
+            posterior_predictive = namedtuple_to_dataset((; y_pred=randn(100, 4, 10)))
+            idata = InferenceData(; posterior_predictive)
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(idata)
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(
+                idata, :y, :y_pred
+            )
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(
+                idata, :y, nothing
+            )
+            @test_throws ArgumentError ArviZStats.observations_and_predictions(
+                idata, nothing, :y_pred
+            )
+        end
+    end
+
     @testset "sigdigits_matching_error" begin
         @test ArviZStats.sigdigits_matching_error(123.456, 0.01) == 5
         @test ArviZStats.sigdigits_matching_error(123.456, 1) == 3

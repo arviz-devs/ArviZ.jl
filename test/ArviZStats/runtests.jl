@@ -9,15 +9,6 @@ Random.seed!(97)
 @testset "ArviZStats" begin
     idata = load_example_data("centered_eight")
 
-    @testset "r2_score" begin
-        rng = Random.MersenneTwister(42)
-        ytrue = randn(rng, 100)
-        ypred = randn(rng, 100)
-        df = r2_score(ytrue, ypred)
-        @test df isa DataFrames.DataFrame
-        @test all(df == ArviZ.todataframes(ArviZ.arviz.r2_score(ytrue, ypred)))
-    end
-
     @testset "summarystats" begin
         rng = MersenneTwister(42)
         nchains, ndraws = 4, 10
@@ -74,4 +65,5 @@ Random.seed!(97)
     include("waic.jl")
     include("model_weights.jl")
     include("compare.jl")
+    include("r2_score.jl")
 end
