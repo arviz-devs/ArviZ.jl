@@ -58,13 +58,8 @@ function r2_score(
     y_name::Union{Symbol,Nothing}=nothing,
     y_pred_name::Union{Symbol,Nothing}=nothing,
 )
-    _y_name = y_name === nothing ? _only_observed_data_key(idata) : y_name
-    _y_pred_name = y_pred_name === nothing ? _y_name : y_pred_name
-    haskey(idata, :posterior_predictive) ||
-        throw(ArgumentError("No `posterior_predictive` group"))
-    y = idata.observed_data[_y_name]
-    y_pred = _draw_chains_params_array(idata.posterior_predictive[_y_pred_name])
-    return r2_score(y, y_pred)
+    (_, y), (_, y_pred) = observations_and_predictions(idata, y_name, y_pred_name)
+    return r2_score(y, _draw_chains_params_array(y_pred))
 end
 
 """
