@@ -5,13 +5,11 @@ using Base: @__doc__
 using Requires
 using REPL
 using DataFrames
-using JSON3: JSON3, StructTypes
 using OrderedCollections: OrderedDict
 
 using PyCall
 using Conda
 using PyPlot
-using DataDeps: DataDeps
 using DimensionalData: DimensionalData, Dimensions
 using LogExpFunctions: logsumexp
 
