@@ -116,7 +116,6 @@ function __init__()
 end
 
 include("utils.jl")
-include("rcparams.jl")
 include("xarray.jl")
 
 include("ArviZStats/ArviZStats.jl")

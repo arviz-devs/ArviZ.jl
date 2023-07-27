@@ -3,7 +3,6 @@ using Test
 
 @testset "ArviZ" begin
     include("helpers.jl")
-    include("test_rcparams.jl")
     include("test_utils.jl")
     include("ArviZStats/runtests.jl")
     include("test_samplechains.jl")
