@@ -55,6 +55,32 @@ See also: [`PSISLOOResult`](@ref), [`waic`](@ref)
     doi: [10.1007/s11222-016-9696-4](https://doi.org/10.1007/s11222-016-9696-4)
     arXiv: [1507.04544](https://arxiv.org/abs/1507.04544)
 [^LOOFAQ]: Aki Vehtari. Cross-validation FAQ. https://mc-stan.org/loo/articles/online-only/faq.html
+
+# Examples
+
+Manually compute ``R_\\mathrm{eff}`` and calculate PSIS-LOO of a model:
+
+```jldoctest
+julia> using ArviZ, ArviZExampleData
+
+julia> idata = load_example_data("centered_eight");
+
+julia> log_like = PermutedDimsArray(idata.log_likelihood.obs, (:draw, :chain, :school));
+
+julia> reff = ess(log_like; kind=:basic, split_chains=1, relative=true);
+
+julia> loo(log_like; reff)
+PSISLOOResult with estimates
+       Estimate    SE
+ elpd       -31   1.4
+    p       0.9  0.34
+
+and PSISResult with 500 draws, 4 chains, and 8 parameters
+Pareto shape (k) diagnostic values:
+                    Count      Min. ESS
+ (-Inf, 0.5]  good  7 (87.5%)  151
+  (0.5, 0.7]  okay  1 (12.5%)  446
+```
 """
 loo(ll::AbstractArray; kwargs...) = _loo(ll; kwargs...)
 
@@ -65,6 +91,28 @@ loo(ll::AbstractArray; kwargs...) = _loo(ll; kwargs...)
 Compute PSIS-LOO from log-likelihood values in `data`.
 
 If more than one log-likelihood variable is present, then `var_name` must be provided.
+
+# Examples
+
+Calculate PSIS-LOO of a model:
+
+```jldoctest
+julia> using ArviZ, ArviZExampleData
+
+julia> idata = load_example_data("centered_eight");
+
+julia> loo(idata)
+PSISLOOResult with estimates
+       Estimate    SE
+ elpd       -31   1.4
+    p       0.9  0.34
+
+and PSISResult with 500 draws, 4 chains, and 8 parameters
+Pareto shape (k) diagnostic values:
+                    Count      Min. ESS
+ (-Inf, 0.5]  good  6 (75.0%)  135
+  (0.5, 0.7]  okay  2 (25.0%)  421
+```
 """
 function loo(
     data::Union{InferenceObjects.InferenceData,InferenceObjects.Dataset};

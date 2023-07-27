@@ -39,13 +39,39 @@ leading authorities on model comparison dx.doi.org/10.1111/1467-9868.00353
 
 # Examples
 
-```julia
-using ArviZ, ArviZExampleData
-models = (
-    centered=load_example_data("centered_eight"),
-    non_centered=load_example_data("non_centered_eight"),
-)
-mc = compare(models);
+Compare the centered and non centered models of the eight school problem using the defaults:
+[`loo`](@ref) and [`Stacking`](@ref) weights:
+
+```jldoctest compare; filter = [r"└.*"]
+julia> using ArviZ, ArviZExampleData
+
+julia> models = (
+           centered=load_example_data("centered_eight"),
+           non_centered=load_example_data("non_centered_eight"),
+       );
+
+julia> mc = compare(models)
+┌ Warning: 1 parameters had Pareto shape values 0.7 < k ≤ 1. Resulting importance sampling estimates are likely to be unstable.
+└ @ PSIS ~/.julia/packages/PSIS/...
+ModelComparisonResult with Stacking weights
+         name  rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
+ non_centered     1   -31        1.4          0               0     1.0  0.9   ⋯
+     centered     2   -31        1.4       0.06           0.067     0.0  0.9   ⋯
+                                                                1 column omitted
+```
+
+Compare the same models from pre-computed PSIS-LOO results and computing
+[`BootstrappedPseudoBMA`](@ref) weights:
+
+```jldoctest compare; setup = :(using Random; Random.seed!(23))
+julia> elpd_results = mc.elpd_result;
+
+julia> compare(elpd_results; weights_method=BootstrappedPseudoBMA())
+ModelComparisonResult with BootstrappedPseudoBMA weights
+         name  rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
+ non_centered     1   -31        1.4          0               0     0.5  0.9   ⋯
+     centered     2   -31        1.4       0.06           0.067     0.5  0.9   ⋯
+                                                                1 column omitted
 ```
 """
 function compare(

@@ -12,18 +12,22 @@
     R-squared for Bayesian Regression Models, The American Statistician,
     73:3, 307-9,
     DOI: [10.1080/00031305.2018.1549100](https://doi.org/10.1080/00031305.2018.1549100).
+
 # Examples
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("regression1d")
-y_true = idata.observed_data.y
-y_pred = PermutedDimsArray(idata.posterior_predictive.y, (:draw, :chain, :y_dim_0))
-r2_score(y_true, y_pred)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("regression1d");
 
-(r2 = 0.683196996216511, r2_std = 0.036883777654323734)
+julia> y_true = idata.observed_data.y;
+
+julia> y_pred = PermutedDimsArray(idata.posterior_predictive.y, (:draw, :chain, :y_dim_0));
+
+julia> r2_score(y_true, y_pred) |> pairs
+pairs(::NamedTuple) with 2 entries:
+  :r2     => 0.683197
+  :r2_std => 0.0368838
 ```
 """
 function r2_score(y_true, y_pred)
@@ -46,13 +50,14 @@ Compute ``R²`` from `idata`, automatically formatting the predictions to the co
 # Examples
 
 ```jldoctest
-using ArviZ, ArviZExampleData
-idata = load_example_data("regression10d")
-r2_score(idata)
+julia> using ArviZ, ArviZExampleData
 
-# output
+julia> idata = load_example_data("regression10d");
 
-(r2 = 0.998384805658226, r2_std = 0.00010062063385452256)
+julia> r2_score(idata) |> pairs
+pairs(::NamedTuple) with 2 entries:
+  :r2     => 0.998385
+  :r2_std => 0.000100621
 ```
 """
 function r2_score(

@@ -30,16 +30,36 @@ See also: [`AbstractModelWeightsMethod`](@ref), [`compare`](@ref)
     2018. Bayesian Analysis. 13, 3, 917–1007.
     doi: [10.1214/17-BA1091](https://doi.org/10.1214/17-BA1091)
     arXiv: [1704.02030](https://arxiv.org/abs/1704.02030)
+
 # Examples
 
-```jldoctest
-using ArviZ, ArviZExampleData
-models = (
-    centered=load_example_data("centered_eight"),
-    non_centered=load_example_data("non_centered_eight"),
-)
-elpd_results = map(loo, models)
-model_weights(elpd_results);
+Compute [`Stacking`](@ref) weights for two models:
+
+```jldoctest model_weights; filter = [r"└.*"]
+julia> using ArviZ, ArviZExampleData
+
+julia> models = (
+           centered=load_example_data("centered_eight"),
+           non_centered=load_example_data("non_centered_eight"),
+       );
+
+julia> elpd_results = map(loo, models);
+┌ Warning: 1 parameters had Pareto shape values 0.7 < k ≤ 1. Resulting importance sampling estimates are likely to be unstable.
+└ @ PSIS ~/.julia/packages/PSIS/...
+
+julia> model_weights(elpd_results; method=Stacking()) |> pairs
+pairs(::NamedTuple) with 2 entries:
+  :centered     => 5.34175e-19
+  :non_centered => 1.0
+```
+
+Now we compute [`BootstrappedPseudoBMA`](@ref) weights for the same models:
+
+```jldoctest model_weights; setup = :(using Random; Random.seed!(94))
+julia> model_weights(elpd_results; method=BootstrappedPseudoBMA()) |> pairs
+pairs(::NamedTuple) with 2 entries:
+  :centered     => 0.483723
+  :non_centered => 0.516277
 ```
 """
 function model_weights(elpd_results; method::AbstractModelWeightsMethod=Stacking())
