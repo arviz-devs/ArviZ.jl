@@ -84,27 +84,9 @@ export from_netcdf, to_netcdf
 ## Data
 export from_mcmcchains, from_samplechains
 
-## rcParams
-export rcParams, with_rc_context
-
-const _min_arviz_version = v"0.13.0"
-const arviz = PyNULL()
-const xarray = PyNULL()
-const pandas = PyNULL()
-const _rcParams = PyNULL()
 const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
-const SUPPORTED_GROUPS = Symbol[]
-const SUPPORTED_GROUPS_DICT = Dict{Symbol,Int}()
-
-include("setup.jl")
-
-# Load ArviZ once at precompilation time for docstringS
-copy!(arviz, import_arviz())
-check_needs_update(; update=false)
-const _precompile_arviz_version = arviz_version()
 
 function __init__()
-    initialize_arviz()
     @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
         include("samplechains.jl")
     end
@@ -112,7 +94,6 @@ function __init__()
         import .MCMCChains: Chains, sections
         include("mcmcchains.jl")
     end
-    return nothing
 end
 
 include("utils.jl")
