@@ -87,7 +87,7 @@ export PSIS, PSISResult, psis, psis!
 export elpd_estimates, information_criterion, loo, waic
 export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
 export ModelComparisonResult, compare
-export summarystats, hdi, hdi!, kde, loo_pit, r2_score
+export hdi, hdi!, loo_pit, r2_score
 
 ## Diagnostics
 export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
