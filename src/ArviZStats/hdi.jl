@@ -42,8 +42,10 @@ julia> using ArviZ
 
 julia> x = randn(2_000);
 
-julia> hdi(x; prob=0.83)
-(lower = -1.3826605224220527, upper = 1.259817149822839)
+julia> hdi(x; prob=0.83) |> pairs
+pairs(::NamedTuple) with 2 entries:
+  :lower => -1.38266
+  :upper => 1.25982
 ```
 
 We can also calculate the HDI for a 3-dimensional array of samples:
