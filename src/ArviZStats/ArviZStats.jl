@@ -1,6 +1,6 @@
 module ArviZStats
 
-using ArviZ: ArviZ, arviz, @forwardfun
+using ArviZ: ArviZ
 using DataInterpolations: DataInterpolations
 using DimensionalData: DimensionalData, Dimensions
 using Distributions: Distributions
@@ -15,7 +15,6 @@ using Optim: Optim
 using PrettyTables: PrettyTables
 using Printf: Printf
 using PSIS: PSIS, PSISResult, psis, psis!
-using PyCall: PyCall
 using Random: Random
 using Setfield: Setfield
 using Statistics: Statistics

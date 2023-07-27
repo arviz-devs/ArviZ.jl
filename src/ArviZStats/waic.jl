@@ -114,26 +114,3 @@ function _waic(log_like, dims=(1, 2))
 
     return WAICResult(estimates, pointwise)
 end
-
-function ArviZ.topandas(::Val{:ELPDData}, d::WAICResult)
-    estimates = elpd_estimates(d)
-    pointwise = elpd_estimates(d; pointwise=true)
-    ds = ArviZ.convert_to_dataset((waic_i=pointwise.elpd,))
-    pyds = PyCall.PyObject(ds)
-    entries = (
-        elpd_waic=estimates.elpd,
-        se=estimates.elpd_mcse,
-        p_waic=estimates.p,
-        n_samples="unknown",
-        n_data_points=length(pointwise.elpd),
-        warning=false,
-        waic_i=pyds.waic_i,
-        scale="log",
-    )
-    return PyCall.pycall(
-        ArviZ.arviz.stats.ELPDData,
-        PyCall.PyObject;
-        data=values(entries),
-        index=keys(entries),
-    )
-end
