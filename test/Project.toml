@@ -1,6 +1,5 @@
 [deps]
 ArviZExampleData = "2f96bb34-afd9-46ae-bcd0-9b2d4372fe3c"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
@@ -24,7 +23,6 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 ArviZExampleData = "0.1.5"
-DataFrames = "0.20, 0.21, 0.22, 1.0"
 DimensionalData = "0.20, 0.21, 0.22, 0.23, 0.24"
 Distributions = "0.25"
 FiniteDifferences = "0.12"

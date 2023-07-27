@@ -3,7 +3,6 @@ module ArviZ
 using Base: @__doc__
 using Requires
 using REPL
-using DataFrames
 using OrderedCollections: OrderedDict
 using DimensionalData: DimensionalData, Dimensions
 using LogExpFunctions: logsumexp
