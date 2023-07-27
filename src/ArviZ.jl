@@ -93,7 +93,5 @@ end
 include("utils.jl")
 include("ArviZStats/ArviZStats.jl")
 using .ArviZStats
-using .ArviZStats: summary
-
 
 end # module
