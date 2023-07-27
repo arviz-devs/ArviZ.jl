@@ -116,8 +116,6 @@ function __init__()
 end
 
 include("utils.jl")
-include("xarray.jl")
-
 include("ArviZStats/ArviZStats.jl")
 using .ArviZStats
 using .ArviZStats: summary
