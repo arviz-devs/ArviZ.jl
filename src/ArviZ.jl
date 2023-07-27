@@ -1,4 +1,3 @@
-__precompile__()
 module ArviZ
 
 using Base: @__doc__
@@ -6,10 +5,6 @@ using Requires
 using REPL
 using DataFrames
 using OrderedCollections: OrderedDict
-
-using PyCall
-using Conda
-using PyPlot
 using DimensionalData: DimensionalData, Dimensions
 using LogExpFunctions: logsumexp
 
@@ -31,7 +26,6 @@ import Base.Docs: getdoc
 using StatsBase: StatsBase
 import StatsBase: summarystats
 import Markdown: @doc_str
-import PyCall: PyObject
 
 using InferenceObjects
 import InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
