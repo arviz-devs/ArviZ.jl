@@ -6,7 +6,6 @@ on:
   pull_request:
 
 env:
-  PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
   CMDSTAN_VERSION: "2.25.0"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
   JULIA_NUM_THREADS: 2
@@ -18,12 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
-      - name: Cache CmdStan
-        id: cache-cmdstan
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.CMDSTAN_PATH }}
-          key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
+      - uses: julia-actions/cache@v1
       - name: Download and build CmdStan
         if: steps.cache-cmdstan.outputs.cache-hit != 'true'
         run: |
@@ -32,14 +26,6 @@ jobs:
           make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
         shell: bash
       - uses: julia-actions/julia-buildpkg@latest
-      - name: Setup Conda
-        run: |
-          using Pkg
-          Pkg.instantiate()
-          using Conda
-          # https://discourse.julialang.org/t/conda-not-installing-matplotlib-for-pyplot/96813/2
-          Conda.add("conda==23.1.0")
-        shell: julia --color=yes --project {0}
       - uses: julia-actions/julia-docdeploy@v1
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl

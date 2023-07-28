@@ -7,9 +7,6 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
-env:
-  PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
-
 jobs:
   test:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
@@ -17,11 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        julia-version: ["1"]
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        include:
-          - julia-version: "1.6"
-            os: ubuntu-latest
+        julia-version: ["1", "1.6"]
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v2
@@ -41,34 +35,8 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
           arch: x64
-      - name: Cache Julia artifacts
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-artifacts
-        with:
-          path: ~/.julia/artifacts
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-test-${{ env.cache-name }}-
-            ${{ runner.os }}-test-
-            ${{ runner.os }}-
-      - name: Install wget for windows
-        if: matrix.os == 'windows-latest'
-        uses: crazy-max/ghaction-chocolatey@v2
-        with:
-          args: install wget
+      - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@latest
-      - name: Install ArviZ dependencies
-        run: |
-          using Pkg
-          Pkg.instantiate()
-          using Conda
-          # https://discourse.julialang.org/t/conda-not-installing-matplotlib-for-pyplot/96813/2
-          Conda.add("conda==23.1.0")
-          using ArviZ
-          ArviZ.initialize_arviz()
-          ArviZ.initialize_pandas()
-        shell: julia --color=yes --project {0}
       - uses: julia-actions/julia-runtest@latest
       - uses: julia-actions/julia-processcoverage@v1
       - uses: codecov/codecov-action@v1

@@ -59,10 +59,8 @@ makedocs(;
             "Working with `InferenceData`" => "working_with_inference_data.md",
             "Creating custom plots" => "creating_custom_plots.md",
         ],
-        "Example Gallery" => ["Matplotlib" => "mpl_examples.md"],
         "API" => [
             hide("api/index.md"),
-            "Plots" => "api/plots.md",
             "Stats" => "api/stats.md",
             "Diagnostics" => "api/diagnostics.md",
             "Data" => "api/data.md",
