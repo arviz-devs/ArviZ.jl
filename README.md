@@ -2,7 +2,7 @@
 <img src="https://raw.githubusercontent.com/arviz-devs/arviz-project/main/arviz_logos/ArviZ_white.png#gh-dark-mode-only" width=200></img>
 
 [![Docs](https://img.shields.io/badge/docs-ArviZ-blue.svg)](https://julia.arviz.org/ArviZ)
-[![CI](https://github.com/arviz-devs/ArviZ.jl/workflows/CI/badge.svg)](https://github.com/arviz-devs/ArviZ.jl/actions/workflows/ci.yml?query=branch%3Amain)
+[![CI](https://github.com/arviz-devs/ArviZ.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/arviz-devs/ArviZ.jl/actions/workflows/ci.yml)
 [![codecov.io](https://codecov.io/github/arviz-devs/ArviZ.jl/coverage.svg?branch=main)](https://codecov.io/github/arviz-devs/ArviZ.jl?branch=main)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
