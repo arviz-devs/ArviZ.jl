@@ -1,7 +1,6 @@
 module ArviZ
 
 using Base: @__doc__
-using Requires
 using REPL
 using OrderedCollections: OrderedDict
 using DimensionalData: DimensionalData, Dimensions
@@ -77,6 +76,7 @@ export from_netcdf, to_netcdf
 ## Conversions
 export from_mcmcchains, from_samplechains
 
+const EXTENSIONS_SUPPORTED = isdefined(Base, :get_extension)
 const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
 
 include("utils.jl")
@@ -84,7 +84,11 @@ include("ArviZStats/ArviZStats.jl")
 using .ArviZStats
 
 include("conversions.jl")
-@static if !isdefined(Base, :isdefined)
+
+if !EXTENSIONS_SUPPORTED
+    using Requires: @require
+end
+@static if !EXTENSIONS_SUPPORTED
     function __init__()
         @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
             include("../ext/ArviZSampleChainsExt.jl")
