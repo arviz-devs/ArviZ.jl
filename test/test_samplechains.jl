@@ -77,13 +77,13 @@ end
 
         multichain = samplechains_dynamichmc_sample(4, 10)
         idata = convert_to_inference_data(multichain)
-        @test ArviZ.groupnames(idata) === (:posterior, :sample_stats)
+        @test InferenceObjects.groupnames(idata) === (:posterior, :sample_stats)
         @test issubset(expected_stats_vars, keys(idata.sample_stats))
         @test size(idata.posterior.μ) == (10, 4, 2, 3)
         @test size(idata.posterior.σ) == (10, 4)
 
         idata = convert_to_inference_data(multichain; group=:prior)
-        @test ArviZ.groupnames(idata) === (:prior, :sample_stats_prior)
+        @test InferenceObjects.groupnames(idata) === (:prior, :sample_stats_prior)
         @test issubset(expected_stats_vars, keys(idata.sample_stats_prior))
     end
 end

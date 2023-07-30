@@ -23,7 +23,7 @@ end
 function test_chains_data(chns, idata, group, names=names(chns); coords=(;), dims=(;))
     ndraws, nvars, nchains = size(chns)
     @test idata isa InferenceData
-    @test group in ArviZ.groupnames(idata)
+    @test group in InferenceObjects.groupnames(idata)
     ds = idata[group]
     for name in names
         @test name in keys(ds)
@@ -31,7 +31,7 @@ function test_chains_data(chns, idata, group, names=names(chns); coords=(;), dim
         s = (x -> length(get(coords, x, ()))).(dim)
         @test size(ds[name]) == (ndraws, nchains, s...)
     end
-    @test ArviZ.attributes(ds)["inference_library"] == "MCMCChains"
+    @test InferenceObjects.attributes(ds)["inference_library"] == "MCMCChains"
     return nothing
 end
 
@@ -207,13 +207,13 @@ end
         prior_predictive = randn(nchains, ndraws, 1)
         idata = from_mcmcchains(chns; prior_predictive)
         test_chains_data(chns, idata, :posterior, names(chns))
-        @test :prior_predictive ∈ ArviZ.groupnames(idata)
+        @test :prior_predictive ∈ InferenceObjects.groupnames(idata)
         @test idata.prior_predictive.x ≈ prior_predictive
 
         prior_predictive = makechains(1, ndraws, nchains)
         idata = from_mcmcchains(chns; prior_predictive)
         test_chains_data(chns, idata, :posterior, names(chns))
-        @test :prior_predictive ∈ ArviZ.groupnames(idata)
+        @test :prior_predictive ∈ InferenceObjects.groupnames(idata)
         @test idata.prior_predictive.var1 ≈
             permutedims(prior_predictive.value, (:var, :iter, :chain))[:var1, :, :]
     end
