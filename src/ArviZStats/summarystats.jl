@@ -119,12 +119,12 @@ SummaryStatistics
  tau                      4.12   3.1   0.896     9.67
 ```
 """
-function summarystats(
+function StatsBase.summarystats(
     data::InferenceObjects.InferenceData; group::Symbol=:posterior, kwargs...
 )
     return summarystats(data[group]; kwargs...)
 end
-function summarystats(
+function StatsBase.summarystats(
     data::InferenceObjects.Dataset; return_type::Type=SummaryStats, kwargs...
 )
     return _summarize(return_type, data; kwargs...)
@@ -222,19 +222,4 @@ function _indices_to_name(name, dims, compact)
         end
     end
     return "$name[" * join(elements, ',') * "]"
-end
-
-"""
-    summarystats(data::InferenceData; group=:posterior, kwargs...)
-    summarystats(data::Dataset; kwargs...)
-
-Compute summary statistics on `data`.
-
-These methods simply forward to [`summarize`](@ref). See that docstring for details.
-"""
-function StatsBase.summarystats(data::InferenceObjects.InferenceData; kwargs...)
-    return summarize(data; kwargs...)
-end
-function StatsBase.summarystats(data::InferenceObjects.Dataset; kwargs...)
-    return summarize(data; kwargs...)
 end
