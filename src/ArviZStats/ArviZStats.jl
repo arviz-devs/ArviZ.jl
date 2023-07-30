@@ -18,7 +18,7 @@ using PSIS: PSIS, PSISResult, psis, psis!
 using Random: Random
 using Setfield: Setfield
 using Statistics: Statistics
-using StatsBase: StatsBase
+using StatsBase: StatsBase, summarystats
 using Tables: Tables
 using TableTraits: TableTraits
 
@@ -32,6 +32,9 @@ export elpd_estimates, information_criterion, loo, waic
 # Model weighting and comparison
 export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
 export ModelComparisonResult, compare
+
+# Summary statistics
+export SummaryStats, summarystats
 
 # Others
 export hdi, hdi!, loo_pit, r2_score
@@ -50,5 +53,6 @@ include("model_weights.jl")
 include("compare.jl")
 include("loo_pit.jl")
 include("r2_score.jl")
+include("summarystats.jl")
 
 end  # module

@@ -22,7 +22,6 @@ import Base:
     +
 import Base.Docs: getdoc
 using StatsBase: StatsBase
-import StatsBase: summarystats
 import Markdown: @doc_str
 
 using InferenceObjects
@@ -48,6 +47,7 @@ export PSIS, PSISResult, psis, psis!
 export elpd_estimates, information_criterion, loo, waic
 export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
 export ModelComparisonResult, compare
+export SummaryStats, summarystats
 export hdi, hdi!, loo_pit, r2_score
 
 ## Diagnostics
