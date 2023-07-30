@@ -30,7 +30,7 @@ using InferenceObjects
 import InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
 # internal functions temporarily used/extended here
 using InferenceObjects:
-    attributes, recursive_stack, groupnames, groups, hasgroup, rekey, setattribute!
+    attributes, recursive_stack, groupnames, groups, hasgroup, setattribute!
 import InferenceObjects: namedtuple_of_arrays
 using InferenceObjects: from_netcdf, to_netcdf
 

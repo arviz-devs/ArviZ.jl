@@ -224,4 +224,17 @@ function from_mcmcchains(
     return all_idata
 end
 
+# adapted from InferenceObjects.jl
+rekey(d, keymap) = Dict(get(keymap, k, k) => d[k] for k in keys(d))
+function rekey(d::NamedTuple, keymap)
+    new_keys = map(k -> get(keymap, k, k), keys(d))
+    return NamedTuple{new_keys}(values(d))
+end
+function rekey(data::InferenceObjects.InferenceData, keymap)
+    groups_old = InferenceObjects.groups(data)
+    names_new = map(k -> get(keymap, k, k), propertynames(groups_old))
+    groups_new = NamedTuple{names_new}(Tuple(groups_old))
+    return InferenceObjects.InferenceData(groups_new)
+end
+
 end  # module
