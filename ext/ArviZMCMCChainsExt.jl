@@ -1,3 +1,7 @@
+module ArviZMCMCChainsExt
+
+import .MCMCChains: Chains, sections
+
 const turing_key_map = Dict(
     :hamiltonian_energy => :energy,
     :hamiltonian_energy_error => :energy_error,
@@ -269,3 +273,5 @@ function from_mcmcchains(
 
     return all_idata
 end
+
+end  # module

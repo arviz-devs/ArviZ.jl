@@ -85,7 +85,7 @@ function __init__()
     end
     @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin
         import .MCMCChains: Chains, sections
-        include("mcmcchains.jl")
+        include("../ext/ArviZMCMCChainsExt.jl")
     end
 end
 
