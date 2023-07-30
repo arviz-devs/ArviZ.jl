@@ -63,12 +63,12 @@ function varnames_locs(loc_names)
     return NamedTuple(vars_to_locs)
 end
 
-function attributes_dict(chns::Chains)
+function attributes_dict(chns::MCMCChains.Chains)
     info = Base.structdiff(chns.info, NamedTuple{(:hashedsummary,)})
     return Dict{String,Any}((string(k), v) for (k, v) in pairs(info))
 end
 
-function section_namedtuple(chns::Chains, section)
+function section_namedtuple(chns::MCMCChains.Chains, section)
     ndraws, _, nchains = size(chns)
     loc_names = chns.name_map[section]
     vars_to_locs = varnames_locs(loc_names)
@@ -78,7 +78,7 @@ function section_namedtuple(chns::Chains, section)
         ndim = length(sizes)
         # NOTE: slicing specific entries from AxisArrays does not preserve order
         # https://github.com/JuliaArrays/AxisArrays.jl/issues/182
-        oldarr = replacemissing(permutedims(chns.value[:, loc_names, :], (1, 3, 2)))
+        oldarr = ArviZ.replacemissing(permutedims(chns.value[:, loc_names, :], (1, 3, 2)))
         if iszero(ndim)
             arr = dropdims(oldarr; dims=3)
         else
@@ -94,27 +94,29 @@ function section_namedtuple(chns::Chains, section)
 end
 
 function chains_to_namedtuple(
-    chns::Chains; ignore=(), section=:parameters, rekey_fun=identity
+    chns::MCMCChains.MCMCChains.Chains; ignore=(), section=:parameters, rekey_fun=identity
 )
-    section in sections(chns) || return (;)
+    section in MCMCChains.sections(chns) || return (;)
     chns_data = section_namedtuple(chns, section)
     chns_data_return = NamedTuple{filter(∉(ignore), keys(chns_data))}(chns_data)
     return rekey_fun(chns_data_return)
 end
 
 """
-    convert_to_inference_data(obj::Chains; group = :posterior, kwargs...) -> InferenceData
+    convert_to_inference_data(obj::MCMCChains.Chains; group = :posterior, kwargs...) -> InferenceData
 
 Convert the chains `obj` to an [`InferenceData`](@ref) with the specified `group`.
 
 Remaining `kwargs` are forwarded to [`from_mcmcchains`](@ref).
 """
-function convert_to_inference_data(chns::Chains; group::Symbol=:posterior, kwargs...)
-    group === :posterior && return from_mcmcchains(chns; kwargs...)
-    return from_mcmcchains(; group => chns, kwargs...)
+function InferenceObjects.convert_to_inference_data(
+    chns::MCMCChains.Chains; group::Symbol=:posterior, kwargs...
+)
+    group === :posterior && return ArviZ.from_mcmcchains(chns; kwargs...)
+    return ArviZ.from_mcmcchains(; group => chns, kwargs...)
 end
 
-function from_mcmcchains(
+function ArviZ.from_mcmcchains(
     posterior,
     posterior_predictive,
     predictions,
@@ -130,13 +132,13 @@ function from_mcmcchains(
         post_data = nothing
         stats_data = nothing
     else
-        post_data = convert_to_eltypes(chains_to_namedtuple(posterior), eltypes)
+        post_data = ArviZ.convert_to_eltypes(chains_to_namedtuple(posterior), eltypes)
         stats_data = chains_to_namedtuple(posterior; section=:internals, rekey_fun)
-        stats_data = enforce_stat_eltypes(stats_data)
-        stats_data = convert_to_eltypes(stats_data, (; is_accept=Bool))
+        stats_data = ArviZ.enforce_stat_eltypes(stats_data)
+        stats_data = ArviZ.convert_to_eltypes(stats_data, (; is_accept=Bool))
     end
 
-    all_idata = InferenceData()
+    all_idata = InferenceObjects.InferenceData()
     for (group, group_data) in [
         :posterior_predictive => posterior_predictive,
         :predictions => predictions,
@@ -152,18 +154,22 @@ function from_mcmcchains(
                 post_data
             )
         end
-        group_dataset = if group_data isa Chains
-            convert_to_dataset(group_data; library, eltypes, kwargs...)
+        group_dataset = if group_data isa MCMCChains.Chains
+            InferenceObjects.convert_to_dataset(group_data; library, eltypes, kwargs...)
         else
-            convert_to_dataset(group_data; library, kwargs...)
+            InferenceObjects.convert_to_dataset(group_data; library, kwargs...)
         end
-        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
+        all_idata = merge(
+            all_idata, InferenceObjects.InferenceData(; group => group_dataset)
+        )
     end
-    post_idata = from_namedtuple(post_data; sample_stats=stats_data, library, kwargs...)
+    post_idata = ArviZ.from_namedtuple(
+        post_data; sample_stats=stats_data, library, kwargs...
+    )
     all_idata = merge(all_idata, post_idata)
     return all_idata
 end
-function from_mcmcchains(
+function ArviZ.from_mcmcchains(
     posterior=nothing;
     posterior_predictive=nothing,
     predictions=nothing,
@@ -177,7 +183,7 @@ function from_mcmcchains(
     eltypes=(;),
     kwargs...,
 )
-    all_idata = from_mcmcchains(
+    all_idata = ArviZ.from_mcmcchains(
         posterior,
         posterior_predictive,
         predictions,
@@ -188,7 +194,7 @@ function from_mcmcchains(
     )
 
     if prior !== nothing
-        pre_prior_idata = convert_to_inference_data(
+        pre_prior_idata = InferenceObjects.convert_to_inference_data(
             prior; posterior_predictive=prior_predictive, library, eltypes, kwargs...
         )
         prior_idata = rekey(
@@ -201,18 +207,20 @@ function from_mcmcchains(
         )
         all_idata = merge(all_idata, prior_idata)
     elseif prior_predictive !== nothing
-        if prior_predictive isa Chains
-            pre_prior_predictive_idata = convert_to_inference_data(
+        if prior_predictive isa MCMCChains.Chains
+            pre_prior_predictive_idata = InferenceObjects.convert_to_inference_data(
                 prior_predictive; library, eltypes, kwargs...
             )
         else
-            pre_prior_predictive_idata = convert_to_inference_data(
+            pre_prior_predictive_idata = InferenceObjects.convert_to_inference_data(
                 prior_predictive; library, kwargs...
             )
         end
         all_idata = merge(
             all_idata,
-            InferenceData(; prior_predictive=pre_prior_predictive_idata.posterior),
+            InferenceObjects.InferenceData(;
+                prior_predictive=pre_prior_predictive_idata.posterior
+            ),
         )
     end
 
@@ -222,9 +230,13 @@ function from_mcmcchains(
         :predictions_constant_data => predictions_constant_data,
     ]
         group_data === nothing && continue
-        group_data = convert_to_eltypes(group_data, eltypes)
-        group_dataset = convert_to_dataset(group_data; library, default_dims=(), kwargs...)
-        all_idata = merge(all_idata, InferenceData(; group => group_dataset))
+        group_data = ArviZ.convert_to_eltypes(group_data, eltypes)
+        group_dataset = ArviZ.convert_to_dataset(
+            group_data; library, default_dims=(), kwargs...
+        )
+        all_idata = merge(
+            all_idata, InferenceObjects.InferenceData(; group => group_dataset)
+        )
     end
 
     return all_idata
