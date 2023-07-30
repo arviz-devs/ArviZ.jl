@@ -1,6 +1,12 @@
 module ArviZMCMCChainsExt
 
-import .MCMCChains: Chains, sections
+if isdefined(Base, :get_extension)
+    using ArviZ: ArviZ, InferenceObjects
+    using MCMCChains: MCMCChains
+else
+    using ..ArviZ: ArviZ, InferenceObjects
+    using ..MCMCChains: MCMCChains
+end
 
 const turing_key_map = Dict(
     :hamiltonian_energy => :energy,
