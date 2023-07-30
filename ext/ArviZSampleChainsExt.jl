@@ -1,3 +1,5 @@
+module ArviZSampleChainsExt
+
 using .SampleChains: SampleChains
 using .SampleChains.TupleVectors: TupleVector
 
@@ -127,3 +129,5 @@ function convert_to_inference_data(
     group === :posterior && return from_samplechains(chain; kwargs...)
     return from_samplechains(; group => chain, kwargs...)
 end
+
+end  # module
