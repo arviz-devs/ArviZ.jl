@@ -4,6 +4,13 @@
 Pages = ["stats.md"]
 ```
 
+## Summary statistics
+
+```@docs
+SummaryStats
+summarystats
+```
+
 ## General statistics
 
 ```@docs
