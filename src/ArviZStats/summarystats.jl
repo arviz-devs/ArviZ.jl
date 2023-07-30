@@ -238,4 +238,3 @@ end
 function StatsBase.summarystats(data::InferenceObjects.Dataset; kwargs...)
     return summarize(data; kwargs...)
 end
-
