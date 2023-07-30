@@ -1,7 +1,6 @@
 module ArviZ
 
 using Base: @__doc__
-using Requires
 using REPL
 using OrderedCollections: OrderedDict
 using DimensionalData: DimensionalData, Dimensions
@@ -27,12 +26,6 @@ import StatsBase: summarystats
 import Markdown: @doc_str
 
 using InferenceObjects
-import InferenceObjects: convert_to_inference_data, namedtuple_of_arrays
-# internal functions temporarily used/extended here
-using InferenceObjects:
-    attributes, recursive_stack, groupnames, groups, hasgroup, rekey, setattribute!
-import InferenceObjects: namedtuple_of_arrays
-using InferenceObjects: from_netcdf, to_netcdf
 
 using MCMCDiagnosticTools:
     MCMCDiagnosticTools,
@@ -74,23 +67,33 @@ export InferenceObjects,
 ## NetCDF I/O
 export from_netcdf, to_netcdf
 
-## Data
+## Conversions
 export from_mcmcchains, from_samplechains
 
+const EXTENSIONS_SUPPORTED = isdefined(Base, :get_extension)
 const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
-
-function __init__()
-    @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
-        include("samplechains.jl")
-    end
-    @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin
-        import .MCMCChains: Chains, sections
-        include("mcmcchains.jl")
-    end
-end
 
 include("utils.jl")
 include("ArviZStats/ArviZStats.jl")
 using .ArviZStats
+
+include("conversions.jl")
+
+if !EXTENSIONS_SUPPORTED
+    using Requires: @require
+end
+@static if !EXTENSIONS_SUPPORTED
+    function __init__()
+        @require SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e" begin
+            include("../ext/ArviZSampleChainsExt.jl")
+        end
+        @require SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4" begin
+            include("../ext/ArviZSampleChainsDynamicHMCExt.jl")
+        end
+        @require MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d" begin
+            include("../ext/ArviZMCMCChainsExt.jl")
+        end
+    end
+end
 
 end # module
