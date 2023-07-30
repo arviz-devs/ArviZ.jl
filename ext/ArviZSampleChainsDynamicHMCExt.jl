@@ -1,9 +1,16 @@
 module ArviZSampleChainsDynamicHMCExt
 
-using ..SampleChains: SampleChains
-using ..SampleChainsDynamicHMC: SampleChainsDynamicHMC
+if isdefined(Base, :get_extension)
+    using ArviZ
+    using SampleChains: SampleChains
+    using SampleChainsDynamicHMC: SampleChainsDynamicHMC
+else
+    using ..ArviZ
+    using ..SampleChains: SampleChains
+    using ..SampleChainsDynamicHMC: SampleChainsDynamicHMC
+end
 
-function _samplechains_info(chain::SampleChainsDynamicHMC.DynamicHMCChain)
+function ArviZ._samplechains_info(chain::SampleChainsDynamicHMC.DynamicHMCChain)
     info = SampleChains.info(chain)
     termination = info.termination
     tree_stats = (

@@ -47,3 +47,22 @@ as it can be passed to [`convert_to_inference_data`](@ref).
 - `InferenceData`: The data with groups corresponding to the provided data
 """
 function from_mcmcchains end
+
+"""
+    from_samplechains(
+        posterior=nothing;
+        prior=nothing,
+        library=SampleChains,
+        kwargs...,
+    ) -> InferenceData
+
+Convert SampleChains samples to an `InferenceData`.
+
+Either `posterior` or `prior` may be a `SampleChains.AbstractChain` or
+`SampleChains.MultiChain` object.
+
+For descriptions of remaining `kwargs`, see [`from_namedtuple`](@ref).
+"""
+function from_samplechains end
+
+function _samplechains_info end
