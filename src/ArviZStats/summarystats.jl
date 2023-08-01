@@ -114,8 +114,8 @@ Compute summary statistics and diagnostics on the `data`.
 
   - `return_type::Type`: The type of object to return. Valid options are [`Dataset`](@ref)
   and [`SummaryStats`](@ref). Defaults to `SummaryStats`.
-  - `hdi_prob::Real`: The value of the `prob` argument to [`hdi`](@ref) used to compute the
-  highest density interval. Defaults to $(HDI_DEFAULT_PROB).
+  - `prob_interval::Real`: The value of the `prob` argument to [`hdi`](@ref) used to compute the
+  highest density interval. Defaults to $(DEFAULT_INTERVAL_PROB).
   - `metric_dim`: The dimension name or type to use for the computed metrics. Only specify
   if `return_type` is `Dataset`. Defaults to `Dim{_:metric}`.
   - `compact_names::Bool`: Whether to use compact names for the variables. Only used if
@@ -171,14 +171,15 @@ function _summarize(
     ::Type{InferenceObjects.Dataset},
     data::InferenceObjects.Dataset;
     kind::Symbol=:both,
-    hdi_prob::Real=HDI_DEFAULT_PROB,
+    prob_interval::Real=DEFAULT_INTERVAL_PROB,
     metric_dim=Dimensions.Dim{:metric},
 )
     dims = InferenceObjects.DEFAULT_SAMPLE_DIMS
     stats = [
         "mean" => (data -> dropdims(Statistics.mean(data; dims); dims)),
         "std" => (data -> dropdims(Statistics.std(data; dims); dims)),
-        _hdi_prob_to_strings(hdi_prob) => (data -> hdi(data; prob=hdi_prob)),
+        _interval_prob_to_strings("hdi", prob_interval) =>
+            (data -> hdi(data; prob=prob_interval)),
     ]
     diagnostics = [
         "mcse_mean" => (data -> MCMCDiagnosticTools.mcse(data; kind=Statistics.mean)),
@@ -215,13 +216,13 @@ function _summarize(
     return SummaryStats(nts)
 end
 
-function _hdi_prob_to_strings(prob; digits=2)
+function _interval_prob_to_strings(interval_type, prob; digits=2)
     α = (1 - prob) / 2
     perc_lower = string(round(100 * α; digits))
     perc_upper = string(round(100 * (1 - α); digits))
     return map((perc_lower, perc_upper)) do s
         s = replace(s, r"\.0+$" => "")
-        return "hdi_$s%"
+        return "$(interval_type)_$s%"
     end
 end
 
