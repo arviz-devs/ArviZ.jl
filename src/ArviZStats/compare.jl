@@ -54,9 +54,9 @@ julia> mc = compare(models)
 ┌ Warning: 1 parameters had Pareto shape values 0.7 < k ≤ 1. Resulting importance sampling estimates are likely to be unstable.
 └ @ PSIS ~/.julia/packages/PSIS/...
 ModelComparisonResult with Stacking weights
-         name  rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
- non_centered     1   -31        1.4          0               0     1.0  0.9   ⋯
-     centered     2   -31        1.4       0.06           0.067     0.0  0.9   ⋯
+ name          rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
+ non_centered     1   -31        1.4       0              0.0       1.0  0.9   ⋯
+ centered         2   -31        1.4       0.06           0.067     0.0  0.9   ⋯
                                                                 1 column omitted
 ```
 
@@ -68,9 +68,9 @@ julia> elpd_results = mc.elpd_result;
 
 julia> compare(elpd_results; weights_method=BootstrappedPseudoBMA())
 ModelComparisonResult with BootstrappedPseudoBMA weights
-         name  rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
- non_centered     1   -31        1.4          0               0     0.5  0.9   ⋯
-     centered     2   -31        1.4       0.06           0.067     0.5  0.9   ⋯
+ name          rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
+ non_centered     1   -31        1.4       0              0.0      0.52  0.9   ⋯
+ centered         2   -31        1.4       0.06           0.067    0.48  0.9   ⋯
                                                                 1 column omitted
 ```
 """
@@ -144,45 +144,47 @@ struct ModelComparisonResult{E,N,R,W,ER,M}
     weights_method::M
 end
 
-function _print_comparison_results(
-    io::IO, ::MIME"text/plain", r::ModelComparisonResult; sigdigits_se=2
-)
+function Base.show(io::IO, ::MIME"text/plain", r::ModelComparisonResult; sigdigits_se=2)
+    weights_method_name = _typename(r.weights_method)
+
     table = Tables.columntable(r)
     cols = Tables.columnnames(table)
-    formatters = function (v, i, j)
-        nm = cols[j]
-        if nm ∈ (:elpd, :elpd_diff, :p)
-            nm_se = Symbol("$(nm)_mcse")
-            v_se = table[nm_se][i]
-            sigdigits = sigdigits_matching_error(v, v_se)
-            return sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
-        elseif nm ∈ (:elpd_mcse, :elpd_diff_mcse, :p_mcse)
-            sigdigits = sigdigits_se
-            return sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
-        elseif nm === :rank
-            return string(v)
-        elseif nm === :weight
-            return sprint(Printf.format, Printf.Format("%.1f"), v)
-        else
-            return string(v)
-        end
+
+    # formatting for columns
+    est_cols = findall(∈((:elpd, :elpd_diff, :p)), cols)
+    se_cols = findall(∈((:elpd_mcse, :elpd_diff_mcse, :p_mcse)), cols)
+    est_formatters = map(est_cols, se_cols) do est_col, se_col
+        ft_printf_sigdigits_matching_se(table[se_col], [est_col])
     end
+    se_formatter = ft_printf_sigdigits(sigdigits_se, se_cols)
+    weights = table.weight
+    digits_weights = ceil(Int, -log10(maximum(weights))) + 1
+    weight_formatter = PrettyTables.ft_printf(
+        "%.$(digits_weights)f", findfirst(==(:weight), cols)
+    )
+    formatters = (est_formatters..., se_formatter, weight_formatter)
+
+    alignment_anchor_regex = Dict(
+        i => [r"\.", r"e", r"^NaN$", r"Inf$"] for
+        (i, (k, v)) in enumerate(pairs(table)) if (eltype(v) <: Real)
+    )
+    alignment = [:l, fill(:r, length(cols) - 1)...]
+    alignment_anchor_fallback = :r
+
     PrettyTables.pretty_table(
         io,
         table;
+        title="ModelComparisonResult with $(weights_method_name) weights",
+        title_crayon=PrettyTables.Crayon(),
         show_subheader=false,
         hlines=:none,
         vlines=:none,
-        formatters,
         newline_at_end=false,
+        formatters,
+        alignment_anchor_regex,
+        alignment,
+        alignment_anchor_fallback,
     )
-    return nothing
-end
-
-function Base.show(io::IO, mime::MIME"text/plain", result::ModelComparisonResult)
-    weights_method_name = _typename(result.weights_method)
-    println(io, "ModelComparisonResult with $(weights_method_name) weights")
-    _print_comparison_results(io, mime, result)
     return nothing
 end
 
