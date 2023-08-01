@@ -118,7 +118,7 @@ Compute summary statistics and diagnostics on the `data`.
   highest density interval. Defaults to $(DEFAULT_INTERVAL_PROB).
   - `metric_dim`: The dimension name or type to use for the computed metrics. Only specify
   if `return_type` is `Dataset`. Defaults to `Dim{_:metric}`.
-  - `compact_names::Bool`: Whether to use compact names for the variables. Only used if
+  - `compact_labels::Bool`: Whether to use compact names for the variables. Only used if
   `return_type` is `SummaryStats`. Defaults to `true`.
   - `kind::Symbol`: Whether to compute just statistics (`:stats`), just diagnostics
   (`:diagnostics`), or both (`:both`). Defaults to `:both`.
@@ -206,12 +206,12 @@ end
 function _summarize(
     ::Type{SummaryStats},
     data::InferenceObjects.Dataset;
-    compact_names::Bool=true,
+    compact_labels::Bool=true,
     kwargs...,
 )
     metric_dim = Dimensions.Dim{:_metric}
     ds = _summarize(InferenceObjects.Dataset, data; metric_dim, kwargs...)
-    row_iter = _flat_iterator(ds, metric_dim; compact_names)
+    row_iter = _flat_iterator(ds, metric_dim; compact_labels)
     nts = Tables.columntable(row_iter)
     return SummaryStats(nts)
 end
@@ -226,7 +226,7 @@ function _interval_prob_to_strings(interval_type, prob; digits=2)
     end
 end
 
-function _flat_iterator(ds, dim; compact_names=true)
+function _flat_iterator(ds, dim; compact_labels=true)
     var_iter = pairs(DimensionalData.layers(ds))
     return Iterators.flatten(
         Iterators.map(var_iter) do (var_name, var)
@@ -236,7 +236,7 @@ function _flat_iterator(ds, dim; compact_names=true)
             indices_iter = DimensionalData.DimKeys(dims_flatten)
             return Iterators.map(indices_iter) do indices
                 (
-                    variable=_indices_to_name(var_name, indices, compact_names),
+                    variable=_indices_to_name(var_name, indices, compact_labels),
                     _arr_to_namedtuple(view(var, indices...))...,
                 )
             end
