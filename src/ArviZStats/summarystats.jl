@@ -184,7 +184,7 @@ function _summarize(
     prob_interval::Real=DEFAULT_INTERVAL_PROB,
     metric_dim=DEFAULT_METRIC_DIM,
 )
-    dims = InferenceObjects.DEFAULT_SAMPLE_DIMS
+    dims = Dimensions.dims(data, InferenceObjects.DEFAULT_SAMPLE_DIMS)
     stats = [
         "mean" => (data -> dropdims(Statistics.mean(data; dims); dims)),
         "std" => (data -> dropdims(Statistics.std(data; dims); dims)),
