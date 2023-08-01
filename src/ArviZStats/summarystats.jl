@@ -46,6 +46,20 @@ function Base.show(
             return sprint(Printf.format, Printf.Format("%.$(sigdigits_default)g"), v)
         end
     end
+
+    # align by decimal point exponent, or beginning of Inf or NaN, if present.
+    # Otherwise, right align, except for variable names
+    # ESS values are special-cased to always be right-aligned, even if Infs or NaNs are present
+    alignment = [:l, fill(:r, length(stats) - 1)...]
+    alignment_anchor_regex = Dict(
+        i => [r"\.", r"e", r"^NaN$", r"Inf$"] for
+        (i, (k, v)) in enumerate(pairs(stats)) if (eltype(v) <: Real && !_is_ess_label(k))
+    )
+    alignment_anchor_fallback = :r
+    alignment_anchor_fallback_override = Dict(
+        i => :r for (i, k) in enumerate(keys(stats)) if _is_ess_label(k)
+    )
+
     kwargs_new = merge(
         (
             title="SummaryStatistics",
@@ -57,6 +71,10 @@ function Base.show(
             alignment=[:l, fill(:r, length(colnames) - 1)...],
             header=["", colnames[2:end]...],
             title_crayon=PrettyTables.Crayon(),
+            alignment,
+            alignment_anchor_regex,
+            alignment_anchor_fallback,
+            alignment_anchor_fallback_override,
         ),
         kwargs,
     )
