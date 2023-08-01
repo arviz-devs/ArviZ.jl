@@ -129,31 +129,34 @@ Compute the summary statistics and diagnostics on posterior draws of the centere
 model:
 
 ```jldoctest summarystats
+julia> using ArviZ, ArviZExampleData
+
 julia> idata = load_example_data("centered_eight");
 
 julia> summarystats(idata.posterior[(:mu, :tau)])
-SummaryStatistics
-      mean  std  hdi_3%  hdi_97%  mcse_mean  mcse_std  ess_tail  ess_bulk  rhat
- mu    4.5  3.5   -1.62     10.7       0.23      0.11       659       241  1.02
- tau   4.1  3.1   0.896     9.67       0.26      0.17        38        67  1.06
+SummaryStats
+      mean  std  hdi_3%  hdi_97%  mcse_mean  mcse_std  ess_tail  ess_bulk  rha ⋯
+ mu    4.5  3.5  -1.62     10.7        0.23      0.11       659       241  1.0 ⋯
+ tau   4.1  3.1   0.896     9.67       0.26      0.17        38        67  1.0 ⋯
+                                                                1 column omitted
 ```
 
 Compute just the statistics on all variables:
 
 ```jldoctest summarystats
 julia> summarystats(idata.posterior; kind=:stats)
-SummaryStatistics
+SummaryStats
                           mean   std  hdi_3%  hdi_97%
- mu                       4.49  3.49   -1.62     10.7
- theta[Choate]            6.46  5.87   -4.56     17.1
- theta[Deerfield]         5.03  4.88   -4.31     14.3
- theta[Phillips Andover]  3.94  5.69   -7.77     13.7
- theta[Phillips Exeter]   4.87  5.01   -4.49     14.7
- theta[Hotchkiss]         3.67  4.96   -6.47     11.7
- theta[Lawrenceville]     3.97  5.19   -7.04     12.2
- theta[St. Paul's]        6.58  5.11   -3.09     16.3
- theta[Mt. Hermon]        4.77  5.74   -5.86       16
- tau                      4.12   3.1   0.896     9.67
+ mu                       4.49  3.49  -1.62     10.7
+ theta[Choate]            6.46  5.87  -4.56     17.1
+ theta[Deerfield]         5.03  4.88  -4.31     14.3
+ theta[Phillips Andover]  3.94  5.69  -7.77     13.7
+ theta[Phillips Exeter]   4.87  5.01  -4.49     14.7
+ theta[Hotchkiss]         3.67  4.96  -6.47     11.7
+ theta[Lawrenceville]     3.97  5.19  -7.04     12.2
+ theta[St. Paul's]        6.58  5.11  -3.09     16.3
+ theta[Mt. Hermon]        4.77  5.74  -5.86     16.0
+ tau                      4.12  3.10   0.896     9.67
 ```
 """
 function StatsBase.summarystats(
