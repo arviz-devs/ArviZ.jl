@@ -344,3 +344,99 @@ function sigdigits_matching_se(x::Real, se::Real; sigdigits_max::Int=7, scale::R
     sigdigits_x = first_digit_x - last_digit_x + 1
     return clamp(sigdigits_x, 0, sigdigits_max)
 end
+
+# format a number with the given number of significant digits
+# - chooses scientific or decimal notation by whichever is most appropriate
+# - shows trailing zeros if significant
+# - removes trailing decimal point if no significant digits after decimal point
+function _printf_with_sigdigits(v::Real, sigdigits)
+    s = sprint(Printf.format, Printf.Format("%#.$(sigdigits)g"), v)
+    return replace(s, r"\.$" => "")
+end
+
+#
+# PrettyTables formatter utility functions
+#
+
+"""
+    ft_printf_sigdigits(sigdigits[, columns])
+
+Use Printf to format the elements in the `columns` to the number of `sigdigits`.
+
+If `sigdigits` is a vector, then columns must be also be a vector with the same number of
+elements.
+If `sigdigits` is a `Real`, and `columns` is not specified (or is empty), then the
+formatting will be applied to the entire table.
+Otherwise, if `sigdigits` is a `Real` and `columns` is a vector, then the elements in the
+columns will be formatted to the number of `sigdigits`.
+"""
+ft_printf_sigdigits(sigdigits::Int) = ft_printf_sigdigits([sigdigits])
+function ft_printf_sigdigits(sigdigits::Int, columns::AbstractVector{Int})
+    return ft_printf_sigdigits([sigdigits for _ in eachindex(columns)], columns)
+end
+function ft_printf_sigdigits(
+    sigdigits::AbstractVector{Int}, columns::AbstractVector{Int}=Int[]
+)
+    lc = length(columns)
+
+    if lc == 0 && (length(sigdigits) != 1)
+        error("If columns is empty, then sigdigits must have only one element.")
+    end
+
+    if lc > 0 && (length(sigdigits) != lc)
+        error(
+            "The vector columns must have the same number of elements of the vector sigdigits.",
+        )
+    end
+
+    if lc == 0
+        return (v, _, _) -> begin
+            v isa Real || return v
+            return _printf_with_sigdigits(v, first(sigdigits))
+        end
+    else
+        return (v, _, j) -> begin
+            v isa Real || return v
+            for (col, sigdigit) in zip(columns, sigdigits)
+                col == j && return _printf_with_sigdigits(v, sigdigit)
+            end
+            return v
+        end
+    end
+end
+
+"""
+    ft_printf_sigdigits_matching_se(se_vals[, columns]; kwargs...)
+
+Use Printf to format the elements in the `columns` to sigdigits based on the standard error
+column in `se_vals`.
+
+All values are formatted with Printf to the number of significant digits determined by
+[`sigdigits_matching_se`](@ref). `kwargs` are forwarded to that function.
+
+`se_vals` must be the same length as any of the columns in the table.
+If `columns` is a non-empty vector, then the formatting is only applied to those columns.
+Otherwise, the formatting is applied to the entire table.
+"""
+function ft_printf_sigdigits_matching_se(
+    se_vals::AbstractVector, columns::AbstractVector{Int}=Int[]; kwargs...
+)
+    if isempty(columns)
+        return (v, i, _) -> begin
+            v isa Real || return v
+            sigdigits = sigdigits_matching_se(v, se_vals[i]; kwargs...)
+            return _printf_with_sigdigits(v, sigdigits)
+        end
+    else
+        return (v, i, j) -> begin
+            v isa Real || return v
+            for col in columns
+                if col == j
+                    sigdigits = sigdigits_matching_se(v, se_vals[i]; kwargs...)
+                    return _printf_with_sigdigits(v, sigdigits)
+                end
+            end
+            return v
+        end
+    end
+end
