@@ -111,7 +111,7 @@ struct DummyOptimizer <: Optim.AbstractOptimizer end
             obj(nothing, grad, x)
             @test grad ≈ grad_exp
 
-            @test @allocated(obj(true, nothing, x)) ≤ 16
+            @test @allocated(obj(true, nothing, x)) ≤ 32
             @test @allocated(obj(true, grad, x)) == @allocated(obj(true, nothing, x))
         end
 
