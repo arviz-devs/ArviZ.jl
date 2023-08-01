@@ -222,9 +222,8 @@ function _summarize(
     kwargs...,
 )
     ds = _summarize(InferenceObjects.Dataset, data; metric_dim, kwargs...)
-    row_iter = _flat_iterator(ds, metric_dim; compact_labels)
-    nts = Tables.columntable(row_iter)
-    return SummaryStats(nts)
+    table = _as_flat_table(ds, metric_dim; compact_labels)
+    return SummaryStats(table)
 end
 
 function _interval_prob_to_strings(interval_type, prob; digits=2)
