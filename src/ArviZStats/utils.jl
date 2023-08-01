@@ -363,42 +363,22 @@ end
 
 Use Printf to format the elements in the `columns` to the number of `sigdigits`.
 
-If `sigdigits` is a vector, then columns must be also be a vector with the same number of
-elements.
 If `sigdigits` is a `Real`, and `columns` is not specified (or is empty), then the
 formatting will be applied to the entire table.
 Otherwise, if `sigdigits` is a `Real` and `columns` is a vector, then the elements in the
 columns will be formatted to the number of `sigdigits`.
 """
-ft_printf_sigdigits(sigdigits::Int) = ft_printf_sigdigits([sigdigits])
-function ft_printf_sigdigits(sigdigits::Int, columns::AbstractVector{Int})
-    return ft_printf_sigdigits([sigdigits for _ in eachindex(columns)], columns)
-end
-function ft_printf_sigdigits(
-    sigdigits::AbstractVector{Int}, columns::AbstractVector{Int}=Int[]
-)
-    lc = length(columns)
-
-    if lc == 0 && (length(sigdigits) != 1)
-        error("If columns is empty, then sigdigits must have only one element.")
-    end
-
-    if lc > 0 && (length(sigdigits) != lc)
-        error(
-            "The vector columns must have the same number of elements of the vector sigdigits.",
-        )
-    end
-
-    if lc == 0
+function ft_printf_sigdigits(sigdigits::Int, columns::AbstractVector{Int}=Int[])
+    if isempty(columns)
         return (v, _, _) -> begin
             v isa Real || return v
-            return _printf_with_sigdigits(v, first(sigdigits))
+            return _printf_with_sigdigits(v, sigdigits)
         end
     else
         return (v, _, j) -> begin
             v isa Real || return v
-            for (col, sigdigit) in zip(columns, sigdigits)
-                col == j && return _printf_with_sigdigits(v, sigdigit)
+            for col in columns
+                col == j && return _printf_with_sigdigits(v, sigdigits)
             end
             return v
         end
