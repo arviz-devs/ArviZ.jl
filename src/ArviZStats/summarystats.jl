@@ -10,6 +10,19 @@ struct SummaryStats{D}
     data::D
 end
 
+# forward key interfaces from its parent
+Base.parent(stats::SummaryStats) = getfield(stats, :data)
+Base.propertynames(stats::SummaryStats) = propertynames(parent(stats))
+Base.getproperty(stats::SummaryStats, nm::Symbol) = getproperty(parent(stats), nm)
+Base.keys(stats::SummaryStats) = keys(parent(stats))
+Base.haskey(stats::SummaryStats, nm::Symbol) = haskey(parent(stats), nm)
+Base.length(stats::SummaryStats) = length(parent(stats))
+Base.getindex(stats::SummaryStats, i::Int) = getindex(parent(stats), i)
+Base.getindex(stats::SummaryStats, nm::Symbol) = getindex(parent(stats), nm)
+function Base.iterate(stats::SummaryStats, i::Int=firstindex(parent(stats)))
+    return iterate(parent(stats), i)
+end
+
 function Base.show(
     io::IO, stats::SummaryStats; sigdigits_se=2, sigdigits_default=3, kwargs...
 )
