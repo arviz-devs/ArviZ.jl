@@ -117,8 +117,6 @@ Compute summary statistics and diagnostics on the `data`.
 
 # Keywords
 
-  - `return_type::Type`: The type of object to return. Valid options are [`Dataset`](@ref)
-    and [`SummaryStats`](@ref). Defaults to `SummaryStats`.
   - `prob_interval::Real`: The value of the `prob` argument to [`hdi`](@ref) used to compute
     the highest density interval. Defaults to $(DEFAULT_INTERVAL_PROB).
   - `return_type::Type`: The type of object to return. Valid options are [`Dataset`](@ref)
