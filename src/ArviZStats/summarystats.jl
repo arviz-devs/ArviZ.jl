@@ -26,26 +26,23 @@ end
 function Base.show(
     io::IO, stats::SummaryStats; sigdigits_se=2, sigdigits_default=3, kwargs...
 )
-    colnames = keys(stats.data)
-    formatters = function (v, i, j)
-        colname = colnames[j]
-        if j == 1
-            return v
-        elseif Symbol("mcse_$colname") ∈ colnames
-            se = stats.data[Symbol("mcse_$colname")][i]
-            sigdigits = sigdigits_matching_error(v, se)
-            sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
-        elseif startswith(string(colname), "mcse")
-            sigdigits = sigdigits_se
-            return sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
-        elseif colname === :rhat
-            return sprint(Printf.format, Printf.Format("%.2f"), v)
-        elseif startswith(string(colname), "ess")
-            return sprint(Printf.format, Printf.Format("%d"), v)
-        else
-            return sprint(Printf.format, Printf.Format("%.$(sigdigits_default)g"), v)
+    # formatting functions for special columns
+    # see https://ronisbr.github.io/PrettyTables.jl/stable/man/formatters/
+    formatters = []
+    for (i, k) in enumerate(keys(stats))
+        mcse_key = Symbol("mcse_$k")
+        if haskey(stats, mcse_key)
+            push!(formatters, ft_printf_sigdigits_matching_se(stats[mcse_key], [i]))
         end
     end
+    mcse_cols = findall(startswith("mcse_") ∘ string, keys(stats))
+    isempty(mcse_cols) || push!(formatters, ft_printf_sigdigits(sigdigits_se, mcse_cols))
+    ess_cols = findall(_is_ess_label, keys(stats))
+    isempty(ess_cols) || push!(formatters, PrettyTables.ft_printf("%d", ess_cols))
+    if haskey(stats, :rhat)
+        push!(formatters, PrettyTables.ft_printf("%.2f", findfirst(==(:rhat), keys(stats))))
+    end
+    push!(formatters, ft_printf_sigdigits(sigdigits_default))
 
     # align by decimal point exponent, or beginning of Inf or NaN, if present.
     # Otherwise, right align, except for variable names
@@ -71,6 +68,7 @@ function Base.show(
             alignment=[:l, fill(:r, length(colnames) - 1)...],
             header=["", colnames[2:end]...],
             title_crayon=PrettyTables.Crayon(),
+            formatters=Tuple(formatters),
             alignment,
             alignment_anchor_regex,
             alignment_anchor_fallback,
