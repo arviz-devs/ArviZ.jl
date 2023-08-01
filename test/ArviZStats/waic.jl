@@ -102,9 +102,8 @@ include("helpers.jl")
         # regression test
         @test sprint(show, "text/plain", waic(idata)) == """
             WAICResult with estimates
-                   Estimate    SE
-             elpd       -31   1.4
-                p       0.9  0.33"""
+             elpd  elpd_mcse    p  p_mcse
+              -31        1.4  0.9    0.33"""
     end
     @testset "agrees with R waic" begin
         if r_loo_installed()

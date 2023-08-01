@@ -71,9 +71,8 @@ julia> reff = ess(log_like; kind=:basic, split_chains=1, relative=true);
 
 julia> loo(log_like; reff)
 PSISLOOResult with estimates
-       Estimate    SE
- elpd       -31   1.4
-    p       0.9  0.34
+ elpd  elpd_mcse    p  p_mcse
+  -31        1.4  0.9    0.34
 
 and PSISResult with 500 draws, 4 chains, and 8 parameters
 Pareto shape (k) diagnostic values:
@@ -103,9 +102,8 @@ julia> idata = load_example_data("centered_eight");
 
 julia> loo(idata)
 PSISLOOResult with estimates
-       Estimate    SE
- elpd       -31   1.4
-    p       0.9  0.34
+ elpd  elpd_mcse    p  p_mcse
+  -31        1.4  0.9    0.34
 
 and PSISResult with 500 draws, 4 chains, and 8 parameters
 Pareto shape (k) diagnostic values:
