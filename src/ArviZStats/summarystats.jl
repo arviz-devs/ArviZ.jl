@@ -86,6 +86,8 @@ function Base.show(
     return nothing
 end
 
+_is_ess_label(k::Symbol) = ((k === :ess) || startswith(string(k), "ess_"))
+
 #### Tables interface as column table
 
 Tables.istable(::Type{<:SummaryStats}) = true
