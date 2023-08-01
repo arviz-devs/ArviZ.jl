@@ -1,3 +1,5 @@
+const DEFAULT_METRIC_DIM = Dimensions.key2dim(:_metric)
+
 """
 $(SIGNATURES)
 
@@ -119,8 +121,10 @@ Compute summary statistics and diagnostics on the `data`.
     and [`SummaryStats`](@ref). Defaults to `SummaryStats`.
   - `prob_interval::Real`: The value of the `prob` argument to [`hdi`](@ref) used to compute
     the highest density interval. Defaults to $(DEFAULT_INTERVAL_PROB).
-  - `metric_dim`: The dimension name or type to use for the computed metrics. Only specify
-    if `return_type` is `Dataset`. Defaults to `Dim{_:metric}`.
+  - `return_type::Type`: The type of object to return. Valid options are [`Dataset`](@ref)
+    and [`SummaryStats`](@ref). Defaults to `SummaryStats`.
+  - `metric_dim`: The dimension name or type to use for the computed metrics. Only used
+    if `return_type` is `Dataset`. Defaults to `$(sprint(show, "text/plain", DEFAULT_METRIC_DIM))`.
   - `compact_labels::Bool`: Whether to use compact names for the variables. Only used if
     `return_type` is `SummaryStats`. Defaults to `true`.
   - `kind::Symbol`: Whether to compute just statistics (`:stats`), just diagnostics
@@ -178,7 +182,7 @@ function _summarize(
     data::InferenceObjects.Dataset;
     kind::Symbol=:both,
     prob_interval::Real=DEFAULT_INTERVAL_PROB,
-    metric_dim=Dimensions.Dim{:metric},
+    metric_dim=DEFAULT_METRIC_DIM,
 )
     dims = InferenceObjects.DEFAULT_SAMPLE_DIMS
     stats = [
@@ -205,17 +209,18 @@ function _summarize(
     metric_vals = map(metrics) do (_, f)
         f(data)
     end
-    metric_names = collect(Iterators.flatten(vcat(map(_astuple ∘ first, metrics))))
-    cat_dim = metric_dim(metric_names)
-    return cat(metric_vals...; dims=cat_dim)::InferenceObjects.Dataset
+    metric_names = collect(Iterators.flatten(map(_astuple ∘ first, metrics)))
+    cat_dim = Dimensions.rebuild(Dimensions.basedims(metric_dim), metric_names)
+    ds = cat(metric_vals...; dims=cat_dim)::InferenceObjects.Dataset
+    return DimensionalData.rebuild(ds; metadata=DimensionalData.NoMetadata(), refdims=dims)
 end
 function _summarize(
     ::Type{SummaryStats},
     data::InferenceObjects.Dataset;
     compact_labels::Bool=true,
+    metric_dim=DEFAULT_METRIC_DIM,
     kwargs...,
 )
-    metric_dim = Dimensions.Dim{:_metric}
     ds = _summarize(InferenceObjects.Dataset, data; metric_dim, kwargs...)
     row_iter = _flat_iterator(ds, metric_dim; compact_labels)
     nts = Tables.columntable(row_iter)
