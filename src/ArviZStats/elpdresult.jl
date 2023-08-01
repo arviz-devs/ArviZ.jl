@@ -17,18 +17,17 @@ function _print_elpd_estimates(
     io::IO, ::MIME"text/plain", r::AbstractELPDResult; sigdigits_se=2
 )
     estimates = elpd_estimates(r)
-    elpd, elpd_mcse = estimates.elpd, estimates.elpd_mcse
-    p, p_mcse = estimates.p, estimates.p_mcse
-    table = (; Estimate=[elpd, p], SE=[elpd_mcse, p_mcse])
-    formatters = function (v, i, j)
-        sigdigits = j == 1 ? sigdigits_matching_error(v, table.SE[i]) : sigdigits_se
-        return sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
-    end
+    table = map(Base.vect, NamedTuple{(:elpd, :elpd_mcse, :p, :p_mcse)}(estimates))
+    formatters = (
+        ft_printf_sigdigits_matching_se(table.elpd_mcse, [1]),
+        ft_printf_sigdigits_matching_se(table.p_mcse, [3]),
+        ft_printf_sigdigits(sigdigits_se),
+    )
+
     PrettyTables.pretty_table(
         io,
         table;
         show_subheader=false,
-        row_labels=["elpd", "p"],
         hlines=:none,
         vlines=:none,
         formatters,
