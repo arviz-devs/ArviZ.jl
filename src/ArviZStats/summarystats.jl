@@ -24,7 +24,12 @@ function Base.iterate(stats::SummaryStats, i::Int=firstindex(parent(stats)))
 end
 
 function Base.show(
-    io::IO, stats::SummaryStats; sigdigits_se=2, sigdigits_default=3, kwargs...
+    io::IO,
+    ::MIME"text/plain",
+    stats::SummaryStats;
+    sigdigits_se=2,
+    sigdigits_default=3,
+    kwargs...,
 )
     # formatting functions for special columns
     # see https://ronisbr.github.io/PrettyTables.jl/stable/man/formatters/
@@ -57,17 +62,17 @@ function Base.show(
         i => :r for (i, k) in enumerate(keys(stats)) if _is_ess_label(k)
     )
 
+    # TODO: highlight bad values in the REPL
+
     kwargs_new = merge(
         (
-            title="SummaryStatistics",
+            title="SummaryStats",
+            title_crayon=PrettyTables.Crayon(),
+            header=["", Iterators.drop(keys(stats), 1)...],  # drop "variable" from header
             show_subheader=false,
             hlines=:none,
             vlines=:none,
-            formatters,
             newline_at_end=false,
-            alignment=[:l, fill(:r, length(colnames) - 1)...],
-            header=["", colnames[2:end]...],
-            title_crayon=PrettyTables.Crayon(),
             formatters=Tuple(formatters),
             alignment,
             alignment_anchor_regex,
@@ -76,7 +81,8 @@ function Base.show(
         ),
         kwargs,
     )
-    PrettyTables.pretty_table(io, stats.data; kwargs_new...)
+    PrettyTables.pretty_table(io, stats; kwargs_new...)
+
     return nothing
 end
 
