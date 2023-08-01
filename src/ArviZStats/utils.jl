@@ -207,24 +207,6 @@ function _smooth_data!(y_interp, interp_method, y, x, x_interp, dims)
     return y_interp
 end
 
-"""
-    sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
-
-Get number of significant digits of `x` so that the last digit of `x` is the first digit of
-`se*scale`.
-"""
-function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
-    (iszero(x) || !isfinite(x) || !isfinite(se) || !isfinite(scale)) && return 0
-    sigdigits_max ≥ 0 || throw(ArgumentError("`sigdigits_max` must be non-negative"))
-    se ≥ 0 || throw(ArgumentError("`se` must be non-negative"))
-    iszero(se) && return sigdigits_max
-    scale > 0 || throw(ArgumentError("`scale` must be positive"))
-    first_digit_x = floor(Int, log10(abs(x)))
-    last_digit_x = floor(Int, log10(se * scale))
-    sigdigits_x = first_digit_x - last_digit_x + 1
-    return clamp(sigdigits_x, 0, sigdigits_max)
-end
-
 Base.@pure _typename(::T) where {T} = T.name.name
 
 _astuple(x) = (x,)
@@ -343,4 +325,22 @@ function _se_log_mean(
     # use delta method to asymptotically map variance of mean to variance of logarithm of mean
     se_log_mean = @. exp(log_var_mean / 2 - log_mean)
     return se_log_mean
+end
+
+"""
+    sigdigits_matching_se(x, se; sigdigits_max=7, scale=2) -> Int
+
+Get number of significant digits of `x` so that the last digit of `x` is the first digit of
+`se*scale`.
+"""
+function sigdigits_matching_se(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
+    (iszero(x) || !isfinite(x) || !isfinite(se) || !isfinite(scale)) && return 0
+    sigdigits_max ≥ 0 || throw(ArgumentError("`sigdigits_max` must be non-negative"))
+    se ≥ 0 || throw(ArgumentError("`se` must be non-negative"))
+    iszero(se) && return sigdigits_max
+    scale > 0 || throw(ArgumentError("`scale` must be positive"))
+    first_digit_x = floor(Int, log10(abs(x)))
+    last_digit_x = floor(Int, log10(se * scale))
+    sigdigits_x = first_digit_x - last_digit_x + 1
+    return clamp(sigdigits_x, 0, sigdigits_max)
 end

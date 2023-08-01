@@ -187,33 +187,6 @@ using StatsBase
         end
     end
 
-    @testset "sigdigits_matching_error" begin
-        @test ArviZStats.sigdigits_matching_error(123.456, 0.01) == 5
-        @test ArviZStats.sigdigits_matching_error(123.456, 1) == 3
-        @test ArviZStats.sigdigits_matching_error(123.456, 0.0001) == 7
-        @test ArviZStats.sigdigits_matching_error(1e5, 0.1) == 7
-        @test ArviZStats.sigdigits_matching_error(1e5, 0.2; scale=5) == 6
-        @test ArviZStats.sigdigits_matching_error(1e4, 0.5) == 5
-        @test ArviZStats.sigdigits_matching_error(1e4, 0.5; scale=1) == 6
-        @test ArviZStats.sigdigits_matching_error(1e5, 0.1; sigdigits_max=2) == 2
-
-        # errors
-        @test_throws ArgumentError ArviZStats.sigdigits_matching_error(123.456, -1)
-        @test_throws ArgumentError ArviZStats.sigdigits_matching_error(
-            123.456, 1; sigdigits_max=-1
-        )
-        @test_throws ArgumentError ArviZStats.sigdigits_matching_error(123.456, 1; scale=-1)
-
-        # edge cases
-        @test ArviZStats.sigdigits_matching_error(0.0, 1) == 0
-        @test ArviZStats.sigdigits_matching_error(NaN, 1) == 0
-        @test ArviZStats.sigdigits_matching_error(Inf, 1) == 0
-        @test ArviZStats.sigdigits_matching_error(100, 1; scale=Inf) == 0
-        @test ArviZStats.sigdigits_matching_error(100, Inf) == 0
-        @test ArviZStats.sigdigits_matching_error(100, 0) == 7
-        @test ArviZStats.sigdigits_matching_error(100, 0; sigdigits_max=2) == 2
-    end
-
     @testset "_assimilar" begin
         @testset for x in ([8, 2, 5], (8, 2, 5), (; a=8, b=2, c=5))
             @test @inferred(ArviZStats._assimilar((x=1.0, y=2.0, z=3.0), x)) ==
@@ -329,5 +302,32 @@ using StatsBase
             se_exp = std(log(mean(rand(n) * scale, w)) for _ in 1:ndraws)
             @test se ≈ se_exp rtol = 1e-1
         end
+    end
+
+    @testset "sigdigits_matching_se" begin
+        @test ArviZStats.sigdigits_matching_se(123.456, 0.01) == 5
+        @test ArviZStats.sigdigits_matching_se(123.456, 1) == 3
+        @test ArviZStats.sigdigits_matching_se(123.456, 0.0001) == 7
+        @test ArviZStats.sigdigits_matching_se(1e5, 0.1) == 7
+        @test ArviZStats.sigdigits_matching_se(1e5, 0.2; scale=5) == 6
+        @test ArviZStats.sigdigits_matching_se(1e4, 0.5) == 5
+        @test ArviZStats.sigdigits_matching_se(1e4, 0.5; scale=1) == 6
+        @test ArviZStats.sigdigits_matching_se(1e5, 0.1; sigdigits_max=2) == 2
+
+        # errors
+        @test_throws ArgumentError ArviZStats.sigdigits_matching_se(123.456, -1)
+        @test_throws ArgumentError ArviZStats.sigdigits_matching_se(
+            123.456, 1; sigdigits_max=-1
+        )
+        @test_throws ArgumentError ArviZStats.sigdigits_matching_se(123.456, 1; scale=-1)
+
+        # edge cases
+        @test ArviZStats.sigdigits_matching_se(0.0, 1) == 0
+        @test ArviZStats.sigdigits_matching_se(NaN, 1) == 0
+        @test ArviZStats.sigdigits_matching_se(Inf, 1) == 0
+        @test ArviZStats.sigdigits_matching_se(100, 1; scale=Inf) == 0
+        @test ArviZStats.sigdigits_matching_se(100, Inf) == 0
+        @test ArviZStats.sigdigits_matching_se(100, 0) == 7
+        @test ArviZStats.sigdigits_matching_se(100, 0; sigdigits_max=2) == 2
     end
 end
