@@ -195,7 +195,7 @@ function _summarize(
         "mcse_mean" => (data -> MCMCDiagnosticTools.mcse(data; kind=Statistics.mean)),
         "mcse_std" => (data -> MCMCDiagnosticTools.mcse(data; kind=Statistics.std)),
         "ess_tail" => (data -> MCMCDiagnosticTools.ess(data; kind=:tail)),
-        ("ess_bulk", "rhat") => (data -> MCMCDiagnosticTools.ess_rhat(data; kind=:bulk)),
+        ("ess_bulk", "rhat") => (data -> MCMCDiagnosticTools.ess_rhat(data)),
     ]
     metrics = if kind === :both
         vcat(stats, diagnostics)
