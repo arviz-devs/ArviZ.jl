@@ -237,22 +237,27 @@ function _interval_prob_to_strings(interval_type, prob; digits=2)
     end
 end
 
-function _flat_iterator(ds, dim; compact_labels=true)
-    var_iter = pairs(DimensionalData.layers(ds))
+function _as_flat_table(ds, dim; compact_labels::Bool=true)
+    row_table = Iterators.map(_indices_iterator(ds, dim)) do (var, indices)
+        var_select = isempty(indices) ? var : view(var, indices...)
+        return (
+            variable=_indices_to_name(var, indices, compact_labels),
+            _arr_to_namedtuple(var_select)...,
+        )
+    end
+    return Tables.columntable(row_table)
+end
+
+function _indices_iterator(ds::DimensionalData.AbstractDimStack, dims)
     return Iterators.flatten(
-        Iterators.map(var_iter) do (var_name, var)
-            dims_flatten = Dimensions.otherdims(var, dim)
-            isempty(dims_flatten) &&
-                return ((variable="$var_name", _arr_to_namedtuple(var)...),)
-            indices_iter = DimensionalData.DimKeys(dims_flatten)
-            return Iterators.map(indices_iter) do indices
-                (
-                    variable=_indices_to_name(var_name, indices, compact_labels),
-                    _arr_to_namedtuple(view(var, indices...))...,
-                )
-            end
-        end,
+        Iterators.map(Base.Fix2(_indices_iterator, dims), DimensionalData.layers(ds))
     )
+end
+function _indices_iterator(var::DimensionalData.AbstractDimArray, dims)
+    dims_flatten = Dimensions.otherdims(var, dims)
+    isempty(dims_flatten) && return ((var, ()),)
+    indices_iter = DimensionalData.DimKeys(dims_flatten)
+    return zip(Iterators.cycle((var,)), indices_iter)
 end
 
 function _arr_to_namedtuple(arr::DimensionalData.AbstractDimVector)
@@ -260,7 +265,9 @@ function _arr_to_namedtuple(arr::DimensionalData.AbstractDimVector)
     return NamedTuple{ks}(Tuple(arr))
 end
 
-function _indices_to_name(name, dims, compact)
+function _indices_to_name(var, dims, compact)
+    name = DimensionalData.name(var)
+    isempty(dims) && return string(name)
     elements = if compact
         map(string ∘ Dimensions.val ∘ Dimensions.val, dims)
     else
