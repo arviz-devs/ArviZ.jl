@@ -1,7 +1,7 @@
 """
     SummaryStats{D}
 
-A container for a column table of values computed by [`summarystatistics`](@ref).
+A container for a column table of values computed by [`summarystats`](@ref).
 
 The first column is `variable`, and all remaining columns are the summary statistics.
 This object implements the Tables and TableTraits interfaces and has a custom `show` method.
