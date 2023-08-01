@@ -1,12 +1,15 @@
 """
-    SummaryStats{D}
+$(SIGNATURES)
 
 A container for a column table of values computed by [`summarystats`](@ref).
 
-The first column is `variable`, and all remaining columns are the summary statistics.
 This object implements the Tables and TableTraits interfaces and has a custom `show` method.
+
+$(FIELDS)
 """
-struct SummaryStats{D}
+struct SummaryStats{D<:NamedTuple}
+    """The summary statistics for each variable, with the first entry containing the
+    variable names"""
     data::D
 end
 
@@ -113,15 +116,15 @@ Compute summary statistics and diagnostics on the `data`.
 # Keywords
 
   - `return_type::Type`: The type of object to return. Valid options are [`Dataset`](@ref)
-  and [`SummaryStats`](@ref). Defaults to `SummaryStats`.
-  - `prob_interval::Real`: The value of the `prob` argument to [`hdi`](@ref) used to compute the
-  highest density interval. Defaults to $(DEFAULT_INTERVAL_PROB).
+    and [`SummaryStats`](@ref). Defaults to `SummaryStats`.
+  - `prob_interval::Real`: The value of the `prob` argument to [`hdi`](@ref) used to compute
+    the highest density interval. Defaults to $(DEFAULT_INTERVAL_PROB).
   - `metric_dim`: The dimension name or type to use for the computed metrics. Only specify
-  if `return_type` is `Dataset`. Defaults to `Dim{_:metric}`.
+    if `return_type` is `Dataset`. Defaults to `Dim{_:metric}`.
   - `compact_labels::Bool`: Whether to use compact names for the variables. Only used if
-  `return_type` is `SummaryStats`. Defaults to `true`.
+    `return_type` is `SummaryStats`. Defaults to `true`.
   - `kind::Symbol`: Whether to compute just statistics (`:stats`), just diagnostics
-  (`:diagnostics`), or both (`:both`). Defaults to `:both`.
+    (`:diagnostics`), or both (`:both`). Defaults to `:both`.
 
 # Examples
 
