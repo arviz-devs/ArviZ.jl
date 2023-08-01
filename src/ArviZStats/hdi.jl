@@ -1,11 +1,10 @@
-const HDI_DEFAULT_PROB = 0.94
 # this pattern ensures that the type is completely specified at compile time
 const HDI_BOUND_DIM = Dimensions.format(
     Dimensions.Dim{:hdi_bound}([:lower, :upper]), Base.OneTo(2)
 )
 
 """
-    hdi(samples::AbstractArray{<:Real}; prob=$(HDI_DEFAULT_PROB)) -> (; lower, upper)
+    hdi(samples::AbstractArray{<:Real}; prob=$(DEFAULT_INTERVAL_PROB)) -> (; lower, upper)
 
 Estimate the unimodal highest density interval (HDI) of `samples` for the probability `prob`.
 
@@ -20,8 +19,8 @@ This implementation uses the algorithm of [^ChenShao1999].
 
 !!! note
     Any default value of `prob` is arbitrary. The default value of
-    `prob=$(HDI_DEFAULT_PROB)` instead of a more common default like `prob=0.95` is chosen
-    to reminder the user of this arbitrariness.
+    `prob=$(DEFAULT_INTERVAL_PROB)` instead of a more common default like `prob=0.95` is
+    chosen to reminder the user of this arbitrariness.
 
 [^Hyndman1996]: Rob J. Hyndman (1996) Computing and Graphing Highest Density Regions,
                 Amer. Stat., 50(2): 120-6.
@@ -66,11 +65,11 @@ function hdi(x::AbstractArray{<:Real}; kwargs...)
 end
 
 """
-    hdi!(samples::AbstractArray{<:Real}; prob=$(HDI_DEFAULT_PROB)) -> (; lower, upper)
+    hdi!(samples::AbstractArray{<:Real}; prob=$(DEFAULT_INTERVAL_PROB)) -> (; lower, upper)
 
 A version of [hdi](@ref) that sorts `samples` in-place while computing the HDI.
 """
-function hdi!(x::AbstractArray{<:Real}; prob::Real=HDI_DEFAULT_PROB)
+function hdi!(x::AbstractArray{<:Real}; prob::Real=DEFAULT_INTERVAL_PROB)
     0 < prob < 1 || throw(DomainError(prob, "HDI `prob` must be in the range `(0, 1)`.]"))
     return _hdi!(x, prob)
 end
@@ -104,8 +103,8 @@ function _hdi!(x::AbstractArray{<:Real}, prob::Real)
 end
 
 """
-    hdi(data::InferenceData; prob=$HDI_DEFAULT_PROB) -> Dataset
-    hdi(data::Dataset; prob=$HDI_DEFAULT_PROB) -> Dataset
+    hdi(data::InferenceData; prob=$DEFAULT_INTERVAL_PROB) -> Dataset
+    hdi(data::Dataset; prob=$DEFAULT_INTERVAL_PROB) -> Dataset
 
 Calculate the highest density interval (HDI) for each parameter in the data.
 
