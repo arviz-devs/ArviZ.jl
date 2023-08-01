@@ -163,6 +163,20 @@ SummaryStats
  theta[Mt. Hermon]        4.77  5.74  -5.86     16.0
  tau                      4.12  3.10   0.896     9.67
 ```
+
+Compute the statistics and diagnostics from the posterior group of an `InferenceData` and
+store in a `Dataset`:
+
+```jldoctest summarystats
+julia> summarystats(idata; return_type=Dataset)
+Dataset with dimensions:
+  Dim{:_metric} Categorical{String} String[mean, std, …, ess_bulk, rhat] Unordered,
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:_metric} (9)
+  :theta Float64 dims: Dim{:school}, Dim{:_metric} (8×9)
+  :tau   Float64 dims: Dim{:_metric} (9)
+```
 """
 function StatsBase.summarystats(
     data::InferenceObjects.InferenceData; group::Symbol=:posterior, kwargs...
