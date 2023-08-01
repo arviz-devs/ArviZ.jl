@@ -93,9 +93,9 @@ _is_ess_label(k::Symbol) = ((k === :ess) || startswith(string(k), "ess_"))
 Tables.istable(::Type{<:SummaryStats}) = true
 Tables.columnaccess(::Type{<:SummaryStats}) = true
 Tables.columns(s::SummaryStats) = s
-Tables.columnnames(s::SummaryStats) = Tables.columnnames(s.data)
-Tables.getcolumn(s::SummaryStats, i::Int) = Tables.getcolumn(s.data, i)
-Tables.getcolumn(s::SummaryStats, nm::Symbol) = Tables.getcolumn(s.data, nm)
+Tables.columnnames(s::SummaryStats) = Tables.columnnames(parent(s))
+Tables.getcolumn(s::SummaryStats, i::Int) = Tables.getcolumn(parent(s), i)
+Tables.getcolumn(s::SummaryStats, nm::Symbol) = Tables.getcolumn(parent(s), nm)
 
 IteratorInterfaceExtensions.isiterable(::SummaryStats) = true
 function IteratorInterfaceExtensions.getiterator(s::SummaryStats)
