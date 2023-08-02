@@ -55,6 +55,7 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Getting Started" => [
+            "Quickstart" => "quickstart.md",
             "Working with `InferenceData`" => "working_with_inference_data.md",
             "Creating custom plots" => "creating_custom_plots.md",
         ],
