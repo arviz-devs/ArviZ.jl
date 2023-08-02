@@ -37,7 +37,7 @@ jobs:
           Conda.add("conda==23.1.0")
           ArviZPythonPlots.initialize_arviz()
           ArviZPythonPlots.initialize_pandas()
-        shell: julia --color=yes --project docs
+        shell: julia --color=yes --project docs {0}
       - uses: julia-actions/julia-docdeploy@v1
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
