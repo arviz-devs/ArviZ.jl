@@ -22,8 +22,14 @@ _maybevec(x) = x
                 dims=(y=[:a], z=[:b, :c]),
                 coords=(a=["q", "r", "s"], b=[0, 1], c=[:m, :n, :o]),
             )
+            idata1 = InferenceData(; posterior=ds)
+            idata2 = InferenceData(; prior=ds)
 
             stats = @inferred Dataset summarystats(ds; return_type=Dataset)
+            @test parent(stats) == parent(summarystats(idata1; return_type=Dataset))
+            @test parent(stats) ==
+                parent(summarystats(idata2; group=:prior, return_type=Dataset))
+
             @test issetequal(keys(stats), keys(ds))
             @test isempty(DimensionalData.metadata(stats))
             @test hasdim(stats, :_metric)
@@ -237,7 +243,7 @@ _maybevec(x) = x
             end
             @test !haskey(stats, :foo)
             @test length(stats) == length(data)
-            for i in eachindex(stats)
+            for i in 1:length(data)
                 @test getindex(stats, i) == getindex(data, i)
             end
             @test Base.iterate(stats) == Base.iterate(data)
