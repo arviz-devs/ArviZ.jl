@@ -156,7 +156,7 @@ end
 function _show(io::IO, mime::MIME, r::ModelComparisonResult; kwargs...)
     row_labels = collect(r.name)
     cols = Tables.columnnames(r)[2:end]
-    table = Tables.columntable(r)[cols]
+    table = NamedTuple{cols}(Tables.columntable(r))
 
     weights_method_name = _typename(r.weights_method)
     weights = table.weight
