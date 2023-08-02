@@ -187,33 +187,6 @@ using StatsBase
         end
     end
 
-    @testset "sigdigits_matching_error" begin
-        @test ArviZStats.sigdigits_matching_error(123.456, 0.01) == 5
-        @test ArviZStats.sigdigits_matching_error(123.456, 1) == 3
-        @test ArviZStats.sigdigits_matching_error(123.456, 0.0001) == 7
-        @test ArviZStats.sigdigits_matching_error(1e5, 0.1) == 7
-        @test ArviZStats.sigdigits_matching_error(1e5, 0.2; scale=5) == 6
-        @test ArviZStats.sigdigits_matching_error(1e4, 0.5) == 5
-        @test ArviZStats.sigdigits_matching_error(1e4, 0.5; scale=1) == 6
-        @test ArviZStats.sigdigits_matching_error(1e5, 0.1; sigdigits_max=2) == 2
-
-        # errors
-        @test_throws ArgumentError ArviZStats.sigdigits_matching_error(123.456, -1)
-        @test_throws ArgumentError ArviZStats.sigdigits_matching_error(
-            123.456, 1; sigdigits_max=-1
-        )
-        @test_throws ArgumentError ArviZStats.sigdigits_matching_error(123.456, 1; scale=-1)
-
-        # edge cases
-        @test ArviZStats.sigdigits_matching_error(0.0, 1) == 0
-        @test ArviZStats.sigdigits_matching_error(NaN, 1) == 0
-        @test ArviZStats.sigdigits_matching_error(Inf, 1) == 0
-        @test ArviZStats.sigdigits_matching_error(100, 1; scale=Inf) == 0
-        @test ArviZStats.sigdigits_matching_error(100, Inf) == 0
-        @test ArviZStats.sigdigits_matching_error(100, 0) == 7
-        @test ArviZStats.sigdigits_matching_error(100, 0; sigdigits_max=2) == 2
-    end
-
     @testset "_assimilar" begin
         @testset for x in ([8, 2, 5], (8, 2, 5), (; a=8, b=2, c=5))
             @test @inferred(ArviZStats._assimilar((x=1.0, y=2.0, z=3.0), x)) ==
@@ -328,6 +301,112 @@ using StatsBase
             se = @inferred ArviZStats._se_log_mean(logx, logw)
             se_exp = std(log(mean(rand(n) * scale, w)) for _ in 1:ndraws)
             @test se ≈ se_exp rtol = 1e-1
+        end
+    end
+
+    @testset "sigdigits_matching_se" begin
+        @test ArviZStats.sigdigits_matching_se(123.456, 0.01) == 5
+        @test ArviZStats.sigdigits_matching_se(123.456, 1) == 3
+        @test ArviZStats.sigdigits_matching_se(123.456, 0.0001) == 7
+        @test ArviZStats.sigdigits_matching_se(1e5, 0.1) == 7
+        @test ArviZStats.sigdigits_matching_se(1e5, 0.2; scale=5) == 6
+        @test ArviZStats.sigdigits_matching_se(1e4, 0.5) == 5
+        @test ArviZStats.sigdigits_matching_se(1e4, 0.5; scale=1) == 6
+        @test ArviZStats.sigdigits_matching_se(1e5, 0.1; sigdigits_max=2) == 2
+
+        # errors
+        @test_throws ArgumentError ArviZStats.sigdigits_matching_se(123.456, -1)
+        @test_throws ArgumentError ArviZStats.sigdigits_matching_se(
+            123.456, 1; sigdigits_max=-1
+        )
+        @test_throws ArgumentError ArviZStats.sigdigits_matching_se(123.456, 1; scale=-1)
+
+        # edge cases
+        @test ArviZStats.sigdigits_matching_se(0.0, 1) == 0
+        @test ArviZStats.sigdigits_matching_se(NaN, 1) == 0
+        @test ArviZStats.sigdigits_matching_se(Inf, 1) == 0
+        @test ArviZStats.sigdigits_matching_se(100, 1; scale=Inf) == 0
+        @test ArviZStats.sigdigits_matching_se(100, Inf) == 0
+        @test ArviZStats.sigdigits_matching_se(100, 0) == 7
+        @test ArviZStats.sigdigits_matching_se(100, 0; sigdigits_max=2) == 2
+    end
+
+    @testset "_printf_with_sigdigits" begin
+        @test ArviZStats._printf_with_sigdigits(123.456, 1) == "1.e+02"
+        @test ArviZStats._printf_with_sigdigits(-123.456, 1) == "-1.e+02"
+        @test ArviZStats._printf_with_sigdigits(123.456, 2) == "1.2e+02"
+        @test ArviZStats._printf_with_sigdigits(-123.456, 2) == "-1.2e+02"
+        @test ArviZStats._printf_with_sigdigits(123.456, 3) == "123"
+        @test ArviZStats._printf_with_sigdigits(-123.456, 3) == "-123"
+        @test ArviZStats._printf_with_sigdigits(123.456, 4) == "123.5"
+        @test ArviZStats._printf_with_sigdigits(-123.456, 4) == "-123.5"
+        @test ArviZStats._printf_with_sigdigits(123.456, 5) == "123.46"
+        @test ArviZStats._printf_with_sigdigits(-123.456, 5) == "-123.46"
+        @test ArviZStats._printf_with_sigdigits(123.456, 6) == "123.456"
+        @test ArviZStats._printf_with_sigdigits(-123.456, 6) == "-123.456"
+        @test ArviZStats._printf_with_sigdigits(123.456, 7) == "123.4560"
+        @test ArviZStats._printf_with_sigdigits(-123.456, 7) == "-123.4560"
+        @test ArviZStats._printf_with_sigdigits(123.456, 8) == "123.45600"
+        @test ArviZStats._printf_with_sigdigits(0.00000123456, 1) == "1.e-06"
+        @test ArviZStats._printf_with_sigdigits(0.00000123456, 2) == "1.2e-06"
+    end
+
+    @testset "ft_printf_sigdigits" begin
+        @testset "all columns" begin
+            @testset for sigdigits in 1:5
+                ft1 = ArviZStats.ft_printf_sigdigits(sigdigits)
+                for i in 1:10, j in 1:5
+                    v = randn()
+                    @test ft1(v, i, j) == ArviZStats._printf_with_sigdigits(v, sigdigits)
+                    @test ft1("foo", i, j) == "foo"
+                end
+            end
+        end
+        @testset "subset of columns" begin
+            @testset for sigdigits in 1:5
+                ft = ArviZStats.ft_printf_sigdigits(sigdigits, [2, 3])
+                for i in 1:10, j in 1:5
+                    v = randn()
+                    if j ∈ [2, 3]
+                        @test ft(v, i, j) == ArviZStats._printf_with_sigdigits(v, sigdigits)
+                    else
+                        @test ft(v, i, j) === v
+                    end
+                    @test ft("foo", i, j) == "foo"
+                end
+            end
+        end
+    end
+
+    @testset "ft_printf_sigdigits_matching_se" begin
+        @testset "all columns" begin
+            @testset for scale in 1:3
+                se = rand(5)
+                ft = ArviZStats.ft_printf_sigdigits_matching_se(se; scale)
+                for i in eachindex(se), j in 1:5
+                    v = randn()
+                    sigdigits = ArviZStats.sigdigits_matching_se(v, se[i]; scale)
+                    @test ft(v, i, j) == ArviZStats._printf_with_sigdigits(v, sigdigits)
+                    @test ft("foo", i, j) == "foo"
+                end
+            end
+        end
+
+        @testset "subset of columns" begin
+            @testset for scale in 1:3
+                se = rand(5)
+                ft = ArviZStats.ft_printf_sigdigits_matching_se(se, [2, 3]; scale)
+                for i in eachindex(se), j in 1:5
+                    v = randn()
+                    if j ∈ [2, 3]
+                        sigdigits = ArviZStats.sigdigits_matching_se(v, se[i]; scale)
+                        @test ft(v, i, j) == ArviZStats._printf_with_sigdigits(v, sigdigits)
+                        @test ft("foo", i, j) == "foo"
+                    else
+                        @test ft(v, i, j) === v
+                    end
+                end
+            end
         end
     end
 end

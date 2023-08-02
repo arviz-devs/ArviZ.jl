@@ -151,9 +151,8 @@ include("helpers.jl")
         # regression test
         @test sprint(show, "text/plain", loo(idata)) == """
             PSISLOOResult with estimates
-                   Estimate    SE
-             elpd       -31   1.4
-                p       0.9  0.34
+             elpd  elpd_mcse    p  p_mcse
+              -31        1.4  0.9    0.34
 
             and PSISResult with 500 draws, 4 chains, and 8 parameters
             Pareto shape (k) diagnostic values:

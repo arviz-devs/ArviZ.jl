@@ -54,9 +54,9 @@ julia> mc = compare(models)
 ┌ Warning: 1 parameters had Pareto shape values 0.7 < k ≤ 1. Resulting importance sampling estimates are likely to be unstable.
 └ @ PSIS ~/.julia/packages/PSIS/...
 ModelComparisonResult with Stacking weights
-         name  rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
- non_centered     1   -31        1.4          0               0     1.0  0.9   ⋯
-     centered     2   -31        1.4       0.06           0.067     0.0  0.9   ⋯
+               rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
+ non_centered     1   -31        1.4       0              0.0       1.0  0.9   ⋯
+ centered         2   -31        1.4       0.06           0.067     0.0  0.9   ⋯
                                                                 1 column omitted
 ```
 
@@ -68,9 +68,9 @@ julia> elpd_results = mc.elpd_result;
 
 julia> compare(elpd_results; weights_method=BootstrappedPseudoBMA())
 ModelComparisonResult with BootstrappedPseudoBMA weights
-         name  rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
- non_centered     1   -31        1.4          0               0     0.5  0.9   ⋯
-     centered     2   -31        1.4       0.06           0.067     0.5  0.9   ⋯
+               rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p   ⋯
+ non_centered     1   -31        1.4       0              0.0      0.52  0.9   ⋯
+ centered         2   -31        1.4       0.06           0.067    0.48  0.9   ⋯
                                                                 1 column omitted
 ```
 """
@@ -144,46 +144,35 @@ struct ModelComparisonResult{E,N,R,W,ER,M}
     weights_method::M
 end
 
-function _print_comparison_results(
-    io::IO, ::MIME"text/plain", r::ModelComparisonResult; sigdigits_se=2
-)
-    table = Tables.columntable(r)
-    cols = Tables.columnnames(table)
-    formatters = function (v, i, j)
-        nm = cols[j]
-        if nm ∈ (:elpd, :elpd_diff, :p)
-            nm_se = Symbol("$(nm)_mcse")
-            v_se = table[nm_se][i]
-            sigdigits = sigdigits_matching_error(v, v_se)
-            return sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
-        elseif nm ∈ (:elpd_mcse, :elpd_diff_mcse, :p_mcse)
-            sigdigits = sigdigits_se
-            return sprint(Printf.format, Printf.Format("%.$(sigdigits)g"), v)
-        elseif nm === :rank
-            return string(v)
-        elseif nm === :weight
-            return sprint(Printf.format, Printf.Format("%.1f"), v)
-        else
-            return string(v)
-        end
-    end
-    PrettyTables.pretty_table(
-        io,
-        table;
-        show_subheader=false,
-        hlines=:none,
-        vlines=:none,
-        formatters,
-        newline_at_end=false,
-    )
-    return nothing
+#### custom tabular show methods
+
+function Base.show(io::IO, mime::MIME"text/plain", r::ModelComparisonResult; kwargs...)
+    return _show(io, mime, r; kwargs...)
+end
+function Base.show(io::IO, mime::MIME"text/html", r::ModelComparisonResult; kwargs...)
+    return _show(io, mime, r; kwargs...)
 end
 
-function Base.show(io::IO, mime::MIME"text/plain", result::ModelComparisonResult)
-    weights_method_name = _typename(result.weights_method)
-    println(io, "ModelComparisonResult with $(weights_method_name) weights")
-    _print_comparison_results(io, mime, result)
-    return nothing
+function _show(io::IO, mime::MIME, r::ModelComparisonResult; kwargs...)
+    row_labels = collect(r.name)
+    cols = Tables.columnnames(r)[2:end]
+    table = NamedTuple{cols}(Tables.columntable(r))
+
+    weights_method_name = _typename(r.weights_method)
+    weights = table.weight
+    digits_weights = ceil(Int, -log10(maximum(weights))) + 1
+    weight_formatter = PrettyTables.ft_printf(
+        "%.$(digits_weights)f", findfirst(==(:weight), cols)
+    )
+    return _show_prettytable(
+        io,
+        mime,
+        table;
+        title="ModelComparisonResult with $(weights_method_name) weights",
+        row_labels,
+        extra_formatters=(weight_formatter,),
+        kwargs...,
+    )
 end
 
 function _permute(r::ModelComparisonResult, perm)
@@ -213,6 +202,8 @@ function Tables.getcolumn(r::ModelComparisonResult, nm::Symbol)
     end
     throw(ArgumentError("Unrecognized column name $nm"))
 end
+Tables.rowaccess(::Type{<:ModelComparisonResult}) = true
+Tables.rows(r::ModelComparisonResult) = Tables.rows(Tables.columntable(r))
 
 IteratorInterfaceExtensions.isiterable(::ModelComparisonResult) = true
 function IteratorInterfaceExtensions.getiterator(r::ModelComparisonResult)

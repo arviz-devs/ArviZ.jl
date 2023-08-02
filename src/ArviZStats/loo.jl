@@ -20,9 +20,8 @@ function elpd_estimates(r::PSISLOOResult; pointwise::Bool=false)
     return pointwise ? r.pointwise : r.estimates
 end
 
-function Base.show(io::IO, mime::MIME"text/plain", result::PSISLOOResult)
-    println(io, "PSISLOOResult with estimates")
-    _print_elpd_estimates(io, mime, result)
+function Base.show(io::IO, mime::MIME"text/plain", result::PSISLOOResult; kwargs...)
+    _show_elpd_estimates(io, mime, result; title="PSISLOOResult with estimates", kwargs...)
     println(io)
     println(io)
     print(io, "and ")
@@ -71,9 +70,8 @@ julia> reff = ess(log_like; kind=:basic, split_chains=1, relative=true);
 
 julia> loo(log_like; reff)
 PSISLOOResult with estimates
-       Estimate    SE
- elpd       -31   1.4
-    p       0.9  0.34
+ elpd  elpd_mcse    p  p_mcse
+  -31        1.4  0.9    0.34
 
 and PSISResult with 500 draws, 4 chains, and 8 parameters
 Pareto shape (k) diagnostic values:
@@ -103,9 +101,8 @@ julia> idata = load_example_data("centered_eight");
 
 julia> loo(idata)
 PSISLOOResult with estimates
-       Estimate    SE
- elpd       -31   1.4
-    p       0.9  0.34
+ elpd  elpd_mcse    p  p_mcse
+  -31        1.4  0.9    0.34
 
 and PSISResult with 500 draws, 4 chains, and 8 parameters
 Pareto shape (k) diagnostic values:

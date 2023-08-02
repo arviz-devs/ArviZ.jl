@@ -207,24 +207,6 @@ function _smooth_data!(y_interp, interp_method, y, x, x_interp, dims)
     return y_interp
 end
 
-"""
-    sigdigits_matching_error(x, se; sigdigits_max=7, scale=2) -> Int
-
-Get number of significant digits of `x` so that the last digit of `x` is the first digit of
-`se*scale`.
-"""
-function sigdigits_matching_error(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
-    (iszero(x) || !isfinite(x) || !isfinite(se) || !isfinite(scale)) && return 0
-    sigdigits_max ≥ 0 || throw(ArgumentError("`sigdigits_max` must be non-negative"))
-    se ≥ 0 || throw(ArgumentError("`se` must be non-negative"))
-    iszero(se) && return sigdigits_max
-    scale > 0 || throw(ArgumentError("`scale` must be positive"))
-    first_digit_x = floor(Int, log10(abs(x)))
-    last_digit_x = floor(Int, log10(se * scale))
-    sigdigits_x = first_digit_x - last_digit_x + 1
-    return clamp(sigdigits_x, 0, sigdigits_max)
-end
-
 Base.@pure _typename(::T) where {T} = T.name.name
 
 _astuple(x) = (x,)
@@ -344,3 +326,204 @@ function _se_log_mean(
     se_log_mean = @. exp(log_var_mean / 2 - log_mean)
     return se_log_mean
 end
+
+"""
+    sigdigits_matching_se(x, se; sigdigits_max=7, scale=2) -> Int
+
+Get number of significant digits of `x` so that the last digit of `x` is the first digit of
+`se*scale`.
+"""
+function sigdigits_matching_se(x::Real, se::Real; sigdigits_max::Int=7, scale::Real=2)
+    (iszero(x) || !isfinite(x) || !isfinite(se) || !isfinite(scale)) && return 0
+    sigdigits_max ≥ 0 || throw(ArgumentError("`sigdigits_max` must be non-negative"))
+    se ≥ 0 || throw(ArgumentError("`se` must be non-negative"))
+    iszero(se) && return sigdigits_max
+    scale > 0 || throw(ArgumentError("`scale` must be positive"))
+    first_digit_x = floor(Int, log10(abs(x)))
+    last_digit_x = floor(Int, log10(se * scale))
+    sigdigits_x = first_digit_x - last_digit_x + 1
+    return clamp(sigdigits_x, 0, sigdigits_max)
+end
+
+# format a number with the given number of significant digits
+# - chooses scientific or decimal notation by whichever is most appropriate
+# - shows trailing zeros if significant
+# - removes trailing decimal point if no significant digits after decimal point
+function _printf_with_sigdigits(v::Real, sigdigits)
+    s = sprint(Printf.format, Printf.Format("%#.$(sigdigits)g"), v)
+    return replace(s, r"\.$" => "")
+end
+
+#
+# PrettyTables formatter utility functions
+#
+
+"""
+    ft_printf_sigdigits(sigdigits[, columns])
+
+Use Printf to format the elements in the `columns` to the number of `sigdigits`.
+
+If `sigdigits` is a `Real`, and `columns` is not specified (or is empty), then the
+formatting will be applied to the entire table.
+Otherwise, if `sigdigits` is a `Real` and `columns` is a vector, then the elements in the
+columns will be formatted to the number of `sigdigits`.
+"""
+function ft_printf_sigdigits(sigdigits::Int, columns::AbstractVector{Int}=Int[])
+    if isempty(columns)
+        return (v, _, _) -> begin
+            v isa Real || return v
+            return _printf_with_sigdigits(v, sigdigits)
+        end
+    else
+        return (v, _, j) -> begin
+            v isa Real || return v
+            for col in columns
+                col == j && return _printf_with_sigdigits(v, sigdigits)
+            end
+            return v
+        end
+    end
+end
+
+"""
+    ft_printf_sigdigits_matching_se(se_vals[, columns]; kwargs...)
+
+Use Printf to format the elements in the `columns` to sigdigits based on the standard error
+column in `se_vals`.
+
+All values are formatted with Printf to the number of significant digits determined by
+[`sigdigits_matching_se`](@ref). `kwargs` are forwarded to that function.
+
+`se_vals` must be the same length as any of the columns in the table.
+If `columns` is a non-empty vector, then the formatting is only applied to those columns.
+Otherwise, the formatting is applied to the entire table.
+"""
+function ft_printf_sigdigits_matching_se(
+    se_vals::AbstractVector, columns::AbstractVector{Int}=Int[]; kwargs...
+)
+    if isempty(columns)
+        return (v, i, _) -> begin
+            v isa Real || return v
+            sigdigits = sigdigits_matching_se(v, se_vals[i]; kwargs...)
+            return _printf_with_sigdigits(v, sigdigits)
+        end
+    else
+        return (v, i, j) -> begin
+            v isa Real || return v
+            for col in columns
+                if col == j
+                    sigdigits = sigdigits_matching_se(v, se_vals[i]; kwargs...)
+                    return _printf_with_sigdigits(v, sigdigits)
+                end
+            end
+            return v
+        end
+    end
+end
+
+function _prettytables_rhat_formatter(data)
+    cols = findall(x -> x === :rhat, keys(data))
+    isempty(cols) && return nothing
+    return PrettyTables.ft_printf("%.2f", cols)
+end
+
+function _prettytables_integer_formatter(data)
+    cols = findall(v -> eltype(v) <: Integer, values(data))
+    isempty(cols) && return nothing
+    return PrettyTables.ft_printf("%d", cols)
+end
+
+# formatting functions for special columns
+# see https://ronisbr.github.io/PrettyTables.jl/stable/man/formatters/
+function _default_prettytables_formatters(data; sigdigits_se=2, sigdigits_default=3)
+    formatters = []
+    for (i, k) in enumerate(keys(data))
+        for mcse_key in (Symbol("mcse_$k"), Symbol("$(k)_mcse"))
+            if haskey(data, mcse_key)
+                push!(formatters, ft_printf_sigdigits_matching_se(data[mcse_key], [i]))
+                continue
+            end
+        end
+    end
+    mcse_cols = findall(keys(data)) do k
+        s = string(k)
+        return startswith(s, "mcse_") || endswith(s, "_mcse")
+    end
+    isempty(mcse_cols) || push!(formatters, ft_printf_sigdigits(sigdigits_se, mcse_cols))
+    ess_cols = findall(_is_ess_label, keys(data))
+    isempty(ess_cols) || push!(formatters, PrettyTables.ft_printf("%d", ess_cols))
+    ft_integer = _prettytables_integer_formatter(data)
+    ft_integer === nothing || push!(formatters, ft_integer)
+    push!(formatters, ft_printf_sigdigits(sigdigits_default))
+    return formatters
+end
+
+function _show_prettytable(
+    io::IO, data; sigdigits_se=2, sigdigits_default=3, extra_formatters=(), kwargs...
+)
+    formatters = (
+        extra_formatters...,
+        _default_prettytables_formatters(data; sigdigits_se, sigdigits_default)...,
+    )
+    alignment = fill(:r, length(data))
+    for (i, v) in enumerate(values(data))
+        if !(eltype(v) <: Real)
+            alignment[i] = :l
+        end
+    end
+    kwargs_new = merge(
+        (
+            show_subheader=false,
+            vcrop_mode=:middle,
+            show_omitted_cell_summary=true,
+            row_label_alignment=:l,
+            formatters,
+            alignment,
+        ),
+        kwargs,
+    )
+    PrettyTables.pretty_table(io, data; kwargs_new...)
+    return nothing
+end
+
+function _show_prettytable(
+    io::IO,
+    ::MIME"text/plain",
+    data;
+    title_crayon=PrettyTables.Crayon(),
+    hlines=:none,
+    vlines=:none,
+    newline_at_end=false,
+    kwargs...,
+)
+    alignment_anchor_regex = Dict(
+        i => [r"\.", r"e", r"^NaN$", r"Inf$"] for (i, (k, v)) in enumerate(pairs(data)) if
+        (eltype(v) <: Real && !(eltype(v) <: Integer) && !_is_ess_label(k))
+    )
+    alignment_anchor_fallback = :r
+    alignment_anchor_fallback_override = Dict(
+        i => :r for (i, k) in enumerate(keys(data)) if _is_ess_label(k)
+    )
+    return _show_prettytable(
+        io,
+        data;
+        backend=Val(:text),
+        title_crayon,
+        hlines,
+        vlines,
+        newline_at_end,
+        alignment_anchor_regex,
+        alignment_anchor_fallback,
+        alignment_anchor_fallback_override,
+        kwargs...,
+    )
+end
+function _show_prettytable(
+    io::IO, ::MIME"text/html", data; minify=true, max_num_of_rows=25, kwargs...
+)
+    return _show_prettytable(
+        io, data; backend=Val(:html), minify, max_num_of_rows, kwargs...
+    )
+end
+
+_is_ess_label(k::Symbol) = ((k === :ess) || startswith(string(k), "ess_"))
