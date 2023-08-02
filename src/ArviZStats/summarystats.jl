@@ -60,6 +60,9 @@ Tables.columns(s::SummaryStats) = s
 Tables.columnnames(s::SummaryStats) = Tables.columnnames(parent(s))
 Tables.getcolumn(s::SummaryStats, i::Int) = Tables.getcolumn(parent(s), i)
 Tables.getcolumn(s::SummaryStats, nm::Symbol) = Tables.getcolumn(parent(s), nm)
+Tables.rowaccess(::Type{<:SummaryStats}) = true
+Tables.rows(s::SummaryStats) = Tables.rows(parent(s))
+Tables.schema(s::SummaryStats) = Tables.schema(parent(s))
 
 IteratorInterfaceExtensions.isiterable(::SummaryStats) = true
 function IteratorInterfaceExtensions.getiterator(s::SummaryStats)

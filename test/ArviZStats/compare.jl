@@ -91,6 +91,9 @@ end
                 @test Tables.getcolumn(mc1, i) == Tables.getcolumn(mc1, k)
             end
             @test_throws ArgumentError Tables.getcolumn(mc1, :foo)
+            @test Tables.rowaccess(typeof(mc1))
+            @test map(NamedTuple, Tables.rows(mc1)) ==
+                map(NamedTuple, Tables.rows(Tables.columntable(mc1)))
         end
 
         @testset "TableTraits interface" begin

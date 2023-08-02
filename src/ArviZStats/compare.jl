@@ -202,6 +202,8 @@ function Tables.getcolumn(r::ModelComparisonResult, nm::Symbol)
     end
     throw(ArgumentError("Unrecognized column name $nm"))
 end
+Tables.rowaccess(::Type{<:ModelComparisonResult}) = true
+Tables.rows(r::ModelComparisonResult) = Tables.rows(Tables.columntable(r))
 
 IteratorInterfaceExtensions.isiterable(::ModelComparisonResult) = true
 function IteratorInterfaceExtensions.getiterator(r::ModelComparisonResult)

@@ -261,6 +261,9 @@ _maybevec(x) = x
                 @test Tables.getcolumn(stats, i) == Tables.getcolumn(stats, k)
             end
             @test_throws ErrorException Tables.getcolumn(stats, :foo)
+            @test Tables.rowaccess(typeof(stats))
+            @test Tables.rows(stats) == Tables.rows(parent(stats))
+            @test Tables.schema(stats) == Tables.schema(parent(stats))
         end
 
         @testset "TableTraits interface" begin
