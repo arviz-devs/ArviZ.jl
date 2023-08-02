@@ -28,7 +28,16 @@ jobs:
         shell: bash
       - uses: julia-actions/julia-buildpkg@latest
       - name: Instantiate docs environment
-        run: julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate()'
+        run: |
+          using Pkg
+          Pkg.instantiate()
+          using ArviZPythonPlots
+          using ArviZPythonPlots.Conda
+          # https://discourse.julialang.org/t/conda-not-installing-matplotlib-for-pyplot/96813/2
+          Conda.add("conda==23.1.0")
+          ArviZPythonPlots.initialize_arviz()
+          ArviZPythonPlots.initialize_pandas()
+        shell: julia --color=yes --project docs
       - uses: julia-actions/julia-docdeploy@v1
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
