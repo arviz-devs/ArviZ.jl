@@ -27,7 +27,7 @@ using PlutoUI
 
 # ╔═╡ a23dfd65-50a8-4872-8c41-661e96585aca
 md"""
-# [ArviZ.jl Quickstart](#quickstart)
+# [ArviZ Quickstart](#quickstart)
 
 !!! note
 
@@ -42,8 +42,8 @@ Here we add the necessary packages for this notebook and load a few we will use 
 """
 
 # ╔═╡ 06b00794-e97f-472b-b526-efe4815103f8
-# ArviZ ships with style sheets!
-ArviZ.use_style("arviz-darkgrid")
+# ArviZPythonPlots ships with style sheets!
+use_style("arviz-darkgrid")
 
 # ╔═╡ 5acbfd9a-cfea-4c3c-a3f0-1744eb7e4e27
 md"""
@@ -64,7 +64,7 @@ end
 
 # ╔═╡ 2c718ea5-2800-4df6-b62c-e0a9e440a1c3
 md"""
-Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of a different random variable.
+Plotting a dictionary of arrays, ArviZ will interpret each key as the name of a different random variable.
 Each row of an array is treated as an independent series of draws from the variable, called a _chain_.
 Below, we have 10 chains of 50 draws each for four different distributions.
 """
