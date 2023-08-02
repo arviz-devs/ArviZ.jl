@@ -306,6 +306,8 @@ _maybevec(x) = x
                  ccc    5.432e+08   2.1e+05  0.99  1012      1000
                  d       Inf         Inf      Inf   Inf       Inf
                  e       NaN         NaN      NaN   NaN       NaN"""
+
+            @test startswith(sprint(show, "text/html", stats), "<table")
         end
     end
 end
