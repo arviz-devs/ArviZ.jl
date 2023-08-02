@@ -20,7 +20,7 @@ let
 end;
 
 # ╔═╡ 467c2d13-6bfe-4feb-9626-fb14796168aa
-using ArviZ, Distributions, LinearAlgebra, PyPlot, Random, StanSample, Turing
+using ArviZ, ArviZPythonPlots, Distributions, LinearAlgebra, Random, StanSample, Turing
 
 # ╔═╡ 56a39a90-0594-48f4-ba04-f7b612019cd1
 using PlutoUI
