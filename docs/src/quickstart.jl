@@ -49,7 +49,8 @@ ArviZ.use_style("arviz-darkgrid")
 md"""
 ## [Get started with plotting](#Get-started-with-plotting)
 
-ArviZ.jl is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
+To plot with ArviZ, we need to load the [ArviZPythonPlots](https://julia.arviz.org/ArviZPythonPlots) package.
+ArviZ is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 """
 
 # ╔═╡ efb3f0af-9fac-48d8-bbb2-2dd6ebd5e4f6
