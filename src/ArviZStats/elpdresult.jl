@@ -13,26 +13,12 @@ Subtypes implement the following functions:
 """
 abstract type AbstractELPDResult end
 
-function _print_elpd_estimates(
-    io::IO, ::MIME"text/plain", r::AbstractELPDResult; sigdigits_se=2
+function _show_elpd_estimates(
+    io::IO, mime::MIME"text/plain", r::AbstractELPDResult; kwargs...
 )
     estimates = elpd_estimates(r)
     table = map(Base.vect, NamedTuple{(:elpd, :elpd_mcse, :p, :p_mcse)}(estimates))
-    formatters = (
-        ft_printf_sigdigits_matching_se(table.elpd_mcse, [1]),
-        ft_printf_sigdigits_matching_se(table.p_mcse, [3]),
-        ft_printf_sigdigits(sigdigits_se),
-    )
-
-    PrettyTables.pretty_table(
-        io,
-        table;
-        show_subheader=false,
-        hlines=:none,
-        vlines=:none,
-        formatters,
-        newline_at_end=false,
-    )
+    _show_prettytable(io, mime, table; kwargs...)
     return nothing
 end
 

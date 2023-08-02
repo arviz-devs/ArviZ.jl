@@ -20,9 +20,8 @@ function elpd_estimates(r::PSISLOOResult; pointwise::Bool=false)
     return pointwise ? r.pointwise : r.estimates
 end
 
-function Base.show(io::IO, mime::MIME"text/plain", result::PSISLOOResult)
-    println(io, "PSISLOOResult with estimates")
-    _print_elpd_estimates(io, mime, result)
+function Base.show(io::IO, mime::MIME"text/plain", result::PSISLOOResult; kwargs...)
+    _show_elpd_estimates(io, mime, result; title="PSISLOOResult with estimates", kwargs...)
     println(io)
     println(io)
     print(io, "and ")

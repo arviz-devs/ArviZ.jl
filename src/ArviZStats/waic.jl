@@ -18,9 +18,8 @@ function elpd_estimates(r::WAICResult; pointwise::Bool=false)
     return pointwise ? r.pointwise : r.estimates
 end
 
-function Base.show(io::IO, mime::MIME"text/plain", result::WAICResult)
-    println(io, "WAICResult with estimates")
-    _print_elpd_estimates(io, mime, result)
+function Base.show(io::IO, mime::MIME"text/plain", result::WAICResult; kwargs...)
+    _show_elpd_estimates(io, mime, result; title="WAICResult with estimates", kwargs...)
     return nothing
 end
 
