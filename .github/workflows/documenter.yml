@@ -26,6 +26,8 @@ jobs:
           make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
         shell: bash
       - uses: julia-actions/julia-buildpkg@latest
+      - name: Instantiate docs environment
+        run: julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate()'
       - uses: julia-actions/julia-docdeploy@v1
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
