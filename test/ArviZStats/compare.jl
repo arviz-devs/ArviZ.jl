@@ -1,5 +1,6 @@
 using Test
 using ArviZ
+using ArviZExampleData
 using DimensionalData
 using IteratorInterfaceExtensions
 using Tables
@@ -111,13 +112,13 @@ end
             mc5 = compare(eight_schools_loo_results; weights_method=PseudoBMA())
             @test sprint(show, "text/plain", mc1) == """
                 ModelComparisonResult with Stacking weights
-                 name          rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p  p_mcse
+                               rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p  p_mcse
                  non_centered     1   -31        1.4       0              0.0       1.0  0.9    0.32
                  centered         2   -31        1.4       0.06           0.067     0.0  0.9    0.34"""
 
             @test sprint(show, "text/plain", mc5) == """
                 ModelComparisonResult with PseudoBMA weights
-                 name          rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p  p_mcse
+                               rank  elpd  elpd_mcse  elpd_diff  elpd_diff_mcse  weight    p  p_mcse
                  non_centered     1   -31        1.4       0              0.0      0.52  0.9    0.32
                  centered         2   -31        1.4       0.06           0.067    0.48  0.9    0.34"""
         end
