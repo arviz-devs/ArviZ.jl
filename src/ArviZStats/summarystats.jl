@@ -28,70 +28,26 @@ function Base.iterate(stats::SummaryStats, i::Int=firstindex(parent(stats)))
     return iterate(parent(stats), i)
 end
 
-function Base.show(
-    io::IO,
-    ::MIME"text/plain",
-    stats::SummaryStats;
-    sigdigits_se=2,
-    sigdigits_default=3,
-    kwargs...,
-)
-    # formatting functions for special columns
-    # see https://ronisbr.github.io/PrettyTables.jl/stable/man/formatters/
-    formatters = []
-    for (i, k) in enumerate(keys(stats))
-        mcse_key = Symbol("mcse_$k")
-        if haskey(stats, mcse_key)
-            push!(formatters, ft_printf_sigdigits_matching_se(stats[mcse_key], [i]))
-        end
-    end
-    mcse_cols = findall(startswith("mcse_") ∘ string, keys(stats))
-    isempty(mcse_cols) || push!(formatters, ft_printf_sigdigits(sigdigits_se, mcse_cols))
-    ess_cols = findall(_is_ess_label, keys(stats))
-    isempty(ess_cols) || push!(formatters, PrettyTables.ft_printf("%d", ess_cols))
-    if haskey(stats, :rhat)
-        push!(formatters, PrettyTables.ft_printf("%.2f", findfirst(==(:rhat), keys(stats))))
-    end
-    push!(formatters, ft_printf_sigdigits(sigdigits_default))
+#### custom tabular show methods
 
-    # align by decimal point exponent, or beginning of Inf or NaN, if present.
-    # Otherwise, right align, except for variable names
-    # ESS values are special-cased to always be right-aligned, even if Infs or NaNs are present
-    alignment = [:l, fill(:r, length(stats) - 1)...]
-    alignment_anchor_regex = Dict(
-        i => [r"\.", r"e", r"^NaN$", r"Inf$"] for
-        (i, (k, v)) in enumerate(pairs(stats)) if (eltype(v) <: Real && !_is_ess_label(k))
-    )
-    alignment_anchor_fallback = :r
-    alignment_anchor_fallback_override = Dict(
-        i => :r for (i, k) in enumerate(keys(stats)) if _is_ess_label(k)
-    )
-
-    # TODO: highlight bad values in the REPL
-
-    kwargs_new = merge(
-        (
-            title="SummaryStats",
-            title_crayon=PrettyTables.Crayon(),
-            header=["", Iterators.drop(keys(stats), 1)...],  # drop "variable" from header
-            show_subheader=false,
-            hlines=:none,
-            vlines=:none,
-            newline_at_end=false,
-            formatters=Tuple(formatters),
-            alignment,
-            alignment_anchor_regex,
-            alignment_anchor_fallback,
-            alignment_anchor_fallback_override,
-        ),
-        kwargs,
-    )
-    PrettyTables.pretty_table(io, stats; kwargs_new...)
-
-    return nothing
+function Base.show(io::IO, mime::MIME"text/plain", stats::SummaryStats; kwargs...)
+    return _show(io, mime, stats; kwargs...)
 end
 
-_is_ess_label(k::Symbol) = ((k === :ess) || startswith(string(k), "ess_"))
+function _show(io::IO, mime::MIME, stats::SummaryStats; kwargs...)
+    data = parent(stats)[eachindex(stats)[2:end]]
+    rhat_formatter = _prettytables_rhat_formatter(data)
+    extra_formatters = rhat_formatter === nothing ? () : (rhat_formatter,)
+    return _show_prettytable(
+        io,
+        mime,
+        data;
+        title="SummaryStats",
+        row_labels=stats.variable,
+        extra_formatters,
+        kwargs...,
+    )
+end
 
 #### Tables interface as column table
 
