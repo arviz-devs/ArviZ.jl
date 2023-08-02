@@ -33,6 +33,9 @@ end
 function Base.show(io::IO, mime::MIME"text/plain", stats::SummaryStats; kwargs...)
     return _show(io, mime, stats; kwargs...)
 end
+function Base.show(io::IO, mime::MIME"text/html", stats::SummaryStats; kwargs...)
+    return _show(io, mime, stats; kwargs...)
+end
 
 function _show(io::IO, mime::MIME, stats::SummaryStats; kwargs...)
     data = parent(stats)[eachindex(stats)[2:end]]

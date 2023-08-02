@@ -149,6 +149,9 @@ end
 function Base.show(io::IO, mime::MIME"text/plain", r::ModelComparisonResult; kwargs...)
     return _show(io, mime, r; kwargs...)
 end
+function Base.show(io::IO, mime::MIME"text/html", r::ModelComparisonResult; kwargs...)
+    return _show(io, mime, r; kwargs...)
+end
 
 function _show(io::IO, mime::MIME, r::ModelComparisonResult; kwargs...)
     row_labels = collect(r.name)

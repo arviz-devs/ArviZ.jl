@@ -518,5 +518,12 @@ function _show_prettytable(
         kwargs...,
     )
 end
+function _show_prettytable(
+    io::IO, ::MIME"text/html", data; minify=true, max_num_of_rows=25, kwargs...
+)
+    return _show_prettytable(
+        io, data; backend=Val(:html), minify, max_num_of_rows, kwargs...
+    )
+end
 
 _is_ess_label(k::Symbol) = ((k === :ess) || startswith(string(k), "ess_"))
