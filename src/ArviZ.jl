@@ -1,6 +1,11 @@
 module ArviZ
 
+using Reexport
 
+## Re-export component packages
+@reexport using InferenceObjects
+# only export recommended functions and corresponding utilities
+@reexport using MCMCDiagnosticTools:
     MCMCDiagnosticTools,
     AutocovMethod,
     FFTAutocovMethod,
@@ -11,6 +16,9 @@ module ArviZ
     mcse,
     rhat,
     rstar
+@reexport using PosteriorStats
+@reexport using PSIS
+@reexport using StatsBase: summarystats
 
 ## Conversions
 export from_mcmcchains, from_samplechains
