@@ -15,7 +15,7 @@ idata = load_example_data("centered_eight")
 ```
 
 !!! info
-	  `Dataset`s are [`DimensionalData.AbstractDimStack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.AbstractDimStack)s and can be used identically.
+	  `Dataset`s are [`DimensionalData.AbstractDimStack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.AbstractDimStack)s and can be used identically.
 	  The variables a `Dataset` contains are called "layers", and dimensions of the same name that appear in more than one layer within a `Dataset` must have the same indices.
 
 `InferenceData` behaves like a `NamedTuple` and can be used similarly.
@@ -121,7 +121,7 @@ Let’s keep only chain 0 here.
 For the subset to take effect on all relevant `InferenceData` groups -- `posterior`, `sample_stats`, `log_likelihood`, and `posterior_predictive` -- we will index `InferenceData` instead of `Dataset`.
 
 Here we use DimensionalData's `At` selector.
-Its [other selectors](https://rafaqz.github.io/DimensionalData.jl/stable/api/#Selectors) are also supported.
+Its [other selectors](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#selectors) are also supported.
 
 ```@example wwid
 idata[chain=At(0)]
@@ -179,7 +179,7 @@ dropdims(mean(post; dims=(:chain, :draw)); dims=(:chain, :draw))
 
 ## Renaming a dimension
 
-We can rename a dimension in a `Dataset` using DimensionalData's [`set`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.Dimensions.LookupArrays.set) method:
+We can rename a dimension in a `Dataset` using DimensionalData's [`set`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.Dimensions.LookupArrays.set) method:
 
 ```@example wwid
 theta_bis = set(post.theta; school=:school_bis)
