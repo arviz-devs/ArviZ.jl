@@ -99,6 +99,7 @@ makedocs(;
     doctestfilters,
     linkcheck=true,
     analytics="G-W1G68W77YV",
+    strict=Documenter.except(:footnote, :missing_docs),
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)
