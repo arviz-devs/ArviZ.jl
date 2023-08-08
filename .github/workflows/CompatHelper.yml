@@ -12,7 +12,7 @@ jobs:
       - name: CompatHelper.main()
         run: |
           using CompatHelper
-          subdirs = ["", "test", "docs"]
+          subdirs = ["", "docs"]
           CompatHelper.main(; subdirs)
         shell: julia --color=yes {0}
         env:
