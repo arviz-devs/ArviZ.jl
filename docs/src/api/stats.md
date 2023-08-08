@@ -8,6 +8,10 @@ Pages = ["stats.md"]
 
 ```@docs
 SummaryStats
+default_summary_stats
+default_stats
+default_diagnostics
+summarize
 summarystats
 ```
 
@@ -22,9 +26,11 @@ r2_score
 ## Pareto-smoothed importance sampling
 
 ```@docs
-PSIS.PSISResult
-PSIS.psis
-PSIS.psis!
+PSISResult
+ess_is
+PSISPlots.paretoshapeplot
+psis
+psis!
 ```
 
 ## LOO and WAIC
@@ -61,8 +67,8 @@ Stacking
 loo_pit
 ```
 
-### Utilities
+## Utilities
 
 ```@docs
-ArviZStats.smooth_data
+PosteriorStats.smooth_data
 ```
