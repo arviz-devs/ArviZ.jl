@@ -1,4 +1,4 @@
-@doc doc"""
+"""
     from_mcmcchains(posterior::MCMCChains.Chains; kwargs...) -> InferenceData
     from_mcmcchains(; kwargs...) -> InferenceData
     from_mcmcchains(
