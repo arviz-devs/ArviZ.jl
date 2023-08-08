@@ -1,32 +1,6 @@
 module ArviZ
 
-using Base: @__doc__
-using REPL
-using OrderedCollections: OrderedDict
-using DimensionalData: DimensionalData, Dimensions
-using LogExpFunctions: logsumexp
 
-import Base:
-    convert,
-    get,
-    getindex,
-    getproperty,
-    hash,
-    haskey,
-    iterate,
-    length,
-    propertynames,
-    setindex,
-    show,
-    write,
-    +
-import Base.Docs: getdoc
-using StatsBase: StatsBase
-import Markdown: @doc_str
-
-using InferenceObjects
-
-using MCMCDiagnosticTools:
     MCMCDiagnosticTools,
     AutocovMethod,
     FFTAutocovMethod,
@@ -38,45 +12,12 @@ using MCMCDiagnosticTools:
     rhat,
     rstar
 
-# Exports
-
-## Stats
-export ArviZStats
-export AbstractELPDResult, PSISLOOResult, WAICResult
-export PSIS, PSISResult, psis, psis!
-export elpd_estimates, information_criterion, loo, waic
-export AbstractModelWeightsMethod, BootstrappedPseudoBMA, PseudoBMA, Stacking, model_weights
-export ModelComparisonResult, compare
-export SummaryStats, summarystats
-export hdi, hdi!, loo_pit, r2_score
-
-## Diagnostics
-export MCMCDiagnosticTools, AutocovMethod, FFTAutocovMethod, BDAAutocovMethod
-export bfmi, ess, ess_rhat, mcse, rhat, rstar
-
-## InferenceObjects
-export InferenceObjects,
-    Dataset,
-    InferenceData,
-    convert_to_dataset,
-    convert_to_inference_data,
-    from_dict,
-    from_namedtuple,
-    namedtuple_to_dataset
-
-## NetCDF I/O
-export from_netcdf, to_netcdf
-
 ## Conversions
 export from_mcmcchains, from_samplechains
 
 const EXTENSIONS_SUPPORTED = isdefined(Base, :get_extension)
-const DEFAULT_SAMPLE_DIMS = Dimensions.key2dim((:chain, :draw))
 
 include("utils.jl")
-include("ArviZStats/ArviZStats.jl")
-using .ArviZStats
-
 include("conversions.jl")
 
 if !EXTENSIONS_SUPPORTED
