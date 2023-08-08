@@ -31,6 +31,7 @@ PSIS = "0.9.1"
 Reexport = "1"
 Requires = "0.5.2, 1.0"
 SampleChains = "0.5"
+SampleChainsDynamicHMC = "0.3"
 StatsBase = "0.32, 0.33, 0.34"
 julia = "1.6"
 
