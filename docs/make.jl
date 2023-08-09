@@ -1,6 +1,4 @@
 using Pkg, CondaPkg, Documenter, Downloads, ArviZ
-using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
-using SampleChains: SampleChains # make `from_samplechains` available for API docs
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
 
@@ -55,37 +53,49 @@ function download_asset(remote_fn, fn=remote_fn)
     )
 end
 
+function get_extension(mod::Module, submodule::Symbol)
+    if isdefined(Base, :get_extension)
+        return Base.get_extension(mod, submodule)
+    else
+        return getproperty(mod, submodule)
+    end
+end
+
 # download arviz-devs org logo assets
 download_asset("ArviZ.png", "logo.png")
 download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
-DocMeta.setdocmeta!(ArviZ.ArviZExampleData, :DocTestSetup, :(using ArviZ.ArviZExampleData);)
-DocMeta.setdocmeta!(
-    ArviZ.MCMCDiagnosticTools, :DocTestSetup, :(using ArviZ.MCMCDiagnosticTools);
+InferenceObjectsMCMCDiagnosticToolsExt = get_extension(
+    InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt
 )
-DocMeta.setdocmeta!(ArviZ.InferenceObjects, :DocTestSetup, :(using ArviZ.InferenceObjects);)
+InferenceObjectsPosteriorStatsExt = get_extension(
+    InferenceObjects, :InferenceObjectsPosteriorStatsExt
+)
+
+for subpkg in (InferenceObjects, MCMCDiagnosticTools, PosteriorStats, PSIS)
+    DocMeta.setdocmeta!(subpkg, :DocTestSetup, :(using $(Symbol(subpkg))))
+end
+DocMeta.setdocmeta!(
+    InferenceObjectsMCMCDiagnosticToolsExt, :DocTestSetup, :(using MCMCDiagnosticTools)
+)
+DocMeta.setdocmeta!(
+    InferenceObjectsPosteriorStatsExt, :DocTestSetup, :(using PosteriorStats)
+)
+
+modules = [
+    ArviZ,
+    InferenceObjects,
+    InferenceObjectsMCMCDiagnosticToolsExt,
+    InferenceObjectsPosteriorStatsExt,
+    MCMCDiagnosticTools,
+    PosteriorStats,
+    PSIS,
+]
 
 doctestfilters = [
     r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
 ]
-
-modules = [
-    ArviZ,
-    ArviZExampleData,
-    InferenceObjects,
-    InferenceObjectsNetCDF,
-    MCMCDiagnosticTools,
-    PSIS,
-]
-if isdefined(Base, :get_extension)
-    # using Requires, these docstrings are automatically loaded, but as an extension we need
-    # to manually specify the module
-    push!(
-        modules,
-        Base.get_extension(InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt),
-    )
-end
 
 makedocs(;
     modules,
@@ -97,10 +107,8 @@ makedocs(;
             "Working with `InferenceData`" => "working_with_inference_data.md",
             "Creating custom plots" => "creating_custom_plots.md",
         ],
-        "Example Gallery" => ["Matplotlib" => "mpl_examples.md"],
         "API" => [
             hide("api/index.md"),
-            "Plots" => "api/plots.md",
             "Stats" => "api/stats.md",
             "Diagnostics" => "api/diagnostics.md",
             "Data" => "api/data.md",
@@ -120,6 +128,8 @@ makedocs(;
     doctestfilters,
     linkcheck=true,
     analytics="G-W1G68W77YV",
+    # allow linkcheck to fail so we can use pretty links to PlutoStaticHTML notebooks
+    strict=Documenter.except(:footnote, :linkcheck, :missing_docs),
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)

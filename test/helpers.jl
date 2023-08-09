@@ -1,12 +1,5 @@
 using Random
-using PyCall
-using ArviZ: attributes
-
-py"""
-class PyNullObject(object):
-   def __init__(self):
-       pass
-"""
+using ArviZ
 
 function random_dim_array(var_name, dims, coords, default_dims=())
     _dims = (default_dims..., dims...)
@@ -111,7 +104,7 @@ function check_idata_schema(idata)
                 @test var_data isa DimensionalData.AbstractDimArray
             end
             @testset "attributes" begin
-                attrs = ArviZ.attributes(group)
+                attrs = InferenceObjects.attributes(group)
                 @test attrs isa AbstractDict{String,Any}
                 @test "created_at" in keys(attrs)
                 @test_skip "inference_library" in keys(attrs)
@@ -124,7 +117,7 @@ end
 function test_idata_approx_equal(
     idata1::InferenceData, idata2::InferenceData; check_metadata=true
 )
-    @test ArviZ.groupnames(idata1) === ArviZ.groupnames(idata2)
+    @test InferenceObjects.groupnames(idata1) === InferenceObjects.groupnames(idata2)
     for (ds1, ds2) in zip(idata1, idata2)
         @test issetequal(keys(ds1), keys(ds2))
         for var_name in keys(ds1)
@@ -158,7 +151,7 @@ function test_idata_group_correct(
     default_dims=(:draw, :chain),
 )
     @test idata isa InferenceData
-    @test ArviZ.hasgroup(idata, group_name)
+    @test InferenceObjects.hasgroup(idata, group_name)
     ds = getproperty(idata, group_name)
     @test ds isa ArviZ.Dataset
     @test issetequal(keys(ds), var_names)

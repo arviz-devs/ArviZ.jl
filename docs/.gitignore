@@ -1,4 +1,7 @@
+Manifest.toml
+
 /.CondaPkg
+
 /src/.quarto/
 /src/_freeze/
 
@@ -7,3 +10,10 @@
 
 /src/creating_custom_plots.md
 /src/creating_custom_plots_files
+
+src/*.log
+src/assets/logo*.png
+src/assets/favicon.ico
+src/*.log
+
+build
