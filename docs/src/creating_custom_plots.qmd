@@ -18,7 +18,7 @@ Pkg.activate(".."); # for reproducibility use the docs environment.
 ```
 
 ```{julia}
-using ArviZ, DimensionalData, DataFrames, Statistics, AlgebraOfGraphics, CairoMakie
+using ArviZ, ArviZExampleData, DimensionalData, DataFrames, Statistics, AlgebraOfGraphics, CairoMakie
 using AlgebraOfGraphics: density
 set_aog_theme!()
 ```
