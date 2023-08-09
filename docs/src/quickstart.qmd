@@ -48,7 +48,7 @@ plot_forest((
     gumbel=rand(rng1, Gumbel(), s),
     student_t=rand(rng1, TDist(6), s),
     exponential=rand(rng1, Exponential(), s),
-),);
+));
 ```
 
 ## Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl
@@ -91,7 +91,7 @@ Turing.@model function model_turing(y, σ, J=length(y))
     for i in 1:J
         y[i] ~ Normal(θ[i], σ[i])
     end
-end
+end;
 ```
 
 ```{julia}
@@ -129,7 +129,7 @@ idata_turing_post = from_mcmcchains(
 )
 ```
 
-Each group is [`Dataset`](@ref), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack).
+Each group is a [`Dataset`](@ref), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack).
 We can view a summary of the dataset.
 
 ```{julia}
