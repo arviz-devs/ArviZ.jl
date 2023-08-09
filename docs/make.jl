@@ -1,6 +1,4 @@
 using Documenter, Downloads, ArviZ
-using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
-using SampleChains: SampleChains # make `from_samplechains` available for API docs
 using PlutoStaticHTML: PlutoStaticHTML
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
@@ -75,6 +73,7 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Getting Started" => [
+            "Quickstart" => "quickstart.md",
             "Working with `InferenceData`" => "working_with_inference_data.md",
             "Creating custom plots" => "creating_custom_plots.md",
         ],
@@ -99,7 +98,8 @@ makedocs(;
     doctestfilters,
     linkcheck=true,
     analytics="G-W1G68W77YV",
-    strict=Documenter.except(:footnote, :missing_docs),
+    # allow linkcheck to fail so we can use pretty links to PlutoStaticHTML notebooks
+    strict=Documenter.except(:footnote, :linkcheck, :missing_docs),
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)

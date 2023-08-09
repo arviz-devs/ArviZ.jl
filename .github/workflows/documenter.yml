@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+env:
+  CMDSTAN_VERSION: "2.25.0"
+  CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
+  JULIA_NUM_THREADS: 2
+
 jobs:
   docs:
     name: Documentation
@@ -15,6 +20,23 @@ jobs:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
       - uses: julia-actions/cache@v1
+      - name: Cache CondaPkg
+        id: cache-condaPkg
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-condapkg
+        with:
+          path: docs/.CondaPkg
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('docs/CondaPkg.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+      - name: Download and build CmdStan
+        if: steps.cache-cmdstan.outputs.cache-hit != 'true'
+        run: |
+          wget -P ${{ env.CMDSTAN_PATH }} https://github.com/stan-dev/cmdstan/releases/download/v${{ env.CMDSTAN_VERSION }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz
+          tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
+          make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
+        shell: bash
       - uses: julia-actions/julia-buildpkg@v1
       - name: Install dependencies
         run: julia --color=yes --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
@@ -22,5 +44,6 @@ jobs:
         with:
           install-package: false
         env:
+          JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}

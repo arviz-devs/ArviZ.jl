@@ -1,0 +1,9 @@
+Manifest.toml
+.CondaPkg
+src/quickstart.md
+src/creating_custom_plots.md
+src/*.log
+src/assets/logo*.png
+src/assets/favicon.ico
+src/*.log
+build

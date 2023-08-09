@@ -25,7 +25,7 @@ pkg> add ArviZ
 
 ## [Usage](@id usage)
 
-See the [API Overview](@ref api) for description of functions.
+See the [Quickstart](./quickstart) for example usage and the [API Overview](@ref api) for description of functions.
 
 ## [Extending ArviZ.jl](@id extendingarviz)
 
