@@ -26,29 +26,49 @@ function download_asset(remote_fn, fn=remote_fn)
     )
 end
 
+function get_extension(mod::Module, submodule::Symbol)
+    if isdefined(Base, :get_extension)
+        return Base.get_extension(mod, submodule)
+    else
+        return getproperty(mod, submodule)
+    end
+end
+
 # download arviz-devs org logo assets
 download_asset("ArviZ.png", "logo.png")
 download_asset("ArviZ_white.png", "logo-dark.png")
 download_asset("favicon.ico")
 
-DocMeta.setdocmeta!(
-    ArviZ.MCMCDiagnosticTools, :DocTestSetup, :(using ArviZ.MCMCDiagnosticTools);
+InferenceObjectsMCMCDiagnosticToolsExt = get_extension(
+    InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt
 )
-DocMeta.setdocmeta!(ArviZ.InferenceObjects, :DocTestSetup, :(using ArviZ.InferenceObjects);)
+InferenceObjectsPosteriorStatsExt = get_extension(
+    InferenceObjects, :InferenceObjectsPosteriorStatsExt
+)
+
+for subpkg in (InferenceObjects, MCMCDiagnosticTools, PosteriorStats, PSIS)
+    DocMeta.setdocmeta!(subpkg, :DocTestSetup, :(using $(Symbol(subpkg))))
+end
+DocMeta.setdocmeta!(
+    InferenceObjectsMCMCDiagnosticToolsExt, :DocTestSetup, :(using MCMCDiagnosticTools)
+)
+DocMeta.setdocmeta!(
+    InferenceObjectsPosteriorStatsExt, :DocTestSetup, :(using PosteriorStats)
+)
+
+modules = [
+    ArviZ,
+    InferenceObjects,
+    InferenceObjectsMCMCDiagnosticToolsExt,
+    InferenceObjectsPosteriorStatsExt,
+    MCMCDiagnosticTools,
+    PosteriorStats,
+    PSIS,
+]
 
 doctestfilters = [
     r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
 ]
-
-modules = [ArviZ, InferenceObjects, MCMCDiagnosticTools, PSIS]
-if isdefined(Base, :get_extension)
-    # using Requires, these docstrings are automatically loaded, but as an extension we need
-    # to manually specify the module
-    push!(
-        modules,
-        Base.get_extension(InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt),
-    )
-end
 
 makedocs(;
     modules,
@@ -81,6 +101,7 @@ makedocs(;
     doctestfilters,
     linkcheck=true,
     analytics="G-W1G68W77YV",
+    strict=Documenter.except(:footnote, :missing_docs),
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)

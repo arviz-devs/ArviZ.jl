@@ -4,12 +4,13 @@ on:
     branches: [main]
     tags: [v*]
   pull_request:
+  schedule:
+    - cron: "0 0 * * *"
 
 env:
   CMDSTAN_VERSION: "2.25.0"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
   JULIA_NUM_THREADS: 2
-  PYTHON: "Conda" # use Julia's packaged Conda build for installing packages
 
 jobs:
   docs:
@@ -26,19 +27,12 @@ jobs:
           tar -xzpf ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}.tar.gz -C ${{ env.CMDSTAN_PATH }}
           make -C ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ build
         shell: bash
-      - uses: julia-actions/julia-buildpkg@latest
-      - name: Instantiate docs environment
-        run: |
-          using Pkg
-          Pkg.instantiate()
-          using ArviZPythonPlots
-          using ArviZPythonPlots.Conda
-          # https://discourse.julialang.org/t/conda-not-installing-matplotlib-for-pyplot/96813/2
-          Conda.add("conda==23.1.0")
-          ArviZPythonPlots.initialize_arviz()
-          ArviZPythonPlots.initialize_pandas()
-        shell: julia --color=yes --project docs {0}
+      - uses: julia-actions/julia-buildpkg@v1
+      - name: Install dependencies
+        run: julia --color=yes --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
       - uses: julia-actions/julia-docdeploy@v1
+        with:
+          install-package: false
         env:
           JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
