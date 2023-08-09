@@ -50,7 +50,7 @@ md"""
 ## [Get started with plotting](#Get-started-with-plotting)
 
 To plot with ArviZ, we need to load the [ArviZPythonPlots](https://julia.arviz.org/ArviZPythonPlots) package.
-ArviZ is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turing.ml), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
+ArviZ is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turinglang.org), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 """
 
 # ╔═╡ efb3f0af-9fac-48d8-bbb2-2dd6ebd5e4f6
@@ -174,7 +174,7 @@ idata_turing_post = from_mcmcchains(
 
 # ╔═╡ 79f342c8-0738-432b-bfd7-2da25e50fa91
 md"""
-Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/InferenceObjects/stable/dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.DimStack).
+Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/InferenceObjects/stable/dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack).
 We can view a summary of the dataset.
 """
 
@@ -235,7 +235,7 @@ end;
 
 # ╔═╡ 4d2fdcbe-c1d4-43b6-b382-f2e956b952a1
 md"""
-And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](https://julia.arviz.org/ArviZ/stable/api/stats/#ArviZ.loo),
+And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](https://julia.arviz.org/ArviZ/stable/api/stats/#PosteriorStats.loo),
 """
 
 # ╔═╡ 5a075722-232f-40fc-a499-8dc5b0c2424a
