@@ -1,7 +1,4 @@
 using Documenter, Downloads, ArviZ
-using ArviZPythonPlots: ArviZPythonPlots
-using MCMCChains: MCMCChains # make `from_mcmcchains` available for API docs
-using SampleChains: SampleChains # make `from_samplechains` available for API docs
 using PlutoStaticHTML: PlutoStaticHTML
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
