@@ -98,7 +98,8 @@ makedocs(;
     doctestfilters,
     linkcheck=true,
     analytics="G-W1G68W77YV",
-    strict=Documenter.except(:footnote, :missing_docs),
+    # allow linkcheck to fail so we can use pretty links to PlutoStaticHTML notebooks
+    strict=Documenter.except(:footnote, :linkcheck, :missing_docs),
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)
