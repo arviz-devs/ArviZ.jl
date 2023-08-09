@@ -1,5 +1,5 @@
 ---
-title: "ArviZ.jl Quickstart"
+title: "ArviZ Quickstart"
 ---
 
 ## Set-up
@@ -16,17 +16,18 @@ Pkg.activate(".."); # for reproducibility use the docs environment.
 ```
 
 ```{julia}
-using ArviZ, Distributions, LinearAlgebra, PyPlot, Random, StanSample, Turing
+using ArviZ, ArviZPythonPlots, Distributions, LinearAlgebra, Random, StanSample, Turing
 ```
 
 ```{julia}
-# ArviZ ships with style sheets!
-ArviZ.use_style("arviz-darkgrid")
+# ArviZPythonPlots ships with style sheets!
+use_style("arviz-darkgrid")
 ```
 
 ## Get started with plotting
 
-ArviZ.jl is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turinglang.org), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
+To plot with ArviZ, we need to load the [ArviZPythonPlots](https://julia.arviz.org/ArviZPythonPlots) package.
+ArviZ is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turinglang.org), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
 
 ```{julia}
 rng1 = Random.MersenneTwister(37772);
@@ -36,7 +37,7 @@ rng1 = Random.MersenneTwister(37772);
 plot_posterior(randn(rng1, 100_000));
 ```
 
-Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of a different random variable.
+Plotting a dictionary of arrays, ArviZ will interpret each key as the name of a different random variable.
 Each row of an array is treated as an independent series of draws from the variable, called a _chain_.
 Below, we have 10 chains of 50 draws each for four different distributions.
 
@@ -128,7 +129,7 @@ idata_turing_post = from_mcmcchains(
 )
 ```
 
-Each group is a [`Dataset`](@ref), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.DimStack).
+Each group is [`Dataset`](@ref), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack).
 We can view a summary of the dataset.
 
 ```{julia}
