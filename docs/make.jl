@@ -71,6 +71,9 @@ prettyurls = haskey(ENV, "CI")
 
 # we don't reexport or document all of MCMCDiagnosticTools
 warnonly = [:missing_docs]
+# we reference the pages built by PlutoStaticHTML with pretty relative URLs
+prettyurls || push!(warnonly, :cross_references)
+
 makedocs(;
     modules,
     sitename="ArviZ.jl",
