@@ -69,6 +69,8 @@ doctestfilters = [
 
 prettyurls = haskey(ENV, "CI")
 
+# we don't reexport or document all of MCMCDiagnosticTools
+warnonly = [:missing_docs]
 makedocs(;
     modules,
     sitename="ArviZ.jl",
@@ -99,9 +101,8 @@ makedocs(;
         analytics="G-W1G68W77YV",
     ),
     doctestfilters,
-    linkcheck=true,
-    # allow linkcheck to fail so we can use pretty links to PlutoStaticHTML notebooks
-    strict=Documenter.except(:footnote, :linkcheck, :missing_docs),
+    linkcheck=prettyurls,
+    warnonly,
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)
