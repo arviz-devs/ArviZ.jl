@@ -67,6 +67,8 @@ doctestfilters = [
     r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
 ]
 
+prettyurls = haskey(ENV, "CI")
+
 makedocs(;
     modules,
     sitename="ArviZ.jl",
@@ -90,7 +92,7 @@ makedocs(;
     ],
     checkdocs=:exports,
     format=Documenter.HTML(;
-        prettyurls=haskey(ENV, "CI"),
+        prettyurls,
         assets=["assets/favicon.ico", "assets/custom.css"],
         sidebar_sitename=false,
         canonical="stable",
