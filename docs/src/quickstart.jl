@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.16
+# v0.19.36
 
 using Markdown
 using InteractiveUtils
@@ -299,14 +299,14 @@ begin
     schools_code = """
     data {
       int<lower=0> J;
-      real y[J];
-      real<lower=0> sigma[J];
+      array[J] real y;
+      array[J] real<lower=0> sigma;
     }
 
     parameters {
       real mu;
       real<lower=0> tau;
-      real theta[J];
+      array[J] real theta;
     }
 
     model {
