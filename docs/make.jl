@@ -69,10 +69,10 @@ doctestfilters = [
 
 prettyurls = haskey(ENV, "CI")
 
-# we don't reexport or document all of MCMCDiagnosticTools
-warnonly = [:missing_docs]
-# we reference the pages built by PlutoStaticHTML with pretty relative URLs
-prettyurls || push!(warnonly, :cross_references)
+warnonly = [
+    :missing_docs,  # we don't reexport or document all of MCMCDiagnosticTools
+    :cross_references,  # we reference the pages built by PlutoStaticHTML with pretty relative URLs
+]
 
 makedocs(;
     modules,
