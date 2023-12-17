@@ -30,6 +30,12 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('docs/CondaPkg.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
+      - name: Cache CmdStan
+        id: cache-cmdstan
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CMDSTAN_PATH }}
+          key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
       - name: Download and build CmdStan
         if: steps.cache-cmdstan.outputs.cache-hit != 'true'
         run: |
