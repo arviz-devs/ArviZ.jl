@@ -72,6 +72,7 @@ prettyurls = haskey(ENV, "CI")
 warnonly = [
     :missing_docs,  # we don't reexport or document all of MCMCDiagnosticTools
     :cross_references,  # we reference the pages built by PlutoStaticHTML with pretty relative URLs
+    :linkcheck,  # avoid checking links to pages built with PlutoStaticHTML
 ]
 
 makedocs(;
@@ -105,7 +106,7 @@ makedocs(;
         analytics="G-W1G68W77YV",
     ),
     doctestfilters,
-    linkcheck=prettyurls,
+    linkcheck=true,
     warnonly,
 )
 
