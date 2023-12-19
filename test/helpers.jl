@@ -1,5 +1,6 @@
-using Random
 using ArviZ
+using DimensionalData
+using Random
 
 function random_dim_array(var_name, dims, coords, default_dims=())
     _dims = (default_dims..., dims...)
