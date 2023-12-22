@@ -17,7 +17,7 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
       - uses: julia-actions/cache@v1
       - name: Cache CondaPkg
