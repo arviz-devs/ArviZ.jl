@@ -1,7 +1,7 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.10.3"
+version = "0.10.4"
 
 [deps]
 InferenceObjects = "b5cf5a8d-e756-4ee3-b014-01d49d192c00"
@@ -26,8 +26,8 @@ ArviZSampleChainsExt = "SampleChains"
 InferenceObjects = "0.3.11"
 MCMCChains = "6"
 MCMCDiagnosticTools = "0.3.4"
-PosteriorStats = "0.1.1"
 PSIS = "0.9.1"
+PosteriorStats = "0.1.1, 0.2"
 Reexport = "1"
 Requires = "0.5.2, 1.0"
 SampleChains = "0.5"
