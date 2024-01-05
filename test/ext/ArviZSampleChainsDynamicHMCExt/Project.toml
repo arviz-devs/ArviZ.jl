@@ -1,0 +1,15 @@
+[deps]
+ArviZ = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
+DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e"
+SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+ArviZ = "0.10.3"
+DimensionalData = "0.24, 0.25"
+Random = "1.6"
+SampleChains = "0.5"
+SampleChainsDynamicHMC = "0.3"
+Test = "1.6"

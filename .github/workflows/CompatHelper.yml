@@ -7,6 +7,7 @@ jobs:
   CompatHelper:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Pkg.add("CompatHelper")
         run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
       - name: CompatHelper.main()
@@ -16,4 +17,5 @@ jobs:
           COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}
         run: |
           using CompatHelper
-          CompatHelper.main(; subdirs=["", "docs"])
+          subdirs = ["", "docs", readdir("test/ext"; join=true)...]
+          CompatHelper.main(; subdirs)

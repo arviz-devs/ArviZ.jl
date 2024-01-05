@@ -3,6 +3,7 @@ using ArviZ
 using DimensionalData
 using MCMCChains: MCMCChains
 using OrderedCollections
+using Random
 
 function makechains(
     names, ndraws, nchains, domains=[Float64 for _ in names]; seed=42, internal_names=[]
