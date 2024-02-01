@@ -22,7 +22,7 @@ jobs:
       - uses: julia-actions/cache@v1
       - name: Cache CondaPkg
         id: cache-condaPkg
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-condapkg
         with:
@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}-${{ env.cache-name }}-
       - name: Cache CmdStan
         id: cache-cmdstan
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.CMDSTAN_PATH }}
           key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
