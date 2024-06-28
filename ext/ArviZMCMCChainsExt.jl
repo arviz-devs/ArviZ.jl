@@ -19,7 +19,7 @@ const stats_key_map = Dict(
 
 function split_locname(name::AbstractString)
     endswith(name, "]") || return name, ()
-    basename, index = rsplit(name[1:end-1], "["; limit=2)
+    basename, index = rsplit(name[1:(end - 1)], "["; limit=2)
     isempty(index) && return name, ()
     try
         loc = parse.(Int, split(index, ','))
