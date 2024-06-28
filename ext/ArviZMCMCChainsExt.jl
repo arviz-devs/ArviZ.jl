@@ -30,13 +30,16 @@ const stats_key_map = merge(turing_key_map, stan_key_map)
 headtail(x) = x[1], x[2:end]
 
 function split_locname(name::AbstractString)
-    name = replace(name, r"[\[,]" => '.')
-    name = replace(name, ']' => "")
-    name, loc = headtail(split(name, '.'))
-    isempty(loc) && return name, ()
-    loc = tryparse.(Int, loc)
-    Nothing <: eltype(loc) && return name, ()
-    return name, tuple(loc...)
+    endswith(name, "]") || return name, ()
+    isplit = findlast(isequal('['), name)
+    isplit === nothing && return name, ()
+    try
+        loc = parse.(Int, split(name[(isplit + 1):(end - 1)], ','))
+        return name[1:(isplit - 1)], tuple(loc...)
+    catch e
+        e isa ArgumentError && return name, ()
+        rethrow(e)
+    end
 end
 function split_locname(name::Symbol)
     subname, loc = split_locname(string(name))
