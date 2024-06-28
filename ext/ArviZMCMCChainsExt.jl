@@ -17,8 +17,6 @@ const stats_key_map = Dict(
     :numerical_error => :diverging,
 )
 
-headtail(x) = x[1], x[2:end]
-
 function split_locname(name::AbstractString)
     endswith(name, "]") || return name, ()
     basename, index = rsplit(name[1:end-1], "["; limit=2)
