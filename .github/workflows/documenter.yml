@@ -8,7 +8,7 @@ on:
     - cron: "0 0 * * *"
 
 env:
-  CMDSTAN_VERSION: "2.33.1"
+  CMDSTAN_VERSION: "2.34.1"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
   JULIA_NUM_THREADS: 2
 
@@ -50,6 +50,6 @@ jobs:
         with:
           install-package: false
         env:
-          JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
+          CMDSTAN: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by StanSample.jl
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}

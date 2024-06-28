@@ -8,7 +8,7 @@ else
     using ..MCMCChains: MCMCChains
 end
 
-const turing_key_map = Dict(
+const stats_key_map = Dict(
     :hamiltonian_energy => :energy,
     :hamiltonian_energy_error => :energy_error,
     :is_adapt => :tune,
@@ -16,27 +16,18 @@ const turing_key_map = Dict(
     :nom_step_size => :step_size_nom,
     :numerical_error => :diverging,
 )
-const stan_key_map = Dict(
-    :accept_stat__ => :acceptance_rate,
-    :divergent__ => :diverging,
-    :energy__ => :energy,
-    :lp__ => :lp,
-    :n_leapfrog__ => :n_steps,
-    :stepsize__ => :step_size,
-    :treedepth__ => :tree_depth,
-)
-const stats_key_map = merge(turing_key_map, stan_key_map)
-
-headtail(x) = x[1], x[2:end]
 
 function split_locname(name::AbstractString)
-    name = replace(name, r"[\[,]" => '.')
-    name = replace(name, ']' => "")
-    name, loc = headtail(split(name, '.'))
-    isempty(loc) && return name, ()
-    loc = tryparse.(Int, loc)
-    Nothing <: eltype(loc) && return name, ()
-    return name, tuple(loc...)
+    endswith(name, "]") || return name, ()
+    basename, index = rsplit(name[1:(end - 1)], "["; limit=2)
+    isempty(index) && return name, ()
+    try
+        loc = parse.(Int, split(index, ','))
+        return basename, tuple(loc...)
+    catch e
+        e isa ArgumentError && return name, ()
+        rethrow(e)
+    end
 end
 function split_locname(name::Symbol)
     subname, loc = split_locname(string(name))
