@@ -73,7 +73,7 @@ end
     end
 
     @testset "multivariate" begin
-        var_names = Symbol.(["a[1][1]", "a.2.2", "a[2,1]", "a[1, 2]"])
+        var_names = Symbol.(["a[1, 1]", "a[2,2]", "a[2,1]", "a[1, 2]"])
         coords = (ai=1:2, aj=["aj1", "aj2"])
         dims = (a=[:ai, :aj],)
         nchains, ndraws = 4, 20
@@ -89,6 +89,26 @@ end
         @test arr[:, :, 2, 2] == chns.value[:, ET(var_names[2]), :]
         @test arr[:, :, 2, 1] == chns.value[:, ET(var_names[3]), :]
         @test arr[:, :, 1, 2] == chns.value[:, ET(var_names[4]), :]
+    end
+
+    @testset "dots are not split" begin
+        var_names = Symbol.(["a.b[1]", "a.b[2]", "a.c[2]", "a.c[1]"])
+        coords = (dim=["x", "y"],)
+        dims = (var"a.b"=[:dim], var"a.c"=[:dim])
+        nchains, ndraws = 4, 20
+        chns = makechains(var_names, ndraws, nchains)
+
+        # String or Symbol, which depends on MCMCChains version
+        ET = Base.promote_typeof(chns.name_map.parameters...)
+
+        idata = from_mcmcchains(chns; coords, dims)
+        test_chains_data(chns, idata, :posterior, Symbol.(["a.b", "a.c"]); coords, dims)
+        arr = idata.posterior.var"a.b"
+        @test arr[:, :, 1] == chns.value[:, ET(var_names[1]), :]
+        @test arr[:, :, 2] == chns.value[:, ET(var_names[2]), :]
+        arr = idata.posterior.var"a.c"
+        @test arr[:, :, 2] == chns.value[:, ET(var_names[3]), :]
+        @test arr[:, :, 1] == chns.value[:, ET(var_names[4]), :]
     end
 
     @testset "specify eltypes" begin
