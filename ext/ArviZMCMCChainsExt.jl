@@ -21,11 +21,11 @@ headtail(x) = x[1], x[2:end]
 
 function split_locname(name::AbstractString)
     endswith(name, "]") || return name, ()
-    isplit = findlast(isequal('['), name)
-    isplit === nothing && return name, ()
+    basename, index = rsplit(name[1:end-1], "["; limit=2)
+    isempty(index) && return name, ()
     try
-        loc = parse.(Int, split(name[(isplit + 1):(end - 1)], ','))
-        return name[1:(isplit - 1)], tuple(loc...)
+        loc = parse.(Int, split(index, ','))
+        return basename, tuple(loc...)
     catch e
         e isa ArgumentError && return name, ()
         rethrow(e)
