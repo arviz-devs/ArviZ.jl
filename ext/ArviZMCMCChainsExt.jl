@@ -8,7 +8,7 @@ else
     using ..MCMCChains: MCMCChains
 end
 
-const turing_key_map = Dict(
+const stats_key_map = Dict(
     :hamiltonian_energy => :energy,
     :hamiltonian_energy_error => :energy_error,
     :is_adapt => :tune,
@@ -16,16 +16,6 @@ const turing_key_map = Dict(
     :nom_step_size => :step_size_nom,
     :numerical_error => :diverging,
 )
-const stan_key_map = Dict(
-    :accept_stat__ => :acceptance_rate,
-    :divergent__ => :diverging,
-    :energy__ => :energy,
-    :lp__ => :lp,
-    :n_leapfrog__ => :n_steps,
-    :stepsize__ => :step_size,
-    :treedepth__ => :tree_depth,
-)
-const stats_key_map = merge(turing_key_map, stan_key_map)
 
 headtail(x) = x[1], x[2:end]
 
