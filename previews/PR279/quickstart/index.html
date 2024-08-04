@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Quickstart · ArviZ.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="stable/quickstart/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li class="is-active"><a class="tocitem" href>Quickstart</a><ul class="internal"><li><a class="tocitem" href="#Set-up"><span>Set-up</span></a></li><li><a class="tocitem" href="#Get-started-with-plotting"><span>Get started with plotting</span></a></li><li><a class="tocitem" href="#Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl"><span>Plotting with MCMCChains.jl’s <code>Chains</code> objects produced by Turing.jl</span></a></li><li><a class="tocitem" href="#Plotting-with-Stan.jl-outputs"><span>Plotting with Stan.jl outputs</span></a></li><li><a class="tocitem" href="#Environment"><span>Environment</span></a></li></ul></li><li><a class="tocitem" href="../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li><a class="tocitem" href="../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">Example Gallery</span><ul><li><a class="tocitem" href="../mpl_examples/">Matplotlib</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../api/plots/">Plots</a></li><li><a class="tocitem" href="../api/stats/">Stats</a></li><li><a class="tocitem" href="../api/diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../api/data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-4-6" type="checkbox"/><label class="tocitem" for="menuitem-4-6"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../api/inference_data/">InferenceData</a></li><li><a class="tocitem" href="../api/dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Getting Started</a></li><li class="is-active"><a href>Quickstart</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Quickstart</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/quickstart.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="ArviZ.jl-Quickstart"><a class="docs-heading-anchor" href="#ArviZ.jl-Quickstart">ArviZ.jl Quickstart</a><a id="ArviZ.jl-Quickstart-1"></a><a class="docs-heading-anchor-permalink" href="#ArviZ.jl-Quickstart" title="Permalink"></a></h1><h2 id="Set-up"><a class="docs-heading-anchor" href="#Set-up">Set-up</a><a id="Set-up-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up" title="Permalink"></a></h2><p>Here we add the necessary packages for this notebook and load a few we will use throughout.</p><pre><code class="language-julia hljs">using ArviZ, Distributions, LinearAlgebra, PyPlot, Random, StanSample, Turing</code></pre><pre><code class="nohighlight hljs">/home/runner/.julia/conda/3/x86_64/lib/python3.10/site-packages/scipy/__init__.py:146: UserWarning: A NumPy version &gt;=1.17.3 and &lt;1.25.0 is required for this version of SciPy (detected version 1.25.0
+  warnings.warn(f&quot;A NumPy version &gt;={np_minversion} and &lt;{np_maxversion}&quot;</code></pre><pre><code class="language-julia hljs"># ArviZ ships with style sheets!
+ArviZ.use_style(&quot;arviz-darkgrid&quot;)</code></pre><h2 id="Get-started-with-plotting"><a class="docs-heading-anchor" href="#Get-started-with-plotting">Get started with plotting</a><a id="Get-started-with-plotting-1"></a><a class="docs-heading-anchor-permalink" href="#Get-started-with-plotting" title="Permalink"></a></h2><p>ArviZ.jl is designed to be used with libraries like <a href="https://github.com/StanJulia/Stan.jl">Stan</a>, <a href="https://turinglang.org">Turing.jl</a>, and <a href="https://github.com/cscherrer/Soss.jl">Soss.jl</a> but works fine with raw arrays.</p><pre><code class="language-julia hljs">rng1 = Random.MersenneTwister(37772);</code></pre><pre><code class="language-julia hljs">plot_posterior(randn(rng1, 100_000));</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-6-output-1.png" alt/></p><p>Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of a different random variable. Each row of an array is treated as an independent series of draws from the variable, called a <em>chain</em>. Below, we have 10 chains of 50 draws each for four different distributions.</p><pre><code class="language-julia hljs">s = (50, 10)
+plot_forest((
+    normal=randn(rng1, s),
+    gumbel=rand(rng1, Gumbel(), s),
+    student_t=rand(rng1, TDist(6), s),
+    exponential=rand(rng1, Exponential(), s),
+),);</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-7-output-1.png" alt/></p><h2 id="Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl"><a class="docs-heading-anchor" href="#Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl">Plotting with MCMCChains.jl’s <code>Chains</code> objects produced by Turing.jl</a><a id="Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl" title="Permalink"></a></h2><p>ArviZ is designed to work well with high dimensional, labelled data. Consider the <a href="https://statmodeling.stat.columbia.edu/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/">eight schools model</a>, which roughly tries to measure the effectiveness of SAT classes at eight different schools. To show off ArviZ’s labelling, I give the schools the names of <a href="https://en.wikipedia.org/wiki/Eight_Schools_Association">a different eight schools</a>.</p><p>This model is small enough to write down, is hierarchical, and uses labelling. Additionally, a centered parameterization causes <a href="https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html">divergences</a> (which are interesting for illustration).</p><p>First we create our data and set some sampling parameters.</p><pre><code class="language-julia hljs">J = 8
+y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
+σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+schools = [
+    &quot;Choate&quot;,
+    &quot;Deerfield&quot;,
+    &quot;Phillips Andover&quot;,
+    &quot;Phillips Exeter&quot;,
+    &quot;Hotchkiss&quot;,
+    &quot;Lawrenceville&quot;,
+    &quot;St. Paul&#39;s&quot;,
+    &quot;Mt. Hermon&quot;,
+]
+ndraws = 1_000
+ndraws_warmup = 1_000
+nchains = 4;</code></pre><p>Now we write and run the model using Turing:</p><pre><code class="language-julia hljs">Turing.@model function model_turing(y, σ, J=length(y))
+    μ ~ Normal(0, 5)
+    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    θ ~ filldist(Normal(μ, τ), J)
+    for i in 1:J
+        y[i] ~ Normal(θ[i], σ[i])
+    end
+end</code></pre><pre><code class="nohighlight hljs">model_turing (generic function with 3 methods)</code></pre><pre><code class="language-julia hljs">rng2 = Random.MersenneTwister(16653);</code></pre><pre><code class="language-julia hljs">param_mod_turing = model_turing(y, σ)
+sampler = NUTS(ndraws_warmup, 0.8)
+
+turing_chns = Turing.sample(
+    rng2, model_turing(y, σ), sampler, MCMCThreads(), ndraws, nchains
+);</code></pre><pre><code class="nohighlight hljs">┌ Info: Found initial step size
+└   ϵ = 1.6
+┌ Info: Found initial step size
+└   ϵ = 0.8
+┌ Info: Found initial step size
+└   ϵ = 0.4
+┌ Info: Found initial step size
+└   ϵ = 0.8</code></pre><p>Most ArviZ functions work fine with <code>Chains</code> objects from Turing:</p><pre><code class="language-julia hljs">plot_autocorr(turing_chns; var_names=(:μ, :τ));</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-12-output-1.png" alt/></p><h3 id="Convert-to-InferenceData"><a class="docs-heading-anchor" href="#Convert-to-InferenceData">Convert to <code>InferenceData</code></a><a id="Convert-to-InferenceData-1"></a><a class="docs-heading-anchor-permalink" href="#Convert-to-InferenceData" title="Permalink"></a></h3><p>For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert <code>Chains</code> objects to multidimensional data structures with named dimensions and indices. Note that for such dimensions, the information is not contained in <code>Chains</code>, so we need to provide it.</p><p>ArviZ is built to work with <a href="../api/inference_data/#InferenceObjects.InferenceData"><code>InferenceData</code></a>, and the more <em>groups</em> it has access to, the more powerful analyses it can perform.</p><pre><code class="language-julia hljs">idata_turing_post = from_mcmcchains(
+    turing_chns;
+    coords=(; school=schools),
+    dims=NamedTuple(k =&gt; (:school,) for k in (:y, :σ, :θ)),
+    library=&quot;Turing&quot;,
+)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :μ Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :τ Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :θ Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+&#10;with metadata Dict{String, Any} with 2 entries:
+  "created_at" => "2023-07-06T22:38:11.324"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: Dim{:draw}, Dim{:chain}
+and 12 layers:
+  :energy           Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :n_steps          Int64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :diverging        Bool dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :max_energy_error Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :energy_error     Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :is_accept        Bool dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :log_density      Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :tree_depth       Int64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :step_size        Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :acceptance_rate  Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :lp               Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :step_size_nom    Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+&#10;with metadata Dict{String, Any} with 2 entries:
+  "created_at" => "2023-07-06T22:38:11.208"
+  "inference_library" => "Turing"</code></pre>
+</details>
+</div><p>Each group is a <a href="../api/dataset/#InferenceObjects.Dataset"><code>Dataset</code></a>, a <code>DimensionalData.AbstractDimStack</code> that can be used identically to a <a href="https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.DimStack"><code>DimensionalData.Dimstack</code></a>. We can view a summary of the dataset.</p><pre><code class="language-julia hljs">idata_turing_post.posterior</code></pre><pre><code class="nohighlight hljs">Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+and 3 layers:
+  :μ Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :τ Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :θ Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+
+with metadata Dict{String, Any} with 2 entries:
+  &quot;created_at&quot;        =&gt; &quot;2023-07-06T22:38:11.324&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;</code></pre><p>Here is a plot of the trace. Note the intelligent labels.</p><pre><code class="language-julia hljs">plot_trace(idata_turing_post);</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-15-output-1.png" alt/></p><p>We can also generate summary stats…</p><pre><code class="language-julia hljs">summarystats(idata_turing_post)</code></pre><p>…and examine the energy distribution of the Hamiltonian sampler.</p><pre><code class="language-julia hljs">plot_energy(idata_turing_post);</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-17-output-1.png" alt/></p><h3 id="Additional-information-in-Turing.jl"><a class="docs-heading-anchor" href="#Additional-information-in-Turing.jl">Additional information in Turing.jl</a><a id="Additional-information-in-Turing.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Additional-information-in-Turing.jl" title="Permalink"></a></h3><p>With a few more steps, we can use Turing to compute additional useful groups to add to the <code>InferenceData</code>.</p><p>To sample from the prior, one simply calls <code>sample</code> but with the <code>Prior</code> sampler:</p><pre><code class="language-julia hljs">prior = Turing.sample(rng2, param_mod_turing, Prior(), ndraws);</code></pre><p>To draw from the prior and posterior predictive distributions we can instantiate a “predictive model”, i.e. a Turing model but with the observations set to <code>missing</code>, and then calling <code>predict</code> on the predictive model and the previously drawn samples:</p><pre><code class="language-julia hljs"># Instantiate the predictive model
+param_mod_predict = model_turing(similar(y, Missing), σ)
+# and then sample!
+prior_predictive = Turing.predict(rng2, param_mod_predict, prior)
+posterior_predictive = Turing.predict(rng2, param_mod_predict, turing_chns);</code></pre><p>And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as <a href="../api/stats/#ArviZ.ArviZStats.loo"><code>loo</code></a>,</p><pre><code class="language-julia hljs">log_likelihood = let
+    log_likelihood = Turing.pointwise_loglikelihoods(
+        param_mod_turing, MCMCChains.get_sections(turing_chns, :parameters)
+    )
+    # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
+    ynames = string.(keys(posterior_predictive))
+    log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
+    (; y=cat(log_likelihood_y...; dims=3))
+end;</code></pre><p>This can then be included in the <a href="../api/data/#ArviZ.from_mcmcchains"><code>from_mcmcchains</code></a> call from above:</p><pre><code class="language-julia hljs">idata_turing = from_mcmcchains(
+    turing_chns;
+    posterior_predictive,
+    log_likelihood,
+    prior,
+    prior_predictive,
+    observed_data=(; y),
+    coords=(; school=schools),
+    dims=NamedTuple(k =&gt; (:school,) for k in (:y, :σ, :θ)),
+    library=Turing,
+)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :μ Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :τ Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :θ Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:38.105"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :y Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:37.15"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>log_likelihood</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :y Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:37.884"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: Dim{:draw}, Dim{:chain}
+and 12 layers:
+  :energy           Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :n_steps          Int64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :diverging        Bool dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :max_energy_error Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :energy_error     Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :is_accept        Bool dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :log_density      Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :tree_depth       Int64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :step_size        Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :acceptance_rate  Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :lp               Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :step_size_nom    Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:38.104"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :μ Float64 dims: Dim{:draw}, Dim{:chain} (1000×1)
+  :τ Float64 dims: Dim{:draw}, Dim{:chain} (1000×1)
+  :θ Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×1×8)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:39.089"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>prior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :y Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×1×8)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:38.755"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>sample_stats_prior</summary>
+<pre><code>Dataset with dimensions: Dim{:draw}, Dim{:chain}
+and 1 layer:
+  :lp Float64 dims: Dim{:draw}, Dim{:chain} (1000×1)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:38.943"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :y Float64 dims: Dim{:school} (8)
+&#10;with metadata Dict{String, Any} with 3 entries:
+  "created_at" => "2023-07-06T22:38:39.44"
+  "inference_library_version" => "0.24.4"
+  "inference_library" => "Turing"</code></pre>
+</details>
+</div><p>Then we can for example compute the expected <em>leave-one-out (LOO)</em> predictive density, which is an estimate of the out-of-distribution predictive fit of the model:</p><pre><code class="language-julia hljs">loo(idata_turing) # higher ELPD is better</code></pre><pre><code class="nohighlight hljs">PSISLOOResult with estimates
+       Estimate    SE 
+ elpd       -31   1.5
+    p       0.9  0.35
+
+and PSISResult with 1000 draws, 4 chains, and 8 parameters
+Pareto shape (k) diagnostic values:
+                    Count      Min. ESS
+ (-Inf, 0.5]  good  5 (62.5%)  723
+  (0.5, 0.7]  okay  3 (37.5%)  390</code></pre><p>If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a uniform distribution. This can be inspected visually:</p><pre><code class="language-julia hljs">plot_loo_pit(idata_turing; y=:y, ecdf=true);</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-23-output-1.png" alt/></p><h2 id="Plotting-with-Stan.jl-outputs"><a class="docs-heading-anchor" href="#Plotting-with-Stan.jl-outputs">Plotting with Stan.jl outputs</a><a id="Plotting-with-Stan.jl-outputs-1"></a><a class="docs-heading-anchor-permalink" href="#Plotting-with-Stan.jl-outputs" title="Permalink"></a></h2><p>StanSample.jl comes with built-in support for producing <code>InferenceData</code> outputs.</p><p>Here is the same centered eight schools model in Stan:</p><pre><code class="language-julia hljs">schools_code = &quot;&quot;&quot;
+data {
+    int&lt;lower=0&gt; J;
+    real y[J];
+    real&lt;lower=0&gt; sigma[J];
+}
+
+parameters {
+    real mu;
+    real&lt;lower=0&gt; tau;
+    real theta[J];
+}
+
+model {
+    mu ~ normal(0, 5);
+    tau ~ cauchy(0, 5);
+    theta ~ normal(mu, tau);
+    y ~ normal(theta, sigma);
+}
+
+generated quantities {
+    vector[J] log_lik;
+    vector[J] y_hat;
+    for (j in 1:J) {
+        log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+        y_hat[j] = normal_rng(theta[j], sigma[j]);
+    }
+}
+&quot;&quot;&quot;
+
+schools_data = Dict(&quot;J&quot; =&gt; J, &quot;y&quot; =&gt; y, &quot;sigma&quot; =&gt; σ)
+idata_stan = mktempdir() do path
+    stan_model = SampleModel(&quot;schools&quot;, schools_code, path)
+    _ = stan_sample(
+        stan_model;
+        data=schools_data,
+        num_chains=nchains,
+        num_warmups=ndraws_warmup,
+        num_samples=ndraws,
+        seed=28983,
+        summary=false,
+    )
+    return StanSample.inferencedata(
+        stan_model;
+        posterior_predictive_var=:y_hat,
+        observed_data=(; y),
+        log_likelihood_var=:log_lik,
+        coords=(; school=schools),
+        dims=NamedTuple(
+            k =&gt; (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)
+        ),
+    )
+end</code></pre><pre><code class="nohighlight hljs">[ Info: /tmp/jl_qZcpA8/schools.stan updated.</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :tau   Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :theta Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+&#10;with metadata Dict{String, Any} with 1 entry:
+  "created_at" => "2023-07-06T22:39:25.626"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :y_hat Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+&#10;with metadata Dict{String, Any} with 1 entry:
+  "created_at" => "2023-07-06T22:39:24.595"</code></pre>
+</details>
+<details>
+<summary>log_likelihood</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:draw},
+  Dim{:chain},
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :log_lik Float64 dims: Dim{:draw}, Dim{:chain}, Dim{:school} (1000×4×8)
+&#10;with metadata Dict{String, Any} with 1 entry:
+  "created_at" => "2023-07-06T22:39:25.378"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: Dim{:draw}, Dim{:chain}
+and 7 layers:
+  :tree_depth      Int64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :energy          Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :diverging       Bool dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :acceptance_rate Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :n_steps         Int64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :lp              Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+  :step_size       Float64 dims: Dim{:draw}, Dim{:chain} (1000×4)
+&#10;with metadata Dict{String, Any} with 1 entry:
+  "created_at" => "2023-07-06T22:39:24.951"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :y Float64 dims: Dim{:school} (8)
+&#10;with metadata Dict{String, Any} with 1 entry:
+  "created_at" => "2023-07-06T22:39:25.789"</code></pre>
+</details>
+</div><pre><code class="language-julia hljs">plot_density(idata_stan; var_names=(:mu, :tau));</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-25-output-1.png" alt/></p><p>Here is a plot showing where the Hamiltonian sampler had divergences:</p><pre><code class="language-julia hljs">plot_pair(
+    idata_stan;
+    coords=Dict(:school =&gt; [&quot;Choate&quot;, &quot;Deerfield&quot;, &quot;Phillips Andover&quot;]),
+    divergences=true,
+);</code></pre><p><img src="../quickstart_files/figure-commonmark/cell-26-output-1.png" alt/></p><h2 id="Environment"><a class="docs-heading-anchor" href="#Environment">Environment</a><a id="Environment-1"></a><a class="docs-heading-anchor-permalink" href="#Environment" title="Permalink"></a></h2><pre><code class="language-julia hljs">using Pkg
+Pkg.status()</code></pre><pre><code class="nohighlight hljs">Status `~/work/ArviZ.jl/ArviZ.jl/docs/Project.toml`
+  [cbdf2221] AlgebraOfGraphics v0.6.16
+  [131c737c] ArviZ v0.9.0-DEV `~/work/ArviZ.jl/ArviZ.jl`
+  [13f3f980] CairoMakie v0.10.6
+  [992eb4ea] CondaPkg v0.2.18
+  [a93c6f00] DataFrames v1.5.0
+  [0703355e] DimensionalData v0.24.12
+  [31c24e10] Distributions v0.25.98
+  [e30172f5] Documenter v0.27.25
+⌅ [f6006082] EvoTrees v0.14.11
+  [7073ff75] IJulia v1.24.2
+  [c7f686f2] MCMCChains v6.0.3
+  [be115224] MCMCDiagnosticTools v0.3.4
+  [a7f614a8] MLJBase v0.21.11
+  [614be32b] MLJIteration v0.5.1
+  [438e738f] PyCall v1.96.1
+  [d330b81b] PyPlot v2.11.1
+  [754583d1] SampleChains v0.5.1
+  [c1514b29] StanSample v7.4.1
+⌅ [fce5fe82] Turing v0.24.4
+  [f43a241f] Downloads v1.6.0
+  [37e2e46d] LinearAlgebra
+  [10745b16] Statistics v1.9.0
+Info Packages marked with ⌅ have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated`</code></pre><pre><code class="language-julia hljs">versioninfo()</code></pre><pre><code class="nohighlight hljs">Julia Version 1.9.2
+Commit e4ee485e909 (2023-07-05 09:39 UTC)
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 2 × Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-14.0.6 (ORCJIT, skylake-avx512)
+  Threads: 3 on 2 virtual cores
+Environment:
+  JULIA_CMDSTAN_HOME = /home/runner/work/ArviZ.jl/ArviZ.jl/.cmdstan//cmdstan-2.25.0/
+  JULIA_IMAGE_THREADS = 1
+  JULIA_NUM_THREADS = 2</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../working_with_inference_data/">Working with <code>InferenceData</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Thursday 6 July 2023 22:46">Thursday 6 July 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
