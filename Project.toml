@@ -1,7 +1,7 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.12.0"
+version = "0.12.1"
 
 [deps]
 InferenceObjects = "b5cf5a8d-e756-4ee3-b014-01d49d192c00"
@@ -32,7 +32,7 @@ Reexport = "1.2"
 Requires = "1.3"
 SampleChains = "0.5"
 SampleChainsDynamicHMC = "0.3"
-StatsBase = "0.33.7"
+StatsBase = "0.33.7, 0.34"
 julia = "1.9"
 
 [extras]
