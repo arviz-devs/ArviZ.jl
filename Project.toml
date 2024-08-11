@@ -32,7 +32,7 @@ Reexport = "1.2"
 Requires = "1.3"
 SampleChains = "0.5"
 SampleChainsDynamicHMC = "0.3"
-StatsBase = "0.33.7"
+StatsBase = "0.33.7, 0.34"
 julia = "1.9"
 
 [extras]
