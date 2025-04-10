@@ -64,7 +64,8 @@ modules = [
 ]
 
 doctestfilters = [
-    r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
+    r"\s+\"created_at\" => .*",  # ignore timestamps in doctests,
+    r"(└.*packages/[A-Za-z]*/).*" => s"\1",  # ignore package paths in warning messages
 ]
 
 prettyurls = haskey(ENV, "CI")
