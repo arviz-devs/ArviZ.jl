@@ -206,8 +206,7 @@ draw(
         :tau;
         layout=:school,
         color=:diverging,
-        markersize=:diverging => (d -> d ? 5 : 2),
-    ),
+    ) * visual(Scatter; markersize=5),
 )
 
 # ╔═╡ 3c939c5a-90c6-4367-9a9b-2525796425ce
@@ -230,9 +229,8 @@ let
             col=:school,
             row=:school2,
             color=:diverging,
-            markersize=:diverging => (d -> d ? 3 : 1),
-        );
-        figure=(; figsize=(5, 5)),
+        ) * visual(Scatter; markersize=5);
+        figure=(; figsize=(5, 5), fontsize=12),
         axis=(; aspect=1),
     )
 end
