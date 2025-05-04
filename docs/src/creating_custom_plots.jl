@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.16
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -124,7 +124,7 @@ To do so, we use `InferenceData`s indexing syntax to subset the data.
 
 # ╔═╡ 746785a2-c472-467f-973a-d2390ec3e0bb
 draw(
-    data(idata[:posterior, school=At(["Choate", "Deerfield"])]) *
+    data(idata[:posterior, school = At(["Choate", "Deerfield"])]) *
     mapping(:theta, :tau; color=:school) *
     density() *
     visual(Contour; levels=10),
@@ -183,7 +183,9 @@ To concatenate the two groups, we introduce a new named dimension using `Dimensi
 draw(
     data(
         cat(
-            idata.posterior[chain=[1]], idata.prior; dims=Dim{:group}([:posterior, :prior])
+            idata.posterior[chain = [1]],
+            idata.prior;
+            dims=Dim{:group}([:posterior, :prior]),
         )[:mu],
     ) *
     mapping(:mu; color=:group) *
@@ -201,12 +203,9 @@ To do so, we merge `posterior` and `samplestats`, which can do with `merge` sinc
 
 # ╔═╡ 2a47f53a-a054-426d-b536-ccffcf62dd15
 draw(
-    data(merge(idata.posterior, idata.sample_stats)) * mapping(
-        :theta,
-        :tau;
-        layout=:school,
-        color=:diverging,
-    ) * visual(Scatter; markersize=5),
+    data(merge(idata.posterior, idata.sample_stats)) *
+    mapping(:theta, :tau; layout=:school, color=:diverging) *
+    visual(Scatter; markersize=5),
 )
 
 # ╔═╡ 3c939c5a-90c6-4367-9a9b-2525796425ce
@@ -219,17 +218,13 @@ To build this plot, we need to make a copy of `theta` with a copy of the `school
 
 # ╔═╡ b3c8eed9-4083-457e-89dd-71d678b724ef
 let
-    theta = idata.posterior.theta[school=1:4]
+    theta = idata.posterior.theta[school = 1:4]
     theta2 = rebuild(set(theta; school=:school2); name=:theta2)
     plot_data = Dataset(theta, theta2, idata.sample_stats.diverging)
     draw(
-        data(plot_data) * mapping(
-            :theta,
-            :theta2 => "theta";
-            col=:school,
-            row=:school2,
-            color=:diverging,
-        ) * visual(Scatter; markersize=5);
+        data(plot_data) *
+        mapping(:theta, :theta2 => "theta"; col=:school, row=:school2, color=:diverging) *
+        visual(Scatter; markersize=5);
         figure=(; figsize=(5, 5), fontsize=12),
         axis=(; aspect=1),
     )
