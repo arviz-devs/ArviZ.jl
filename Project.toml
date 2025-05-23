@@ -24,7 +24,7 @@ ArviZSampleChainsExt = "SampleChains"
 
 [compat]
 InferenceObjects = "0.4"
-MCMCChains = "6"
+MCMCChains = "6, 7"
 MCMCDiagnosticTools = "0.3.4"
 PSIS = "0.9.1"
 PosteriorStats = "0.2.2"
