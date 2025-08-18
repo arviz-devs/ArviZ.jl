@@ -2,7 +2,6 @@ using Test
 using ArviZ
 using DimensionalData
 using MCMCChains: MCMCChains
-using OrderedCollections
 using Random
 
 function makechains(
