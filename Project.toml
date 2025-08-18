@@ -1,7 +1,7 @@
 name = "ArviZ"
 uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
-version = "0.12.2"
+version = "0.12.3"
 
 [deps]
 InferenceObjects = "b5cf5a8d-e756-4ee3-b014-01d49d192c00"
