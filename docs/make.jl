@@ -100,7 +100,7 @@ makedocs(;
     checkdocs=:exports,
     format=Documenter.HTML(;
         prettyurls,
-        size_threshold=2 * 10^6,  # 2Mb, needed since PlutoStaticHTML embeds images in markdown
+        size_threshold=2^21,  # 2Mb, needed since PlutoStaticHTML embeds images in markdown
         assets=["assets/favicon.ico", "assets/custom.css"],
         sidebar_sitename=false,
         canonical="stable",
