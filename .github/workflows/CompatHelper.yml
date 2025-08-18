@@ -17,5 +17,5 @@ jobs:
           COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}
         run: |
           using CompatHelper
-          subdirs = ["", "docs", readdir("test/ext"; join=true)...]
+          subdirs = ["", "docs"]
           CompatHelper.main(; subdirs)
