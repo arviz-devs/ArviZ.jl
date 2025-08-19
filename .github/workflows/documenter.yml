@@ -23,16 +23,6 @@ jobs:
           version: 1.7.33
       - uses: julia-actions/setup-julia@v2
       - uses: julia-actions/cache@v2
-      - name: Cache CondaPkg
-        id: cache-condaPkg
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-condapkg
-        with:
-          path: docs/.CondaPkg
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('docs/CondaPkg.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
       - name: Cache CmdStan
         id: cache-cmdstan
         uses: actions/cache@v4
