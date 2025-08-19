@@ -1,5 +1,6 @@
 ---
 title: "ArviZ Quickstart"
+engine: julia
 ---
 
 ## Set-up

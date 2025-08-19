@@ -1,14 +1,11 @@
-using Pkg, CondaPkg, Documenter, Downloads, ArviZ
+using Pkg, Documenter, Downloads, ArviZ
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
 
 # generate markdown from Quarto files
 if Sys.which("quarto") !== nothing
-    CondaPkg.withenv() do
-        @info "Rendering Quarto files"
-        Pkg.build("IJulia")
-        run(`quarto render $(DOCS_SRC_PATH)`)
-    end
+    @info "Rendering Quarto files"
+    run(`quarto render $(DOCS_SRC_PATH)`)
 else
     @warn "Quarto not found, skipping rendering Quarto files"
 end
