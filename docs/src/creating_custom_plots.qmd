@@ -1,6 +1,5 @@
 ---
 title: "Creating custom plots"
-engine: julia
 ---
 
 While ArviZ includes many plotting functions for visualizing the data stored in [`InferenceData`](@ref) objects, you will often need to construct custom plots, or you may want to tweak some of our plots in your favorite plotting package.
