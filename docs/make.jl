@@ -94,7 +94,16 @@ modules = [
 ]
 
 doctestfilters = [
-    r"\s+\"created_at\" => .*",  # ignore timestamps in doctests
+    r"\s+\"created_at\" => .*",  # ignore timestamps in doctests,
+    r"(└.*packages/[A-Za-z]*/).*" => s"\1",  # ignore package paths in warning messages
+]
+
+prettyurls = haskey(ENV, "CI")
+
+warnonly = [
+    :missing_docs,  # we don't reexport or document all of MCMCDiagnosticTools
+    :cross_references,  # we reference the pages built by PlutoStaticHTML with pretty relative URLs
+    :linkcheck,  # avoid checking links to pages built with PlutoStaticHTML
 ]
 
 makedocs(;
@@ -120,15 +129,16 @@ makedocs(;
     ],
     checkdocs=:exports,
     format=Documenter.HTML(;
-        prettyurls=haskey(ENV, "CI"),
+        prettyurls,
+        size_threshold=2^21,  # 2Mb, needed since PlutoStaticHTML embeds images in markdown
         assets=["assets/favicon.ico", "assets/custom.css"],
         sidebar_sitename=false,
         canonical="stable",
+        analytics="G-W1G68W77YV",
     ),
     doctestfilters,
     linkcheck=true,
-    analytics="G-W1G68W77YV",
-    strict=Documenter.except(:footnote, :missing_docs),
+    warnonly,
 )
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)

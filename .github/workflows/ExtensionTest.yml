@@ -1,0 +1,36 @@
+name: ExtensionTest
+on:
+  push:
+    branches: [main]
+    tags: [v*]
+  pull_request:
+jobs:
+  test:
+    name: ${{ matrix.extension }} - Julia ${{ matrix.julia-version }} 
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: [1.9, 1, pre]
+        extension:
+          - ArviZMCMCChainsExt
+          - ArviZSampleChainsExt
+          - ArviZSampleChainsDynamicHMCExt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: x64
+      - uses: julia-actions/julia-buildpkg@v1
+      - run: |
+          julia --code-coverage=user -e '
+            using Pkg
+            test_path = joinpath(pwd(), "test", "ext", "${{ matrix.extension }}")
+            Pkg.activate(test_path)
+            Pkg.develop(PackageSpec(path=pwd()))
+            include(joinpath(test_path, "runtests.jl"))'
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-action@v5
+        with:
+          files: lcov.info

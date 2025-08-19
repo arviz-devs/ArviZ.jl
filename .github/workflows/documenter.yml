@@ -8,7 +8,7 @@ on:
     - cron: "0 0 * * *"
 
 env:
-  CMDSTAN_VERSION: "2.25.0"
+  CMDSTAN_VERSION: "2.34.1"
   CMDSTAN_PATH: "${{ GITHUB.WORKSPACE }}/.cmdstan/"
   JULIA_NUM_THREADS: 2
 
@@ -17,15 +17,25 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: 1.3.353
-      - uses: julia-actions/setup-julia@v1
-      - uses: julia-actions/cache@v1
+      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/cache@v2
+      - name: Cache CondaPkg
+        id: cache-condaPkg
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-condapkg
+        with:
+          path: docs/.CondaPkg
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('docs/CondaPkg.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
       - name: Cache CmdStan
         id: cache-cmdstan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.CMDSTAN_PATH }}
           key: cmdstan-${{ env.CMDSTAN_VERSION }}-${{ runner.os }}
@@ -43,6 +53,6 @@ jobs:
         with:
           install-package: false
         env:
-          JULIA_CMDSTAN_HOME: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by CmdStan.jl
+          CMDSTAN: ${{ env.CMDSTAN_PATH }}/cmdstan-${{ env.CMDSTAN_VERSION }}/ # required by StanSample.jl
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
