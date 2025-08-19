@@ -129,7 +129,7 @@ idata_turing_post = from_mcmcchains(
 )
 ```
 
-Each group is a [`Dataset`](@ref), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack).
+Each group is a [`Dataset`](@ref), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/stacks).
 We can view a summary of the dataset.
 
 ```{julia}
