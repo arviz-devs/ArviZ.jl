@@ -23,11 +23,11 @@ ArviZSampleChainsDynamicHMCExt = ["SampleChains", "SampleChainsDynamicHMC"]
 ArviZSampleChainsExt = "SampleChains"
 
 [compat]
-InferenceObjects = "0.4"
+InferenceObjects = "0.4.13"
 MCMCChains = "6, 7"
 MCMCDiagnosticTools = "0.3.4"
 PSIS = "0.9.1"
-PosteriorStats = "0.2.2, 0.3"
+PosteriorStats = "0.3"
 Reexport = "1.2"
 Requires = "1.3"
 SampleChains = "0.5"
