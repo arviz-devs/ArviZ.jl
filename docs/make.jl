@@ -1,4 +1,4 @@
-using Documenter, Downloads, ArviZ
+using Documenter, DocumenterInterLinks, Downloads, ArviZ
 using PlutoStaticHTML: PlutoStaticHTML
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
@@ -53,6 +53,19 @@ DocMeta.setdocmeta!(
     InferenceObjectsPosteriorStatsExt, :DocTestSetup, :(using PosteriorStats)
 )
 
+links = InterLinks(
+    "arviz" => "https://python.arviz.org/en/stable/",
+    "DimensionalData" => "https://rafaqz.github.io/DimensionalData.jl/stable/",
+    "IntervalSets" => "https://juliamath.github.io/IntervalSets.jl/stable/",
+    "MCMCDiagnosticTools" => "https://julia.arviz.org/MCMCDiagnosticTools/stable/",
+    "MLJ" => "https://juliaai.github.io/MLJ.jl/stable/",
+    "NCDatasets" => "https://juliageo.org/NCDatasets.jl/stable/",
+    "PosteriorStats" => "https://julia.arviz.org/PosteriorStats/stable/",
+    "PSIS" => "https://julia.arviz.org/PSIS/stable/",
+    "Statistics" => "https://docs.julialang.org/en/v1/",
+    "StatsBase" => "https://juliastats.org/StatsBase.jl/stable/",
+)
+
 modules = [
     ArviZ,
     InferenceObjects,
@@ -74,41 +87,45 @@ warnonly = [
     :missing_docs,  # we don't reexport or document all of MCMCDiagnosticTools
     :cross_references,  # we reference the pages built by PlutoStaticHTML with pretty relative URLs
     :linkcheck,  # avoid checking links to pages built with PlutoStaticHTML
+    :external_cross_references,  # rely on our component packages to get external cross-references right
 ]
 
-makedocs(;
-    modules,
-    sitename="ArviZ.jl",
-    pages=[
-        "Home" => "index.md",
-        "Getting Started" => [
-            "Quickstart" => "quickstart.md",
-            "Working with `InferenceData`" => "working_with_inference_data.md",
-            "Creating custom plots" => "creating_custom_plots.md",
-        ],
-        "API" => [
-            hide("api/index.md"),
-            "Stats" => "api/stats.md",
-            "Diagnostics" => "api/diagnostics.md",
-            "Data" => "api/data.md",
-            "InferenceObjects" => [
-                "InferenceData" => "api/inference_data.md",
-                "Dataset" => "api/dataset.md",
+withenv("COLUMNS" => 100) do
+    makedocs(;
+        modules,
+        sitename="ArviZ.jl",
+        pages=[
+            "Home" => "index.md",
+            "Getting Started" => [
+                "Quickstart" => "quickstart.md",
+                "Working with `InferenceData`" => "working_with_inference_data.md",
+                "Creating custom plots" => "creating_custom_plots.md",
+            ],
+            "API" => [
+                hide("api/index.md"),
+                "Stats" => "api/stats.md",
+                "Diagnostics" => "api/diagnostics.md",
+                "Data" => "api/data.md",
+                "InferenceObjects" => [
+                    "InferenceData" => "api/inference_data.md",
+                    "Dataset" => "api/dataset.md",
+                ],
             ],
         ],
-    ],
-    checkdocs=:exports,
-    format=Documenter.HTML(;
-        prettyurls,
-        size_threshold=2^21,  # 2Mb, needed since PlutoStaticHTML embeds images in markdown
-        assets=["assets/favicon.ico", "assets/custom.css"],
-        sidebar_sitename=false,
-        canonical="stable",
-        analytics="G-W1G68W77YV",
-    ),
-    doctestfilters,
-    linkcheck=true,
-    warnonly,
-)
+        checkdocs=:exports,
+        format=Documenter.HTML(;
+            prettyurls,
+            size_threshold=2^21,  # 2Mb, needed since PlutoStaticHTML embeds images in markdown
+            assets=["assets/favicon.ico", "assets/custom.css"],
+            sidebar_sitename=false,
+            canonical="stable",
+            analytics="G-W1G68W77YV",
+        ),
+        doctestfilters,
+        linkcheck=true,
+        warnonly,
+        plugins=[links],
+    )
+end
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)
