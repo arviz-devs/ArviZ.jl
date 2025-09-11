@@ -1,4 +1,4 @@
-using Documenter, Downloads, ArviZ
+using Documenter, DocumenterInterLinks, Downloads, ArviZ
 using PlutoStaticHTML: PlutoStaticHTML
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
@@ -53,6 +53,19 @@ DocMeta.setdocmeta!(
     InferenceObjectsPosteriorStatsExt, :DocTestSetup, :(using PosteriorStats)
 )
 
+links = InterLinks(
+    "arviz" => "https://python.arviz.org/en/stable/",
+    "DimensionalData" => "https://rafaqz.github.io/DimensionalData.jl/stable/",
+    "IntervalSets" => "https://juliamath.github.io/IntervalSets.jl/stable/",
+    "MCMCDiagnosticTools" => "https://julia.arviz.org/MCMCDiagnosticTools/stable/",
+    "MLJ" => "https://juliaai.github.io/MLJ.jl/stable/",
+    "NCDatasets" => "https://juliageo.org/NCDatasets.jl/stable/",
+    "PosteriorStats" => "https://julia.arviz.org/PosteriorStats/stable/",
+    "PSIS" => "https://julia.arviz.org/PSIS/stable/",
+    "Statistics" => "https://docs.julialang.org/en/v1/",
+    "StatsBase" => "https://juliastats.org/StatsBase.jl/stable/",
+)
+
 modules = [
     ArviZ,
     InferenceObjects,
@@ -74,6 +87,7 @@ warnonly = [
     :missing_docs,  # we don't reexport or document all of MCMCDiagnosticTools
     :cross_references,  # we reference the pages built by PlutoStaticHTML with pretty relative URLs
     :linkcheck,  # avoid checking links to pages built with PlutoStaticHTML
+    :external_cross_references,  # rely on our component packages to get external cross-references right
 ]
 
 withenv("COLUMNS" => 100) do
@@ -110,6 +124,7 @@ withenv("COLUMNS" => 100) do
         doctestfilters,
         linkcheck=true,
         warnonly,
+        plugins=[links],
     )
 end
 
