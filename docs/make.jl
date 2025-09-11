@@ -76,39 +76,41 @@ warnonly = [
     :linkcheck,  # avoid checking links to pages built with PlutoStaticHTML
 ]
 
-makedocs(;
-    modules,
-    sitename="ArviZ.jl",
-    pages=[
-        "Home" => "index.md",
-        "Getting Started" => [
-            "Quickstart" => "quickstart.md",
-            "Working with `InferenceData`" => "working_with_inference_data.md",
-            "Creating custom plots" => "creating_custom_plots.md",
-        ],
-        "API" => [
-            hide("api/index.md"),
-            "Stats" => "api/stats.md",
-            "Diagnostics" => "api/diagnostics.md",
-            "Data" => "api/data.md",
-            "InferenceObjects" => [
-                "InferenceData" => "api/inference_data.md",
-                "Dataset" => "api/dataset.md",
+withenv("COLUMNS" => 100) do
+    makedocs(;
+        modules,
+        sitename="ArviZ.jl",
+        pages=[
+            "Home" => "index.md",
+            "Getting Started" => [
+                "Quickstart" => "quickstart.md",
+                "Working with `InferenceData`" => "working_with_inference_data.md",
+                "Creating custom plots" => "creating_custom_plots.md",
+            ],
+            "API" => [
+                hide("api/index.md"),
+                "Stats" => "api/stats.md",
+                "Diagnostics" => "api/diagnostics.md",
+                "Data" => "api/data.md",
+                "InferenceObjects" => [
+                    "InferenceData" => "api/inference_data.md",
+                    "Dataset" => "api/dataset.md",
+                ],
             ],
         ],
-    ],
-    checkdocs=:exports,
-    format=Documenter.HTML(;
-        prettyurls,
-        size_threshold=2^21,  # 2Mb, needed since PlutoStaticHTML embeds images in markdown
-        assets=["assets/favicon.ico", "assets/custom.css"],
-        sidebar_sitename=false,
-        canonical="stable",
-        analytics="G-W1G68W77YV",
-    ),
-    doctestfilters,
-    linkcheck=true,
-    warnonly,
-)
+        checkdocs=:exports,
+        format=Documenter.HTML(;
+            prettyurls,
+            size_threshold=2^21,  # 2Mb, needed since PlutoStaticHTML embeds images in markdown
+            assets=["assets/favicon.ico", "assets/custom.css"],
+            sidebar_sitename=false,
+            canonical="stable",
+            analytics="G-W1G68W77YV",
+        ),
+        doctestfilters,
+        linkcheck=true,
+        warnonly,
+    )
+end
 
 deploydocs(; repo="github.com/arviz-devs/ArviZ.jl.git", devbranch="main", push_preview=true)
