@@ -32,16 +32,14 @@ psis
 psis!
 ```
 
-## LOO and WAIC
+## Leave-One-Out Cross-validation (LOO-CV)
 
 ```@docs
 AbstractELPDResult
 PSISLOOResult
-WAICResult
 elpd_estimates
 information_criterion
 loo
-waic
 ```
 
 ## Model comparison
