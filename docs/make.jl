@@ -88,6 +88,7 @@ warnonly = [
     :cross_references,  # we reference the pages built by PlutoStaticHTML with pretty relative URLs
     :linkcheck,  # avoid checking links to pages built with PlutoStaticHTML
     :external_cross_references,  # rely on our component packages to get external cross-references right
+    :doctest,  # rely on our component packages to get doctests right
 ]
 
 withenv("COLUMNS" => 100) do
