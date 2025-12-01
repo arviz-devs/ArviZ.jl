@@ -9,18 +9,17 @@ Pages = ["stats.md"]
 ```@docs
 SummaryStats
 default_summary_stats
-default_stats
-default_diagnostics
 summarize
 summarystats
 ```
 
-## General statistics
+## Credible intervals
 
 ```@docs
+eti
+eti!
 hdi
 hdi!
-r2_score
 ```
 
 ## Pareto-smoothed importance sampling
@@ -33,16 +32,14 @@ psis
 psis!
 ```
 
-## LOO and WAIC
+## Leave-One-Out Cross-validation (LOO-CV)
 
 ```@docs
 AbstractELPDResult
 PSISLOOResult
-WAICResult
 elpd_estimates
 information_criterion
 loo
-waic
 ```
 
 ## Model comparison
@@ -65,10 +62,12 @@ Stacking
 
 ```@docs
 loo_pit
+r2_score
 ```
 
 ## Utilities
 
 ```@docs
-PosteriorStats.smooth_data
+PosteriorStats.kde_reflected
+PosteriorStats.pointwise_loglikelihoods
 ```
