@@ -1,0 +1,10 @@
+
+--- Translating Stan model to C++ code ---
+bin/stanc  --o=/home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.hpp /home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.stan
+Model name=noname_model
+Input file=/home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.stan
+Output file=/home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.hpp
+
+--- Compiling, linking C++ code ---
+g++ -std=c++1y -pthread -D_REENTRANT -Wno-sign-compare     -I stan/lib/stan_math/lib/tbb_2019_U8/include -O3 -I src -I stan/src -I lib/rapidjson_1.1.0/ -I stan/lib/stan_math/ -I stan/lib/stan_math/lib/eigen_3.3.3 -I stan/lib/stan_math/lib/boost_1.69.0 -I stan/lib/stan_math/lib/sundials_4.1.0/include    -DBOOST_DISABLE_ASSERTS      -c  -x c++ -o /home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.o /home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.hpp
+g++ -std=c++1y -pthread -D_REENTRANT -Wno-sign-compare     -I stan/lib/stan_math/lib/tbb_2019_U8/include -O3 -I src -I stan/src -I lib/rapidjson_1.1.0/ -I stan/lib/stan_math/ -I stan/lib/stan_math/lib/eigen_3.3.3 -I stan/lib/stan_math/lib/boost_1.69.0 -I stan/lib/stan_math/lib/sundials_4.1.0/include    -DBOOST_DISABLE_ASSERTS            -Wl,-L,"/home/travis/.cmdstan/cmdstan-2.21.0/stan/lib/stan_math/lib/tbb" -Wl,-rpath,"/home/travis/.cmdstan/cmdstan-2.21.0/stan/lib/stan_math/lib/tbb"  /home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.o src/cmdstan/main.o         stan/lib/stan_math/lib/sundials_4.1.0/lib/libsundials_nvecserial.a stan/lib/stan_math/lib/sundials_4.1.0/lib/libsundials_cvodes.a stan/lib/stan_math/lib/sundials_4.1.0/lib/libsundials_idas.a stan/lib/stan_math/lib/sundials_4.1.0/lib/libsundials_kinsol.a  stan/lib/stan_math/lib/tbb/libtbb.so.2 -o /home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname

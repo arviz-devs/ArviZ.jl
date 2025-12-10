@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Diagnostics · ArviZ.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="stable/api/diagnostics/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../../quickstart/">Quickstart</a></li><li><a class="tocitem" href="../../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li><a class="tocitem" href="../../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">Example Gallery</span><ul><li><a class="tocitem" href="../../mpl_examples/">Matplotlib</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../plots/">Plots</a></li><li><a class="tocitem" href="../stats/">Stats</a></li><li class="is-active"><a class="tocitem" href>Diagnostics</a><ul class="internal"><li><a class="tocitem" href="#Reference"><span>Reference</span></a></li></ul></li><li><a class="tocitem" href="../data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-4-6" type="checkbox"/><label class="tocitem" for="menuitem-4-6"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../inference_data/">InferenceData</a></li><li><a class="tocitem" href="../dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">API</a></li><li class="is-active"><a href>Diagnostics</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Diagnostics</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/api/diagnostics.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="diagnostics-api"><a class="docs-heading-anchor" href="#diagnostics-api">Diagnostics</a><a id="diagnostics-api-1"></a><a class="docs-heading-anchor-permalink" href="#diagnostics-api" title="Permalink"></a></h1><ul><li><a href="#ArviZ.bfmi"><code>ArviZ.bfmi</code></a></li><li><a href="#ArviZ.ess"><code>ArviZ.ess</code></a></li><li><a href="#ArviZ.mcse"><code>ArviZ.mcse</code></a></li><li><a href="#ArviZ.rhat"><code>ArviZ.rhat</code></a></li></ul><h2 id="Reference"><a class="docs-heading-anchor" href="#Reference">Reference</a><a id="Reference-1"></a><a class="docs-heading-anchor-permalink" href="#Reference" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.bfmi" href="#ArviZ.bfmi"><code>ArviZ.bfmi</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Calculate the estimated Bayesian fraction of missing information (BFMI).</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.bfmi.html"><code>arviz.bfmi</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    BFMI quantifies how well momentum resampling matches the marginal energy distribution. For more
+    information on BFMI, see https://arxiv.org/pdf/1604.00695v1.pdf. The current advice is that
+    values smaller than 0.3 indicate poor sampling. However, this threshold is
+    provisional and may change. See
+    `pystan_workflow &lt;http://mc-stan.org/users/documentation/case-studies/pystan_workflow.html&gt;`_
+    for more information.
+
+    Parameters
+    ----------
+    data : obj
+        Any object that can be converted to an :class:`arviz.InferenceData` object.
+        Refer to documentation of :func:`arviz.convert_to_dataset` for details.
+        If InferenceData, energy variable needs to be found.
+
+    Returns
+    -------
+    z : array
+        The Bayesian fraction of missing information of the model and trace. One element per
+        chain in the trace.
+
+    See Also
+    --------
+    plot_energy : Plot energy transition distribution and marginal energy
+                  distribution in HMC algorithms.
+
+    Examples
+    --------
+    Compute the BFMI of an InferenceData object
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&#39;radon&#39;)
+           ...: az.bfmi(data)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/50950ea27d65c65e72b0bad646f78c57c099b340/src/diagnostics.jl#L1-L47">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ess" href="#ArviZ.ess"><code>ArviZ.ess</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Calculate estimate of the effective sample size (ess).</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.ess.html"><code>arviz.ess</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Parameters
+    ----------
+    data : obj
+        Any object that can be converted to an :class:`arviz.InferenceData` object.
+        Refer to documentation of :func:`arviz.convert_to_dataset` for details.
+        For ndarray: shape = (chain, draw).
+        For n-dimensional ndarray transform first to dataset with :func:`arviz.convert_to_dataset`.
+    var_names : str or list of str
+        Names of variables to include in the return value Dataset.
+    method : str, optional, default &quot;bulk&quot;
+        Select ess method. Valid methods are:
+
+        - &quot;bulk&quot;
+        - &quot;tail&quot;     # prob, optional
+        - &quot;quantile&quot; # prob
+        - &quot;mean&quot; (old ess)
+        - &quot;sd&quot;
+        - &quot;median&quot;
+        - &quot;mad&quot; (mean absolute deviance)
+        - &quot;z_scale&quot;
+        - &quot;folded&quot;
+        - &quot;identity&quot;
+        - &quot;local&quot;
+    relative : bool
+        Return relative ess
+        ``ress = ess / n``
+    prob : float, or tuple of two floats, optional
+        probability value for &quot;tail&quot;, &quot;quantile&quot; or &quot;local&quot; ess functions.
+    dask_kwargs : dict, optional
+        Dask related kwargs passed to :func:`~arviz.wrap_xarray_ufunc`.
+
+    Returns
+    -------
+    xarray.Dataset
+        Return the effective sample size, :math:`\hat{N}_{eff}`
+
+    Notes
+    -----
+    The basic ess (:math:`N_{\mathit{eff}}`) diagnostic is computed by:
+
+    .. math:: \hat{N}_{\mathit{eff}} = \frac{MN}{\hat{\tau}}
+
+    .. math:: \hat{\tau} = -1 + 2 \sum_{t&#39;=0}^K \hat{P}_{t&#39;}
+
+    where :math:`M` is the number of chains, :math:`N` the number of draws,
+    :math:`\hat{\rho}_t` is the estimated _autocorrelation at lag :math:`t`, and
+    :math:`K` is the last integer for which :math:`\hat{P}_{K} = \hat{\rho}_{2K} +
+    \hat{\rho}_{2K+1}` is still positive.
+
+    The current implementation is similar to Stan, which uses Geyer&#39;s initial monotone sequence
+    criterion (Geyer, 1992; Geyer, 2011).
+
+    References
+    ----------
+    * Vehtari et al. (2019) see https://arxiv.org/abs/1903.08008
+    * https://mc-stan.org/docs/2_18/reference-manual/effective-sample-size-section.html
+      Section 15.4.2
+    * Gelman et al. BDA (2014) Formula 11.8
+
+    See Also
+    --------
+    arviz.rhat : Compute estimate of rank normalized splitR-hat for a set of traces.
+    arviz.mcse : Calculate Markov Chain Standard Error statistic.
+    plot_ess : Plot quantile, local or evolution of effective sample sizes (ESS).
+    arviz.summary : Create a data frame with summary statistics.
+
+    Examples
+    --------
+    Calculate the effective_sample_size using the default arguments:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&#39;non_centered_eight&#39;)
+           ...: az.ess(data)
+
+    Calculate the ress of some of the variables
+
+    .. ipython::
+
+        In [1]: az.ess(data, relative=True, var_names=[&quot;mu&quot;, &quot;theta_t&quot;])
+
+    Calculate the ess using the &quot;tail&quot; method, leaving the `prob` argument at its default
+    value.
+
+    .. ipython::
+
+        In [1]: az.ess(data, method=&quot;tail&quot;)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/50950ea27d65c65e72b0bad646f78c57c099b340/src/diagnostics.jl#L2-L102">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.mcse" href="#ArviZ.mcse"><code>ArviZ.mcse</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Calculate Markov Chain Standard Error statistic.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.mcse.html"><code>arviz.mcse</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Parameters
+    ----------
+    data : obj
+        Any object that can be converted to an :class:`arviz.InferenceData` object
+        Refer to documentation of :func:`arviz.convert_to_dataset` for details
+        For ndarray: shape = (chain, draw).
+        For n-dimensional ndarray transform first to dataset with ``az.convert_to_dataset``.
+    var_names : list
+        Names of variables to include in the rhat report
+    method : str
+        Select mcse method. Valid methods are:
+        - &quot;mean&quot;
+        - &quot;sd&quot;
+        - &quot;median&quot;
+        - &quot;quantile&quot;
+
+    prob : float
+        Quantile information.
+    dask_kwargs : dict, optional
+        Dask related kwargs passed to :func:`~arviz.wrap_xarray_ufunc`.
+
+    Returns
+    -------
+    xarray.Dataset
+        Return the msce dataset
+
+    See Also
+    --------
+    ess : Compute autocovariance estimates for every lag for the input array.
+    summary : Create a data frame with summary statistics.
+    plot_mcse : Plot quantile or local Monte Carlo Standard Error.
+
+    Examples
+    --------
+    Calculate the Markov Chain Standard Error using the default arguments:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&quot;non_centered_eight&quot;)
+           ...: az.mcse(data)
+
+    Calculate the Markov Chain Standard Error using the quantile method:
+
+    .. ipython::
+
+        In [1]: az.mcse(data, method=&quot;quantile&quot;, prob=0.7)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/50950ea27d65c65e72b0bad646f78c57c099b340/src/diagnostics.jl#L3-L62">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.rhat" href="#ArviZ.rhat"><code>ArviZ.rhat</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Compute estimate of rank normalized splitR-hat for a set of traces.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.rhat.html"><code>arviz.rhat</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    The rank normalized R-hat diagnostic tests for lack of convergence by comparing the variance
+    between multiple chains to the variance within each chain. If convergence has been achieved,
+    the between-chain and within-chain variances should be identical. To be most effective in
+    detecting evidence for nonconvergence, each chain should have been initialized to starting
+    values that are dispersed relative to the target distribution.
+
+    Parameters
+    ----------
+    data : obj
+        Any object that can be converted to an :class:`arviz.InferenceData` object.
+        Refer to documentation of :func:`arviz.convert_to_dataset` for details.
+        At least 2 posterior chains are needed to compute this diagnostic of one or more
+        stochastic parameters.
+        For ndarray: shape = (chain, draw).
+        For n-dimensional ndarray transform first to dataset with ``az.convert_to_dataset``.
+    var_names : list
+        Names of variables to include in the rhat report
+    method : str
+        Select R-hat method. Valid methods are:
+        - &quot;rank&quot;        # recommended by Vehtari et al. (2019)
+        - &quot;split&quot;
+        - &quot;folded&quot;
+        - &quot;z_scale&quot;
+        - &quot;identity&quot;
+    dask_kwargs : dict, optional
+        Dask related kwargs passed to :func:`~arviz.wrap_xarray_ufunc`.
+
+    Returns
+    -------
+    xarray.Dataset
+      Returns dataset of the potential scale reduction factors, :math:`\hat{R}`
+
+    See Also
+    --------
+    ess : Calculate estimate of the effective sample size (ess).
+    mcse : Calculate Markov Chain Standard Error statistic.
+    plot_forest : Forest plot to compare HDI intervals from a number of distributions.
+
+    Notes
+    -----
+    The diagnostic is computed by:
+
+      .. math:: \hat{R} = \frac{\hat{V}}{W}
+
+    where :math:`W` is the within-chain variance and :math:`\hat{V}` is the posterior variance
+    estimate for the pooled rank-traces. This is the potential scale reduction factor, which
+    converges to unity when each of the traces is a sample from the target posterior. Values
+    greater than one indicate that one or more chains have not yet converged.
+
+    Rank values are calculated over all the chains with ``scipy.stats.rankdata``.
+    Each chain is split in two and normalized with the z-transform following Vehtari et al. (2019).
+
+    References
+    ----------
+    * Vehtari et al. (2019) see https://arxiv.org/abs/1903.08008
+    * Gelman et al. BDA (2014)
+    * Brooks and Gelman (1998)
+    * Gelman and Rubin (1992)
+
+    Examples
+    --------
+    Calculate the R-hat using the default arguments:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&quot;non_centered_eight&quot;)
+           ...: az.rhat(data)
+
+    Calculate the R-hat of some variables using the folded method:
+
+    .. ipython::
+
+        In [1]: az.rhat(data, var_names=[&quot;mu&quot;, &quot;theta_t&quot;], method=&quot;folded&quot;)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/50950ea27d65c65e72b0bad646f78c57c099b340/src/diagnostics.jl#L4-L90">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../stats/">« Stats</a><a class="docs-footer-nextpage" href="../data/">Data »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.22 on <span class="colophon-date" title="Wednesday 17 August 2022 23:05">Wednesday 17 August 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

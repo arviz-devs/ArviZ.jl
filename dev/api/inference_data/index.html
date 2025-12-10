@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>InferenceData · ArviZ.jl</title><meta name="title" content="InferenceData · ArviZ.jl"/><meta property="og:title" content="InferenceData · ArviZ.jl"/><meta property="twitter:title" content="InferenceData · ArviZ.jl"/><meta name="description" content="Documentation for ArviZ.jl."/><meta property="og:description" content="Documentation for ArviZ.jl."/><meta property="twitter:description" content="Documentation for ArviZ.jl."/><meta property="og:url" content="stable/api/inference_data/"/><meta property="twitter:url" content="stable/api/inference_data/"/><link rel="canonical" href="stable/api/inference_data/"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-W1G68W77YV"></script><script>  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-W1G68W77YV', {'page_path': location.pathname + location.search + location.hash});
+</script><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../../quickstart/">Quickstart</a></li><li><a class="tocitem" href="../../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li><a class="tocitem" href="../../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../stats/">Stats</a></li><li><a class="tocitem" href="../diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-3-5" type="checkbox" checked/><label class="tocitem" for="menuitem-3-5"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li class="is-active"><a class="tocitem" href>InferenceData</a><ul class="internal"><li><a class="tocitem" href="#Type-definition"><span>Type definition</span></a></li><li><a class="tocitem" href="#Property-interface"><span>Property interface</span></a></li><li><a class="tocitem" href="#Indexing-interface"><span>Indexing interface</span></a></li><li><a class="tocitem" href="#Iteration-interface"><span>Iteration interface</span></a></li><li><a class="tocitem" href="#General-conversion"><span>General conversion</span></a></li><li><a class="tocitem" href="#General-functions"><span>General functions</span></a></li></ul></li><li><a class="tocitem" href="../dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">API</a></li><li><a class="is-disabled">InferenceObjects</a></li><li class="is-active"><a href>InferenceData</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>InferenceData</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/api/inference_data.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="inferencedata-api"><a class="docs-heading-anchor" href="#inferencedata-api">InferenceData</a><a id="inferencedata-api-1"></a><a class="docs-heading-anchor-permalink" href="#inferencedata-api" title="Permalink"></a></h1><ul><li><a href="#InferenceObjects.InferenceData"><code>InferenceObjects.InferenceData</code></a></li><li><a href="#Base.cat"><code>Base.cat</code></a></li><li><a href="#Base.getindex"><code>Base.getindex</code></a></li><li><a href="#Base.getproperty"><code>Base.getproperty</code></a></li><li><a href="#Base.merge"><code>Base.merge</code></a></li><li><a href="#Base.propertynames"><code>Base.propertynames</code></a></li><li><a href="#Base.setindex"><code>Base.setindex</code></a></li><li><a href="#InferenceObjects.convert_to_inference_data"><code>InferenceObjects.convert_to_inference_data</code></a></li><li><a href="#InferenceObjects.from_dict"><code>InferenceObjects.from_dict</code></a></li><li><a href="#InferenceObjects.from_namedtuple"><code>InferenceObjects.from_namedtuple</code></a></li></ul><h2 id="Type-definition"><a class="docs-heading-anchor" href="#Type-definition">Type definition</a><a id="Type-definition-1"></a><a class="docs-heading-anchor-permalink" href="#Type-definition" title="Permalink"></a></h2><article><details class="docstring" open="true"><summary id="InferenceObjects.InferenceData"><a class="docstring-binding" href="#InferenceObjects.InferenceData"><code>InferenceObjects.InferenceData</code></a> — <span class="docstring-category">Type</span></summary><section><div><pre><code class="language-julia hljs">InferenceData{group_names,group_types}</code></pre><p>Container for inference data storage using DimensionalData.</p><p>This object implements the <a href="https://python.arviz.org/en/stable/schema/schema.html#schema">InferenceData schema</a>.</p><p>Internally, groups are stored in a <code>NamedTuple</code>, which can be accessed using <code>parent(::InferenceData)</code>.</p><p><strong>Constructors</strong></p><pre><code class="language-julia hljs">InferenceData(groups::NamedTuple)
+InferenceData(; groups...)</code></pre><p>Construct an inference data from either a <code>NamedTuple</code> or keyword arguments of groups.</p><p>Groups must be <a href="../dataset/#InferenceObjects.Dataset"><code>Dataset</code></a> objects.</p><p>Instead of directly creating an <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a>, use the exported <code>from_xyz</code> functions or <a href="#InferenceObjects.convert_to_inference_data"><code>convert_to_inference_data</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/inference_data.jl#L1-L22">source</a></section></details></article><h2 id="Property-interface"><a class="docs-heading-anchor" href="#Property-interface">Property interface</a><a id="Property-interface-1"></a><a class="docs-heading-anchor-permalink" href="#Property-interface" title="Permalink"></a></h2><article><details class="docstring" open="true"><summary id="Base.getproperty"><a class="docstring-binding" href="#Base.getproperty"><code>Base.getproperty</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">getproperty(data::InferenceData, name::Symbol) -&gt; Dataset</code></pre><p>Get group with the specified <code>name</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/inference_data.jl#L48-L52">source</a></section></details></article><article><details class="docstring" open="true"><summary id="Base.propertynames"><a class="docstring-binding" href="#Base.propertynames"><code>Base.propertynames</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">propertynames(data::InferenceData) -&gt; Tuple{Symbol}</code></pre><p>Get names of groups</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/inference_data.jl#L41-L45">source</a></section></details></article><h2 id="Indexing-interface"><a class="docs-heading-anchor" href="#Indexing-interface">Indexing interface</a><a id="Indexing-interface-1"></a><a class="docs-heading-anchor-permalink" href="#Indexing-interface" title="Permalink"></a></h2><article><details class="docstring" open="true"><summary id="Base.getindex"><a class="docstring-binding" href="#Base.getindex"><code>Base.getindex</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">Base.getindex(data::InferenceData, groups::Symbol; coords...) -&gt; Dataset
+Base.getindex(data::InferenceData, groups; coords...) -&gt; InferenceData</code></pre><p>Return a new <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a> containing the specified groups sliced to the specified <code>coords</code>.</p><p><code>coords</code> specifies a dimension name mapping to an index, a <a href="https://rafaqz.github.io/DimensionalData.jl/stable/selectors"><code>DimensionalData.Selector</code></a>, or an <a href="https://juliamath.github.io/IntervalSets.jl/stable/api/#IntervalSets.AbstractInterval"><code>IntervalSets.AbstractInterval</code></a>.</p><p>If one or more groups lack the specified dimension, a warning is raised but can be ignored. All groups that contain the dimension must also contain the specified indices, or an exception will be raised.</p><p><strong>Examples</strong></p><p>Select data from all groups for just the specified id values.</p><pre><code class="language- hljs">julia&gt; using InferenceObjects, DimensionalData
+
+julia&gt; idata = from_namedtuple(
+           (θ=randn(4, 100, 4), τ=randn(4, 100));
+           prior=(θ=randn(4, 100, 4), τ=randn(4, 100)),
+           observed_data=(y=randn(4),),
+           dims=(θ=[:id], y=[:id]),
+           coords=(id=[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;],),
+       )
+InferenceData with groups:
+  &gt; posterior
+  &gt; prior
+  &gt; observed_data
+
+julia&gt; idata.posterior
+Dataset with dimensions:
+  Dim{:chain} Sampled 1:4 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 1:100 ForwardOrdered Regular Points,
+  Dim{:id} Categorical String[a, b, c, d] ForwardOrdered
+and 2 layers:
+  :θ Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:id} (4×100×4)
+  :τ Float64 dims: Dim{:chain}, Dim{:draw} (4×100)
+
+with metadata Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2022-08-11T11:15:21.4&quot;
+
+julia&gt; idata_sel = idata[id=At([&quot;a&quot;, &quot;b&quot;])]
+InferenceData with groups:
+  &gt; posterior
+  &gt; prior
+  &gt; observed_data
+
+julia&gt; idata_sel.posterior
+Dataset with dimensions:
+  Dim{:chain} Sampled 1:4 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 1:100 ForwardOrdered Regular Points,
+  Dim{:id} Categorical String[a, b] ForwardOrdered
+and 2 layers:
+  :θ Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:id} (4×100×2)
+  :τ Float64 dims: Dim{:chain}, Dim{:draw} (4×100)
+
+with metadata Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2022-08-11T11:15:21.4&quot;</code></pre><p>Select data from just the posterior, returning a <a href="../dataset/#InferenceObjects.Dataset"><code>Dataset</code></a> if the indices index more than one element from any of the variables:</p><pre><code class="language- hljs">julia&gt; idata[:observed_data, id=At([&quot;a&quot;])]
+Dataset with dimensions:
+  Dim{:id} Categorical String[a] ForwardOrdered
+and 1 layer:
+  :y Float64 dims: Dim{:id} (1)
+
+with metadata Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2022-08-11T11:19:25.982&quot;</code></pre><p>Note that if a single index is provided, the behavior is still to slice so that the dimension is preserved.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/inference_data.jl#L56-L137">source</a></section></details></article><article><details class="docstring" open="true"><summary id="Base.setindex"><a class="docstring-binding" href="#Base.setindex"><code>Base.setindex</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">Base.setindex(data::InferenceData, group::Dataset, name::Symbol) -&gt; InferenceData</code></pre><p>Create a new <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a> containing the <code>group</code> with the specified <code>name</code>.</p><p>If a group with <code>name</code> is already in <code>data</code>, it is replaced.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/inference_data.jl#L166-L172">source</a></section></details></article><h2 id="Iteration-interface"><a class="docs-heading-anchor" href="#Iteration-interface">Iteration interface</a><a id="Iteration-interface-1"></a><a class="docs-heading-anchor-permalink" href="#Iteration-interface" title="Permalink"></a></h2><p><code>InferenceData</code> also implements the same iteration interface as its underlying <code>NamedTuple</code>. That is, iterating over an <code>InferenceData</code> iterates over its groups.</p><h2 id="General-conversion"><a class="docs-heading-anchor" href="#General-conversion">General conversion</a><a id="General-conversion-1"></a><a class="docs-heading-anchor-permalink" href="#General-conversion" title="Permalink"></a></h2><article><details class="docstring" open="true"><summary id="InferenceObjects.convert_to_inference_data"><a class="docstring-binding" href="#InferenceObjects.convert_to_inference_data"><code>InferenceObjects.convert_to_inference_data</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">convert_to_inference_data(obj; group, kwargs...) -&gt; InferenceData</code></pre><p>Convert a supported object to an <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a> object.</p><p>If <code>obj</code> converts to a single dataset, <code>group</code> specifies which dataset in the resulting <code>InferenceData</code> that is.</p><p>See <a href="../dataset/#InferenceObjects.convert_to_dataset"><code>convert_to_dataset</code></a></p><p><strong>Arguments</strong></p><ul><li><p><code>obj</code> can be many objects. Basic supported types are:</p><ul><li><a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a>: return unchanged</li><li><a href="../dataset/#InferenceObjects.Dataset"><code>Dataset</code></a>/<code>DimensionalData.AbstractDimStack</code>: add to <code>InferenceData</code> as the only group</li><li><code>NamedTuple</code>/<code>AbstractDict</code>: create a <code>Dataset</code> as the only group</li><li><code>AbstractArray{&lt;:Real}</code>: create a <code>Dataset</code> as the only group, given an arbitrary name, if the name is not set</li></ul></li></ul><p>More specific types may be documented separately.</p><p><strong>Keywords</strong></p><ul><li><p><code>group::Symbol = :posterior</code>: If <code>obj</code> converts to a single dataset, assign the resulting dataset to this group.</p></li><li><p><code>dims</code>: a collection mapping variable names to collections of objects containing dimension names. Acceptable such objects are:</p><ul><li><code>Symbol</code>: dimension name</li><li><code>Type{&lt;:DimensionsionalData.Dimension}</code>: dimension type</li><li><code>DimensionsionalData.Dimension</code>: dimension, potentially with indices</li><li><code>Nothing</code>: no dimension name provided, dimension name is automatically generated</li></ul></li><li><p><code>coords</code>: a collection indexable by dimension name specifying the indices of the given dimension. If indices for a dimension in <code>dims</code> are provided, they are used even if the dimension contains its own indices. If a dimension is missing, its indices are automatically generated.</p></li><li><p><code>kwargs</code>: remaining keywords forwarded to converter functions</p></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/convert_inference_data.jl#L13-L53">source</a></section></details></article><article><details class="docstring" open="true"><summary id="InferenceObjects.from_dict"><a class="docstring-binding" href="#InferenceObjects.from_dict"><code>InferenceObjects.from_dict</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">from_dict(posterior::AbstractDict; kwargs...) -&gt; InferenceData</code></pre><p>Convert a dictionary to an <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a>.</p><p><strong>Arguments</strong></p><ul><li><code>posterior</code>: The data to be converted. Its strings must be <code>Symbol</code> or <code>AbstractString</code>, and its values must be arrays.</li></ul><p><strong>Keywords</strong></p><ul><li><code>posterior_predictive::Any=nothing</code>: Draws from the posterior predictive distribution</li><li><code>sample_stats::Any=nothing</code>: Statistics of the posterior sampling process</li><li><code>predictions::Any=nothing</code>: Out-of-sample predictions for the posterior.</li><li><code>prior::Dict=nothing</code>: Draws from the prior</li><li><code>prior_predictive::Any=nothing</code>: Draws from the prior predictive distribution</li><li><code>sample_stats_prior::Any=nothing</code>: Statistics of the prior sampling process</li><li><code>observed_data::NamedTuple</code>: Observed data on which the <code>posterior</code> is conditional. It should only contain data which is modeled as a random variable. Keys are parameter names and values.</li><li><code>constant_data::NamedTuple</code>: Model constants, data included in the model which is not modeled as a random variable. Keys are parameter names and values.</li><li><code>predictions_constant_data::NamedTuple</code>: Constants relevant to the model predictions (i.e. new <code>x</code> values in a linear regression).</li><li><code>log_likelihood</code>: Pointwise log-likelihood for the data. It is recommended to use this argument as a <code>NamedTuple</code> whose keys are observed variable names and whose values are log likelihood arrays.</li><li><code>library</code>: Name of library that generated the draws</li><li><code>coords</code>: Map from named dimension to named indices</li><li><code>dims</code>: Map from variable name to names of its dimensions</li></ul><p><strong>Returns</strong></p><ul><li><code>InferenceData</code>: The data with groups corresponding to the provided data</li></ul><p><strong>Examples</strong></p><pre><code class="language- hljs">using InferenceObjects
+nchains = 2
+ndraws = 100
+
+data = Dict(
+    :x =&gt; rand(ndraws, nchains),
+    :y =&gt; randn(2, ndraws, nchains),
+    :z =&gt; randn(3, 2, ndraws, nchains),
+)
+idata = from_dict(data)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/from_dict.jl#L1-L51">source</a></section></details></article><article><details class="docstring" open="true"><summary id="InferenceObjects.from_namedtuple"><a class="docstring-binding" href="#InferenceObjects.from_namedtuple"><code>InferenceObjects.from_namedtuple</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">from_namedtuple(posterior::NamedTuple; kwargs...) -&gt; InferenceData
+from_namedtuple(posterior::Vector{Vector{&lt;:NamedTuple}}; kwargs...) -&gt; InferenceData
+from_namedtuple(
+    posterior::NamedTuple,
+    sample_stats::Any,
+    posterior_predictive::Any,
+    predictions::Any,
+    log_likelihood::Any;
+    kwargs...
+) -&gt; InferenceData</code></pre><p>Convert a <code>NamedTuple</code> or container of <code>NamedTuple</code>s to an <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a>.</p><p>If containers are passed, they are flattened into a single <code>NamedTuple</code> with array elements whose first dimensions correspond to the dimensions of the containers.</p><p><strong>Arguments</strong></p><ul><li><p><code>posterior</code>: The data to be converted. It may be of the following types:</p><ul><li><code>::NamedTuple</code>: The keys are the variable names and the values are arrays with dimensions <code>(ndraws, nchains[, sizes...])</code>.</li><li><code>::Vector{Vector{&lt;:NamedTuple}}</code>: A vector of length <code>nchains</code> whose elements have length <code>ndraws</code>.</li></ul></li></ul><p><strong>Keywords</strong></p><ul><li><code>posterior_predictive::Any=nothing</code>: Draws from the posterior predictive distribution</li><li><code>sample_stats::Any=nothing</code>: Statistics of the posterior sampling process</li><li><code>predictions::Any=nothing</code>: Out-of-sample predictions for the posterior.</li><li><code>prior=nothing</code>: Draws from the prior. Accepts the same types as <code>posterior</code>.</li><li><code>prior_predictive::Any=nothing</code>: Draws from the prior predictive distribution</li><li><code>sample_stats_prior::Any=nothing</code>: Statistics of the prior sampling process</li><li><code>observed_data::NamedTuple</code>: Observed data on which the <code>posterior</code> is conditional. It should only contain data which is modeled as a random variable. Keys are parameter names and values.</li><li><code>constant_data::NamedTuple</code>: Model constants, data included in the model which is not modeled as a random variable. Keys are parameter names and values.</li><li><code>predictions_constant_data::NamedTuple</code>: Constants relevant to the model predictions (i.e. new <code>x</code> values in a linear regression).</li><li><code>log_likelihood</code>: Pointwise log-likelihood for the data. It is recommended to use this argument as a <code>NamedTuple</code> whose keys are observed variable names and whose values are log likelihood arrays.</li><li><code>library</code>: Name of library that generated the draws</li><li><code>coords</code>: Map from named dimension to named indices</li><li><code>dims</code>: Map from variable name to names of its dimensions</li></ul><p><strong>Returns</strong></p><ul><li><code>InferenceData</code>: The data with groups corresponding to the provided data</li></ul><div class="admonition is-info" id="Note-8e38ef2c0e21ae0"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-8e38ef2c0e21ae0" title="Permalink"></a></header><div class="admonition-body"><p>If a <code>NamedTuple</code> is provided for <code>observed_data</code>, <code>constant_data</code>, or predictions<em>constant</em>data`, any non-array values (e.g. integers) are converted to 0-dimensional arrays.</p></div></div><p><strong>Examples</strong></p><pre><code class="language- hljs">using InferenceObjects
+nchains = 2
+ndraws = 100
+
+data1 = (
+    x=rand(ndraws, nchains), y=randn(ndraws, nchains, 2), z=randn(ndraws, nchains, 3, 2)
+)
+idata1 = from_namedtuple(data1)
+
+data2 = [[(x=rand(), y=randn(2), z=randn(3, 2)) for _ in 1:ndraws] for _ in 1:nchains];
+idata2 = from_namedtuple(data2)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/from_namedtuple.jl#L1-L73">source</a></section></details></article><h2 id="General-functions"><a class="docs-heading-anchor" href="#General-functions">General functions</a><a id="General-functions-1"></a><a class="docs-heading-anchor-permalink" href="#General-functions" title="Permalink"></a></h2><article><details class="docstring" open="true"><summary id="Base.cat"><a class="docstring-binding" href="#Base.cat"><code>Base.cat</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">cat(data::InferenceData...; [groups=keys(data[1]),] dims) -&gt; InferenceData</code></pre><p>Concatenate <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a> objects along the specified dimension <code>dims</code>.</p><p>Only the groups in <code>groups</code> are concatenated. Remaining groups are <a href="#Base.merge"><code>merge</code></a>d into the new <code>InferenceData</code> object.</p><p><strong>Examples</strong></p><p>Here is how we can concatenate all groups of two <code>InferenceData</code> objects along the existing <code>chain</code> dimension:</p><pre><code class="language-julia-repl hljs">julia&gt; coords = (; a_dim=[&quot;x&quot;, &quot;y&quot;, &quot;z&quot;]);
+
+julia&gt; dims = dims=(; a=[:a_dim]);
+
+julia&gt; data = Dict(:a =&gt; randn(100, 4, 3), :b =&gt; randn(100, 4));
+
+julia&gt; idata = from_dict(data; coords=coords, dims=dims)
+InferenceData with groups:
+  &gt; posterior
+
+julia&gt; idata_cat1 = cat(idata, idata; dims=:chain)
+InferenceData with groups:
+  &gt; posterior
+
+julia&gt; idata_cat1.posterior
+┌ 100×8×3 Dataset ┐
+├─────────────────┴──────────────────────────────────── dims ┐
+  ↓ draw,
+  → chain,
+  ↗ a_dim Categorical{String} [&quot;x&quot;, …, &quot;z&quot;] ForwardOrdered
+├──────────────────────────────────────────────────── layers ┤
+  :a eltype: Float64 dims: draw, chain, a_dim size: 100×8×3
+  :b eltype: Float64 dims: draw, chain size: 100×8
+├────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-07-25T10:11:18.92&quot;</code></pre><p>Alternatively, we can concatenate along a new <code>run</code> dimension, which will be created.</p><pre><code class="language-julia-repl hljs">julia&gt; idata_cat2 = cat(idata, idata; dims=:run)
+InferenceData with groups:
+  &gt; posterior
+
+julia&gt; idata_cat2.posterior
+┌ 100×4×3×2 Dataset ┐
+├───────────────────┴───────────────────────────────────────── dims ┐
+  ↓ draw,
+  → chain,
+  ↗ a_dim Categorical{String} [&quot;x&quot;, …, &quot;z&quot;] ForwardOrdered,
+  ⬔ run
+├─────────────────────────────────────────────────────────── layers ┤
+  :a eltype: Float64 dims: draw, chain, a_dim, run size: 100×4×3×2
+  :b eltype: Float64 dims: draw, chain, run size: 100×4×2
+├───────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-07-25T10:11:18.92&quot;</code></pre><p>We can also concatenate only a subset of groups and merge the rest, which is useful when some groups are present only in some of the <code>InferenceData</code> objects or will be identical in all of them:</p><pre><code class="language-julia-repl hljs">julia&gt; observed_data = Dict(:y =&gt; randn(10));
+
+julia&gt; idata2 = from_dict(data; observed_data=observed_data, coords=coords, dims=dims)
+InferenceData with groups:
+  &gt; posterior
+  &gt; observed_data
+
+julia&gt; idata_cat3 = cat(idata, idata2; groups=(:posterior,), dims=:run)
+InferenceData with groups:
+  &gt; posterior
+  &gt; observed_data
+
+julia&gt; idata_cat3.posterior
+┌ 100×4×3×2 Dataset ┐
+├───────────────────┴───────────────────────────────────────── dims ┐
+  ↓ draw,
+  → chain,
+  ↗ a_dim Categorical{String} [&quot;x&quot;, …, &quot;z&quot;] ForwardOrdered,
+  ⬔ run
+├─────────────────────────────────────────────────────────── layers ┤
+  :a eltype: Float64 dims: draw, chain, a_dim, run size: 100×4×3×2
+  :b eltype: Float64 dims: draw, chain, run size: 100×4×2
+├───────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-07-25T10:11:18.92&quot;
+
+julia&gt; idata_cat3.observed_data
+┌ 10-element Dataset ┐
+├────────────────────┴───────────────── dims ┐
+  ↓ y_dim_1
+├──────────────────────────────────── layers ┤
+  :y eltype: Float64 dims: y_dim_1 size: 10
+├────────────────────────────────────────────┴ metadata ┐
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-07-25T10:11:18.951&quot;</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/inference_data.jl#L283-L388">source</a></section></details></article><article><details class="docstring" open="true"><summary id="Base.merge"><a class="docstring-binding" href="#Base.merge"><code>Base.merge</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">merge(data::InferenceData...) -&gt; InferenceData</code></pre><p>Merge <a href="#InferenceObjects.InferenceData"><code>InferenceData</code></a> objects.</p><p>The result contains all groups in <code>data</code> and <code>others</code>. If a group appears more than once, the one that occurs last is kept.</p><p>See also: <a href="#Base.cat"><code>cat</code></a></p><p><strong>Examples</strong></p><p>Here we merge an <code>InferenceData</code> containing only a posterior group with one containing only a prior group to create a new one containing both groups.</p><pre><code class="language-julia-repl hljs">julia&gt; idata1 = from_dict(Dict(:a =&gt; randn(100, 4, 3), :b =&gt; randn(100, 4)))
+InferenceData with groups:
+  &gt; posterior
+
+julia&gt; idata2 = from_dict(; prior=Dict(:a =&gt; randn(100, 1, 3), :c =&gt; randn(100, 1)))
+InferenceData with groups:
+  &gt; prior
+
+julia&gt; idata_merged = merge(idata1, idata2)
+InferenceData with groups:
+  &gt; posterior
+  &gt; prior</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/InferenceObjects.jl/blob/v0.4.14/src/inference_data.jl#L242-L271">source</a></section></details></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../data/">« Data</a><a class="docs-footer-nextpage" href="../dataset/">Dataset »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Wednesday 10 December 2025 13:52">Wednesday 10 December 2025</span>. Using Julia version 1.12.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

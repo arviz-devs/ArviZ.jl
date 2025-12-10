@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Working with InferenceData · ArviZ.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="stable/working_with_inference_data/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../quickstart/">Quickstart</a></li><li class="is-active"><a class="tocitem" href>Working with <code>InferenceData</code></a><ul class="internal"><li><a class="tocitem" href="#Get-the-dataset-corresponding-to-a-single-group"><span>Get the dataset corresponding to a single group</span></a></li><li><a class="tocitem" href="#Getting-a-new-InferenceData-with-a-subset-of-groups"><span>Getting a new <code>InferenceData</code> with a subset of groups</span></a></li><li><a class="tocitem" href="#Adding-groups-to-an-InferenceData"><span>Adding groups to an <code>InferenceData</code></span></a></li><li><a class="tocitem" href="#Add-a-new-variable"><span>Add a new variable</span></a></li><li><a class="tocitem" href="#Obtain-an-array-for-a-given-parameter"><span>Obtain an array for a given parameter</span></a></li><li><a class="tocitem" href="#Get-the-dimension-lengths"><span>Get the dimension lengths</span></a></li><li><a class="tocitem" href="#Get-coordinate/index-values"><span>Get coordinate/index values</span></a></li><li><a class="tocitem" href="#Get-a-subset-of-chains"><span>Get a subset of chains</span></a></li><li><a class="tocitem" href="#Remove-the-first-n-draws-(burn-in)"><span>Remove the first <span>$n$</span> draws (burn-in)</span></a></li><li><a class="tocitem" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions"><span>Compute posterior mean values along draw and chain dimensions</span></a></li><li><a class="tocitem" href="#Renaming-a-dimension"><span>Renaming a dimension</span></a></li><li><a class="tocitem" href="#Compute-and-store-posterior-pushforward-quantities"><span>Compute and store posterior pushforward quantities</span></a></li><li><a class="tocitem" href="#Advanced-subsetting"><span>Advanced subsetting</span></a></li><li><a class="tocitem" href="#Add-new-chains-using-concat"><span>Add new chains using <code>concat</code></span></a></li></ul></li><li><a class="tocitem" href="../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">Example Gallery</span><ul><li><a class="tocitem" href="../mpl_examples/">Matplotlib</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../api/plots/">Plots</a></li><li><a class="tocitem" href="../api/stats/">Stats</a></li><li><a class="tocitem" href="../api/diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../api/data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-4-6" type="checkbox"/><label class="tocitem" for="menuitem-4-6"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../api/inference_data/">InferenceData</a></li><li><a class="tocitem" href="../api/dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Getting Started</a></li><li class="is-active"><a href>Working with <code>InferenceData</code></a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Working with <code>InferenceData</code></a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/working_with_inference_data.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="working-with-inference-data"><a class="docs-heading-anchor" href="#working-with-inference-data">Working with <code>InferenceData</code></a><a id="working-with-inference-data-1"></a><a class="docs-heading-anchor-permalink" href="#working-with-inference-data" title="Permalink"></a></h1><pre><code class="language-julia hljs">using ArviZ, DimensionalData, Statistics</code></pre><p>Here we present a collection of common manipulations you can use while working with <a href="../api/inference_data/#InferenceObjects.InferenceData"><code>InferenceData</code></a>.</p><p>Let&#39;s load one of ArviZ&#39;s example datasets. <code>posterior</code>, <code>posterior_predictive</code>, etc are the groups stored in <code>idata</code>, and they are stored as <a href="../api/dataset/#InferenceObjects.Dataset"><code>Dataset</code></a>s. In this HTML view, you can click a group name to expand a summary of the group.</p><pre><code class="language-julia hljs">idata = load_example_data(&quot;centered_eight&quot;)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 12 layers:
+  :tune             Bool dims: Dim{:chain}, Dim{:draw} (4×500)
+  :depth            Int64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :tree_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :lp               Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :energy_error     Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :step_size_bar    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :max_energy_error Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :energy           Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :mean_tree_accept Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :step_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :diverging        Bool dims: Dim{:chain}, Dim{:draw} (4×500)
+  :log_likelihood   Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.485802"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled StepRangeLen(0.0, 0.0, 1) ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 5 layers:
+  :tau       Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :tau_log__ Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :mu        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :theta     Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+  :obs       Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.490387"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:school} (8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.491909"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><div class="admonition is-info"><header class="admonition-header">Info</header><div class="admonition-body"><p><code>Dataset</code>s are <a href="https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.AbstractDimStack"><code>DimensionalData.AbstractDimStack</code></a>s and can be used identically.   The variables a <code>Dataset</code> contains are called &quot;layers&quot;, and dimensions of the same name that appear in more than one layer within a <code>Dataset</code> must have the same indices.</p></div></div><p><code>InferenceData</code> behaves like a <code>NamedTuple</code> and can be used similarly. Note that unlike a <code>NamedTuple</code>, the groups always appear in a specific order.</p><pre><code class="language-julia hljs">length(idata) # number of groups</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5</code></pre><pre><code class="language-julia hljs">keys(idata) # group names</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(:posterior, :posterior_predictive, :sample_stats, :prior, :observed_data)</code></pre><h2 id="Get-the-dataset-corresponding-to-a-single-group"><a class="docs-heading-anchor" href="#Get-the-dataset-corresponding-to-a-single-group">Get the dataset corresponding to a single group</a><a id="Get-the-dataset-corresponding-to-a-single-group-1"></a><a class="docs-heading-anchor-permalink" href="#Get-the-dataset-corresponding-to-a-single-group" title="Permalink"></a></h2><p>Group datasets can be accessed both as properties or as indexed items.</p><pre><code class="language-julia hljs">post = idata.posterior</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at                =&gt; &quot;2019-06-21T17:36:34.398087&quot;
+  :inference_library_version =&gt; &quot;3.7&quot;
+  :inference_library         =&gt; &quot;pymc3&quot;</code></pre><p><code>post</code> is the dataset itself, so this is a non-allocating operation.</p><pre><code class="language-julia hljs">idata[:posterior] === post</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p><code>InferenceData</code> supports a more advanced indexing syntax, which we&#39;ll see later.</p><h2 id="Getting-a-new-InferenceData-with-a-subset-of-groups"><a class="docs-heading-anchor" href="#Getting-a-new-InferenceData-with-a-subset-of-groups">Getting a new <code>InferenceData</code> with a subset of groups</a><a id="Getting-a-new-InferenceData-with-a-subset-of-groups-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-new-InferenceData-with-a-subset-of-groups" title="Permalink"></a></h2><p>We can index by a collection of group names to get a new <code>InferenceData</code> with just those groups. This is also non-allocating.</p><pre><code class="language-julia hljs">idata_sub = idata[(:posterior, :posterior_predictive)]</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><h2 id="Adding-groups-to-an-InferenceData"><a class="docs-heading-anchor" href="#Adding-groups-to-an-InferenceData">Adding groups to an <code>InferenceData</code></a><a id="Adding-groups-to-an-InferenceData-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-groups-to-an-InferenceData" title="Permalink"></a></h2><p><code>InferenceData</code> is immutable, so to add or replace groups we use <a href="../api/inference_data/#Base.merge"><code>merge</code></a> to create a new object.</p><pre><code class="language-julia hljs">merge(idata_sub, idata[(:observed_data, :prior)])</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled StepRangeLen(0.0, 0.0, 1) ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 5 layers:
+  :tau       Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :tau_log__ Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :mu        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :theta     Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+  :obs       Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.490387"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:school} (8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.491909"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><p>We can also use <a href="../api/inference_data/#Base.setindex"><code>Base.setindex</code></a> to out-of-place add or replace a single group.</p><pre><code class="language-julia hljs">Base.setindex(idata_sub, idata.prior, :prior)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled StepRangeLen(0.0, 0.0, 1) ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 5 layers:
+  :tau       Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :tau_log__ Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :mu        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :theta     Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+  :obs       Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.490387"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><h2 id="Add-a-new-variable"><a class="docs-heading-anchor" href="#Add-a-new-variable">Add a new variable</a><a id="Add-a-new-variable-1"></a><a class="docs-heading-anchor-permalink" href="#Add-a-new-variable" title="Permalink"></a></h2><p><code>Dataset</code> is also immutable. So while the values within the underlying data arrays can be mutated, layers cannot be added or removed from <code>Dataset</code>s, and groups cannot be added/removed from <code>InferenceData</code>.</p><p>Instead, we do this out-of-place also using <code>merge</code>.</p><pre><code class="language-julia hljs">merge(post, (log_tau=log.(post[:tau]),))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+and 4 layers:
+  :mu      Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta   Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+  :tau     Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :log_tau Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at                =&gt; &quot;2019-06-21T17:36:34.398087&quot;
+  :inference_library_version =&gt; &quot;3.7&quot;
+  :inference_library         =&gt; &quot;pymc3&quot;</code></pre><h2 id="Obtain-an-array-for-a-given-parameter"><a class="docs-heading-anchor" href="#Obtain-an-array-for-a-given-parameter">Obtain an array for a given parameter</a><a id="Obtain-an-array-for-a-given-parameter-1"></a><a class="docs-heading-anchor-permalink" href="#Obtain-an-array-for-a-given-parameter" title="Permalink"></a></h2><p>Let’s say we want to get the values for <code>mu</code> as an array. Parameters can be accessed with either property or index syntax.</p><pre><code class="language-julia hljs">post.tau</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4×500 DimArray{Float64,2} tau with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points
+    0        1        2         3        …  497        498        499
+ 0  3.7301   2.07538  3.70299   4.14612      10.1079     8.07999    7.72886
+ 1  1.19333  1.19333  1.19333   3.0369       13.922      8.86992    4.76318
+ 2  5.13725  4.26438  2.14143   1.44099       2.81184   12.1797     4.45297
+ 3  0.50007  0.50007  0.902267  1.17612       8.34563    7.71079    5.4068</code></pre><pre><code class="language-julia hljs">post[:tau] === post.tau</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p>To remove the dimensions, just use <code>parent</code> to retrieve the underlying array.</p><pre><code class="language-julia hljs">parent(post.tau)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4×500 Matrix{Float64}:
+ 3.7301   2.07538  3.70299   4.14612  …  10.1079    8.07999  7.72886
+ 1.19333  1.19333  1.19333   3.0369      13.922     8.86992  4.76318
+ 5.13725  4.26438  2.14143   1.44099      2.81184  12.1797   4.45297
+ 0.50007  0.50007  0.902267  1.17612      8.34563   7.71079  5.4068</code></pre><h2 id="Get-the-dimension-lengths"><a class="docs-heading-anchor" href="#Get-the-dimension-lengths">Get the dimension lengths</a><a id="Get-the-dimension-lengths-1"></a><a class="docs-heading-anchor-permalink" href="#Get-the-dimension-lengths" title="Permalink"></a></h2><p>Let’s check how many groups are in our hierarchical model.</p><pre><code class="language-julia hljs">size(idata.observed_data, :school)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8</code></pre><h2 id="Get-coordinate/index-values"><a class="docs-heading-anchor" href="#Get-coordinate/index-values">Get coordinate/index values</a><a id="Get-coordinate/index-values-1"></a><a class="docs-heading-anchor-permalink" href="#Get-coordinate/index-values" title="Permalink"></a></h2><p>What are the names of the groups in our hierarchical model? You can access them from the coordinate name <code>school</code> in this case.</p><pre><code class="language-julia hljs">DimensionalData.index(idata.observed_data, :school)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8-element Vector{String}:
+ &quot;Choate&quot;
+ &quot;Deerfield&quot;
+ &quot;Phillips Andover&quot;
+ &quot;Phillips Exeter&quot;
+ &quot;Hotchkiss&quot;
+ &quot;Lawrenceville&quot;
+ &quot;St. Paul&#39;s&quot;
+ &quot;Mt. Hermon&quot;</code></pre><h2 id="Get-a-subset-of-chains"><a class="docs-heading-anchor" href="#Get-a-subset-of-chains">Get a subset of chains</a><a id="Get-a-subset-of-chains-1"></a><a class="docs-heading-anchor-permalink" href="#Get-a-subset-of-chains" title="Permalink"></a></h2><p>Let’s keep only chain 0 here. For the subset to take effect on all relevant <code>InferenceData</code> groups – <code>posterior</code>, <code>sample_stats</code>, <code>log_likelihood</code>, and <code>posterior_predictive</code> – we will index <code>InferenceData</code> instead of <code>Dataset</code>.</p><p>Here we use DimensionalData&#39;s <code>At</code> selector. Its <a href="https://rafaqz.github.io/DimensionalData.jl/stable/api/#Selectors">other selectors</a> are also supported.</p><pre><code class="language-julia hljs">idata[chain=At(0)]</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled Int64[0] ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled Int64[0] ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled Int64[0] ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 12 layers:
+  :tune             Bool dims: Dim{:chain}, Dim{:draw} (1×500)
+  :depth            Int64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :tree_size        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :lp               Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :energy_error     Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :step_size_bar    Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :max_energy_error Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :energy           Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :mean_tree_accept Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :step_size        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :diverging        Bool dims: Dim{:chain}, Dim{:draw} (1×500)
+  :log_likelihood   Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.485802"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled Float64[0.0] ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 5 layers:
+  :tau       Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :tau_log__ Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :mu        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :theta     Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+  :obs       Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.490387"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:school} (8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.491909"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><p>Note that in this case, <code>prior</code> only has a chain of 0. If it also had the other chains, we could have passed <code>chain=At([0, 2])</code> to subset by chains 0 and 2.</p><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>If we used <code>idata[chain=[0, 2]]</code> without the <code>At</code> selector, this is equivalent to <code>idata[chain=DimensionalData.index(idata.posterior, :chain)[0, 2]]</code>, that is, <code>[0, 2]</code> indexes an array of dimension indices, which here would error.   But if we had requested <code>idata[chain=[1, 2]]</code> we would not hit an error, but we would index the wrong chains.   So it&#39;s important to always use a selector to index by values of dimension indices.</p></div></div><h2 id="Remove-the-first-n-draws-(burn-in)"><a class="docs-heading-anchor" href="#Remove-the-first-n-draws-(burn-in)">Remove the first <span>$n$</span> draws (burn-in)</a><a id="Remove-the-first-n-draws-(burn-in)-1"></a><a class="docs-heading-anchor-permalink" href="#Remove-the-first-n-draws-(burn-in)" title="Permalink"></a></h2><p>Let’s say we want to remove the first 100 draws from all the chains and all <code>InferenceData</code> groups with draws. To do this we use the <code>..</code> syntax from IntervalSets.jl, which is exported by DimensionalData.</p><pre><code class="language-julia hljs">idata[draw=100 .. Inf]</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 100:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×400×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 100:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×400×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 100:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 12 layers:
+  :tune             Bool dims: Dim{:chain}, Dim{:draw} (4×400)
+  :depth            Int64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :tree_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :lp               Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :energy_error     Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :step_size_bar    Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :max_energy_error Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :energy           Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :mean_tree_accept Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :step_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :diverging        Bool dims: Dim{:chain}, Dim{:draw} (4×400)
+  :log_likelihood   Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×400×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.485802"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled StepRangeLen(0.0, 0.0, 1) ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 100:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 5 layers:
+  :tau       Float64 dims: Dim{:chain}, Dim{:draw} (1×400)
+  :tau_log__ Float64 dims: Dim{:chain}, Dim{:draw} (1×400)
+  :mu        Float64 dims: Dim{:chain}, Dim{:draw} (1×400)
+  :theta     Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×400×8)
+  :obs       Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×400×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.490387"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:school} (8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.491909"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><p>If you check the object you will see that the groups <code>posterior</code>, <code>posterior_predictive</code>, <code>prior</code>, and <code>sample_stats</code> have 400 draws compared to <code>idata</code>, which has 500. The group <code>observed_data</code> has not been affected because it does not have the <code>draw</code> dimension.</p><p>Alternatively, you can change a subset of groups by combining indexing styles with <code>merge</code>. Here we use this to build a new <code>InferenceData</code> where we have discarded the first 100 draws only from <code>posterior</code>.</p><pre><code class="language-julia hljs">merge(idata, idata[(:posterior,), draw=100 .. Inf])</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 100:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×400×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (4×400)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 12 layers:
+  :tune             Bool dims: Dim{:chain}, Dim{:draw} (4×500)
+  :depth            Int64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :tree_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :lp               Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :energy_error     Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :step_size_bar    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :max_energy_error Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :energy           Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :mean_tree_accept Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :step_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :diverging        Bool dims: Dim{:chain}, Dim{:draw} (4×500)
+  :log_likelihood   Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.485802"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled StepRangeLen(0.0, 0.0, 1) ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 5 layers:
+  :tau       Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :tau_log__ Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :mu        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :theta     Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+  :obs       Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.490387"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:school} (8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.491909"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><h2 id="Compute-posterior-mean-values-along-draw-and-chain-dimensions"><a class="docs-heading-anchor" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions">Compute posterior mean values along draw and chain dimensions</a><a id="Compute-posterior-mean-values-along-draw-and-chain-dimensions-1"></a><a class="docs-heading-anchor-permalink" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions" title="Permalink"></a></h2><p>To compute the mean value of the posterior samples, do the following:</p><pre><code class="language-julia hljs">mean(post)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(mu = 4.092610850912027, theta = 4.56047268323059, tau = 4.088982928754772)</code></pre><p>This computes the mean along all dimensions, discarding all dimensions and returning the result as a <code>NamedTuple</code>. This may be what you wanted for <code>mu</code> and <code>tau</code>, which have only two dimensions (<code>chain</code> and <code>draw</code>), but maybe not what you expected for <code>theta</code>, which has one more dimension <code>school</code>.</p><p>You can specify along which dimension you want to compute the mean (or other functions), which instead returns a <code>Dataset</code>.</p><pre><code class="language-julia hljs">mean(post; dims=(:chain, :draw))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dataset with dimensions: 
+  Dim{:chain} Sampled 1.5:4.0:1.5 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 249.5:500.0:249.5 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (1×1)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×1×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (1×1)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at                =&gt; &quot;2019-06-21T17:36:34.398087&quot;
+  :inference_library_version =&gt; &quot;3.7&quot;
+  :inference_library         =&gt; &quot;pymc3&quot;</code></pre><p>The singleton dimensions of <code>chain</code> and <code>draw</code> now contain meaningless indices, so you may want to discard them, which you can do with <code>dropdims</code>.</p><pre><code class="language-julia hljs">dropdims(mean(post; dims=(:chain, :draw)); dims=(:chain, :draw))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dataset with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: 
+  :theta Float64 dims: Dim{:school} (8)
+  :tau   Float64 dims: 
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at                =&gt; &quot;2019-06-21T17:36:34.398087&quot;
+  :inference_library_version =&gt; &quot;3.7&quot;
+  :inference_library         =&gt; &quot;pymc3&quot;</code></pre><h2 id="Renaming-a-dimension"><a class="docs-heading-anchor" href="#Renaming-a-dimension">Renaming a dimension</a><a id="Renaming-a-dimension-1"></a><a class="docs-heading-anchor-permalink" href="#Renaming-a-dimension" title="Permalink"></a></h2><p>We can rename a dimension in a <code>Dataset</code> using DimensionalData&#39;s <a href="https://rafaqz.github.io/DimensionalData.jl/stable/api/#DimensionalData.Dimensions.LookupArrays.set"><code>set</code></a> method:</p><pre><code class="language-julia hljs">theta_bis = set(post.theta; school=:school_bis)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4×500×8 DimArray{Float64,3} theta with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school_bis} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+[:, :, 1]
+     0         1        2        …  497       498        499
+ 0   1.66865  -6.23936  2.1951       21.6306    9.29298   11.7154
+ 1   8.09621   8.09621  8.09621      15.2759   14.7355    -4.83704
+ 2  14.5709   12.6867   9.66618       2.6685    5.36165   13.4391
+ 3   4.32639   4.32639  2.99078      14.1863   -1.42095   -0.0501594
+[and 7 more slices...]</code></pre><p>We can use this, for example, to broadcast functions across multiple arrays, automatically matching up shared dimensions, using <code>DimensionalData.broadcast_dims</code>.</p><pre><code class="language-julia hljs">theta_school_diff = broadcast_dims(-, post.theta, theta_bis)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4×500×8×8 DimArray{Float64,4} theta with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered,
+  Dim{:school_bis} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+[:, :, 1, 1]
+    0    1    2    3    4    5    6    …  495    496    497    498    499
+ 0  0.0  0.0  0.0  0.0  0.0  0.0  0.0       0.0    0.0    0.0    0.0    0.0
+ 1  0.0  0.0  0.0  0.0  0.0  0.0  0.0       0.0    0.0    0.0    0.0    0.0
+ 2  0.0  0.0  0.0  0.0  0.0  0.0  0.0       0.0    0.0    0.0    0.0    0.0
+ 3  0.0  0.0  0.0  0.0  0.0  0.0  0.0       0.0    0.0    0.0    0.0    0.0
+[and 63 more slices...]</code></pre><h2 id="Compute-and-store-posterior-pushforward-quantities"><a class="docs-heading-anchor" href="#Compute-and-store-posterior-pushforward-quantities">Compute and store posterior pushforward quantities</a><a id="Compute-and-store-posterior-pushforward-quantities-1"></a><a class="docs-heading-anchor-permalink" href="#Compute-and-store-posterior-pushforward-quantities" title="Permalink"></a></h2><p>We use “posterior pushfoward quantities” to refer to quantities that are not variables in the posterior but deterministic computations using posterior variables.</p><p>You can compute these pushforward operations and store them as a new variable in a copy of the posterior group.</p><p>Here we&#39;ll create a new <code>InferenceData</code> with <code>theta_school_diff</code> in the posterior:</p><pre><code class="language-julia hljs">idata_new = Base.setindex(idata, merge(post, (; theta_school_diff)), :posterior)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  Dim{:school_bis} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 4 layers:
+  :mu                Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta             Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+  :tau               Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :theta_school_diff Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school}, Dim{:school_bis} (4×500×8×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.489022"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 12 layers:
+  :tune             Bool dims: Dim{:chain}, Dim{:draw} (4×500)
+  :depth            Int64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :tree_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :lp               Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :energy_error     Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :step_size_bar    Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :max_energy_error Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :energy           Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :mean_tree_accept Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :step_size        Float64 dims: Dim{:chain}, Dim{:draw} (4×500)
+  :diverging        Bool dims: Dim{:chain}, Dim{:draw} (4×500)
+  :log_likelihood   Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (4×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.485802"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled StepRangeLen(0.0, 0.0, 1) ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 5 layers:
+  :tau       Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :tau_log__ Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :mu        Float64 dims: Dim{:chain}, Dim{:draw} (1×500)
+  :theta     Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+  :obs       Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (1×500×8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.490387"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 1 layer:
+  :obs Float64 dims: Dim{:school} (8)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.491909"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><p>Once you have these pushforward quantities in an <code>InferenceData</code>, you’ll then be able to plot them with ArviZ functions, calculate stats and diagnostics on them, or save and share the <code>InferenceData</code> object with the pushforward quantities included.</p><p>Here we compute the <a href="../api/diagnostics/#ArviZ.mcse"><code>mcse</code></a> of <code>theta_school_diff</code>:</p><pre><code class="language-julia hljs">mcse(idata_new.posterior).theta_school_diff</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8×8 DimArray{Float64,2} theta_school_diff with dimensions: 
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered,
+  Dim{:school_bis} Categorical String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+                       &quot;Choate&quot;  …   &quot;St. Paul&#39;s&quot;   &quot;Mt. Hermon&quot;
+  &quot;Choate&quot;            0.0           0.111869       0.175078
+  &quot;Deerfield&quot;         0.149711      0.15666        0.11984
+  &quot;Phillips Andover&quot;  0.276861      0.23738        0.163744
+  &quot;Phillips Exeter&quot;   0.163212      0.167966       0.135588
+  &quot;Hotchkiss&quot;         0.299984   …  0.260274       0.165326
+  &quot;Lawrenceville&quot;     0.223715      0.209422       0.146585
+  &quot;St. Paul&#39;s&quot;        0.111869      0.0            0.155986
+  &quot;Mt. Hermon&quot;        0.175078      0.155986       0.0</code></pre><h2 id="Advanced-subsetting"><a class="docs-heading-anchor" href="#Advanced-subsetting">Advanced subsetting</a><a id="Advanced-subsetting-1"></a><a class="docs-heading-anchor-permalink" href="#Advanced-subsetting" title="Permalink"></a></h2><p>To select the value corresponding to the difference between the Choate and Deerfield schools do:</p><pre><code class="language-julia hljs">school_idx = [&quot;Choate&quot;, &quot;Hotchkiss&quot;, &quot;Mt. Hermon&quot;]
+school_bis_idx = [&quot;Deerfield&quot;, &quot;Choate&quot;, &quot;Lawrenceville&quot;]
+theta_school_diff[school=At(school_idx), school_bis=At(school_bis_idx)]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4×500×3×3 DimArray{Float64,4} theta with dimensions: 
+  Dim{:chain} Sampled 0:3 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Hotchkiss, Mt. Hermon] Unordered,
+  Dim{:school_bis} Categorical String[Deerfield, Choate, Lawrenceville] Unordered
+[:, :, 1, 1]
+     0          1         2         …  497         498        499
+ 0  10.2061    -7.31077   5.11594       11.8025     -4.39806    7.22325
+ 1   0.339696   0.339696  0.339696      10.027       7.18936  -13.3384
+ 2  -0.458749   5.00749   0.540794      -0.935327    2.57992    3.82478
+ 3  -0.872076  -0.872076  0.168416       2.42358     2.61346   -0.113698
+[and 8 more slices...]</code></pre><h2 id="Add-new-chains-using-concat"><a class="docs-heading-anchor" href="#Add-new-chains-using-concat">Add new chains using <code>concat</code></a><a id="Add-new-chains-using-concat-1"></a><a class="docs-heading-anchor-permalink" href="#Add-new-chains-using-concat" title="Permalink"></a></h2><p>Suppose after checking the <code>mcse</code> and realizing you need more samples, you rerun the model with two chains and obtain an <code>idata_rerun</code> object.</p><pre><code class="language-julia hljs">idata_rerun = InferenceData(; posterior=set(post[chain=At([0, 1])]; chain=[4, 5]))</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled Int64[4, 5] ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (2×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (2×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (2×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div><p>You can combine the two using <a href="../api/data/#ArviZ.concat"><code>concat</code></a>.</p><pre><code class="language-julia hljs">concat(idata[[:posterior]], idata_rerun; dim=:chain)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>Dataset with dimensions: 
+  Dim{:chain} Sampled 0:5 ForwardOrdered Regular Points,
+  Dim{:draw} Sampled 0:499 ForwardOrdered Regular Points,
+  Dim{:school} Categorical String[Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+and 3 layers:
+  :mu    Float64 dims: Dim{:chain}, Dim{:draw} (6×500)
+  :theta Float64 dims: Dim{:chain}, Dim{:draw}, Dim{:school} (6×500×8)
+  :tau   Float64 dims: Dim{:chain}, Dim{:draw} (6×500)
+
+with metadata OrderedCollections.OrderedDict{Symbol, Any} with 3 entries:
+  :created_at => "2019-06-21T17:36:34.398087"
+  :inference_library_version => "3.7"
+  :inference_library => "pymc3"</code></pre>
+</details>
+</div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../quickstart/">« Quickstart</a><a class="docs-footer-nextpage" href="../creating_custom_plots/">Creating custom plots »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Saturday 1 October 2022 20:48">Saturday 1 October 2022</span>. Using Julia version 1.8.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
