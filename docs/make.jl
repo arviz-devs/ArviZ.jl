@@ -1,7 +1,12 @@
-using Documenter, DocumenterInterLinks, Downloads, ArviZ
+using Documenter, DocumenterInterLinks, Downloads, ArviZ, DocumenterCitation
 using PlutoStaticHTML: PlutoStaticHTML
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
+
+bib = CitationBibliography(
+    joinpath(@__DIR__, "src", "references.bib");
+)
+
 
 # generate markdown from Pluto notebooks
 output_format = PlutoStaticHTML.documenter_output
@@ -95,6 +100,7 @@ withenv("COLUMNS" => 100) do
     makedocs(;
         modules,
         sitename="ArviZ.jl",
+        plugins = [bib],
         pages=[
             "Home" => "index.md",
             "Getting Started" => [
