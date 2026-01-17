@@ -1,4 +1,4 @@
-using Documenter, DocumenterInterLinks, Downloads, ArviZ, DocumenterCitation
+using Documenter, DocumenterInterLinks, Downloads, ArviZ, DocumenterCitations
 using PlutoStaticHTML: PlutoStaticHTML
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
