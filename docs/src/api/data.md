@@ -8,7 +8,6 @@ Pages = ["data.md"]
 
 ```@docs
 from_mcmcchains
-from_samplechains
 ```
 
 ## IO / Conversion
