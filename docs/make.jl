@@ -100,7 +100,7 @@ withenv("COLUMNS" => 100) do
     makedocs(;
         modules,
         sitename="ArviZ.jl",
-        plugins = [bib],
+        plugins = [bib,links],
         pages=[
             "Home" => "index.md",
             "Getting Started" => [
@@ -131,7 +131,6 @@ withenv("COLUMNS" => 100) do
         doctestfilters,
         linkcheck=true,
         warnonly,
-        plugins=[links],
     )
 end
 
