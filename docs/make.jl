@@ -10,23 +10,30 @@ bib = CitationBibliography(
 
 # generate markdown from Pluto notebooks
 output_format = PlutoStaticHTML.documenter_output
+
 build_opts = PlutoStaticHTML.BuildOptions(
     DOCS_SRC_PATH;
-    previous_dir=DOCS_SRC_PATH,
-    output_format=output_format,
-    add_documenter_css=false,
+    previous_dir = DOCS_SRC_PATH,
+    output_format = output_format,
+    add_documenter_css = false,
+    use_distributed = false,
+    max_concurrent_runs = 0,
 )
 PlutoStaticHTML.build_notebooks(build_opts)
 
-const ASSETS_DIR = joinpath(@__DIR__, "src", "assets")
-const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz-project/main/arviz_logos"
 
-function download_asset(remote_fn, fn=remote_fn)
+const ASSETS_DIR = joinpath(@__DIR__, "src", "assets")
+const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz-project/main/arviz_logos/"
+
+function download_asset(remote_fn::String, fn::String)
     mkpath(ASSETS_DIR)
-    return Downloads.download(
-        joinpath(ARVIZ_ASSETS_URL, remote_fn), joinpath(ASSETS_DIR, fn); verbose=true
+    Downloads.download(
+        ARVIZ_ASSETS_URL * remote_fn,
+        joinpath(ASSETS_DIR, fn);
+        verbose=true,
     )
 end
+
 
 function get_extension(mod::Module, submodule::Symbol)
     if isdefined(Base, :get_extension)
@@ -39,7 +46,7 @@ end
 # download arviz-devs org logo assets
 download_asset("ArviZ.png", "logo.png")
 download_asset("ArviZ_white.png", "logo-dark.png")
-download_asset("favicon.ico")
+download_asset("favicon.ico", "favicon.ico")
 
 InferenceObjectsMCMCDiagnosticToolsExt = get_extension(
     InferenceObjects, :InferenceObjectsMCMCDiagnosticToolsExt
