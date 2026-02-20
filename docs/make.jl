@@ -19,6 +19,10 @@ build_opts = PlutoStaticHTML.BuildOptions(
     use_distributed = false,
     max_concurrent_runs = 0,
 )
+
+if haskey(ENV, "CI")
+    ENV["MPLBACKEND"] = "Agg"
+end
 PlutoStaticHTML.build_notebooks(build_opts)
 
 
