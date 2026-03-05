@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.36
+# v0.20.23
 
 using Markdown
 using InteractiveUtils
@@ -28,10 +28,6 @@ using PlutoUI
 # ╔═╡ a23dfd65-50a8-4872-8c41-661e96585aca
 md"""
 # [ArviZ Quickstart](#quickstart)
-
-!!! note
-
-    This tutorial is adapted from [ArviZ's quickstart](https://python.arviz.org/en/latest/getting_started/Introduction.html).
 """
 
 # ╔═╡ d2eedd48-48c6-4fcd-b179-6be7fe68d3d6
@@ -50,7 +46,7 @@ md"""
 ## [Get started with plotting](#Get-started-with-plotting)
 
 To plot with ArviZ, we need to load the [ArviZPythonPlots](https://julia.arviz.org/ArviZPythonPlots) package.
-ArviZ is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turinglang.org), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
+ArviZ is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl) and [Turing.jl](https://turinglang.org) but works fine with raw arrays.
 """
 
 # ╔═╡ efb3f0af-9fac-48d8-bbb2-2dd6ebd5e4f6
@@ -123,7 +119,7 @@ Now we write and run the model using Turing:
 # ╔═╡ f383d541-e22d-44b4-b8cb-28b3d67944a1
 Turing.@model function model_turing(y, σ, J=length(y))
     μ ~ Normal(0, 5)
-    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    τ ~ truncated(Cauchy(0, 5); lower=0)
     θ ~ filldist(Normal(μ, τ), J)
     for i in 1:J
         y[i] ~ Normal(θ[i], σ[i])
@@ -174,7 +170,7 @@ idata_turing_post = from_mcmcchains(
 
 # ╔═╡ 79f342c8-0738-432b-bfd7-2da25e50fa91
 md"""
-Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/InferenceObjects/stable/dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack).
+Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/InferenceObjects/stable/dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/stacks).
 We can view a summary of the dataset.
 """
 
@@ -302,27 +298,24 @@ begin
       array[J] real y;
       array[J] real<lower=0> sigma;
     }
-
     parameters {
       real mu;
       real<lower=0> tau;
       array[J] real theta;
     }
-
     model {
       mu ~ normal(0, 5);
       tau ~ cauchy(0, 5);
       theta ~ normal(mu, tau);
       y ~ normal(theta, sigma);
     }
-
     generated quantities {
-        vector[J] log_lik;
-        vector[J] y_hat;
-        for (j in 1:J) {
-            log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
-            y_hat[j] = normal_rng(theta[j], sigma[j]);
-        }
+      vector[J] log_lik;
+      vector[J] y_hat;
+      for (j in 1 : J) {
+        log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+        y_hat[j] = normal_rng(theta[j], sigma[j]);
+      }
     }
     """
 
