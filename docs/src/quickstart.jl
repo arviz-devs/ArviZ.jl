@@ -119,7 +119,7 @@ Now we write and run the model using Turing:
 # ╔═╡ f383d541-e22d-44b4-b8cb-28b3d67944a1
 Turing.@model function model_turing(y, σ, J=length(y))
     μ ~ Normal(0, 5)
-    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    τ ~ truncated(Cauchy(0, 5); lower=0)
     θ ~ filldist(Normal(μ, τ), J)
     for i in 1:J
         y[i] ~ Normal(θ[i], σ[i])
