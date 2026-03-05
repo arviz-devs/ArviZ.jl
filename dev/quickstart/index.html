@@ -7,11 +7,11 @@
 <!--
     # This information is used for caching.
     [PlutoStaticHTML.State]
-    input_sha = "6fe715f5b7c4157cd81939b39222a27e0f685903c066457f76d663ff72d749a9"
-    julia_version = "1.12.4"
+    input_sha = "5d02a5f3282bad8293495326869f305ca06bd3918546f95ce7f98a9b9215e533"
+    julia_version = "1.12.5"
 -->
 
-<div class="markdown"><h1 id="ArviZ-Quickstart"><a href="#quickstart">ArviZ Quickstart</a></h1><div class="admonition is-note"><header class="admonition-header">Note</header><div class="admonition-body"><p>This tutorial is adapted from <a href="https://python.arviz.org/en/latest/getting_started/Introduction.html">ArviZ's quickstart</a>.</p></div></div></div>
+<div class="markdown"><h1 id="ArviZ-Quickstart"><a href="#quickstart">ArviZ Quickstart</a></h1></div>
 
 
 <div class="markdown"><h2 id="Setup"><a href="#setup">Setup</a></h2><p>Here we add the necessary packages for this notebook and load a few we will use throughout.</p></div>
@@ -27,7 +27,7 @@ use_style("arviz-darkgrid")</code></pre>
 
 
 
-<div class="markdown"><h2 id="Get-started-with-plotting"><a href="#Get-started-with-plotting">Get started with plotting</a></h2><p>To plot with ArviZ, we need to load the <a href="https://julia.arviz.org/ArviZPythonPlots">ArviZPythonPlots</a> package. ArviZ is designed to be used with libraries like <a href="https://github.com/StanJulia/Stan.jl">Stan</a>, <a href="https://turinglang.org">Turing.jl</a>, and <a href="https://github.com/cscherrer/Soss.jl">Soss.jl</a> but works fine with raw arrays.</p></div>
+<div class="markdown"><h2 id="Get-started-with-plotting"><a href="#Get-started-with-plotting">Get started with plotting</a></h2><p>To plot with ArviZ, we need to load the <a href="https://julia.arviz.org/ArviZPythonPlots">ArviZPythonPlots</a> package. ArviZ is designed to be used with libraries like <a href="https://github.com/StanJulia/Stan.jl">Stan</a> and <a href="https://turinglang.org">Turing.jl</a> but works fine with raw arrays.</p></div>
 
 <pre class='language-julia'><code class='language-julia'>rng1 = Random.MersenneTwister(37772);</code></pre>
 
@@ -81,7 +81,7 @@ end;</code></pre>
 
 <pre class='language-julia'><code class='language-julia'>Turing.@model function model_turing(y, σ, J=length(y))
     μ ~ Normal(0, 5)
-    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    τ ~ truncated(Cauchy(0, 5); lower=0)
     θ ~ filldist(Normal(μ, τ), J)
     for i in 1:J
         y[i] ~ Normal(θ[i], σ[i])
@@ -131,9 +131,9 @@ end</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :θ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 2 entries:
-  "created_at" =&gt; "2026-02-07T01:57:18.014"
+  "created_at" =&gt; "2026-03-05T14:46:51.336"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>sample_stats</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>sample_stats</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── layers ┤</span>
@@ -153,12 +153,12 @@ end</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :step_size_nom   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
 <span class="sgr90">├───────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 2 entries:
-  "created_at" =&gt; "2026-02-07T01:57:17.936"
+  "created_at" =&gt; "2026-03-05T14:46:51.258"
   "inference_library" =&gt; "Turing"
-</pre></details></div>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────┘</span></pre></details></div>
 
 
-<div class="markdown"><p>Each group is an <a href="https://julia.arviz.org/InferenceObjects/stable/dataset"><code>ArviZ.Dataset</code></a>, a <code>DimensionalData.AbstractDimStack</code> that can be used identically to a <a href="https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack"><code>DimensionalData.Dimstack</code></a>. We can view a summary of the dataset.</p></div>
+<div class="markdown"><p>Each group is an <a href="https://julia.arviz.org/InferenceObjects/stable/dataset"><code>ArviZ.Dataset</code></a>, a <code>DimensionalData.AbstractDimStack</code> that can be used identically to a <a href="https://rafaqz.github.io/DimensionalData.jl/stable/stacks"><code>DimensionalData.Dimstack</code></a>. We can view a summary of the dataset.</p></div>
 
 <pre class='language-julia'><code class='language-julia'>idata_turing_post.posterior</code></pre>
 <pre class="code-output documenter-example-output" id="var-hash997003">�[90m┌ �[39m�[38;5;209m1000�[39m×�[38;5;32m4�[39m×�[38;5;81m8�[39m Dataset�[90m ┐�[39m
@@ -172,9 +172,9 @@ end</code></pre>
 �[38;5;37m  :θ�[39m�[90m eltype: �[39mFloat64�[90m dims: �[39m�[38;5;209mdraw�[39m, �[38;5;32mchain�[39m, �[38;5;81mschool�[39m�[90m size: �[39m�[38;5;209m1000�[39m×�[38;5;32m4�[39m×�[38;5;81m8�[39m
 �[90m├─────────────────────────────────────────────────────────── metadata ┤�[39m
   Dict{String, Any} with 2 entries:
-  "created_at"        =&gt; "2026-02-07T01:57:18.014"
+  "created_at"        =&gt; "2026-03-05T14:46:51.336"
   "inference_library" =&gt; "Turing"
-</pre>
+�[90m└─────────────────────────────────────────────────────────────────────┘�[39m</pre>
 
 
 <div class="markdown"><p>Here is a plot of the trace. Note the intelligent labels.</p></div>
@@ -257,10 +257,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :θ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:53.786"
+  "created_at" =&gt; "2026-03-05T14:47:28.191"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>posterior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>posterior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
@@ -269,10 +269,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:52.635"
+  "created_at" =&gt; "2026-03-05T14:47:27.035"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>log_likelihood</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>log_likelihood</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
@@ -281,10 +281,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:53.276"
+  "created_at" =&gt; "2026-03-05T14:47:27.68"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>sample_stats</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>sample_stats</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── layers ┤</span>
@@ -304,10 +304,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :step_size_nom   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
 <span class="sgr90">├───────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:53.786"
+  "created_at" =&gt; "2026-03-05T14:47:28.19"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>prior</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>prior</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
@@ -318,10 +318,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :θ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:54.523"
+  "created_at" =&gt; "2026-03-05T14:47:28.97"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>prior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>prior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
@@ -330,10 +330,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:54.139"
+  "created_at" =&gt; "2026-03-05T14:47:28.543"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>sample_stats_prior</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>sample_stats_prior</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────┴───────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
 <span class="sgr90">├──────────────────────────────────────────────────────── layers ┤</span>
@@ -342,20 +342,20 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :loglikelihood</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
 <span class="sgr90">├────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:54.235"
+  "created_at" =&gt; "2026-03-05T14:47:28.681"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details><details><summary>observed_data</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>observed_data</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
 <span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
 <span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 3 entries:
-  "created_at" =&gt; "2026-02-07T01:57:55.15"
+  "created_at" =&gt; "2026-03-05T14:47:29.611"
   "inference_library_version" =&gt; "0.41.4"
   "inference_library" =&gt; "Turing"
-</pre></details></div>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details></div>
 
 
 <div class="markdown"><p>Then we can for example compute the expected <em>leave-one-out (LOO)</em> predictive density, which is an estimate of the out-of-distribution predictive fit of the model:</p></div>
@@ -390,27 +390,24 @@ end</code></pre>
       array[J] real y;
       array[J] real&lt;lower=0&gt; sigma;
     }
-
     parameters {
       real mu;
       real&lt;lower=0&gt; tau;
       array[J] real theta;
     }
-
     model {
       mu ~ normal(0, 5);
       tau ~ cauchy(0, 5);
       theta ~ normal(mu, tau);
       y ~ normal(theta, sigma);
     }
-
     generated quantities {
-        vector[J] log_lik;
-        vector[J] y_hat;
-        for (j in 1:J) {
-            log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
-            y_hat[j] = normal_rng(theta[j], sigma[j]);
-        }
+      vector[J] log_lik;
+      vector[J] y_hat;
+      for (j in 1 : J) {
+        log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+        y_hat[j] = normal_rng(theta[j], sigma[j]);
+      }
     }
     """
 
@@ -449,8 +446,8 @@ end</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :theta</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 1 entry:
-  "created_at" =&gt; "2026-02-07T01:58:39.184"
-</pre></details><details><summary>posterior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+  "created_at" =&gt; "2026-03-05T14:48:14.071"
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>posterior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
@@ -459,8 +456,8 @@ end</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :y_hat</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 1 entry:
-  "created_at" =&gt; "2026-02-07T01:58:38.109"
-</pre></details><details><summary>log_likelihood</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+  "created_at" =&gt; "2026-03-05T14:48:12.976"
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>log_likelihood</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
@@ -469,8 +466,8 @@ end</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :log_lik</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 1 entry:
-  "created_at" =&gt; "2026-02-07T01:58:38.865"
-</pre></details><details><summary>sample_stats</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
+  "created_at" =&gt; "2026-03-05T14:48:13.747"
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>sample_stats</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────┴─────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
 <span class="sgr90">├────────────────────────────────────────────────────────── layers ┤</span>
@@ -483,16 +480,16 @@ end</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :step_size      </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
 <span class="sgr90">├──────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 1 entry:
-  "created_at" =&gt; "2026-02-07T01:58:38.462"
-</pre></details><details><summary>observed_data</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
+  "created_at" =&gt; "2026-03-05T14:48:13.335"
+<span class="sgr90">└──────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>observed_data</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
 <span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
 <span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 1 entry:
-  "created_at" =&gt; "2026-02-07T01:58:39.448"
-</pre></details></div>
+  "created_at" =&gt; "2026-03-05T14:48:14.335"
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details></div>
 
 <pre class='language-julia'><code class='language-julia'>begin
     plot_density(idata_stan; var_names=(:mu, :tau))
@@ -524,26 +521,26 @@ end</code></pre>
 
 <pre class='language-julia'><code class='language-julia'>with_terminal(Pkg.status; color=false)</code></pre>
 <pre id="plutouiterminal">Status `~/work/ArviZ.jl/ArviZ.jl/docs/Project.toml`
-⌃ [cbdf2221] AlgebraOfGraphics v0.11.10
-  [131c737c] ArviZ v0.14.0 `~/work/ArviZ.jl/ArviZ.jl`
+  [cbdf2221] AlgebraOfGraphics v0.12.2
+  [131c737c] ArviZ v0.14.1 `~/work/ArviZ.jl/ArviZ.jl`
   [2f96bb34] ArviZExampleData v0.3.0
   [4a6e88f0] ArviZPythonPlots v0.1.13
-  [13f3f980] CairoMakie v0.15.8
+  [13f3f980] CairoMakie v0.15.9
   [a93c6f00] DataFrames v1.8.1
-  [0703355e] DimensionalData v0.29.25
+⌅ [0703355e] DimensionalData v0.29.27
   [31c24e10] Distributions v0.25.123
-  [e30172f5] Documenter v1.16.1
+  [e30172f5] Documenter v1.17.0
   [d12716ef] DocumenterInterLinks v1.1.0
-  [f6006082] EvoTrees v0.18.3
-  [b5cf5a8d] InferenceObjects v0.4.15
+  [f6006082] EvoTrees v0.18.5
+  [b5cf5a8d] InferenceObjects v0.4.17
   [2ab3a3ac] LogExpFunctions v0.3.29
   [be115224] MCMCDiagnosticTools v0.3.16
 ⌃ [a7f614a8] MLJBase v1.10.0
   [614be32b] MLJIteration v0.6.4
   [ce719bf2] PSIS v0.9.8
-  [359b1769] PlutoStaticHTML v7.0.9
+  [359b1769] PlutoStaticHTML v7.0.10
   [7f904dfe] PlutoUI v0.7.79
-  [7f36be82] PosteriorStats v0.4.4
+  [7f36be82] PosteriorStats v0.4.7
   [c1514b29] StanSample v7.10.2
   [a19d573c] StatisticalMeasures v0.3.4
   [10745b16] Statistics v1.11.1
@@ -555,8 +552,8 @@ Info Packages marked with ⌃ and ⌅ have new versions available. Those with �
 </pre>
 
 <pre class='language-julia'><code class='language-julia'>with_terminal(versioninfo)</code></pre>
-<pre id="plutouiterminal">Julia Version 1.12.4
-Commit 01a2eadb047 (2026-01-06 16:56 UTC)
+<pre id="plutouiterminal">Julia Version 1.12.5
+Commit 5fe89b8ddc1 (2026-02-09 16:05 UTC)
 Build Info:
   Official https://julialang.org release
 Platform Info:
@@ -573,4 +570,4 @@ Environment:
   JULIA_PYTHONCALL_EXE = /home/runner/work/ArviZ.jl/ArviZ.jl/docs/.CondaPkg/.pixi/envs/default/bin/python
 </pre>
 
-<!-- PlutoStaticHTML.End --></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../working_with_inference_data/">Working with <code>InferenceData</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Saturday 7 February 2026 02:01">Saturday 7 February 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<!-- PlutoStaticHTML.End --></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../working_with_inference_data/">Working with <code>InferenceData</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 5 March 2026 14:51">Thursday 5 March 2026</span>. Using Julia version 1.12.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

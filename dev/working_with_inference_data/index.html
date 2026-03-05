@@ -22,7 +22,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -38,7 +38,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>log_likelihood</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -54,7 +54,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>sample_stats</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -87,7 +87,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -105,7 +105,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -121,7 +121,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>observed_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -135,7 +135,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>constant_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -149,8 +149,8 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
-</div><div class="admonition is-info" id="Info-3a2b8323703466c8"><header class="admonition-header">Info<a class="admonition-anchor" href="#Info-3a2b8323703466c8" title="Permalink"></a></header><div class="admonition-body"><p><code>Dataset</code>s are <a href="https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.AbstractDimStack"><code>DimensionalData.AbstractDimStack</code></a>s and can be used identically.   The variables a <code>Dataset</code> contains are called &quot;layers&quot;, and dimensions of the same name that appear in more than one layer within a <code>Dataset</code> must have the same indices.</p></div></div><p><code>InferenceData</code> behaves like a <code>NamedTuple</code> and can be used similarly. Note that unlike a <code>NamedTuple</code>, the groups always appear in a specific order.</p><pre><code class="language-julia hljs">length(idata) # number of groups</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8</code></pre><pre><code class="language-julia hljs">keys(idata) # group names</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(:posterior, :posterior_predictive, :log_likelihood, :sample_stats, :prior, :prior_predictive, :observed_data, :constant_data)</code></pre><h2 id="Get-the-dataset-corresponding-to-a-single-group"><a class="docs-heading-anchor" href="#Get-the-dataset-corresponding-to-a-single-group">Get the dataset corresponding to a single group</a><a id="Get-the-dataset-corresponding-to-a-single-group-1"></a><a class="docs-heading-anchor-permalink" href="#Get-the-dataset-corresponding-to-a-single-group" title="Permalink"></a></h2><p>Group datasets can be accessed both as properties or as indexed items.</p><pre><code class="language-julia hljs">post = idata.posterior</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
+</div><div class="admonition is-info" id="Info-3a2b8323703466c8"><header class="admonition-header">Info<a class="admonition-anchor" href="#Info-3a2b8323703466c8" title="Permalink"></a></header><div class="admonition-body"><p><code>Dataset</code>s are <a href="https://rafaqz.github.io/DimensionalData.jl/stable/stacks"><code>DimensionalData.AbstractDimStack</code></a>s and can be used identically.   The variables a <code>Dataset</code> contains are called &quot;layers&quot;, and dimensions of the same name that appear in more than one layer within a <code>Dataset</code> must have the same indices.</p></div></div><p><code>InferenceData</code> behaves like a <code>NamedTuple</code> and can be used similarly. Note that unlike a <code>NamedTuple</code>, the groups always appear in a specific order.</p><pre><code class="language-julia hljs">length(idata) # number of groups</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8</code></pre><pre><code class="language-julia hljs">keys(idata) # group names</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(:posterior, :posterior_predictive, :log_likelihood, :sample_stats, :prior, :prior_predictive, :observed_data, :constant_data)</code></pre><h2 id="Get-the-dataset-corresponding-to-a-single-group"><a class="docs-heading-anchor" href="#Get-the-dataset-corresponding-to-a-single-group">Get the dataset corresponding to a single group</a><a id="Get-the-dataset-corresponding-to-a-single-group-1"></a><a class="docs-heading-anchor-permalink" href="#Get-the-dataset-corresponding-to-a-single-group" title="Permalink"></a></h2><p>Group datasets can be accessed both as properties or as indexed items.</p><pre><code class="language-julia hljs">post = idata.posterior</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴───────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
@@ -167,7 +167,7 @@
   &quot;tuning_steps&quot;              =&gt; 1000
   &quot;arviz_version&quot;             =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
-</code></pre><p><code>post</code> is the dataset itself, so this is a non-allocating operation.</p><pre><code class="language-julia hljs">idata[:posterior] === post</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p><code>InferenceData</code> supports a more advanced indexing syntax, which we&#39;ll see later.</p><h2 id="Getting-a-new-InferenceData-with-a-subset-of-groups"><a class="docs-heading-anchor" href="#Getting-a-new-InferenceData-with-a-subset-of-groups">Getting a new <code>InferenceData</code> with a subset of groups</a><a id="Getting-a-new-InferenceData-with-a-subset-of-groups-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-new-InferenceData-with-a-subset-of-groups" title="Permalink"></a></h2><p>We can index by a collection of group names to get a new <code>InferenceData</code> with just those groups. This is also non-allocating.</p><pre><code class="language-julia hljs">idata_sub = idata[(:posterior, :posterior_predictive)]</code></pre><div>InferenceData<details>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></code></pre><p><code>post</code> is the dataset itself, so this is a non-allocating operation.</p><pre><code class="language-julia hljs">idata[:posterior] === post</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p><code>InferenceData</code> supports a more advanced indexing syntax, which we&#39;ll see later.</p><h2 id="Getting-a-new-InferenceData-with-a-subset-of-groups"><a class="docs-heading-anchor" href="#Getting-a-new-InferenceData-with-a-subset-of-groups">Getting a new <code>InferenceData</code> with a subset of groups</a><a id="Getting-a-new-InferenceData-with-a-subset-of-groups-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-new-InferenceData-with-a-subset-of-groups" title="Permalink"></a></h2><p>We can index by a collection of group names to get a new <code>InferenceData</code> with just those groups. This is also non-allocating.</p><pre><code class="language-julia hljs">idata_sub = idata[(:posterior, :posterior_predictive)]</code></pre><div>InferenceData<details>
 <summary>posterior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴───────────────────────────────────────────── dims ┐</span>
@@ -186,7 +186,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -202,7 +202,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><h2 id="Adding-groups-to-an-InferenceData"><a class="docs-heading-anchor" href="#Adding-groups-to-an-InferenceData">Adding groups to an <code>InferenceData</code></a><a id="Adding-groups-to-an-InferenceData-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-groups-to-an-InferenceData" title="Permalink"></a></h2><p><code>InferenceData</code> is immutable, so to add or replace groups we use <a href="../api/inference_data/#Base.merge"><code>merge</code></a> to create a new object.</p><pre><code class="language-julia hljs">merge(idata_sub, idata[(:observed_data, :prior)])</code></pre><div>InferenceData<details>
 <summary>posterior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
@@ -222,7 +222,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -238,7 +238,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -256,7 +256,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>observed_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -270,7 +270,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><p>We can also use <a href="../api/inference_data/#Base.setindex"><code>Base.setindex</code></a> to out-of-place add or replace a single group.</p><pre><code class="language-julia hljs">Base.setindex(idata_sub, idata.prior, :prior)</code></pre><div>InferenceData<details>
 <summary>posterior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
@@ -290,7 +290,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -306,7 +306,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -324,7 +324,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><h2 id="Add-a-new-variable"><a class="docs-heading-anchor" href="#Add-a-new-variable">Add a new variable</a><a id="Add-a-new-variable-1"></a><a class="docs-heading-anchor-permalink" href="#Add-a-new-variable" title="Permalink"></a></h2><p><code>Dataset</code> is also immutable. So while the values within the underlying data arrays can be mutated, layers cannot be added or removed from <code>Dataset</code>s, and groups cannot be added/removed from <code>InferenceData</code>.</p><p>Instead, we do this out-of-place also using <code>merge</code>.</p><pre><code class="language-julia hljs">merge(post, (log_tau=log.(post[:tau]),))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴───────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
@@ -343,7 +343,7 @@
   &quot;tuning_steps&quot;              =&gt; 1000
   &quot;arviz_version&quot;             =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
-</code></pre><h2 id="Obtain-an-array-for-a-given-parameter"><a class="docs-heading-anchor" href="#Obtain-an-array-for-a-given-parameter">Obtain an array for a given parameter</a><a id="Obtain-an-array-for-a-given-parameter-1"></a><a class="docs-heading-anchor-permalink" href="#Obtain-an-array-for-a-given-parameter" title="Permalink"></a></h2><p>Let’s say we want to get the values for <code>mu</code> as an array. Parameters can be accessed with either property or index syntax.</p><pre><code class="language-julia hljs">post.tau</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> DimArray{Float64, 2}<span class="sgr38_5" style="color:#00afaf"> tau</span><span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></code></pre><h2 id="Obtain-an-array-for-a-given-parameter"><a class="docs-heading-anchor" href="#Obtain-an-array-for-a-given-parameter">Obtain an array for a given parameter</a><a id="Obtain-an-array-for-a-given-parameter-1"></a><a class="docs-heading-anchor-permalink" href="#Obtain-an-array-for-a-given-parameter" title="Permalink"></a></h2><p>Let’s say we want to get the values for <code>mu</code> as an array. Parameters can be accessed with either property or index syntax.</p><pre><code class="language-julia hljs">post.tau</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> DimArray{Float64, 2}<span class="sgr38_5" style="color:#00afaf"> tau</span><span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────────────────────┴────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
   <span class="sgr38_5" style="color:#0087d7">→ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
@@ -385,7 +385,7 @@
  &quot;Hotchkiss&quot;
  &quot;Lawrenceville&quot;
  &quot;St. Paul&#39;s&quot;
- &quot;Mt. Hermon&quot;</code></pre><h2 id="Get-a-subset-of-chains"><a class="docs-heading-anchor" href="#Get-a-subset-of-chains">Get a subset of chains</a><a id="Get-a-subset-of-chains-1"></a><a class="docs-heading-anchor-permalink" href="#Get-a-subset-of-chains" title="Permalink"></a></h2><p>Let’s keep only chain 0 here. For the subset to take effect on all relevant <code>InferenceData</code> groups – <code>posterior</code>, <code>sample_stats</code>, <code>log_likelihood</code>, and <code>posterior_predictive</code> – we will index <code>InferenceData</code> instead of <code>Dataset</code>.</p><p>Here we use DimensionalData&#39;s <code>At</code> selector. Its <a href="https://rafaqz.github.io/DimensionalData.jl/stable/reference/#selectors">other selectors</a> are also supported.</p><pre><code class="language-julia hljs">idata[chain=At(0)]</code></pre><div>InferenceData<details>
+ &quot;Mt. Hermon&quot;</code></pre><h2 id="Get-a-subset-of-chains"><a class="docs-heading-anchor" href="#Get-a-subset-of-chains">Get a subset of chains</a><a id="Get-a-subset-of-chains-1"></a><a class="docs-heading-anchor-permalink" href="#Get-a-subset-of-chains" title="Permalink"></a></h2><p>Let’s keep only chain 0 here. For the subset to take effect on all relevant <code>InferenceData</code> groups – <code>posterior</code>, <code>sample_stats</code>, <code>log_likelihood</code>, and <code>posterior_predictive</code> – we will index <code>InferenceData</code> instead of <code>Dataset</code>.</p><p>Here we use DimensionalData&#39;s <code>At</code> selector. Its <a href="https://rafaqz.github.io/DimensionalData.jl/stable/selectors">other selectors</a> are also supported.</p><pre><code class="language-julia hljs">idata[chain=At(0)]</code></pre><div>InferenceData<details>
 <summary>posterior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴───────────────────────────────────────────── dims ┐</span>
@@ -404,7 +404,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -420,7 +420,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>log_likelihood</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -436,7 +436,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>sample_stats</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -469,7 +469,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -487,7 +487,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -503,7 +503,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>observed_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -517,7 +517,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>constant_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -531,7 +531,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><p>Note that in this case, <code>prior</code> only has a chain of 0. If it also had the other chains, we could have passed <code>chain=At([0, 2])</code> to subset by chains 0 and 2.</p><div class="admonition is-warning" id="Warning-fe43002ee442c86e"><header class="admonition-header">Warning<a class="admonition-anchor" href="#Warning-fe43002ee442c86e" title="Permalink"></a></header><div class="admonition-body"><p>If we used <code>idata[chain=[0, 2]]</code> without the <code>At</code> selector, this is equivalent to <code>idata[chain=DimensionalData.index(idata.posterior, :chain)[0, 2]]</code>, that is, <code>[0, 2]</code> indexes an array of dimension indices, which here would error.   But if we had requested <code>idata[chain=[1, 2]]</code> we would not hit an error, but we would index the wrong chains.   So it&#39;s important to always use a selector to index by values of dimension indices.</p></div></div><h2 id="Remove-the-first-n-draws-(burn-in)"><a class="docs-heading-anchor" href="#Remove-the-first-n-draws-(burn-in)">Remove the first <span>$n$</span> draws (burn-in)</a><a id="Remove-the-first-n-draws-(burn-in)-1"></a><a class="docs-heading-anchor-permalink" href="#Remove-the-first-n-draws-(burn-in)" title="Permalink"></a></h2><p>Let’s say we want to remove the first 100 draws from all the chains and all <code>InferenceData</code> groups with draws. To do this we use the <code>..</code> syntax from IntervalSets.jl, which is exported by DimensionalData.</p><pre><code class="language-julia hljs">idata[draw=100 .. Inf]</code></pre><div>InferenceData<details>
 <summary>posterior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">400</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
@@ -551,7 +551,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">400</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -567,7 +567,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>log_likelihood</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">400</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -583,7 +583,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>sample_stats</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">400</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -616,7 +616,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">400</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -634,7 +634,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">400</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -650,7 +650,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>observed_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -664,7 +664,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>constant_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -678,7 +678,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><p>If you check the object you will see that the groups <code>posterior</code>, <code>posterior_predictive</code>, <code>prior</code>, and <code>sample_stats</code> have 400 draws compared to <code>idata</code>, which has 500. The group <code>observed_data</code> has not been affected because it does not have the <code>draw</code> dimension.</p><p>Alternatively, you can change a subset of groups by combining indexing styles with <code>merge</code>. Here we use this to build a new <code>InferenceData</code> where we have discarded the first 100 draws only from <code>posterior</code>.</p><pre><code class="language-julia hljs">merge(idata, idata[(:posterior,), draw=100 .. Inf])</code></pre><div>InferenceData<details>
 <summary>posterior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">400</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
@@ -698,7 +698,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -714,7 +714,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>log_likelihood</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -730,7 +730,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>sample_stats</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -763,7 +763,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -781,7 +781,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -797,7 +797,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>observed_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -811,7 +811,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>constant_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -825,7 +825,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><h2 id="Compute-posterior-mean-values-along-draw-and-chain-dimensions"><a class="docs-heading-anchor" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions">Compute posterior mean values along draw and chain dimensions</a><a id="Compute-posterior-mean-values-along-draw-and-chain-dimensions-1"></a><a class="docs-heading-anchor-permalink" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions" title="Permalink"></a></h2><p>To compute the mean value of the posterior samples, do the following:</p><pre><code class="language-julia hljs">mean(post)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(mu = 4.171372428995561, theta = 4.749054742616296, tau = 4.321165826222454)</code></pre><p>This computes the mean along all dimensions, discarding all dimensions and returning the result as a <code>NamedTuple</code>. This may be what you wanted for <code>mu</code> and <code>tau</code>, which have only two dimensions (<code>chain</code> and <code>draw</code>), but maybe not what you expected for <code>theta</code>, which has one more dimension <code>school</code>.</p><p>You can specify along which dimension you want to compute the mean (or other functions), which instead returns a <code>Dataset</code>.</p><pre><code class="language-julia hljs">mean(post; dims=(:chain, :draw))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├───────────────┴─────────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span> Sampled{Float64} <span class="sgr38_5" style="color:#ff875f">[249.5]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
@@ -843,7 +843,7 @@
   &quot;tuning_steps&quot;              =&gt; 1000
   &quot;arviz_version&quot;             =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
-</code></pre><p>The singleton dimensions of <code>chain</code> and <code>draw</code> now contain meaningless indices, so you may want to discard them, which you can do with <code>dropdims</code>.</p><pre><code class="language-julia hljs">dropdims(mean(post; dims=(:chain, :draw)); dims=(:chain, :draw))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></code></pre><p>The singleton dimensions of <code>chain</code> and <code>draw</code> now contain meaningless indices, so you may want to discard them, which you can do with <code>dropdims</code>.</p><pre><code class="language-julia hljs">dropdims(mean(post; dims=(:chain, :draw)); dims=(:chain, :draw))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
 <span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
@@ -858,7 +858,7 @@
   &quot;tuning_steps&quot;              =&gt; 1000
   &quot;arviz_version&quot;             =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
-</code></pre><h2 id="Renaming-a-dimension"><a class="docs-heading-anchor" href="#Renaming-a-dimension">Renaming a dimension</a><a id="Renaming-a-dimension-1"></a><a class="docs-heading-anchor-permalink" href="#Renaming-a-dimension" title="Permalink"></a></h2><p>We can rename a dimension in a <code>Dataset</code> using DimensionalData&#39;s <a href="https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.Dimensions.LookupArrays.set"><code>set</code></a> method:</p><pre><code class="language-julia hljs">theta_bis = set(post.theta; school=:school_bis)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> DimArray{Float64, 3}<span class="sgr38_5" style="color:#00afaf"> theta</span><span class="sgr90"> ┐</span>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></code></pre><h2 id="Renaming-a-dimension"><a class="docs-heading-anchor" href="#Renaming-a-dimension">Renaming a dimension</a><a id="Renaming-a-dimension-1"></a><a class="docs-heading-anchor-permalink" href="#Renaming-a-dimension" title="Permalink"></a></h2><p>We can rename a dimension in a <code>Dataset</code> using DimensionalData&#39;s <a href="https://rafaqz.github.io/DimensionalData.jl/stable/object_modification#set"><code>set</code></a> method:</p><pre><code class="language-julia hljs">theta_bis = set(post.theta; school=:school_bis)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> DimArray{Float64, 3}<span class="sgr38_5" style="color:#00afaf"> theta</span><span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────────────────────────┴─────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school_bis</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
   <span class="sgr38_5" style="color:#0087d7">→ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
@@ -909,7 +909,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>posterior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -925,7 +925,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>log_likelihood</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -941,7 +941,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>sample_stats</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
@@ -974,7 +974,7 @@
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└───────────────────────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -992,7 +992,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>prior_predictive</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
@@ -1008,7 +1008,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>observed_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -1022,7 +1022,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 <details>
 <summary>constant_data</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
@@ -1036,7 +1036,7 @@
   &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><p>Once you have these pushforward quantities in an <code>InferenceData</code>, you’ll then be able to plot them with ArviZ functions, calculate stats and diagnostics on them, or save and share the <code>InferenceData</code> object with the pushforward quantities included.</p><p>Here we compute the <a href="../api/diagnostics/#mcse"><code>mcse</code></a> of <code>theta_school_diff</code>:</p><pre><code class="language-julia hljs">mcse(idata_new.posterior).theta_school_diff</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">8</span> DimArray{Float64, 2}<span class="sgr38_5" style="color:#00afaf"> theta_school_diff</span><span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────────────────────────────────┴────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
@@ -1082,7 +1082,7 @@ theta_school_diff[school=At(school_idx), school_bis=At(school_bis_idx)]</code></
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details>
 </div><p>You can combine the two using <a href="../api/inference_data/#Base.cat"><code>cat</code></a>.</p><pre><code class="language-julia hljs">cat(idata[[:posterior]], idata_rerun; dims=:chain)</code></pre><div>InferenceData<details>
 <summary>posterior</summary>
 <pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">6</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
@@ -1102,5 +1102,5 @@ theta_school_diff[school=At(school_idx), school_bis=At(school_bis_idx)]</code></
   &quot;tuning_steps&quot; =&gt; 1000
   &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
   &quot;inference_library&quot; =&gt; &quot;pymc&quot;
-</pre></details>
-</div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../quickstart/">« Quickstart</a><a class="docs-footer-nextpage" href="../creating_custom_plots/">Creating custom plots »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Saturday 7 February 2026 02:01">Saturday 7 February 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details>
+</div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../quickstart/">« Quickstart</a><a class="docs-footer-nextpage" href="../creating_custom_plots/">Creating custom plots »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 5 March 2026 14:51">Thursday 5 March 2026</span>. Using Julia version 1.12.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
