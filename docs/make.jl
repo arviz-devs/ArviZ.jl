@@ -56,6 +56,7 @@ DocMeta.setdocmeta!(
 links = InterLinks(
     "arviz" => "https://python.arviz.org/en/stable/",
     "DimensionalData" => "https://rafaqz.github.io/DimensionalData.jl/stable/",
+    "Distributions" => "https://juliastats.org/Distributions.jl/stable/",
     "IntervalSets" => "https://juliamath.github.io/IntervalSets.jl/stable/",
     "MCMCDiagnosticTools" => "https://julia.arviz.org/MCMCDiagnosticTools/stable/",
     "MLJ" => "https://juliaai.github.io/MLJ.jl/stable/",
