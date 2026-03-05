@@ -28,10 +28,6 @@ using PlutoUI
 # ╔═╡ a23dfd65-50a8-4872-8c41-661e96585aca
 md"""
 # [ArviZ Quickstart](#quickstart)
-
-!!! note
-
-    This tutorial is adapted from [ArviZ's quickstart](https://python.arviz.org/en/latest/getting_started/Introduction.html).
 """
 
 # ╔═╡ d2eedd48-48c6-4fcd-b179-6be7fe68d3d6
@@ -174,7 +170,7 @@ idata_turing_post = from_mcmcchains(
 
 # ╔═╡ 79f342c8-0738-432b-bfd7-2da25e50fa91
 md"""
-Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/InferenceObjects/stable/dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.DimStack).
+Each group is an [`ArviZ.Dataset`](https://julia.arviz.org/InferenceObjects/stable/dataset), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/stacks).
 We can view a summary of the dataset.
 """
 
