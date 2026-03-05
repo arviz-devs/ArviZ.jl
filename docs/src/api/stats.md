@@ -69,5 +69,5 @@ r2_score
 
 ```@docs
 PosteriorStats.kde_reflected
-PosteriorStats.pointwise_loglikelihoods
+PosteriorStats.pointwise_conditional_loglikelihoods
 ```
