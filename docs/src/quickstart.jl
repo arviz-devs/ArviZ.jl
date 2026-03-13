@@ -319,67 +319,49 @@ begin
     }
     """
 
-    if Sys.iswindows()
-        @warn "Skipping Stan example on Windows during docs build"
-        idata_stan = nothing
-    else
-        idata_stan = mktempdir() do path
-            stan_model = SampleModel("schools", schools_code, path)
-            _ = stan_sample(
-                stan_model;
-                data=schools_data,
-                num_chains=nchains,
-                num_warmups=ndraws_warmup,
-                num_samples=ndraws,
-                seed=28983,
-                summary=false,
-            )
-            StanSample.inferencedata(
-                stan_model;
-                posterior_predictive_var=:y_hat,
-                observed_data=(; y),
-                log_likelihood_var=:log_lik,
-                coords=(; school=schools),
-                dims=NamedTuple(
-                    k => (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)
-                ),
-            )
-        end
-    end
-end   # ← THIS WAS MISSING
-  
-
-
-# ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
-begin
-    if idata_stan === nothing
-        @warn "Skipping density plot because Stan example was not run"
-    else
-        plot_density(idata_stan; var_names=(:mu, :tau))
-        gcf()
+    schools_data = Dict("J" => J, "y" => y, "sigma" => σ)
+    idata_stan = mktempdir() do path
+        stan_model = SampleModel("schools", schools_code, path)
+        _ = stan_sample(
+            stan_model;
+            data=schools_data,
+            num_chains=nchains,
+            num_warmups=ndraws_warmup,
+            num_samples=ndraws,
+            seed=28983,
+            summary=false,
+        )
+        return StanSample.inferencedata(
+            stan_model;
+            posterior_predictive_var=:y_hat,
+            observed_data=(; y),
+            log_likelihood_var=:log_lik,
+            coords=(; school=schools),
+            dims=NamedTuple(
+                k => (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)
+            ),
+        )
     end
 end
 
-
+# ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
+begin
+    plot_density(idata_stan; var_names=(:mu, :tau))
+    gcf()
+end
 
 # ╔═╡ e44b260c-9d2f-43f8-a64b-04245a0a5658
 md"""Here is a plot showing where the Hamiltonian sampler had divergences:"""
 
 # ╔═╡ 5070bbbc-68d2-49b8-bd91-456dc0da4573
 begin
-    if idata_stan === nothing
-        @warn "Skipping pair plot because Stan example was not run"
-    else
-        plot_pair(
-            idata_stan;
-            coords=Dict(:school => ["Choate", "Deerfield", "Phillips Andover"]),
-            divergences=true,
-        )
-        gcf()
-    end
+    plot_pair(
+        idata_stan;
+        coords=Dict(:school => ["Choate", "Deerfield", "Phillips Andover"]),
+        divergences=true,
+    )
+    gcf()
 end
-
-
 
 # ╔═╡ ac2b4378-bd1c-4164-af05-d9a35b1bb08f
 md"## [Environment](#environment)"
