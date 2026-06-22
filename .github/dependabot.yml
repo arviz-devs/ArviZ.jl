@@ -9,7 +9,6 @@ updates:
     directories: # Location of Julia projects
       - "/"
       - "/docs"
-      - "/test/coverage"
       - "/test/ext/ArviZMCMCChainsExt"
       - "/test/ext/ArviZSampleChainsDynamicHMCExt"
       - "/test/ext/ArviZSampleChainsExt"
