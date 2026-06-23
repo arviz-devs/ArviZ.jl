@@ -1,10 +1,13 @@
-using Documenter, DocumenterInterLinks, Downloads, ArviZ
+using Documenter, DocumenterInterLinks, Downloads, ArviZ, DocumenterCitations
 using PlutoStaticHTML: PlutoStaticHTML
 
 const DOCS_SRC_PATH = joinpath(@__DIR__, "src")
 
-# generate markdown from Pluto notebooks
+bib = CitationBibliography(
+    joinpath(@__DIR__, "src", "references.bib");
+)
 output_format = PlutoStaticHTML.documenter_output
+
 build_opts = PlutoStaticHTML.BuildOptions(
     DOCS_SRC_PATH;
     previous_dir=DOCS_SRC_PATH,
@@ -12,6 +15,7 @@ build_opts = PlutoStaticHTML.BuildOptions(
     add_documenter_css=false,
 )
 PlutoStaticHTML.build_notebooks(build_opts)
+
 
 const ASSETS_DIR = joinpath(@__DIR__, "src", "assets")
 const ARVIZ_ASSETS_URL = "https://raw.githubusercontent.com/arviz-devs/arviz-project/main/arviz_logos"
@@ -22,6 +26,7 @@ function download_asset(remote_fn, fn=remote_fn)
         joinpath(ARVIZ_ASSETS_URL, remote_fn), joinpath(ASSETS_DIR, fn); verbose=true
     )
 end
+
 
 function get_extension(mod::Module, submodule::Symbol)
     if isdefined(Base, :get_extension)
@@ -96,6 +101,7 @@ withenv("COLUMNS" => 100) do
     makedocs(;
         modules,
         sitename="ArviZ.jl",
+        plugins = [bib,links],
         pages=[
             "Home" => "index.md",
             "Getting Started" => [
@@ -126,7 +132,6 @@ withenv("COLUMNS" => 100) do
         doctestfilters,
         linkcheck=true,
         warnonly,
-        plugins=[links],
     )
 end
 
