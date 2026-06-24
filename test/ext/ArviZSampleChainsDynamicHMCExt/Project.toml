@@ -5,3 +5,9 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SampleChains = "754583d1-7fc4-4dab-93b5-5eaca5c9622e"
 SampleChainsDynamicHMC = "6d9fd711-e8b2-4778-9c70-c1dfb499d4c4"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+ArviZ = "0.14.1"
+DimensionalData = "0.30.1"
+SampleChains = "0.5.1"
+SampleChainsDynamicHMC = "0.3.5"
