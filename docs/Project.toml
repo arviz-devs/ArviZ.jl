@@ -30,11 +30,17 @@ Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 [sources.ArviZ]
 path = ".."
 
+# TEMPORARY: remove once arviz-devs/ArviZPythonPlots.jl#86 merges and v0.2.0 is
+# registered, and change the compat entry below to "0.2".
+[sources.ArviZPythonPlots]
+url = "https://github.com/arviz-devs/ArviZPythonPlots.jl"
+rev = "migrate-arviz-1.0"
+
 [compat]
 AlgebraOfGraphics = "0.6.13, 0.7, 0.8, 0.9, 0.10, 0.11, 0.12"
 ArviZ = "0.14.0"
 ArviZExampleData = "0.3"
-ArviZPythonPlots = "0.1.12"
+ArviZPythonPlots = "0.2"
 CairoMakie = "0.10, 0.11, 0.12, 0.13, 0.14, 0.15"
 DataFrames = "1.4"
 DimensionalData = "0.27, 0.28, 0.29"
