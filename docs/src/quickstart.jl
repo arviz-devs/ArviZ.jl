@@ -54,13 +54,13 @@ rng1 = Random.MersenneTwister(37772);
 
 # ╔═╡ 401e9b91-0bca-4369-8d36-3d9f0b3ad60b
 begin
-    plot_posterior(randn(rng1, 100_000))
+    plot_dist(convert_to_inference_data(randn(rng1, 100_000)))
     gcf()
 end
 
 # ╔═╡ 2c718ea5-2800-4df6-b62c-e0a9e440a1c3
 md"""
-Plotting a dictionary of arrays, ArviZ will interpret each key as the name of a different random variable.
+Plotting a `NamedTuple` of arrays, ArviZ will interpret each key as the name of a different random variable.
 Each row of an array is treated as an independent series of draws from the variable, called a _chain_.
 Below, we have 10 chains of 50 draws each for four different distributions.
 """
@@ -68,12 +68,13 @@ Below, we have 10 chains of 50 draws each for four different distributions.
 # ╔═╡ 49f19c17-ac1d-46b5-a655-4376b7713244
 let
     s = (50, 10)
-    plot_forest((
+    idata = convert_to_inference_data((
         normal=randn(rng1, s),
         gumbel=rand(rng1, Gumbel(), s),
         student_t=rand(rng1, TDist(6), s),
         exponential=rand(rng1, Exponential(), s),
-    ),)
+    ))
+    plot_forest(idata)
     gcf()
 end
 
@@ -139,25 +140,14 @@ begin
     )
 end;
 
-# ╔═╡ bd4ab044-51ce-4af9-83b2-bd8fc827f810
-md"""
-Most ArviZ functions work fine with `Chains` objects from Turing:
-"""
-
-# ╔═╡ 500f4e0d-0a36-4b5c-8900-667560fbf1d4
-begin
-    plot_autocorr(turing_chns; var_names=(:μ, :τ))
-    gcf()
-end
-
 # ╔═╡ 1129ad94-f65a-4332-b354-21bcf7e53541
 md"""
 ### Convert to `InferenceData`
 
-For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert `Chains` objects to multidimensional data structures with named dimensions and indices.
+ArviZPythonPlots' plotting functions require an [`InferenceData`](https://julia.arviz.org/InferenceObjects/stable/inference_data)-like object, so before plotting we use built-in ArviZ utilities to convert `Chains` objects to multidimensional data structures with named dimensions and indices.
 Note that for such dimensions, the information is not contained in `Chains`, so we need to provide it.
 
-ArviZ is built to work with [`InferenceData`](https://julia.arviz.org/InferenceObjects/stable/inference_data), and the more *groups* it has access to, the more powerful analyses it can perform.
+ArviZ is built to work with `InferenceData`, and the more *groups* it has access to, the more powerful analyses it can perform.
 """
 
 # ╔═╡ 803efdd8-656e-4e37-ba36-81195d064972
@@ -176,6 +166,17 @@ We can view a summary of the dataset.
 
 # ╔═╡ 6209f947-5001-4507-b3e8-9747256f3328
 idata_turing_post.posterior
+
+# ╔═╡ bd4ab044-51ce-4af9-83b2-bd8fc827f810
+md"""
+Now we can use any of ArviZPythonPlots' plotting functions, e.g. to look at the autocorrelation of each parameter:
+"""
+
+# ╔═╡ 500f4e0d-0a36-4b5c-8900-667560fbf1d4
+begin
+    plot_autocorr(idata_turing_post; var_names=[:μ, :τ])
+    gcf()
+end
 
 # ╔═╡ 26692722-db0d-41de-b58c-339b639f6948
 md"""
@@ -277,7 +278,7 @@ This can be inspected visually:
 
 # ╔═╡ 05c9be29-7758-4324-971c-5579f99aaf9d
 begin
-    plot_loo_pit(idata_turing; y=:y, ecdf=true)
+    plot_loo_pit(idata_turing; var_names=:y)
     gcf()
 end
 
@@ -346,7 +347,7 @@ end
 
 # ╔═╡ ab145e41-b230-4cad-bef5-f31e0e0770d4
 begin
-    plot_density(idata_stan; var_names=(:mu, :tau))
+    plot_dist(idata_stan; var_names=[:mu, :tau])
     gcf()
 end
 
@@ -358,7 +359,7 @@ begin
     plot_pair(
         idata_stan;
         coords=Dict(:school => ["Choate", "Deerfield", "Phillips Andover"]),
-        divergences=true,
+        visuals=Dict("divergence" => true),
     )
     gcf()
 end
@@ -389,12 +390,12 @@ with_terminal(versioninfo)
 # ╠═f383d541-e22d-44b4-b8cb-28b3d67944a1
 # ╠═86cb5e19-49e4-4e5e-8b89-e76936932055
 # ╠═85bbcba7-c0f9-4c86-9cdf-a27055d3d448
-# ╟─bd4ab044-51ce-4af9-83b2-bd8fc827f810
-# ╠═500f4e0d-0a36-4b5c-8900-667560fbf1d4
 # ╟─1129ad94-f65a-4332-b354-21bcf7e53541
 # ╠═803efdd8-656e-4e37-ba36-81195d064972
 # ╟─79f342c8-0738-432b-bfd7-2da25e50fa91
 # ╠═6209f947-5001-4507-b3e8-9747256f3328
+# ╟─bd4ab044-51ce-4af9-83b2-bd8fc827f810
+# ╠═500f4e0d-0a36-4b5c-8900-667560fbf1d4
 # ╟─26692722-db0d-41de-b58c-339b639f6948
 # ╠═14046b83-9c0a-4d33-ae4e-36c7d6f1b2e6
 # ╟─737f319c-1ddd-45f2-8d10-aaecdc1334be
