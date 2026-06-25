@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Working with InferenceData · ArviZ.jl</title><meta name="title" content="Working with InferenceData · ArviZ.jl"/><meta property="og:title" content="Working with InferenceData · ArviZ.jl"/><meta property="twitter:title" content="Working with InferenceData · ArviZ.jl"/><meta name="description" content="Documentation for ArviZ.jl."/><meta property="og:description" content="Documentation for ArviZ.jl."/><meta property="twitter:description" content="Documentation for ArviZ.jl."/><meta property="og:url" content="stable/working_with_inference_data/"/><meta property="twitter:url" content="stable/working_with_inference_data/"/><link rel="canonical" href="stable/working_with_inference_data/"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-W1G68W77YV"></script><script>  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-W1G68W77YV', {'page_path': location.pathname + location.search + location.hash});
+</script><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../quickstart/">Quickstart</a></li><li class="is-active"><a class="tocitem" href>Working with <code>InferenceData</code></a><ul class="internal"><li><a class="tocitem" href="#Get-the-dataset-corresponding-to-a-single-group"><span>Get the dataset corresponding to a single group</span></a></li><li><a class="tocitem" href="#Getting-a-new-InferenceData-with-a-subset-of-groups"><span>Getting a new <code>InferenceData</code> with a subset of groups</span></a></li><li><a class="tocitem" href="#Adding-groups-to-an-InferenceData"><span>Adding groups to an <code>InferenceData</code></span></a></li><li><a class="tocitem" href="#Add-a-new-variable"><span>Add a new variable</span></a></li><li><a class="tocitem" href="#Obtain-an-array-for-a-given-parameter"><span>Obtain an array for a given parameter</span></a></li><li><a class="tocitem" href="#Get-the-dimension-lengths"><span>Get the dimension lengths</span></a></li><li><a class="tocitem" href="#Get-coordinate/index-values"><span>Get coordinate/index values</span></a></li><li><a class="tocitem" href="#Get-a-subset-of-chains"><span>Get a subset of chains</span></a></li><li><a class="tocitem" href="#Remove-the-first-n-draws-(burn-in)"><span>Remove the first <span>$n$</span> draws (burn-in)</span></a></li><li><a class="tocitem" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions"><span>Compute posterior mean values along draw and chain dimensions</span></a></li><li><a class="tocitem" href="#Renaming-a-dimension"><span>Renaming a dimension</span></a></li><li><a class="tocitem" href="#Compute-and-store-posterior-pushforward-quantities"><span>Compute and store posterior pushforward quantities</span></a></li><li><a class="tocitem" href="#Advanced-subsetting"><span>Advanced subsetting</span></a></li><li><a class="tocitem" href="#Add-new-chains-using-cat"><span>Add new chains using <code>cat</code></span></a></li></ul></li><li><a class="tocitem" href="../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../api/stats/">Stats</a></li><li><a class="tocitem" href="../api/diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../api/data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-3-5" type="checkbox"/><label class="tocitem" for="menuitem-3-5"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../api/inference_data/">InferenceData</a></li><li><a class="tocitem" href="../api/dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Getting Started</a></li><li class="is-active"><a href>Working with <code>InferenceData</code></a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Working with <code>InferenceData</code></a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/working_with_inference_data.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="working-with-inference-data"><a class="docs-heading-anchor" href="#working-with-inference-data">Working with <code>InferenceData</code></a><a id="working-with-inference-data-1"></a><a class="docs-heading-anchor-permalink" href="#working-with-inference-data" title="Permalink"></a></h1><pre><code class="language-julia hljs">using ArviZ, ArviZExampleData, DimensionalData, Statistics</code></pre><p>Here we present a collection of common manipulations you can use while working with <a href="../api/inference_data/#InferenceObjects.InferenceData"><code>InferenceData</code></a>.</p><p>Let&#39;s load one of ArviZ&#39;s example datasets. <code>posterior</code>, <code>posterior_predictive</code>, etc are the groups stored in <code>idata</code>, and they are stored as <a href="../api/dataset/#InferenceObjects.Dataset"><code>Dataset</code></a>s. In this HTML view, you can click a group name to expand a summary of the group.</p><pre><code class="language-julia hljs">idata = load_example_data(&quot;centered_eight&quot;)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 500×4×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×4
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×4
+  :tau   eltype: Float64 dims: draw, chain size: 500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>log_likelihood</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:37.487399"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>╭───────────────╮
+│ 500×4 Dataset │
+├───────────────┴─────────────────────────────────────────────────────── dims ┐
+  ↓ draw  Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├─────────────────────────────────────────────────────────────────────────────┴ layers ┐
+  :max_energy_error    eltype: Float64 dims: draw, chain size: 500×4
+  :energy_error        eltype: Float64 dims: draw, chain size: 500×4
+  :lp                  eltype: Float64 dims: draw, chain size: 500×4
+  :index_in_trajectory eltype: Int64 dims: draw, chain size: 500×4
+  :acceptance_rate     eltype: Float64 dims: draw, chain size: 500×4
+  :diverging           eltype: Bool dims: draw, chain size: 500×4
+  :process_time_diff   eltype: Float64 dims: draw, chain size: 500×4
+  :n_steps             eltype: Float64 dims: draw, chain size: 500×4
+  :perf_counter_start  eltype: Float64 dims: draw, chain size: 500×4
+  :largest_eigval      eltype: Union{Missing, Float64} dims: draw, chain size: 500×4
+  :smallest_eigval     eltype: Union{Missing, Float64} dims: draw, chain size: 500×4
+  :step_size_bar       eltype: Float64 dims: draw, chain size: 500×4
+  :step_size           eltype: Float64 dims: draw, chain size: 500×4
+  :energy              eltype: Float64 dims: draw, chain size: 500×4
+  :tree_depth          eltype: Int64 dims: draw, chain size: 500×4
+  :perf_counter_diff   eltype: Float64 dims: draw, chain size: 500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.324929"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>╭─────────────────╮
+│ 500×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :tau   eltype: Float64 dims: draw, chain size: 500×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×1
+  :mu    eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.602116"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×1 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.604969"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.606375"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>constant_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :scores eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.607471"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><div class="admonition is-info"><header class="admonition-header">Info</header><div class="admonition-body"><p><code>Dataset</code>s are <a href="https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.AbstractDimStack"><code>DimensionalData.AbstractDimStack</code></a>s and can be used identically.   The variables a <code>Dataset</code> contains are called &quot;layers&quot;, and dimensions of the same name that appear in more than one layer within a <code>Dataset</code> must have the same indices.</p></div></div><p><code>InferenceData</code> behaves like a <code>NamedTuple</code> and can be used similarly. Note that unlike a <code>NamedTuple</code>, the groups always appear in a specific order.</p><pre><code class="language-julia hljs">length(idata) # number of groups</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8</code></pre><pre><code class="language-julia hljs">keys(idata) # group names</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(:posterior, :posterior_predictive, :log_likelihood, :sample_stats, :prior, :prior_predictive, :observed_data, :constant_data)</code></pre><h2 id="Get-the-dataset-corresponding-to-a-single-group"><a class="docs-heading-anchor" href="#Get-the-dataset-corresponding-to-a-single-group">Get the dataset corresponding to a single group</a><a id="Get-the-dataset-corresponding-to-a-single-group-1"></a><a class="docs-heading-anchor-permalink" href="#Get-the-dataset-corresponding-to-a-single-group" title="Permalink"></a></h2><p>Group datasets can be accessed both as properties or as indexed items.</p><pre><code class="language-julia hljs">post = idata.posterior</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭─────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> │</span>
+<span class="sgr90">├─────────────────┴────────────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw  </span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, 1, …, 498, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain </span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, 1, 2, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :mu   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :theta</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#5fd7ff">school</span>, <span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#5fd7ff">8</span>×<span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :tau  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 6 entries:
+  &quot;created_at&quot;                =&gt; &quot;2022-10-13T14:37:37.315398&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;4.2.2&quot;
+  &quot;sampling_time&quot;             =&gt; 7.48011
+  &quot;tuning_steps&quot;              =&gt; 1000
+  &quot;arviz_version&quot;             =&gt; &quot;0.13.0.dev0&quot;
+  &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
+</code></pre><p><code>post</code> is the dataset itself, so this is a non-allocating operation.</p><pre><code class="language-julia hljs">idata[:posterior] === post</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p><code>InferenceData</code> supports a more advanced indexing syntax, which we&#39;ll see later.</p><h2 id="Getting-a-new-InferenceData-with-a-subset-of-groups"><a class="docs-heading-anchor" href="#Getting-a-new-InferenceData-with-a-subset-of-groups">Getting a new <code>InferenceData</code> with a subset of groups</a><a id="Getting-a-new-InferenceData-with-a-subset-of-groups-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-new-InferenceData-with-a-subset-of-groups" title="Permalink"></a></h2><p>We can index by a collection of group names to get a new <code>InferenceData</code> with just those groups. This is also non-allocating.</p><pre><code class="language-julia hljs">idata_sub = idata[(:posterior, :posterior_predictive)]</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 500×4×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×4
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×4
+  :tau   eltype: Float64 dims: draw, chain size: 500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><h2 id="Adding-groups-to-an-InferenceData"><a class="docs-heading-anchor" href="#Adding-groups-to-an-InferenceData">Adding groups to an <code>InferenceData</code></a><a id="Adding-groups-to-an-InferenceData-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-groups-to-an-InferenceData" title="Permalink"></a></h2><p><code>InferenceData</code> is immutable, so to add or replace groups we use <a href="../api/inference_data/#Base.merge"><code>merge</code></a> to create a new object.</p><pre><code class="language-julia hljs">merge(idata_sub, idata[(:observed_data, :prior)])</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 500×4×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×4
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×4
+  :tau   eltype: Float64 dims: draw, chain size: 500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>╭─────────────────╮
+│ 500×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :tau   eltype: Float64 dims: draw, chain size: 500×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×1
+  :mu    eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.602116"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.606375"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><p>We can also use <a href="../api/inference_data/#Base.setindex"><code>Base.setindex</code></a> to out-of-place add or replace a single group.</p><pre><code class="language-julia hljs">Base.setindex(idata_sub, idata.prior, :prior)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 500×4×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×4
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×4
+  :tau   eltype: Float64 dims: draw, chain size: 500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>╭─────────────────╮
+│ 500×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :tau   eltype: Float64 dims: draw, chain size: 500×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×1
+  :mu    eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.602116"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><h2 id="Add-a-new-variable"><a class="docs-heading-anchor" href="#Add-a-new-variable">Add a new variable</a><a id="Add-a-new-variable-1"></a><a class="docs-heading-anchor-permalink" href="#Add-a-new-variable" title="Permalink"></a></h2><p><code>Dataset</code> is also immutable. So while the values within the underlying data arrays can be mutated, layers cannot be added or removed from <code>Dataset</code>s, and groups cannot be added/removed from <code>InferenceData</code>.</p><p>Instead, we do this out-of-place also using <code>merge</code>.</p><pre><code class="language-julia hljs">merge(post, (log_tau=log.(post[:tau]),))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭─────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> │</span>
+<span class="sgr90">├─────────────────┴────────────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw  </span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, 1, …, 498, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain </span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, 1, 2, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :mu     </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :theta  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#5fd7ff">school</span>, <span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#5fd7ff">8</span>×<span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :tau    </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :log_tau</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 6 entries:
+  &quot;created_at&quot;                =&gt; &quot;2022-10-13T14:37:37.315398&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;4.2.2&quot;
+  &quot;sampling_time&quot;             =&gt; 7.48011
+  &quot;tuning_steps&quot;              =&gt; 1000
+  &quot;arviz_version&quot;             =&gt; &quot;0.13.0.dev0&quot;
+  &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
+</code></pre><h2 id="Obtain-an-array-for-a-given-parameter"><a class="docs-heading-anchor" href="#Obtain-an-array-for-a-given-parameter">Obtain an array for a given parameter</a><a id="Obtain-an-array-for-a-given-parameter-1"></a><a class="docs-heading-anchor-permalink" href="#Obtain-an-array-for-a-given-parameter" title="Permalink"></a></h2><p>Let’s say we want to get the values for <code>mu</code> as an array. Parameters can be accessed with either property or index syntax.</p><pre><code class="language-julia hljs">post.tau</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭───────────────────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> DimArray{Float64,2}<span class="sgr38_5" style="color:#00afaf"> tau</span><span class="sgr90"> │</span>
+<span class="sgr90">├───────────────────────────────┴─────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw </span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, 1, …, 498, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, 1, 2, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────────────┘</span>
+   <span class="sgr38_5" style="color:#ff875f">↓</span> <span class="sgr38_5" style="color:#0087d7">→</span>  <span class="sgr38_5" style="color:#0087d7">0</span>        <span class="sgr38_5" style="color:#0087d7">1</span>         <span class="sgr38_5" style="color:#0087d7">2</span>        <span class="sgr38_5" style="color:#0087d7">3</span>
+   <span class="sgr38_5" style="color:#ff875f">0</span>    4.72574  1.97083   3.50128  6.07326
+   <span class="sgr38_5" style="color:#ff875f">1</span>    3.90899  2.04903   2.89324  3.77187
+   <span class="sgr38_5" style="color:#ff875f">2</span>    4.84403  2.12376   4.27329  3.17054
+   <span class="sgr38_5" style="color:#ff875f">3</span>    1.8567   3.39183  11.8965   6.00193
+   ⋮                                
+ <span class="sgr38_5" style="color:#ff875f">495</span>    7.56498  1.61268   3.56495  2.78607
+ <span class="sgr38_5" style="color:#ff875f">496</span>    2.24702  1.84816   2.55959  4.28196
+ <span class="sgr38_5" style="color:#ff875f">497</span>    1.89384  2.17459   4.08978  2.74061
+ <span class="sgr38_5" style="color:#ff875f">498</span>    5.92006  1.32755   2.72017  2.93238
+ <span class="sgr38_5" style="color:#ff875f">499</span>    4.3259   1.21199   1.91701  4.46125</code></pre><pre><code class="language-julia hljs">post[:tau] === post.tau</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p>To remove the dimensions, just use <code>parent</code> to retrieve the underlying array.</p><pre><code class="language-julia hljs">parent(post.tau)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">500×4 Matrix{Float64}:
+ 4.72574   1.97083   3.50128  6.07326
+ 3.90899   2.04903   2.89324  3.77187
+ 4.84403   2.12376   4.27329  3.17054
+ 1.8567    3.39183  11.8965   6.00193
+ 4.74841   4.84368   7.11325  3.28632
+ 3.51387  10.8872    7.18892  2.16314
+ 4.20898   4.01889   9.0977   7.68505
+ 2.6834    4.28584   7.84286  4.08612
+ 1.16889   3.70403  17.1548   5.1157
+ 1.21052   3.15829  16.7573   4.86939
+ ⋮                            
+ 2.05742   1.09087  10.8168   5.08507
+ 2.72536   1.09087   2.16788  6.1552
+ 5.97049   1.67101   5.19169  8.23756
+ 8.15827   1.61268   4.96249  3.13966
+ 7.56498   1.61268   3.56495  2.78607
+ 2.24702   1.84816   2.55959  4.28196
+ 1.89384   2.17459   4.08978  2.74061
+ 5.92006   1.32755   2.72017  2.93238
+ 4.3259    1.21199   1.91701  4.46125</code></pre><h2 id="Get-the-dimension-lengths"><a class="docs-heading-anchor" href="#Get-the-dimension-lengths">Get the dimension lengths</a><a id="Get-the-dimension-lengths-1"></a><a class="docs-heading-anchor-permalink" href="#Get-the-dimension-lengths" title="Permalink"></a></h2><p>Let’s check how many groups are in our hierarchical model.</p><pre><code class="language-julia hljs">size(idata.observed_data, :school)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8</code></pre><h2 id="Get-coordinate/index-values"><a class="docs-heading-anchor" href="#Get-coordinate/index-values">Get coordinate/index values</a><a id="Get-coordinate/index-values-1"></a><a class="docs-heading-anchor-permalink" href="#Get-coordinate/index-values" title="Permalink"></a></h2><p>What are the names of the groups in our hierarchical model? You can access them from the coordinate name <code>school</code> in this case.</p><pre><code class="language-julia hljs">DimensionalData.index(idata.observed_data, :school)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">8-element Vector{String}:
+ &quot;Choate&quot;
+ &quot;Deerfield&quot;
+ &quot;Phillips Andover&quot;
+ &quot;Phillips Exeter&quot;
+ &quot;Hotchkiss&quot;
+ &quot;Lawrenceville&quot;
+ &quot;St. Paul&#39;s&quot;
+ &quot;Mt. Hermon&quot;</code></pre><h2 id="Get-a-subset-of-chains"><a class="docs-heading-anchor" href="#Get-a-subset-of-chains">Get a subset of chains</a><a id="Get-a-subset-of-chains-1"></a><a class="docs-heading-anchor-permalink" href="#Get-a-subset-of-chains" title="Permalink"></a></h2><p>Let’s keep only chain 0 here. For the subset to take effect on all relevant <code>InferenceData</code> groups – <code>posterior</code>, <code>sample_stats</code>, <code>log_likelihood</code>, and <code>posterior_predictive</code> – we will index <code>InferenceData</code> instead of <code>Dataset</code>.</p><p>Here we use DimensionalData&#39;s <code>At</code> selector. Its <a href="https://rafaqz.github.io/DimensionalData.jl/stable/reference/#selectors">other selectors</a> are also supported.</p><pre><code class="language-julia hljs">idata[chain=At(0)]</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 500×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×1
+  :tau   eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×1 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>log_likelihood</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×1 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:37.487399"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>╭───────────────╮
+│ 500×1 Dataset │
+├───────────────┴─────────────────────────────────────────────────────── dims ┐
+  ↓ draw  Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain Sampled{Int64} [0] ForwardOrdered Irregular Points
+├─────────────────────────────────────────────────────────────────────────────┴ layers ┐
+  :max_energy_error    eltype: Float64 dims: draw, chain size: 500×1
+  :energy_error        eltype: Float64 dims: draw, chain size: 500×1
+  :lp                  eltype: Float64 dims: draw, chain size: 500×1
+  :index_in_trajectory eltype: Int64 dims: draw, chain size: 500×1
+  :acceptance_rate     eltype: Float64 dims: draw, chain size: 500×1
+  :diverging           eltype: Bool dims: draw, chain size: 500×1
+  :process_time_diff   eltype: Float64 dims: draw, chain size: 500×1
+  :n_steps             eltype: Float64 dims: draw, chain size: 500×1
+  :perf_counter_start  eltype: Float64 dims: draw, chain size: 500×1
+  :largest_eigval      eltype: Union{Missing, Float64} dims: draw, chain size: 500×1
+  :smallest_eigval     eltype: Union{Missing, Float64} dims: draw, chain size: 500×1
+  :step_size_bar       eltype: Float64 dims: draw, chain size: 500×1
+  :step_size           eltype: Float64 dims: draw, chain size: 500×1
+  :energy              eltype: Float64 dims: draw, chain size: 500×1
+  :tree_depth          eltype: Int64 dims: draw, chain size: 500×1
+  :perf_counter_diff   eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.324929"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>╭─────────────────╮
+│ 500×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :tau   eltype: Float64 dims: draw, chain size: 500×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×1
+  :mu    eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.602116"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×1 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.604969"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.606375"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>constant_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :scores eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.607471"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><p>Note that in this case, <code>prior</code> only has a chain of 0. If it also had the other chains, we could have passed <code>chain=At([0, 2])</code> to subset by chains 0 and 2.</p><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>If we used <code>idata[chain=[0, 2]]</code> without the <code>At</code> selector, this is equivalent to <code>idata[chain=DimensionalData.index(idata.posterior, :chain)[0, 2]]</code>, that is, <code>[0, 2]</code> indexes an array of dimension indices, which here would error.   But if we had requested <code>idata[chain=[1, 2]]</code> we would not hit an error, but we would index the wrong chains.   So it&#39;s important to always use a selector to index by values of dimension indices.</p></div></div><h2 id="Remove-the-first-n-draws-(burn-in)"><a class="docs-heading-anchor" href="#Remove-the-first-n-draws-(burn-in)">Remove the first <span>$n$</span> draws (burn-in)</a><a id="Remove-the-first-n-draws-(burn-in)-1"></a><a class="docs-heading-anchor-permalink" href="#Remove-the-first-n-draws-(burn-in)" title="Permalink"></a></h2><p>Let’s say we want to remove the first 100 draws from all the chains and all <code>InferenceData</code> groups with draws. To do this we use the <code>..</code> syntax from IntervalSets.jl, which is exported by DimensionalData.</p><pre><code class="language-julia hljs">idata[draw=100 .. Inf]</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 400×4×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [100, 101, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 400×4
+  :theta eltype: Float64 dims: school, draw, chain size: 8×400×4
+  :tau   eltype: Float64 dims: draw, chain size: 400×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×400×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [100, 101, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×400×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>log_likelihood</summary>
+<pre><code>╭─────────────────╮
+│ 8×400×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [100, 101, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×400×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:37.487399"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>╭───────────────╮
+│ 400×4 Dataset │
+├───────────────┴──────────────────────────────────────────────────────── dims ┐
+  ↓ draw  Sampled{Int64} [100, 101, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :max_energy_error    eltype: Float64 dims: draw, chain size: 400×4
+  :energy_error        eltype: Float64 dims: draw, chain size: 400×4
+  :lp                  eltype: Float64 dims: draw, chain size: 400×4
+  :index_in_trajectory eltype: Int64 dims: draw, chain size: 400×4
+  :acceptance_rate     eltype: Float64 dims: draw, chain size: 400×4
+  :diverging           eltype: Bool dims: draw, chain size: 400×4
+  :process_time_diff   eltype: Float64 dims: draw, chain size: 400×4
+  :n_steps             eltype: Float64 dims: draw, chain size: 400×4
+  :perf_counter_start  eltype: Float64 dims: draw, chain size: 400×4
+  :largest_eigval      eltype: Union{Missing, Float64} dims: draw, chain size: 400×4
+  :smallest_eigval     eltype: Union{Missing, Float64} dims: draw, chain size: 400×4
+  :step_size_bar       eltype: Float64 dims: draw, chain size: 400×4
+  :step_size           eltype: Float64 dims: draw, chain size: 400×4
+  :energy              eltype: Float64 dims: draw, chain size: 400×4
+  :tree_depth          eltype: Int64 dims: draw, chain size: 400×4
+  :perf_counter_diff   eltype: Float64 dims: draw, chain size: 400×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.324929"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>╭─────────────────╮
+│ 400×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [100, 101, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :tau   eltype: Float64 dims: draw, chain size: 400×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×400×1
+  :mu    eltype: Float64 dims: draw, chain size: 400×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.602116"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×400×1 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [100, 101, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×400×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.604969"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.606375"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>constant_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :scores eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.607471"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><p>If you check the object you will see that the groups <code>posterior</code>, <code>posterior_predictive</code>, <code>prior</code>, and <code>sample_stats</code> have 400 draws compared to <code>idata</code>, which has 500. The group <code>observed_data</code> has not been affected because it does not have the <code>draw</code> dimension.</p><p>Alternatively, you can change a subset of groups by combining indexing styles with <code>merge</code>. Here we use this to build a new <code>InferenceData</code> where we have discarded the first 100 draws only from <code>posterior</code>.</p><pre><code class="language-julia hljs">merge(idata, idata[(:posterior,), draw=100 .. Inf])</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 400×4×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [100, 101, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 400×4
+  :theta eltype: Float64 dims: school, draw, chain size: 8×400×4
+  :tau   eltype: Float64 dims: draw, chain size: 400×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>log_likelihood</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:37.487399"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>╭───────────────╮
+│ 500×4 Dataset │
+├───────────────┴─────────────────────────────────────────────────────── dims ┐
+  ↓ draw  Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├─────────────────────────────────────────────────────────────────────────────┴ layers ┐
+  :max_energy_error    eltype: Float64 dims: draw, chain size: 500×4
+  :energy_error        eltype: Float64 dims: draw, chain size: 500×4
+  :lp                  eltype: Float64 dims: draw, chain size: 500×4
+  :index_in_trajectory eltype: Int64 dims: draw, chain size: 500×4
+  :acceptance_rate     eltype: Float64 dims: draw, chain size: 500×4
+  :diverging           eltype: Bool dims: draw, chain size: 500×4
+  :process_time_diff   eltype: Float64 dims: draw, chain size: 500×4
+  :n_steps             eltype: Float64 dims: draw, chain size: 500×4
+  :perf_counter_start  eltype: Float64 dims: draw, chain size: 500×4
+  :largest_eigval      eltype: Union{Missing, Float64} dims: draw, chain size: 500×4
+  :smallest_eigval     eltype: Union{Missing, Float64} dims: draw, chain size: 500×4
+  :step_size_bar       eltype: Float64 dims: draw, chain size: 500×4
+  :step_size           eltype: Float64 dims: draw, chain size: 500×4
+  :energy              eltype: Float64 dims: draw, chain size: 500×4
+  :tree_depth          eltype: Int64 dims: draw, chain size: 500×4
+  :perf_counter_diff   eltype: Float64 dims: draw, chain size: 500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.324929"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>╭─────────────────╮
+│ 500×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :tau   eltype: Float64 dims: draw, chain size: 500×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×1
+  :mu    eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.602116"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×1 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.604969"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.606375"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>constant_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :scores eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.607471"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><h2 id="Compute-posterior-mean-values-along-draw-and-chain-dimensions"><a class="docs-heading-anchor" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions">Compute posterior mean values along draw and chain dimensions</a><a id="Compute-posterior-mean-values-along-draw-and-chain-dimensions-1"></a><a class="docs-heading-anchor-permalink" href="#Compute-posterior-mean-values-along-draw-and-chain-dimensions" title="Permalink"></a></h2><p>To compute the mean value of the posterior samples, do the following:</p><pre><code class="language-julia hljs">mean(post)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(mu = 4.485933103402338,
+ theta = 4.911515591394205,
+ tau = 4.124222787491913,)</code></pre><p>This computes the mean along all dimensions, discarding all dimensions and returning the result as a <code>NamedTuple</code>. This may be what you wanted for <code>mu</code> and <code>tau</code>, which have only two dimensions (<code>chain</code> and <code>draw</code>), but maybe not what you expected for <code>theta</code>, which has one more dimension <code>school</code>.</p><p>You can specify along which dimension you want to compute the mean (or other functions), which instead returns a <code>Dataset</code>.</p><pre><code class="language-julia hljs">mean(post; dims=(:chain, :draw))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭───────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">1</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> │</span>
+<span class="sgr90">├───────────────┴──────────────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw  </span> Sampled{Float64} <span class="sgr38_5" style="color:#ff875f">[249.5]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain </span> Sampled{Float64} <span class="sgr38_5" style="color:#0087d7">[1.5]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :mu   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :theta</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#5fd7ff">school</span>, <span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#5fd7ff">8</span>×<span class="sgr38_5" style="color:#ff875f">1</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :tau  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 6 entries:
+  &quot;created_at&quot;                =&gt; &quot;2022-10-13T14:37:37.315398&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;4.2.2&quot;
+  &quot;sampling_time&quot;             =&gt; 7.48011
+  &quot;tuning_steps&quot;              =&gt; 1000
+  &quot;arviz_version&quot;             =&gt; &quot;0.13.0.dev0&quot;
+  &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
+</code></pre><p>The singleton dimensions of <code>chain</code> and <code>draw</code> now contain meaningless indices, so you may want to discard them, which you can do with <code>dropdims</code>.</p><pre><code class="language-julia hljs">dropdims(mean(post; dims=(:chain, :draw)); dims=(:chain, :draw))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭───────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> │</span>
+<span class="sgr90">├───────────────────┴──────────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :mu   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span>
+<span class="sgr38_5" style="color:#00afaf">  :theta</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
+<span class="sgr38_5" style="color:#00afaf">  :tau  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span>
+<span class="sgr90">├──────────────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 6 entries:
+  &quot;created_at&quot;                =&gt; &quot;2022-10-13T14:37:37.315398&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;4.2.2&quot;
+  &quot;sampling_time&quot;             =&gt; 7.48011
+  &quot;tuning_steps&quot;              =&gt; 1000
+  &quot;arviz_version&quot;             =&gt; &quot;0.13.0.dev0&quot;
+  &quot;inference_library&quot;         =&gt; &quot;pymc&quot;
+</code></pre><h2 id="Renaming-a-dimension"><a class="docs-heading-anchor" href="#Renaming-a-dimension">Renaming a dimension</a><a id="Renaming-a-dimension-1"></a><a class="docs-heading-anchor-permalink" href="#Renaming-a-dimension" title="Permalink"></a></h2><p>We can rename a dimension in a <code>Dataset</code> using DimensionalData&#39;s <a href="https://rafaqz.github.io/DimensionalData.jl/stable/reference/#DimensionalData.Dimensions.LookupArrays.set"><code>set</code></a> method:</p><pre><code class="language-julia hljs">theta_bis = set(post.theta; school=:school_bis)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭───────────────────────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> DimArray{Float64,3}<span class="sgr38_5" style="color:#00afaf"> theta</span><span class="sgr90"> │</span>
+<span class="sgr90">├───────────────────────────────────┴──────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school_bis</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ draw      </span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, 1, …, 498, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ chain     </span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">[0, 1, 2, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────────────┘</span>
+[<span class="sgr38_5" style="color:#ff875f">:</span>, <span class="sgr38_5" style="color:#0087d7">:</span>, <span class="sgr38_5" style="color:#5fd7ff">1</span>]
+ <span class="sgr38_5" style="color:#ff875f">↓</span> <span class="sgr38_5" style="color:#0087d7">→</span>                   <span class="sgr38_5" style="color:#0087d7">0</span>        …  <span class="sgr38_5" style="color:#0087d7">497</span>         <span class="sgr38_5" style="color:#0087d7">498</span>        <span class="sgr38_5" style="color:#0087d7">499</span>
+  <span class="sgr38_5" style="color:#ff875f">&quot;Choate&quot;</span>            12.3207       -0.213828   10.4025     6.66131
+  <span class="sgr38_5" style="color:#ff875f">&quot;Deerfield&quot;</span>          9.90537       1.35515     6.90741    7.41377
+  <span class="sgr38_5" style="color:#ff875f">&quot;Phillips Andover&quot;</span>  14.9516        6.98269    -4.96414   -9.3226
+  <span class="sgr38_5" style="color:#ff875f">&quot;Phillips Exeter&quot;</span>   11.0115        3.71681     3.13584    2.69192
+  <span class="sgr38_5" style="color:#ff875f">&quot;Hotchkiss&quot;</span>          5.5796   …    5.32446    -2.2243    -0.502331
+  <span class="sgr38_5" style="color:#ff875f">&quot;Lawrenceville&quot;</span>     16.9018        6.96589    -2.83504   -4.25487
+  <span class="sgr38_5" style="color:#ff875f">&quot;St. Paul&#39;s&quot;</span>        13.1981        4.9302      5.39106    7.56657
+  <span class="sgr38_5" style="color:#ff875f">&quot;Mt. Hermon&quot;</span>        15.0614        3.0586      6.38124    9.98762</code></pre><p>We can use this, for example, to broadcast functions across multiple arrays, automatically matching up shared dimensions, using <code>DimensionalData.broadcast_dims</code>.</p><pre><code class="language-julia hljs">theta_school_diff = broadcast_dims(-, post.theta, theta_bis)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭─────────────────────────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span>×<span class="sgr38_5" style="color:#ff5f87">8</span> DimArray{Float64,4}<span class="sgr38_5" style="color:#00afaf"> theta</span><span class="sgr90"> │</span>
+<span class="sgr90">├─────────────────────────────────────┴────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school    </span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ draw      </span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, 1, …, 498, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ chain     </span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">[0, 1, 2, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#ff5f87">⬔ school_bis</span> Categorical{String} <span class="sgr38_5" style="color:#ff5f87">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────────────┘</span>
+[<span class="sgr38_5" style="color:#ff875f">:</span>, <span class="sgr38_5" style="color:#0087d7">:</span>, <span class="sgr38_5" style="color:#5fd7ff">1</span>, <span class="sgr38_5" style="color:#ff5f87">1</span>]
+ <span class="sgr38_5" style="color:#ff875f">↓</span> <span class="sgr38_5" style="color:#0087d7">→</span>                   <span class="sgr38_5" style="color:#0087d7">0</span>         …  <span class="sgr38_5" style="color:#0087d7">497</span>        <span class="sgr38_5" style="color:#0087d7">498</span>        <span class="sgr38_5" style="color:#0087d7">499</span>
+  <span class="sgr38_5" style="color:#ff875f">&quot;Choate&quot;</span>             0.0            0.0        0.0        0.0
+  <span class="sgr38_5" style="color:#ff875f">&quot;Deerfield&quot;</span>         -2.41532        1.56898   -3.49509    0.752459
+  <span class="sgr38_5" style="color:#ff875f">&quot;Phillips Andover&quot;</span>   2.63093        7.19652  -15.3666   -15.9839
+  <span class="sgr38_5" style="color:#ff875f">&quot;Phillips Exeter&quot;</span>   -1.3092         3.93064   -7.26666   -3.96939
+  <span class="sgr38_5" style="color:#ff875f">&quot;Hotchkiss&quot;</span>         -6.74108   …    5.53829  -12.6268    -7.16364
+  <span class="sgr38_5" style="color:#ff875f">&quot;Lawrenceville&quot;</span>      4.58111        7.17972  -13.2375   -10.9162
+  <span class="sgr38_5" style="color:#ff875f">&quot;St. Paul&#39;s&quot;</span>         0.877374       5.14403   -5.01144    0.905263
+  <span class="sgr38_5" style="color:#ff875f">&quot;Mt. Hermon&quot;</span>         2.74068        3.27243   -4.02126    3.32631</code></pre><h2 id="Compute-and-store-posterior-pushforward-quantities"><a class="docs-heading-anchor" href="#Compute-and-store-posterior-pushforward-quantities">Compute and store posterior pushforward quantities</a><a id="Compute-and-store-posterior-pushforward-quantities-1"></a><a class="docs-heading-anchor-permalink" href="#Compute-and-store-posterior-pushforward-quantities" title="Permalink"></a></h2><p>We use “posterior pushfoward quantities” to refer to quantities that are not variables in the posterior but deterministic computations using posterior variables.</p><p>You can compute these pushforward operations and store them as a new variable in a copy of the posterior group.</p><p>Here we&#39;ll create a new <code>InferenceData</code> with <code>theta_school_diff</code> in the posterior:</p><pre><code class="language-julia hljs">idata_new = Base.setindex(idata, merge(post, (; theta_school_diff)), :posterior)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭───────────────────╮
+│ 500×4×8×8 Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ draw       Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain      Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points,
+  ↗ school     Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  ⬔ school_bis Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu                eltype: Float64 dims: draw, chain size: 500×4
+  :theta             eltype: Float64 dims: school, draw, chain size: 8×500×4
+  :tau               eltype: Float64 dims: draw, chain size: 500×4
+  :theta_school_diff eltype: Float64 dims: school, draw, chain, school_bis size: 8×500×4×8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:41.460544"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>log_likelihood</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×4 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:37.487399"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>sample_stats</summary>
+<pre><code>╭───────────────╮
+│ 500×4 Dataset │
+├───────────────┴─────────────────────────────────────────────────────── dims ┐
+  ↓ draw  Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain Sampled{Int64} [0, 1, 2, 3] ForwardOrdered Irregular Points
+├─────────────────────────────────────────────────────────────────────────────┴ layers ┐
+  :max_energy_error    eltype: Float64 dims: draw, chain size: 500×4
+  :energy_error        eltype: Float64 dims: draw, chain size: 500×4
+  :lp                  eltype: Float64 dims: draw, chain size: 500×4
+  :index_in_trajectory eltype: Int64 dims: draw, chain size: 500×4
+  :acceptance_rate     eltype: Float64 dims: draw, chain size: 500×4
+  :diverging           eltype: Bool dims: draw, chain size: 500×4
+  :process_time_diff   eltype: Float64 dims: draw, chain size: 500×4
+  :n_steps             eltype: Float64 dims: draw, chain size: 500×4
+  :perf_counter_start  eltype: Float64 dims: draw, chain size: 500×4
+  :largest_eigval      eltype: Union{Missing, Float64} dims: draw, chain size: 500×4
+  :smallest_eigval     eltype: Union{Missing, Float64} dims: draw, chain size: 500×4
+  :step_size_bar       eltype: Float64 dims: draw, chain size: 500×4
+  :step_size           eltype: Float64 dims: draw, chain size: 500×4
+  :energy              eltype: Float64 dims: draw, chain size: 500×4
+  :tree_depth          eltype: Int64 dims: draw, chain size: 500×4
+  :perf_counter_diff   eltype: Float64 dims: draw, chain size: 500×4
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.324929"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior</summary>
+<pre><code>╭─────────────────╮
+│ 500×1×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :tau   eltype: Float64 dims: draw, chain size: 500×1
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×1
+  :mu    eltype: Float64 dims: draw, chain size: 500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.602116"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>prior_predictive</summary>
+<pre><code>╭─────────────────╮
+│ 8×500×1 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered,
+  → draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  ↗ chain  Sampled{Int64} [0] ForwardOrdered Irregular Points
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school, draw, chain size: 8×500×1
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.604969"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>observed_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :obs eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.606375"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+<details>
+<summary>constant_data</summary>
+<pre><code>╭───────────────────╮
+│ 8-element Dataset │
+├───────────────────┴──────────────────────────────────────────────────── dims ┐
+  ↓ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :scores eltype: Float64 dims: school size: 8
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 4 entries:
+  "created_at" => "2022-10-13T14:37:26.607471"
+  "inference_library_version" => "4.2.2"
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><p>Once you have these pushforward quantities in an <code>InferenceData</code>, you’ll then be able to plot them with ArviZ functions, calculate stats and diagnostics on them, or save and share the <code>InferenceData</code> object with the pushforward quantities included.</p><p>Here we compute the <a href="../api/diagnostics/#mcse"><code>mcse</code></a> of <code>theta_school_diff</code>:</p><pre><code class="language-julia hljs">mcse(idata_new.posterior).theta_school_diff</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭───────────────────────────────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">8</span> DimArray{Float64,2}<span class="sgr38_5" style="color:#00afaf"> theta_school_diff</span><span class="sgr90"> │</span>
+<span class="sgr90">├───────────────────────────────────────────┴──────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school    </span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ school_bis</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────────────┘</span>
+ <span class="sgr38_5" style="color:#ff875f">↓</span> <span class="sgr38_5" style="color:#0087d7">→</span>                     <span class="sgr38_5" style="color:#0087d7">&quot;Choate&quot;</span>  …     <span class="sgr38_5" style="color:#0087d7">&quot;St. Paul&#39;s&quot;</span>     <span class="sgr38_5" style="color:#0087d7">&quot;Mt. Hermon&quot;</span>
+  <span class="sgr38_5" style="color:#ff875f">&quot;Choate&quot;</span>            NaN               0.117476         0.219695
+  <span class="sgr38_5" style="color:#ff875f">&quot;Deerfield&quot;</span>           0.191463        0.16484          0.189386
+  <span class="sgr38_5" style="color:#ff875f">&quot;Phillips Andover&quot;</span>    0.255636        0.258001         0.160477
+  <span class="sgr38_5" style="color:#ff875f">&quot;Phillips Exeter&quot;</span>     0.162782        0.156724         0.144923
+  <span class="sgr38_5" style="color:#ff875f">&quot;Hotchkiss&quot;</span>           0.282881   …    0.283969         0.189015
+  <span class="sgr38_5" style="color:#ff875f">&quot;Lawrenceville&quot;</span>       0.259065        0.251988         0.178094
+  <span class="sgr38_5" style="color:#ff875f">&quot;St. Paul&#39;s&quot;</span>          0.117476      NaN                0.222054
+  <span class="sgr38_5" style="color:#ff875f">&quot;Mt. Hermon&quot;</span>          0.219695        0.222054       NaN</code></pre><h2 id="Advanced-subsetting"><a class="docs-heading-anchor" href="#Advanced-subsetting">Advanced subsetting</a><a id="Advanced-subsetting-1"></a><a class="docs-heading-anchor-permalink" href="#Advanced-subsetting" title="Permalink"></a></h2><p>To select the value corresponding to the difference between the Choate and Deerfield schools do:</p><pre><code class="language-julia hljs">school_idx = [&quot;Choate&quot;, &quot;Hotchkiss&quot;, &quot;Mt. Hermon&quot;]
+school_bis_idx = [&quot;Deerfield&quot;, &quot;Choate&quot;, &quot;Lawrenceville&quot;]
+theta_school_diff[school=At(school_idx), school_bis=At(school_bis_idx)]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">╭─────────────────────────────────────╮</span>
+<span class="sgr90">│ </span><span class="sgr38_5" style="color:#ff875f">3</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span>×<span class="sgr38_5" style="color:#ff5f87">3</span> DimArray{Float64,4}<span class="sgr38_5" style="color:#00afaf"> theta</span><span class="sgr90"> │</span>
+<span class="sgr90">├─────────────────────────────────────┴────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school    </span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, &quot;Hotchkiss&quot;, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ draw      </span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, 1, …, 498, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ chain     </span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">[0, 1, 2, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#ff5f87">⬔ school_bis</span> Categorical{String} <span class="sgr38_5" style="color:#ff5f87">[&quot;Deerfield&quot;, &quot;Choate&quot;, &quot;Lawrenceville&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">└──────────────────────────────────────────────────────────────────────────────┘</span>
+[<span class="sgr38_5" style="color:#ff875f">:</span>, <span class="sgr38_5" style="color:#0087d7">:</span>, <span class="sgr38_5" style="color:#5fd7ff">1</span>, <span class="sgr38_5" style="color:#ff5f87">1</span>]
+ <span class="sgr38_5" style="color:#ff875f">↓</span> <span class="sgr38_5" style="color:#0087d7">→</span>             <span class="sgr38_5" style="color:#0087d7">0</span>         <span class="sgr38_5" style="color:#0087d7">1</span>        …  <span class="sgr38_5" style="color:#0087d7">497</span>        <span class="sgr38_5" style="color:#0087d7">498</span>         <span class="sgr38_5" style="color:#0087d7">499</span>
+  <span class="sgr38_5" style="color:#ff875f">&quot;Choate&quot;</span>       2.41532   2.1563       -1.56898    3.49509    -0.752459
+  <span class="sgr38_5" style="color:#ff875f">&quot;Hotchkiss&quot;</span>   -4.32577  -1.31781       3.96931   -9.13171    -7.9161
+  <span class="sgr38_5" style="color:#ff875f">&quot;Mt. Hermon&quot;</span>   5.156    -2.9526        1.70345   -0.526168    2.57385</code></pre><h2 id="Add-new-chains-using-cat"><a class="docs-heading-anchor" href="#Add-new-chains-using-cat">Add new chains using <code>cat</code></a><a id="Add-new-chains-using-cat-1"></a><a class="docs-heading-anchor-permalink" href="#Add-new-chains-using-cat" title="Permalink"></a></h2><p>Suppose after checking the <code>mcse</code> and realizing you need more samples, you rerun the model with two chains and obtain an <code>idata_rerun</code> object.</p><pre><code class="language-julia hljs">idata_rerun = InferenceData(; posterior=set(post[chain=At([0, 1])]; chain=[4, 5]))</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 500×2×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [4, 5] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×2
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×2
+  :tau   eltype: Float64 dims: draw, chain size: 500×2
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div><p>You can combine the two using <a href="../api/inference_data/#Base.cat"><code>cat</code></a>.</p><pre><code class="language-julia hljs">cat(idata[[:posterior]], idata_rerun; dims=:chain)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><code>╭─────────────────╮
+│ 500×6×8 Dataset │
+├─────────────────┴────────────────────────────────────────────────────── dims ┐
+  ↓ draw   Sampled{Int64} [0, 1, …, 498, 499] ForwardOrdered Irregular Points,
+  → chain  Sampled{Int64} [0, 1, …, 4, 5] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [Choate, Deerfield, …, St. Paul's, Mt. Hermon] Unordered
+├────────────────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×6
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×6
+  :tau   eltype: Float64 dims: draw, chain size: 500×6
+├──────────────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  "created_at" => "2022-10-13T14:37:37.315398"
+  "inference_library_version" => "4.2.2"
+  "sampling_time" => 7.48011
+  "tuning_steps" => 1000
+  "arviz_version" => "0.13.0.dev0"
+  "inference_library" => "pymc"
+</code></pre>
+</details>
+</div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../quickstart/">« Quickstart</a><a class="docs-footer-nextpage" href="../creating_custom_plots/">Creating custom plots »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Wednesday 13 March 2024 15:32">Wednesday 13 March 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

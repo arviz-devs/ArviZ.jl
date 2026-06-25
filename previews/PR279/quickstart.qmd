@@ -1,0 +1,305 @@
+---
+title: "ArviZ Quickstart"
+---
+
+## Set-up
+
+Here we add the necessary packages for this notebook and load a few we will use throughout.
+
+```{julia}
+#| echo: false
+#| code-fold: true
+#| output: false
+using Pkg;
+cd(@__DIR__)
+Pkg.activate(".."); # for reproducibility use the docs environment.
+```
+
+```{julia}
+using ArviZ, ArviZPythonPlots, Distributions, LinearAlgebra, Random, StanSample, Turing
+```
+
+```{julia}
+# ArviZPythonPlots ships with style sheets!
+use_style("arviz-darkgrid")
+```
+
+## Get started with plotting
+
+To plot with ArviZ, we need to load the [ArviZPythonPlots](https://julia.arviz.org/ArviZPythonPlots) package.
+ArviZ is designed to be used with libraries like [Stan](https://github.com/StanJulia/Stan.jl), [Turing.jl](https://turinglang.org), and [Soss.jl](https://github.com/cscherrer/Soss.jl) but works fine with raw arrays.
+
+```{julia}
+rng1 = Random.MersenneTwister(37772);
+```
+
+```{julia}
+plot_posterior(randn(rng1, 100_000));
+```
+
+Plotting a dictionary of arrays, ArviZ will interpret each key as the name of a different random variable.
+Each row of an array is treated as an independent series of draws from the variable, called a _chain_.
+Below, we have 10 chains of 50 draws each for four different distributions.
+
+```{julia}
+s = (50, 10)
+plot_forest((
+    normal=randn(rng1, s),
+    gumbel=rand(rng1, Gumbel(), s),
+    student_t=rand(rng1, TDist(6), s),
+    exponential=rand(rng1, Exponential(), s),
+));
+```
+
+## Plotting with MCMCChains.jl's `Chains` objects produced by Turing.jl
+
+ArviZ is designed to work well with high dimensional, labelled data.
+Consider the [eight schools model](https://statmodeling.stat.columbia.edu/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/), which roughly tries to measure the effectiveness of SAT classes at eight different schools.
+To show off ArviZ's labelling, I give the schools the names of [a different eight schools](https://en.wikipedia.org/wiki/Eight_Schools_Association).
+
+This model is small enough to write down, is hierarchical, and uses labelling.
+Additionally, a centered parameterization causes [divergences](https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html) (which are interesting for illustration).
+
+First we create our data and set some sampling parameters.
+
+```{julia}
+J = 8
+y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
+σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+schools = [
+    "Choate",
+    "Deerfield",
+    "Phillips Andover",
+    "Phillips Exeter",
+    "Hotchkiss",
+    "Lawrenceville",
+    "St. Paul's",
+    "Mt. Hermon",
+]
+ndraws = 1_000
+ndraws_warmup = 1_000
+nchains = 4;
+```
+
+Now we write and run the model using Turing:
+
+```{julia}
+Turing.@model function model_turing(y, σ, J=length(y))
+    μ ~ Normal(0, 5)
+    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    θ ~ filldist(Normal(μ, τ), J)
+    for i in 1:J
+        y[i] ~ Normal(θ[i], σ[i])
+    end
+end;
+```
+
+```{julia}
+rng2 = Random.MersenneTwister(16653);
+```
+
+```{julia}
+param_mod_turing = model_turing(y, σ)
+sampler = NUTS(ndraws_warmup, 0.8)
+
+turing_chns = Turing.sample(
+    rng2, model_turing(y, σ), sampler, MCMCThreads(), ndraws, nchains
+);
+```
+
+Most ArviZ functions work fine with `Chains` objects from Turing:
+
+```{julia}
+plot_autocorr(turing_chns; var_names=(:μ, :τ));
+```
+
+### Convert to `InferenceData`
+
+For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert `Chains` objects to multidimensional data structures with named dimensions and indices.
+Note that for such dimensions, the information is not contained in `Chains`, so we need to provide it.
+
+ArviZ is built to work with [`InferenceData`](@ref), and the more *groups* it has access to, the more powerful analyses it can perform.
+
+```{julia}
+idata_turing_post = from_mcmcchains(
+    turing_chns;
+    coords=(; school=schools),
+    dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
+    library="Turing",
+)
+```
+
+Each group is a [`Dataset`](@ref), a `DimensionalData.AbstractDimStack` that can be used identically to a [`DimensionalData.Dimstack`](https://rafaqz.github.io/DimensionalData.jl/stable/stacks).
+We can view a summary of the dataset.
+
+```{julia}
+idata_turing_post.posterior
+```
+
+Here is a plot of the trace. Note the intelligent labels.
+
+```{julia}
+plot_trace(idata_turing_post);
+```
+
+We can also generate summary stats...
+
+```{julia}
+summarystats(idata_turing_post)
+```
+
+...and examine the energy distribution of the Hamiltonian sampler.
+
+```{julia}
+plot_energy(idata_turing_post);
+```
+
+### Additional information in Turing.jl
+
+With a few more steps, we can use Turing to compute additional useful groups to add to the `InferenceData`.
+
+To sample from the prior, one simply calls `sample` but with the `Prior` sampler:
+
+```{julia}
+prior = Turing.sample(rng2, param_mod_turing, Prior(), ndraws);
+```
+
+To draw from the prior and posterior predictive distributions we can instantiate a "predictive model", i.e. a Turing model but with the observations set to `missing`, and then calling `predict` on the predictive model and the previously drawn samples:
+
+```{julia}
+# Instantiate the predictive model
+param_mod_predict = model_turing(similar(y, Missing), σ)
+# and then sample!
+prior_predictive = Turing.predict(rng2, param_mod_predict, prior)
+posterior_predictive = Turing.predict(rng2, param_mod_predict, turing_chns);
+```
+
+And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as [`loo`](@ref),
+
+```{julia}
+log_likelihood = let
+    log_likelihood = Turing.pointwise_loglikelihoods(
+        param_mod_turing, MCMCChains.get_sections(turing_chns, :parameters)
+    )
+    # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
+    ynames = string.(keys(posterior_predictive))
+    log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
+    (; y=cat(log_likelihood_y...; dims=3))
+end;
+```
+
+This can then be included in the [`from_mcmcchains`](@ref) call from above:
+
+```{julia}
+idata_turing = from_mcmcchains(
+    turing_chns;
+    posterior_predictive,
+    log_likelihood,
+    prior,
+    prior_predictive,
+    observed_data=(; y),
+    coords=(; school=schools),
+    dims=NamedTuple(k => (:school,) for k in (:y, :σ, :θ)),
+    library=Turing,
+)
+```
+
+Then we can for example compute the expected *leave-one-out (LOO)* predictive density, which is an estimate of the out-of-distribution predictive fit of the model:
+
+```{julia}
+loo(idata_turing) # higher ELPD is better
+```
+
+If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a uniform distribution.
+This can be inspected visually:
+
+```{julia}
+plot_loo_pit(idata_turing; y=:y, ecdf=true);
+```
+
+## Plotting with Stan.jl outputs
+
+StanSample.jl comes with built-in support for producing `InferenceData` outputs.
+
+Here is the same centered eight schools model in Stan:
+
+```{julia}
+schools_code = """
+data {
+    int<lower=0> J;
+    array[J] real y;
+    array[J] real<lower=0> sigma;
+}
+
+parameters {
+    real mu;
+    real<lower=0> tau;
+    array[J] real theta;
+}
+
+model {
+    mu ~ normal(0, 5);
+    tau ~ cauchy(0, 5);
+    theta ~ normal(mu, tau);
+    y ~ normal(theta, sigma);
+}
+
+generated quantities {
+    vector[J] log_lik;
+    vector[J] y_hat;
+    for (j in 1:J) {
+        log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+        y_hat[j] = normal_rng(theta[j], sigma[j]);
+    }
+}
+"""
+
+schools_data = Dict("J" => J, "y" => y, "sigma" => σ)
+idata_stan = mktempdir() do path
+    stan_model = SampleModel("schools", schools_code, path)
+    _ = stan_sample(
+        stan_model;
+        data=schools_data,
+        num_chains=nchains,
+        num_warmups=ndraws_warmup,
+        num_samples=ndraws,
+        seed=28983,
+        summary=false,
+    )
+    return StanSample.inferencedata(
+        stan_model;
+        posterior_predictive_var=:y_hat,
+        observed_data=(; y),
+        log_likelihood_var=:log_lik,
+        coords=(; school=schools),
+        dims=NamedTuple(
+            k => (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)
+        ),
+    )
+end
+```
+
+```{julia}
+plot_density(idata_stan; var_names=(:mu, :tau));
+```
+
+Here is a plot showing where the Hamiltonian sampler had divergences:
+
+```{julia}
+plot_pair(
+    idata_stan;
+    coords=Dict(:school => ["Choate", "Deerfield", "Phillips Andover"]),
+    divergences=true,
+);
+```
+
+## Environment
+
+```{julia}
+using Pkg
+Pkg.status()
+```
+
+```{julia}
+versioninfo()
+```
