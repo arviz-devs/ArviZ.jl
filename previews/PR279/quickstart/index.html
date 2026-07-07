@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Quickstart · ArviZ.jl</title><meta name="title" content="Quickstart · ArviZ.jl"/><meta property="og:title" content="Quickstart · ArviZ.jl"/><meta property="twitter:title" content="Quickstart · ArviZ.jl"/><meta name="description" content="Documentation for ArviZ.jl."/><meta property="og:description" content="Documentation for ArviZ.jl."/><meta property="twitter:description" content="Documentation for ArviZ.jl."/><meta property="og:url" content="stable/quickstart/"/><meta property="twitter:url" content="stable/quickstart/"/><link rel="canonical" href="stable/quickstart/"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-W1G68W77YV"></script><script>  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-W1G68W77YV', {'page_path': location.pathname + location.search + location.hash});
+</script><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li class="is-active"><a class="tocitem" href>Quickstart</a><ul class="internal"><li><a class="tocitem" href="#Set-up"><span>Set-up</span></a></li><li><a class="tocitem" href="#Get-started-with-plotting"><span>Get started with plotting</span></a></li><li><a class="tocitem" href="#Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl"><span>Plotting with MCMCChains.jl’s <code>Chains</code> objects produced by Turing.jl</span></a></li><li><a class="tocitem" href="#Plotting-with-Stan.jl-outputs"><span>Plotting with Stan.jl outputs</span></a></li><li><a class="tocitem" href="#Environment"><span>Environment</span></a></li></ul></li><li><a class="tocitem" href="../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li><a class="tocitem" href="../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../api/stats/">Stats</a></li><li><a class="tocitem" href="../api/diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../api/data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-3-5" type="checkbox"/><label class="tocitem" for="menuitem-3-5"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../api/inference_data/">InferenceData</a></li><li><a class="tocitem" href="../api/dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Getting Started</a></li><li class="is-active"><a href>Quickstart</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Quickstart</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/quickstart.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="ArviZ-Quickstart"><a class="docs-heading-anchor" href="#ArviZ-Quickstart">ArviZ Quickstart</a><a id="ArviZ-Quickstart-1"></a><a class="docs-heading-anchor-permalink" href="#ArviZ-Quickstart" title="Permalink"></a></h1><h2 id="Set-up"><a class="docs-heading-anchor" href="#Set-up">Set-up</a><a id="Set-up-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up" title="Permalink"></a></h2><p>Here we add the necessary packages for this notebook and load a few we will use throughout.</p><pre><code class="language-julia hljs">using ArviZ, ArviZPythonPlots, Distributions, LinearAlgebra, Random, StanSample, Turing</code></pre><pre><code class="nohighlight hljs">    CondaPkg Found dependencies: /home/runner/.julia/packages/DimensionalData/48C1z/CondaPkg.toml
+    CondaPkg Found dependencies: /home/runner/.julia/packages/PythonCall/avYrV/CondaPkg.toml
+    CondaPkg Found dependencies: /home/runner/.julia/packages/ArviZPythonPlots/TzoLB/CondaPkg.toml
+    CondaPkg Found dependencies: /home/runner/.julia/packages/PythonPlot/oS8x4/CondaPkg.toml
+    CondaPkg Resolving changes
+             + arviz
+             + libstdcxx-ng
+             + matplotlib
+             + numpy
+             + openssl
+             + pandas
+             + python
+             + xarray
+    CondaPkg Initialising pixi
+             │ /home/runner/.julia/artifacts/cefba4912c2b400756d043a2563ef77a0088866b/bin/pixi
+             │ init
+             │ --format pixi
+             └ /home/runner/work/ArviZ.jl/ArviZ.jl/docs/.CondaPkg
+✔ Created /home/runner/work/ArviZ.jl/ArviZ.jl/docs/.CondaPkg/pixi.toml
+    CondaPkg Wrote /home/runner/work/ArviZ.jl/ArviZ.jl/docs/.CondaPkg/pixi.toml
+             │ [dependencies]
+             │ openssl = &quot;&gt;=3, &lt;3.6, &gt;=3, &lt;3.6&quot;
+             │ libstdcxx-ng = &quot;&gt;=3.4,&lt;15.0&quot;
+             │ matplotlib = &quot;&gt;=1&quot;
+             │ pandas = &quot;*&quot;
+             │ xarray = &quot;*&quot;
+             │ arviz = &quot;&gt;=0.15.0,&lt;=0.18&quot;
+             │ numpy = &quot;*&quot;
+             │ 
+             │     [dependencies.python]
+             │     channel = &quot;conda-forge&quot;
+             │     build = &quot;*cpython*&quot;
+             │     version = &quot;&gt;=3.8,&lt;4&quot;
+             │ 
+             │ [project]
+             │ name = &quot;.CondaPkg&quot;
+             │ platforms = [&quot;linux-64&quot;]
+             │ channels = [&quot;conda-forge&quot;]
+             │ channel-priority = &quot;strict&quot;
+             └ description = &quot;automatically generated by CondaPkg.jl&quot;
+    CondaPkg Installing packages
+             │ /home/runner/.julia/artifacts/cefba4912c2b400756d043a2563ef77a0088866b/bin/pixi
+             │ install
+             └ --manifest-path /home/runner/work/ArviZ.jl/ArviZ.jl/docs/.CondaPkg/pixi.toml
+✔ The default environment has been installed.</code></pre><pre><code class="language-julia hljs"># ArviZPythonPlots ships with style sheets!
+use_style(&quot;arviz-darkgrid&quot;)</code></pre><h2 id="Get-started-with-plotting"><a class="docs-heading-anchor" href="#Get-started-with-plotting">Get started with plotting</a><a id="Get-started-with-plotting-1"></a><a class="docs-heading-anchor-permalink" href="#Get-started-with-plotting" title="Permalink"></a></h2><p>To plot with ArviZ, we need to load the <a href="https://julia.arviz.org/ArviZPythonPlots">ArviZPythonPlots</a> package. ArviZ is designed to be used with libraries like <a href="https://github.com/StanJulia/Stan.jl">Stan</a>, <a href="https://turinglang.org">Turing.jl</a>, and <a href="https://github.com/cscherrer/Soss.jl">Soss.jl</a> but works fine with raw arrays.</p><pre><code class="language-julia hljs">rng1 = Random.MersenneTwister(37772);</code></pre><pre><code class="language-julia hljs">plot_posterior(randn(rng1, 100_000));</code></pre><p>Plotting a dictionary of arrays, ArviZ will interpret each key as the name of a different random variable. Each row of an array is treated as an independent series of draws from the variable, called a <em>chain</em>. Below, we have 10 chains of 50 draws each for four different distributions.</p><pre><code class="language-julia hljs">s = (50, 10)
+plot_forest((
+    normal=randn(rng1, s),
+    gumbel=rand(rng1, Gumbel(), s),
+    student_t=rand(rng1, TDist(6), s),
+    exponential=rand(rng1, Exponential(), s),
+));</code></pre><h2 id="Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl"><a class="docs-heading-anchor" href="#Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl">Plotting with MCMCChains.jl’s <code>Chains</code> objects produced by Turing.jl</a><a id="Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Plotting-with-MCMCChains.jl’s-Chains-objects-produced-by-Turing.jl" title="Permalink"></a></h2><p>ArviZ is designed to work well with high dimensional, labelled data. Consider the <a href="https://statmodeling.stat.columbia.edu/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/">eight schools model</a>, which roughly tries to measure the effectiveness of SAT classes at eight different schools. To show off ArviZ’s labelling, I give the schools the names of <a href="https://en.wikipedia.org/wiki/Eight_Schools_Association">a different eight schools</a>.</p><p>This model is small enough to write down, is hierarchical, and uses labelling. Additionally, a centered parameterization causes <a href="https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html">divergences</a> (which are interesting for illustration).</p><p>First we create our data and set some sampling parameters.</p><pre><code class="language-julia hljs">J = 8
+y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
+σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+schools = [
+    &quot;Choate&quot;,
+    &quot;Deerfield&quot;,
+    &quot;Phillips Andover&quot;,
+    &quot;Phillips Exeter&quot;,
+    &quot;Hotchkiss&quot;,
+    &quot;Lawrenceville&quot;,
+    &quot;St. Paul&#39;s&quot;,
+    &quot;Mt. Hermon&quot;,
+]
+ndraws = 1_000
+ndraws_warmup = 1_000
+nchains = 4;</code></pre><p>Now we write and run the model using Turing:</p><pre><code class="language-julia hljs">Turing.@model function model_turing(y, σ, J=length(y))
+    μ ~ Normal(0, 5)
+    τ ~ truncated(Cauchy(0, 5), 0, Inf)
+    θ ~ filldist(Normal(μ, τ), J)
+    for i in 1:J
+        y[i] ~ Normal(θ[i], σ[i])
+    end
+end;</code></pre><pre><code class="language-julia hljs">rng2 = Random.MersenneTwister(16653);</code></pre><pre><code class="language-julia hljs">param_mod_turing = model_turing(y, σ)
+sampler = NUTS(ndraws_warmup, 0.8)
+
+turing_chns = Turing.sample(
+    rng2, model_turing(y, σ), sampler, MCMCThreads(), ndraws, nchains
+);</code></pre><pre><code class="nohighlight hljs">Sampling (2 threads)   0%|                              |  ETA: N/A
+┌ Info: Found initial step size
+└   ϵ = 0.2
+┌ Info: Found initial step size
+└   ϵ = 0.41250000000000003
+Sampling (2 threads)   0%|▏                             |  ETA: 0:47:39
+Sampling (2 threads)   1%|▎                             |  ETA: 0:23:44
+Sampling (2 threads)   2%|▌                             |  ETA: 0:15:45
+Sampling (2 threads)   2%|▋                             |  ETA: 0:11:46
+Sampling (2 threads)   2%|▊                             |  ETA: 0:09:23
+Sampling (2 threads)   3%|▉                             |  ETA: 0:07:47
+Sampling (2 threads)   4%|█                             |  ETA: 0:06:38
+Sampling (2 threads)   4%|█▎                            |  ETA: 0:05:47
+Sampling (2 threads)   4%|█▍                            |  ETA: 0:05:07
+Sampling (2 threads)   5%|█▌                            |  ETA: 0:04:35
+Sampling (2 threads)   6%|█▋                            |  ETA: 0:04:09
+Sampling (2 threads)   6%|█▊                            |  ETA: 0:03:47
+Sampling (2 threads)   6%|██                            |  ETA: 0:03:29
+Sampling (2 threads)   7%|██▏                           |  ETA: 0:03:13
+Sampling (2 threads)   8%|██▎                           |  ETA: 0:02:59
+Sampling (2 threads)   8%|██▍                           |  ETA: 0:02:47
+Sampling (2 threads)   8%|██▌                           |  ETA: 0:02:36
+Sampling (2 threads)   9%|██▊                           |  ETA: 0:02:27
+Sampling (2 threads)  10%|██▉                           |  ETA: 0:02:19
+Sampling (2 threads)  10%|███                           |  ETA: 0:02:11
+Sampling (2 threads)  10%|███▏                          |  ETA: 0:02:04
+Sampling (2 threads)  11%|███▎                          |  ETA: 0:01:58
+Sampling (2 threads)  12%|███▌                          |  ETA: 0:01:52
+Sampling (2 threads)  12%|███▋                          |  ETA: 0:01:47
+Sampling (2 threads)  12%|███▊                          |  ETA: 0:01:42
+Sampling (2 threads)  13%|███▉                          |  ETA: 0:01:38
+Sampling (2 threads)  14%|████                          |  ETA: 0:01:33
+Sampling (2 threads)  14%|████▎                         |  ETA: 0:01:30
+Sampling (2 threads)  14%|████▍                         |  ETA: 0:01:26
+Sampling (2 threads)  15%|████▌                         |  ETA: 0:01:23
+Sampling (2 threads)  16%|████▋                         |  ETA: 0:01:20
+Sampling (2 threads)  16%|████▊                         |  ETA: 0:01:17
+Sampling (2 threads)  16%|█████                         |  ETA: 0:01:14
+Sampling (2 threads)  17%|█████▏                        |  ETA: 0:01:11
+Sampling (2 threads)  18%|█████▎                        |  ETA: 0:01:09
+Sampling (2 threads)  18%|█████▍                        |  ETA: 0:01:07
+Sampling (2 threads)  18%|█████▌                        |  ETA: 0:01:05
+Sampling (2 threads)  19%|█████▊                        |  ETA: 0:01:02
+Sampling (2 threads)  20%|█████▉                        |  ETA: 0:01:01
+Sampling (2 threads)  20%|██████                        |  ETA: 0:00:59
+Sampling (2 threads)  20%|██████▏                       |  ETA: 0:00:57
+Sampling (2 threads)  21%|██████▎                       |  ETA: 0:00:55
+Sampling (2 threads)  22%|██████▌                       |  ETA: 0:00:54
+Sampling (2 threads)  22%|██████▋                       |  ETA: 0:00:52
+Sampling (2 threads)  22%|██████▊                       |  ETA: 0:00:51
+Sampling (2 threads)  23%|██████▉                       |  ETA: 0:00:50
+Sampling (2 threads)  24%|███████                       |  ETA: 0:00:48
+Sampling (2 threads)  24%|███████▎                      |  ETA: 0:00:47
+Sampling (2 threads)  24%|███████▍                      |  ETA: 0:00:46
+Sampling (2 threads)  25%|███████▌                      |  ETA: 0:00:44
+Sampling (2 threads)  26%|███████▋                      |  ETA: 0:00:43
+Sampling (2 threads)  26%|███████▊                      |  ETA: 0:00:42
+Sampling (2 threads)  26%|████████                      |  ETA: 0:00:41
+Sampling (2 threads)  27%|████████▏                     |  ETA: 0:00:40
+Sampling (2 threads)  28%|████████▎                     |  ETA: 0:00:39
+Sampling (2 threads)  28%|████████▍                     |  ETA: 0:00:38
+Sampling (2 threads)  28%|████████▌                     |  ETA: 0:00:37
+Sampling (2 threads)  29%|████████▊                     |  ETA: 0:00:36
+Sampling (2 threads)  30%|████████▉                     |  ETA: 0:00:36
+Sampling (2 threads)  30%|█████████                     |  ETA: 0:00:35
+Sampling (2 threads)  30%|█████████▏                    |  ETA: 0:00:34
+Sampling (2 threads)  31%|█████████▎                    |  ETA: 0:00:33
+Sampling (2 threads)  32%|█████████▌                    |  ETA: 0:00:32
+Sampling (2 threads)  32%|█████████▋                    |  ETA: 0:00:32
+Sampling (2 threads)  32%|█████████▊                    |  ETA: 0:00:31
+Sampling (2 threads)  33%|█████████▉                    |  ETA: 0:00:30
+Sampling (2 threads)  34%|██████████                    |  ETA: 0:00:30
+Sampling (2 threads)  34%|██████████▎                   |  ETA: 0:00:29
+Sampling (2 threads)  34%|██████████▍                   |  ETA: 0:00:28
+Sampling (2 threads)  35%|██████████▌                   |  ETA: 0:00:28
+Sampling (2 threads)  36%|██████████▋                   |  ETA: 0:00:27
+Sampling (2 threads)  36%|██████████▊                   |  ETA: 0:00:27
+Sampling (2 threads)  36%|███████████                   |  ETA: 0:00:26
+Sampling (2 threads)  37%|███████████▏                  |  ETA: 0:00:26
+Sampling (2 threads)  38%|███████████▎                  |  ETA: 0:00:25
+Sampling (2 threads)  38%|███████████▍                  |  ETA: 0:00:24
+Sampling (2 threads)  38%|███████████▌                  |  ETA: 0:00:24
+Sampling (2 threads)  39%|███████████▊                  |  ETA: 0:00:23
+Sampling (2 threads)  40%|███████████▉                  |  ETA: 0:00:23
+Sampling (2 threads)  40%|████████████                  |  ETA: 0:00:23
+Sampling (2 threads)  40%|████████████▏                 |  ETA: 0:00:22
+Sampling (2 threads)  41%|████████████▎                 |  ETA: 0:00:22
+Sampling (2 threads)  42%|████████████▌                 |  ETA: 0:00:21
+Sampling (2 threads)  42%|████████████▋                 |  ETA: 0:00:21
+Sampling (2 threads)  42%|████████████▊                 |  ETA: 0:00:20
+Sampling (2 threads)  43%|████████████▉                 |  ETA: 0:00:20
+Sampling (2 threads)  44%|█████████████                 |  ETA: 0:00:20
+Sampling (2 threads)  44%|█████████████▎                |  ETA: 0:00:23
+Sampling (2 threads)  44%|█████████████▍                |  ETA: 0:00:23
+┌ Info: Found initial step size
+└   ϵ = 1.0
+Sampling (2 threads)  45%|█████████████▌                |  ETA: 0:00:22
+Sampling (2 threads)  46%|█████████████▋                |  ETA: 0:00:22
+Sampling (2 threads)  46%|█████████████▊                |  ETA: 0:00:21
+Sampling (2 threads)  46%|██████████████                |  ETA: 0:00:21
+Sampling (2 threads)  47%|██████████████▏               |  ETA: 0:00:21
+Sampling (2 threads)  48%|██████████████▎               |  ETA: 0:00:20
+Sampling (2 threads)  48%|██████████████▍               |  ETA: 0:00:20
+Sampling (2 threads)  48%|██████████████▌               |  ETA: 0:00:19
+Sampling (2 threads)  49%|██████████████▊               |  ETA: 0:00:19
+Sampling (2 threads)  50%|██████████████▉               |  ETA: 0:00:19
+Sampling (2 threads)  50%|███████████████               |  ETA: 0:00:18
+Sampling (2 threads)  50%|███████████████▏              |  ETA: 0:00:18
+Sampling (2 threads)  51%|███████████████▎              |  ETA: 0:00:18
+Sampling (2 threads)  52%|███████████████▌              |  ETA: 0:00:17
+Sampling (2 threads)  52%|███████████████▋              |  ETA: 0:00:17
+Sampling (2 threads)  52%|███████████████▊              |  ETA: 0:00:17
+Sampling (2 threads)  53%|███████████████▉              |  ETA: 0:00:16
+Sampling (2 threads)  54%|████████████████              |  ETA: 0:00:16
+Sampling (2 threads)  54%|████████████████▎             |  ETA: 0:00:16
+Sampling (2 threads)  55%|████████████████▍             |  ETA: 0:00:15
+Sampling (2 threads)  55%|████████████████▌             |  ETA: 0:00:15
+Sampling (2 threads)  56%|████████████████▋             |  ETA: 0:00:15
+Sampling (2 threads)  56%|████████████████▊             |  ETA: 0:00:15
+Sampling (2 threads)  56%|█████████████████             |  ETA: 0:00:14
+Sampling (2 threads)  57%|█████████████████▏            |  ETA: 0:00:14
+Sampling (2 threads)  57%|█████████████████▎            |  ETA: 0:00:14
+┌ Info: Found initial step size
+└   ϵ = 0.2
+Sampling (2 threads)  58%|█████████████████▍            |  ETA: 0:00:13
+Sampling (2 threads)  58%|█████████████████▌            |  ETA: 0:00:13
+Sampling (2 threads)  59%|█████████████████▊            |  ETA: 0:00:13
+Sampling (2 threads)  60%|█████████████████▉            |  ETA: 0:00:13
+Sampling (2 threads)  60%|██████████████████            |  ETA: 0:00:12
+Sampling (2 threads)  60%|██████████████████▏           |  ETA: 0:00:12
+Sampling (2 threads)  61%|██████████████████▎           |  ETA: 0:00:12
+Sampling (2 threads)  62%|██████████████████▌           |  ETA: 0:00:12
+Sampling (2 threads)  62%|██████████████████▋           |  ETA: 0:00:11
+Sampling (2 threads)  62%|██████████████████▊           |  ETA: 0:00:11
+Sampling (2 threads)  63%|██████████████████▉           |  ETA: 0:00:11
+Sampling (2 threads)  64%|███████████████████           |  ETA: 0:00:11
+Sampling (2 threads)  64%|███████████████████▎          |  ETA: 0:00:10
+Sampling (2 threads)  64%|███████████████████▍          |  ETA: 0:00:10
+Sampling (2 threads)  65%|███████████████████▌          |  ETA: 0:00:10
+Sampling (2 threads)  66%|███████████████████▋          |  ETA: 0:00:10
+Sampling (2 threads)  66%|███████████████████▊          |  ETA: 0:00:10
+Sampling (2 threads)  66%|████████████████████          |  ETA: 0:00:09
+Sampling (2 threads)  67%|████████████████████▏         |  ETA: 0:00:09
+Sampling (2 threads)  68%|████████████████████▎         |  ETA: 0:00:09
+Sampling (2 threads)  68%|████████████████████▍         |  ETA: 0:00:09
+Sampling (2 threads)  68%|████████████████████▌         |  ETA: 0:00:09
+Sampling (2 threads)  69%|████████████████████▊         |  ETA: 0:00:08
+Sampling (2 threads)  70%|████████████████████▉         |  ETA: 0:00:08
+Sampling (2 threads)  70%|█████████████████████         |  ETA: 0:00:08
+Sampling (2 threads)  70%|█████████████████████▏        |  ETA: 0:00:08
+Sampling (2 threads)  71%|█████████████████████▎        |  ETA: 0:00:08
+Sampling (2 threads)  72%|█████████████████████▌        |  ETA: 0:00:07
+Sampling (2 threads)  72%|█████████████████████▋        |  ETA: 0:00:07
+Sampling (2 threads)  72%|█████████████████████▊        |  ETA: 0:00:07
+Sampling (2 threads)  73%|█████████████████████▉        |  ETA: 0:00:07
+Sampling (2 threads)  74%|██████████████████████        |  ETA: 0:00:07
+Sampling (2 threads)  74%|██████████████████████▎       |  ETA: 0:00:07
+Sampling (2 threads)  74%|██████████████████████▍       |  ETA: 0:00:06
+Sampling (2 threads)  75%|██████████████████████▌       |  ETA: 0:00:06
+Sampling (2 threads)  76%|██████████████████████▋       |  ETA: 0:00:06
+Sampling (2 threads)  76%|██████████████████████▊       |  ETA: 0:00:06
+Sampling (2 threads)  76%|███████████████████████       |  ETA: 0:00:06
+Sampling (2 threads)  77%|███████████████████████▏      |  ETA: 0:00:06
+Sampling (2 threads)  78%|███████████████████████▎      |  ETA: 0:00:05
+Sampling (2 threads)  78%|███████████████████████▍      |  ETA: 0:00:05
+Sampling (2 threads)  78%|███████████████████████▌      |  ETA: 0:00:05
+Sampling (2 threads)  79%|███████████████████████▊      |  ETA: 0:00:05
+Sampling (2 threads)  80%|███████████████████████▉      |  ETA: 0:00:05
+Sampling (2 threads)  80%|████████████████████████      |  ETA: 0:00:05
+Sampling (2 threads)  80%|████████████████████████▏     |  ETA: 0:00:05
+Sampling (2 threads)  81%|████████████████████████▎     |  ETA: 0:00:04
+Sampling (2 threads)  82%|████████████████████████▌     |  ETA: 0:00:04
+Sampling (2 threads)  82%|████████████████████████▋     |  ETA: 0:00:04
+Sampling (2 threads)  82%|████████████████████████▊     |  ETA: 0:00:04
+Sampling (2 threads)  83%|████████████████████████▉     |  ETA: 0:00:04
+Sampling (2 threads)  84%|█████████████████████████     |  ETA: 0:00:04
+Sampling (2 threads)  84%|█████████████████████████▎    |  ETA: 0:00:04
+Sampling (2 threads)  84%|█████████████████████████▍    |  ETA: 0:00:03
+Sampling (2 threads)  85%|█████████████████████████▌    |  ETA: 0:00:03
+Sampling (2 threads)  86%|█████████████████████████▋    |  ETA: 0:00:03
+Sampling (2 threads)  86%|█████████████████████████▊    |  ETA: 0:00:03
+Sampling (2 threads)  86%|██████████████████████████    |  ETA: 0:00:03
+Sampling (2 threads)  87%|██████████████████████████▏   |  ETA: 0:00:03
+Sampling (2 threads)  88%|██████████████████████████▎   |  ETA: 0:00:03
+Sampling (2 threads)  88%|██████████████████████████▍   |  ETA: 0:00:03
+Sampling (2 threads)  88%|██████████████████████████▌   |  ETA: 0:00:02
+Sampling (2 threads)  89%|██████████████████████████▊   |  ETA: 0:00:02
+Sampling (2 threads)  90%|██████████████████████████▉   |  ETA: 0:00:02
+Sampling (2 threads)  90%|███████████████████████████   |  ETA: 0:00:02
+Sampling (2 threads)  90%|███████████████████████████▏  |  ETA: 0:00:02
+Sampling (2 threads)  91%|███████████████████████████▎  |  ETA: 0:00:02
+Sampling (2 threads)  92%|███████████████████████████▌  |  ETA: 0:00:02
+Sampling (2 threads)  92%|███████████████████████████▋  |  ETA: 0:00:02
+Sampling (2 threads)  92%|███████████████████████████▊  |  ETA: 0:00:02
+Sampling (2 threads)  93%|███████████████████████████▉  |  ETA: 0:00:01
+Sampling (2 threads)  94%|████████████████████████████  |  ETA: 0:00:01
+Sampling (2 threads)  94%|████████████████████████████▎ |  ETA: 0:00:01
+Sampling (2 threads)  94%|████████████████████████████▍ |  ETA: 0:00:01
+Sampling (2 threads)  95%|████████████████████████████▌ |  ETA: 0:00:01
+Sampling (2 threads)  96%|████████████████████████████▋ |  ETA: 0:00:01
+Sampling (2 threads)  96%|████████████████████████████▊ |  ETA: 0:00:01
+Sampling (2 threads)  96%|█████████████████████████████ |  ETA: 0:00:01
+Sampling (2 threads)  97%|█████████████████████████████▏|  ETA: 0:00:01
+Sampling (2 threads)  98%|█████████████████████████████▎|  ETA: 0:00:00
+Sampling (2 threads)  98%|█████████████████████████████▍|  ETA: 0:00:00
+Sampling (2 threads)  98%|█████████████████████████████▌|  ETA: 0:00:00
+Sampling (2 threads)  99%|█████████████████████████████▊|  ETA: 0:00:00
+Sampling (2 threads) 100%|█████████████████████████████▉|  ETA: 0:00:00
+Sampling (2 threads) 100%|██████████████████████████████| Time: 0:00:19
+Sampling (2 threads) 100%|██████████████████████████████| Time: 0:00:19</code></pre><p>Most ArviZ functions work fine with <code>Chains</code> objects from Turing:</p><pre><code class="language-julia hljs">plot_autocorr(turing_chns; var_names=(:μ, :τ));</code></pre><h3 id="Convert-to-InferenceData"><a class="docs-heading-anchor" href="#Convert-to-InferenceData">Convert to <code>InferenceData</code></a><a id="Convert-to-InferenceData-1"></a><a class="docs-heading-anchor-permalink" href="#Convert-to-InferenceData" title="Permalink"></a></h3><p>For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert <code>Chains</code> objects to multidimensional data structures with named dimensions and indices. Note that for such dimensions, the information is not contained in <code>Chains</code>, so we need to provide it.</p><p>ArviZ is built to work with <a href="../api/inference_data/#InferenceObjects.InferenceData"><code>InferenceData</code></a>, and the more <em>groups</em> it has access to, the more powerful analyses it can perform.</p><pre><code class="language-julia hljs">idata_turing_post = from_mcmcchains(
+    turing_chns;
+    coords=(; school=schools),
+    dims=NamedTuple(k =&gt; (:school,) for k in (:y, :σ, :θ)),
+    library=&quot;Turing&quot;,
+)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :μ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :τ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :θ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 2 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:39:52.91&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>sample_stats</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :energy          </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :n_steps         </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :diverging       </span><span class="sgr90"> eltype: </span>Bool<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :max_energy_error</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :loglikelihood   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :energy_error    </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :is_accept       </span><span class="sgr90"> eltype: </span>Bool<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :logprior        </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :log_density     </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :tree_depth      </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :step_size       </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :acceptance_rate </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :lp              </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :step_size_nom   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr90">├───────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 2 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:39:52.832&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+</div><p>Each group is a <a href="../api/dataset/#InferenceObjects.Dataset"><code>Dataset</code></a>, a <code>DimensionalData.AbstractDimStack</code> that can be used identically to a <a href="https://rafaqz.github.io/DimensionalData.jl/stable/stacks"><code>DimensionalData.Dimstack</code></a>. We can view a summary of the dataset.</p><pre><code class="language-julia hljs">idata_turing_post.posterior</code></pre><pre><code class="nohighlight hljs">┌ 1000×4×8 Dataset ┐
+├──────────────────┴──────────────────────────────────────────── dims ┐
+  ↓ draw,
+  → chain,
+  ↗ school Categorical{String} [&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;] Unordered
+├───────────────────────────────────────────────────────────── layers ┤
+  :μ eltype: Float64 dims: draw, chain size: 1000×4
+  :τ eltype: Float64 dims: draw, chain size: 1000×4
+  :θ eltype: Float64 dims: draw, chain, school size: 1000×4×8
+├─────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 2 entries:
+  &quot;created_at&quot;        =&gt; &quot;2025-08-19T09:39:52.91&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;</code></pre><p>Here is a plot of the trace. Note the intelligent labels.</p><pre><code class="language-julia hljs">plot_trace(idata_turing_post);</code></pre><p>We can also generate summary stats…</p><pre><code class="language-julia hljs">summarystats(idata_turing_post)</code></pre><p>[TABLE]</p><p>SummaryStats</p><p>…and examine the energy distribution of the Hamiltonian sampler.</p><pre><code class="language-julia hljs">plot_energy(idata_turing_post);</code></pre><h3 id="Additional-information-in-Turing.jl"><a class="docs-heading-anchor" href="#Additional-information-in-Turing.jl">Additional information in Turing.jl</a><a id="Additional-information-in-Turing.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Additional-information-in-Turing.jl" title="Permalink"></a></h3><p>With a few more steps, we can use Turing to compute additional useful groups to add to the <code>InferenceData</code>.</p><p>To sample from the prior, one simply calls <code>sample</code> but with the <code>Prior</code> sampler:</p><pre><code class="language-julia hljs">prior = Turing.sample(rng2, param_mod_turing, Prior(), ndraws);</code></pre><pre><code class="nohighlight hljs">Sampling   0%|                                          |  ETA: N/A
+Sampling   0%|▎                                         |  ETA: 0:01:26
+Sampling   1%|▍                                         |  ETA: 0:00:43
+Sampling   2%|▋                                         |  ETA: 0:00:28
+Sampling   2%|▉                                         |  ETA: 0:00:21
+Sampling   2%|█                                         |  ETA: 0:00:17
+Sampling   3%|█▎                                        |  ETA: 0:00:14
+Sampling   4%|█▌                                        |  ETA: 0:00:12
+Sampling   4%|█▋                                        |  ETA: 0:00:10
+Sampling   4%|█▉                                        |  ETA: 0:00:09
+Sampling   5%|██▏                                       |  ETA: 0:00:08
+Sampling   6%|██▎                                       |  ETA: 0:00:08
+Sampling   6%|██▌                                       |  ETA: 0:00:07
+Sampling   6%|██▊                                       |  ETA: 0:00:06
+Sampling   7%|███                                       |  ETA: 0:00:06
+Sampling   8%|███▏                                      |  ETA: 0:00:05
+Sampling   8%|███▍                                      |  ETA: 0:00:05
+Sampling   8%|███▋                                      |  ETA: 0:00:05
+Sampling   9%|███▊                                      |  ETA: 0:00:04
+Sampling  10%|████                                      |  ETA: 0:00:04
+Sampling  10%|████▎                                     |  ETA: 0:00:04
+Sampling  10%|████▍                                     |  ETA: 0:00:04
+Sampling  11%|████▋                                     |  ETA: 0:00:04
+Sampling  12%|████▉                                     |  ETA: 0:00:03
+Sampling  12%|█████                                     |  ETA: 0:00:03
+Sampling  12%|█████▎                                    |  ETA: 0:00:03
+Sampling  13%|█████▌                                    |  ETA: 0:00:03
+Sampling  14%|█████▋                                    |  ETA: 0:00:03
+Sampling  14%|█████▉                                    |  ETA: 0:00:03
+Sampling  14%|██████▏                                   |  ETA: 0:00:03
+Sampling  15%|██████▎                                   |  ETA: 0:00:03
+Sampling  16%|██████▌                                   |  ETA: 0:00:02
+Sampling  16%|██████▊                                   |  ETA: 0:00:02
+Sampling  16%|██████▉                                   |  ETA: 0:00:02
+Sampling  17%|███████▏                                  |  ETA: 0:00:02
+Sampling  18%|███████▍                                  |  ETA: 0:00:02
+Sampling  18%|███████▌                                  |  ETA: 0:00:02
+Sampling  18%|███████▊                                  |  ETA: 0:00:02
+Sampling  19%|████████                                  |  ETA: 0:00:02
+Sampling  20%|████████▎                                 |  ETA: 0:00:02
+Sampling  20%|████████▍                                 |  ETA: 0:00:02
+Sampling  20%|████████▋                                 |  ETA: 0:00:02
+Sampling  21%|████████▉                                 |  ETA: 0:00:02
+Sampling  22%|█████████                                 |  ETA: 0:00:02
+Sampling  22%|█████████▎                                |  ETA: 0:00:02
+Sampling  22%|█████████▌                                |  ETA: 0:00:02
+Sampling  23%|█████████▋                                |  ETA: 0:00:02
+Sampling  24%|█████████▉                                |  ETA: 0:00:02
+Sampling  24%|██████████▏                               |  ETA: 0:00:01
+Sampling  24%|██████████▎                               |  ETA: 0:00:01
+Sampling  25%|██████████▌                               |  ETA: 0:00:01
+Sampling  26%|██████████▊                               |  ETA: 0:00:01
+Sampling  26%|██████████▉                               |  ETA: 0:00:01
+Sampling  26%|███████████▏                              |  ETA: 0:00:01
+Sampling  27%|███████████▍                              |  ETA: 0:00:01
+Sampling  28%|███████████▌                              |  ETA: 0:00:01
+Sampling  28%|███████████▊                              |  ETA: 0:00:01
+Sampling  28%|████████████                              |  ETA: 0:00:01
+Sampling  29%|████████████▏                             |  ETA: 0:00:01
+Sampling  30%|████████████▍                             |  ETA: 0:00:01
+Sampling  30%|████████████▋                             |  ETA: 0:00:01
+Sampling  30%|████████████▊                             |  ETA: 0:00:01
+Sampling  31%|█████████████                             |  ETA: 0:00:01
+Sampling  32%|█████████████▎                            |  ETA: 0:00:01
+Sampling  32%|█████████████▌                            |  ETA: 0:00:01
+Sampling  32%|█████████████▋                            |  ETA: 0:00:01
+Sampling  33%|█████████████▉                            |  ETA: 0:00:01
+Sampling  34%|██████████████▏                           |  ETA: 0:00:01
+Sampling  34%|██████████████▎                           |  ETA: 0:00:01
+Sampling  34%|██████████████▌                           |  ETA: 0:00:01
+Sampling  35%|██████████████▊                           |  ETA: 0:00:01
+Sampling  36%|██████████████▉                           |  ETA: 0:00:01
+Sampling  36%|███████████████▏                          |  ETA: 0:00:01
+Sampling  36%|███████████████▍                          |  ETA: 0:00:01
+Sampling  37%|███████████████▌                          |  ETA: 0:00:01
+Sampling  38%|███████████████▊                          |  ETA: 0:00:01
+Sampling  38%|████████████████                          |  ETA: 0:00:01
+Sampling  38%|████████████████▏                         |  ETA: 0:00:01
+Sampling  39%|████████████████▍                         |  ETA: 0:00:01
+Sampling  40%|████████████████▋                         |  ETA: 0:00:01
+Sampling  40%|████████████████▊                         |  ETA: 0:00:01
+Sampling  40%|█████████████████                         |  ETA: 0:00:01
+Sampling  41%|█████████████████▎                        |  ETA: 0:00:01
+Sampling  42%|█████████████████▍                        |  ETA: 0:00:01
+Sampling  42%|█████████████████▋                        |  ETA: 0:00:01
+Sampling  42%|█████████████████▉                        |  ETA: 0:00:01
+Sampling  43%|██████████████████                        |  ETA: 0:00:01
+Sampling  44%|██████████████████▎                       |  ETA: 0:00:01
+Sampling  44%|██████████████████▌                       |  ETA: 0:00:01
+Sampling  44%|██████████████████▊                       |  ETA: 0:00:01
+Sampling  45%|██████████████████▉                       |  ETA: 0:00:01
+Sampling  46%|███████████████████▏                      |  ETA: 0:00:01
+Sampling  46%|███████████████████▍                      |  ETA: 0:00:01
+Sampling  46%|███████████████████▌                      |  ETA: 0:00:01
+Sampling  47%|███████████████████▊                      |  ETA: 0:00:01
+Sampling  48%|████████████████████                      |  ETA: 0:00:01
+Sampling  48%|████████████████████▏                     |  ETA: 0:00:01
+Sampling  48%|████████████████████▍                     |  ETA: 0:00:01
+Sampling  49%|████████████████████▋                     |  ETA: 0:00:01
+Sampling  50%|████████████████████▊                     |  ETA: 0:00:01
+Sampling  50%|█████████████████████                     |  ETA: 0:00:00
+Sampling  50%|█████████████████████▎                    |  ETA: 0:00:00
+Sampling  51%|█████████████████████▍                    |  ETA: 0:00:00
+Sampling  52%|█████████████████████▋                    |  ETA: 0:00:00
+Sampling  52%|█████████████████████▉                    |  ETA: 0:00:00
+Sampling  52%|██████████████████████                    |  ETA: 0:00:00
+Sampling  53%|██████████████████████▎                   |  ETA: 0:00:00
+Sampling  54%|██████████████████████▌                   |  ETA: 0:00:00
+Sampling  54%|██████████████████████▋                   |  ETA: 0:00:00
+Sampling  55%|██████████████████████▉                   |  ETA: 0:00:00
+Sampling  55%|███████████████████████▏                  |  ETA: 0:00:00
+Sampling  56%|███████████████████████▎                  |  ETA: 0:00:00
+Sampling  56%|███████████████████████▌                  |  ETA: 0:00:00
+Sampling  56%|███████████████████████▊                  |  ETA: 0:00:00
+Sampling  57%|████████████████████████                  |  ETA: 0:00:00
+Sampling  57%|████████████████████████▏                 |  ETA: 0:00:00
+Sampling  58%|████████████████████████▍                 |  ETA: 0:00:00
+Sampling  58%|████████████████████████▋                 |  ETA: 0:00:00
+Sampling  59%|████████████████████████▊                 |  ETA: 0:00:00
+Sampling  60%|█████████████████████████                 |  ETA: 0:00:00
+Sampling  60%|█████████████████████████▎                |  ETA: 0:00:00
+Sampling  60%|█████████████████████████▍                |  ETA: 0:00:00
+Sampling  61%|█████████████████████████▋                |  ETA: 0:00:00
+Sampling  62%|█████████████████████████▉                |  ETA: 0:00:00
+Sampling  62%|██████████████████████████                |  ETA: 0:00:00
+Sampling  62%|██████████████████████████▎               |  ETA: 0:00:00
+Sampling  63%|██████████████████████████▌               |  ETA: 0:00:00
+Sampling  64%|██████████████████████████▋               |  ETA: 0:00:00
+Sampling  64%|██████████████████████████▉               |  ETA: 0:00:00
+Sampling  64%|███████████████████████████▏              |  ETA: 0:00:00
+Sampling  65%|███████████████████████████▎              |  ETA: 0:00:00
+Sampling  66%|███████████████████████████▌              |  ETA: 0:00:00
+Sampling  66%|███████████████████████████▊              |  ETA: 0:00:00
+Sampling  66%|███████████████████████████▉              |  ETA: 0:00:00
+Sampling  67%|████████████████████████████▏             |  ETA: 0:00:00
+Sampling  68%|████████████████████████████▍             |  ETA: 0:00:00
+Sampling  68%|████████████████████████████▌             |  ETA: 0:00:00
+Sampling  68%|████████████████████████████▊             |  ETA: 0:00:00
+Sampling  69%|█████████████████████████████             |  ETA: 0:00:00
+Sampling  70%|█████████████████████████████▎            |  ETA: 0:00:00
+Sampling  70%|█████████████████████████████▍            |  ETA: 0:00:00
+Sampling  70%|█████████████████████████████▋            |  ETA: 0:00:00
+Sampling  71%|█████████████████████████████▉            |  ETA: 0:00:00
+Sampling  72%|██████████████████████████████            |  ETA: 0:00:00
+Sampling  72%|██████████████████████████████▎           |  ETA: 0:00:00
+Sampling  72%|██████████████████████████████▌           |  ETA: 0:00:00
+Sampling  73%|██████████████████████████████▋           |  ETA: 0:00:00
+Sampling  74%|██████████████████████████████▉           |  ETA: 0:00:00
+Sampling  74%|███████████████████████████████▏          |  ETA: 0:00:00
+Sampling  74%|███████████████████████████████▎          |  ETA: 0:00:00
+Sampling  75%|███████████████████████████████▌          |  ETA: 0:00:00
+Sampling  76%|███████████████████████████████▊          |  ETA: 0:00:00
+Sampling  76%|███████████████████████████████▉          |  ETA: 0:00:00
+Sampling  76%|████████████████████████████████▏         |  ETA: 0:00:00
+Sampling  77%|████████████████████████████████▍         |  ETA: 0:00:00
+Sampling  78%|████████████████████████████████▌         |  ETA: 0:00:00
+Sampling  78%|████████████████████████████████▊         |  ETA: 0:00:00
+Sampling  78%|█████████████████████████████████         |  ETA: 0:00:00
+Sampling  79%|█████████████████████████████████▏        |  ETA: 0:00:00
+Sampling  80%|█████████████████████████████████▍        |  ETA: 0:00:00
+Sampling  80%|█████████████████████████████████▋        |  ETA: 0:00:00
+Sampling  80%|█████████████████████████████████▊        |  ETA: 0:00:00
+Sampling  81%|██████████████████████████████████        |  ETA: 0:00:00
+Sampling  82%|██████████████████████████████████▎       |  ETA: 0:00:00
+Sampling  82%|██████████████████████████████████▌       |  ETA: 0:00:00
+Sampling  82%|██████████████████████████████████▋       |  ETA: 0:00:00
+Sampling  83%|██████████████████████████████████▉       |  ETA: 0:00:00
+Sampling  84%|███████████████████████████████████▏      |  ETA: 0:00:00
+Sampling  84%|███████████████████████████████████▎      |  ETA: 0:00:00
+Sampling  84%|███████████████████████████████████▌      |  ETA: 0:00:00
+Sampling  85%|███████████████████████████████████▊      |  ETA: 0:00:00
+Sampling  86%|███████████████████████████████████▉      |  ETA: 0:00:00
+Sampling  86%|████████████████████████████████████▏     |  ETA: 0:00:00
+Sampling  86%|████████████████████████████████████▍     |  ETA: 0:00:00
+Sampling  87%|████████████████████████████████████▌     |  ETA: 0:00:00
+Sampling  88%|████████████████████████████████████▊     |  ETA: 0:00:00
+Sampling  88%|█████████████████████████████████████     |  ETA: 0:00:00
+Sampling  88%|█████████████████████████████████████▏    |  ETA: 0:00:00
+Sampling  89%|█████████████████████████████████████▍    |  ETA: 0:00:00
+Sampling  90%|█████████████████████████████████████▋    |  ETA: 0:00:00
+Sampling  90%|█████████████████████████████████████▊    |  ETA: 0:00:00
+Sampling  90%|██████████████████████████████████████    |  ETA: 0:00:00
+Sampling  91%|██████████████████████████████████████▎   |  ETA: 0:00:00
+Sampling  92%|██████████████████████████████████████▍   |  ETA: 0:00:00
+Sampling  92%|██████████████████████████████████████▋   |  ETA: 0:00:00
+Sampling  92%|██████████████████████████████████████▉   |  ETA: 0:00:00
+Sampling  93%|███████████████████████████████████████   |  ETA: 0:00:00
+Sampling  94%|███████████████████████████████████████▎  |  ETA: 0:00:00
+Sampling  94%|███████████████████████████████████████▌  |  ETA: 0:00:00
+Sampling  94%|███████████████████████████████████████▊  |  ETA: 0:00:00
+Sampling  95%|███████████████████████████████████████▉  |  ETA: 0:00:00
+Sampling  96%|████████████████████████████████████████▏ |  ETA: 0:00:00
+Sampling  96%|████████████████████████████████████████▍ |  ETA: 0:00:00
+Sampling  96%|████████████████████████████████████████▌ |  ETA: 0:00:00
+Sampling  97%|████████████████████████████████████████▊ |  ETA: 0:00:00
+Sampling  98%|█████████████████████████████████████████ |  ETA: 0:00:00
+Sampling  98%|█████████████████████████████████████████▏|  ETA: 0:00:00
+Sampling  98%|█████████████████████████████████████████▍|  ETA: 0:00:00
+Sampling  99%|█████████████████████████████████████████▋|  ETA: 0:00:00
+Sampling 100%|█████████████████████████████████████████▊|  ETA: 0:00:00
+Sampling 100%|██████████████████████████████████████████| Time: 0:00:00
+Sampling 100%|██████████████████████████████████████████| Time: 0:00:00</code></pre><p>To draw from the prior and posterior predictive distributions we can instantiate a “predictive model”, i.e. a Turing model but with the observations set to <code>missing</code>, and then calling <code>predict</code> on the predictive model and the previously drawn samples:</p><pre><code class="language-julia hljs"># Instantiate the predictive model
+param_mod_predict = model_turing(similar(y, Missing), σ)
+# and then sample!
+prior_predictive = Turing.predict(rng2, param_mod_predict, prior)
+posterior_predictive = Turing.predict(rng2, param_mod_predict, turing_chns);</code></pre><p>And to extract the pointwise log-likelihoods, which is useful if you want to compute metrics such as <a href="../api/stats/#PosteriorStats.loo"><code>loo</code></a>,</p><pre><code class="language-julia hljs">log_likelihood = let
+    log_likelihood = Turing.pointwise_loglikelihoods(
+        param_mod_turing, MCMCChains.get_sections(turing_chns, :parameters)
+    )
+    # Ensure the ordering of the loglikelihoods matches the ordering of `posterior_predictive`
+    ynames = string.(keys(posterior_predictive))
+    log_likelihood_y = getindex.(Ref(log_likelihood), ynames)
+    (; y=cat(log_likelihood_y...; dims=3))
+end;</code></pre><p>This can then be included in the <a href="../api/data/#ArviZ.from_mcmcchains"><code>from_mcmcchains</code></a> call from above:</p><pre><code class="language-julia hljs">idata_turing = from_mcmcchains(
+    turing_chns;
+    posterior_predictive,
+    log_likelihood,
+    prior,
+    prior_predictive,
+    observed_data=(; y),
+    coords=(; school=schools),
+    dims=NamedTuple(k =&gt; (:school,) for k in (:y, :σ, :θ)),
+    library=Turing,
+)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :μ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :τ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :θ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:24.737&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:24.274&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>log_likelihood</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:24.577&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>sample_stats</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :energy          </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :n_steps         </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :diverging       </span><span class="sgr90"> eltype: </span>Bool<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :max_energy_error</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :loglikelihood   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :energy_error    </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :is_accept       </span><span class="sgr90"> eltype: </span>Bool<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :logprior        </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :log_density     </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :tree_depth      </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :step_size       </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :acceptance_rate </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :lp              </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :step_size_nom   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr90">├───────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:24.737&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>prior</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :μ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :τ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :θ</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:25.306&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>prior_predictive</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:25.138&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>sample_stats_prior</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├────────────────┴───────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
+<span class="sgr90">├──────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :logprior     </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :lp           </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :loglikelihood</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">1</span>
+<span class="sgr90">├────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:25.233&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+<details>
+<summary>observed_data</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 3 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:40:25.503&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;0.40.2&quot;
+  &quot;inference_library&quot; =&gt; &quot;Turing&quot;
+</pre></details>
+</div><p>Then we can for example compute the expected <em>leave-one-out (LOO)</em> predictive density, which is an estimate of the out-of-distribution predictive fit of the model:</p><pre><code class="language-julia hljs">loo(idata_turing) # higher ELPD is better</code></pre><pre><code class="nohighlight hljs">PSISLOOResult with estimates
+ elpd  elpd_mcse    p  p_mcse 
+  -31        1.4  0.9    0.33
+
+and PSISResult with 1000 draws, 4 chains, and 8 parameters
+Pareto shape (k) diagnostic values:
+                    Count      Min. ESS
+ (-Inf, 0.5]  good  6 (75.0%)  313
+  (0.5, 0.7]  okay  2 (25.0%)  1049</code></pre><p>If the model is well-calibrated, i.e. it replicates the true generative process well, the CDF of the pointwise LOO values should be similarly distributed to a uniform distribution. This can be inspected visually:</p><pre><code class="language-julia hljs">plot_loo_pit(idata_turing; y=:y, ecdf=true);</code></pre><h2 id="Plotting-with-Stan.jl-outputs"><a class="docs-heading-anchor" href="#Plotting-with-Stan.jl-outputs">Plotting with Stan.jl outputs</a><a id="Plotting-with-Stan.jl-outputs-1"></a><a class="docs-heading-anchor-permalink" href="#Plotting-with-Stan.jl-outputs" title="Permalink"></a></h2><p>StanSample.jl comes with built-in support for producing <code>InferenceData</code> outputs.</p><p>Here is the same centered eight schools model in Stan:</p><pre><code class="language-julia hljs">schools_code = &quot;&quot;&quot;
+data {
+    int&lt;lower=0&gt; J;
+    array[J] real y;
+    array[J] real&lt;lower=0&gt; sigma;
+}
+
+parameters {
+    real mu;
+    real&lt;lower=0&gt; tau;
+    array[J] real theta;
+}
+
+model {
+    mu ~ normal(0, 5);
+    tau ~ cauchy(0, 5);
+    theta ~ normal(mu, tau);
+    y ~ normal(theta, sigma);
+}
+
+generated quantities {
+    vector[J] log_lik;
+    vector[J] y_hat;
+    for (j in 1:J) {
+        log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+        y_hat[j] = normal_rng(theta[j], sigma[j]);
+    }
+}
+&quot;&quot;&quot;
+
+schools_data = Dict(&quot;J&quot; =&gt; J, &quot;y&quot; =&gt; y, &quot;sigma&quot; =&gt; σ)
+idata_stan = mktempdir() do path
+    stan_model = SampleModel(&quot;schools&quot;, schools_code, path)
+    _ = stan_sample(
+        stan_model;
+        data=schools_data,
+        num_chains=nchains,
+        num_warmups=ndraws_warmup,
+        num_samples=ndraws,
+        seed=28983,
+        summary=false,
+    )
+    return StanSample.inferencedata(
+        stan_model;
+        posterior_predictive_var=:y_hat,
+        observed_data=(; y),
+        log_likelihood_var=:log_lik,
+        coords=(; school=schools),
+        dims=NamedTuple(
+            k =&gt; (:school,) for k in (:y, :sigma, :theta, :log_lik, :y_hat)
+        ),
+    )
+end</code></pre><pre><code class="nohighlight hljs">[ Info: /tmp/jl_q9qkTM/schools.stan updated.</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :mu   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :tau  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :theta</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:41:06.675&quot;
+</pre></details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :y_hat</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:41:06.262&quot;
+</pre></details>
+<details>
+<summary>log_likelihood</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├──────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :log_lik</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span>, <span class="sgr38_5" style="color:#5fd7ff">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:41:06.584&quot;
+</pre></details>
+<details>
+<summary>sample_stats</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├────────────────┴─────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span>, <span class="sgr38_5" style="color:#0087d7">→ chain</span>
+<span class="sgr90">├────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :tree_depth     </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :energy         </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :diverging      </span><span class="sgr90"> eltype: </span>Bool<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :acceptance_rate</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :n_steps        </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :lp             </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :step_size      </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">1000</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr90">├──────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:41:06.401&quot;
+</pre></details>
+<details>
+<summary>observed_data</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :y</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 1 entry:
+  &quot;created_at&quot; =&gt; &quot;2025-08-19T09:41:06.731&quot;
+</pre></details>
+</div><pre><code class="language-julia hljs">plot_density(idata_stan; var_names=(:mu, :tau));</code></pre><p>Here is a plot showing where the Hamiltonian sampler had divergences:</p><pre><code class="language-julia hljs">plot_pair(
+    idata_stan;
+    coords=Dict(:school =&gt; [&quot;Choate&quot;, &quot;Deerfield&quot;, &quot;Phillips Andover&quot;]),
+    divergences=true,
+);</code></pre><h2 id="Environment"><a class="docs-heading-anchor" href="#Environment">Environment</a><a id="Environment-1"></a><a class="docs-heading-anchor-permalink" href="#Environment" title="Permalink"></a></h2><pre><code class="language-julia hljs">using Pkg
+Pkg.status()</code></pre><pre><code class="nohighlight hljs">Status `~/work/ArviZ.jl/ArviZ.jl/docs/Project.toml`
+⌃ [cbdf2221] AlgebraOfGraphics v0.11.4
+  [131c737c] ArviZ v0.12.3 `~/work/ArviZ.jl/ArviZ.jl`
+  [2f96bb34] ArviZExampleData v0.2.0
+  [4a6e88f0] ArviZPythonPlots v0.1.9
+  [13f3f980] CairoMakie v0.15.6
+  [a93c6f00] DataFrames v1.7.0
+  [0703355e] DimensionalData v0.29.23
+  [31c24e10] Distributions v0.25.120
+  [e30172f5] Documenter v1.14.1
+  [f6006082] EvoTrees v0.17.4
+  [b5cf5a8d] InferenceObjects v0.4.12
+  [be115224] MCMCDiagnosticTools v0.3.15
+  [a7f614a8] MLJBase v1.8.2
+  [614be32b] MLJIteration v0.6.3
+  [ce719bf2] PSIS v0.9.8
+  [7f36be82] PosteriorStats v0.2.8
+  [c1514b29] StanSample v7.10.2
+  [a19d573c] StatisticalMeasures v0.2.1
+  [10745b16] Statistics v1.11.1
+  [2913bbd2] StatsBase v0.34.6
+  [fce5fe82] Turing v0.40.2
+  [f43a241f] Downloads v1.6.0
+  [37e2e46d] LinearAlgebra v1.11.0
+Info Packages marked with ⌃ have new versions available and may be upgradable.</code></pre><pre><code class="language-julia hljs">versioninfo()</code></pre><pre><code class="nohighlight hljs">Julia Version 1.11.6
+Commit 9615af0f269 (2025-07-09 12:58 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 7763 64-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-16.0.6 (ORCJIT, znver3)
+Threads: 2 default, 0 interactive, 1 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_PROJECT = @.
+  JULIA_NUM_THREADS = 2
+  JULIA_LOAD_PATH = @:@stdlib
+  JULIA_PYTHONCALL_EXE = /home/runner/work/ArviZ.jl/ArviZ.jl/docs/.CondaPkg/.pixi/envs/default/bin/python</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../working_with_inference_data/">Working with <code>InferenceData</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 19 August 2025 09:44">Tuesday 19 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

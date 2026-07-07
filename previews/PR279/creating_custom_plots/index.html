@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Creating custom plots · ArviZ.jl</title><meta name="title" content="Creating custom plots · ArviZ.jl"/><meta property="og:title" content="Creating custom plots · ArviZ.jl"/><meta property="twitter:title" content="Creating custom plots · ArviZ.jl"/><meta name="description" content="Documentation for ArviZ.jl."/><meta property="og:description" content="Documentation for ArviZ.jl."/><meta property="twitter:description" content="Documentation for ArviZ.jl."/><meta property="og:url" content="stable/creating_custom_plots/"/><meta property="twitter:url" content="stable/creating_custom_plots/"/><link rel="canonical" href="stable/creating_custom_plots/"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-W1G68W77YV"></script><script>  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-W1G68W77YV', {'page_path': location.pathname + location.search + location.hash});
+</script><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../quickstart/">Quickstart</a></li><li><a class="tocitem" href="../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li class="is-active"><a class="tocitem" href>Creating custom plots</a><ul class="internal"><li><a class="tocitem" href="#Environment"><span>Environment</span></a></li></ul></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../api/stats/">Stats</a></li><li><a class="tocitem" href="../api/diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../api/data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-3-5" type="checkbox"/><label class="tocitem" for="menuitem-3-5"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../api/inference_data/">InferenceData</a></li><li><a class="tocitem" href="../api/dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Getting Started</a></li><li class="is-active"><a href>Creating custom plots</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Creating custom plots</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/creating_custom_plots.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Creating-custom-plots"><a class="docs-heading-anchor" href="#Creating-custom-plots">Creating custom plots</a><a id="Creating-custom-plots-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-custom-plots" title="Permalink"></a></h1><p>While ArviZ includes many plotting functions for visualizing the data stored in <a href="../api/inference_data/#InferenceObjects.InferenceData"><code>InferenceData</code></a> objects, you will often need to construct custom plots, or you may want to tweak some of our plots in your favorite plotting package.</p><p>In this tutorial, we will show you a few useful techniques you can use to construct these plots using Julia’s plotting packages. For demonstration purposes, we’ll use Makie.jl and AlgebraOfGraphics.jl, which can consume <a href="../api/dataset/#InferenceObjects.Dataset"><code>Dataset</code></a> objects since they implement the Tables interface. However, we could just as easily have used StatsPlots.jl.</p><pre><code class="language-julia hljs">using ArviZ, ArviZExampleData, DimensionalData, DataFrames, Statistics, AlgebraOfGraphics, CairoMakie
+using AlgebraOfGraphics: density
+set_aog_theme!()</code></pre><p>We’ll start by loading some draws from an implementation of the non-centered parameterization of the 8 schools model. In this parameterization, the model has some sampling issues.</p><pre><code class="language-julia hljs">idata = load_example_data(&quot;centered_eight&quot;)</code></pre><div>InferenceData<details>
+<summary>posterior</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>×<span class="sgr38_5" style="color:#5fd7ff">8</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├─────────────────┴───────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ school</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├───────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :mu   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :theta</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#5fd7ff">school</span>, <span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#5fd7ff">8</span>×<span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :tau  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 6 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:33.071271+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;sampling_time&quot; =&gt; 3.15909
+  &quot;tuning_steps&quot; =&gt; 1000
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+<details>
+<summary>posterior_predictive</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">[0, …, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span>, <span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 4 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:33.992006+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+<details>
+<summary>log_likelihood</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">[0, …, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span>, <span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 4 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:33.869112+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+<details>
+<summary>sample_stats</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├───────────────┴──────────────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 3]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :step_size            </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :reached_max_treedepth</span><span class="sgr90"> eltype: </span>Bool<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :perf_counter_start   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :energy_error         </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :perf_counter_diff    </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :tree_depth           </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :process_time_diff    </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :n_steps              </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :max_energy_error     </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :step_size_bar        </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :lp                   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :index_in_trajectory  </span><span class="sgr90"> eltype: </span>Int64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :acceptance_rate      </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :smallest_eigval      </span><span class="sgr90"> eltype: </span>Union{Missing, Float64}<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :energy               </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :diverging            </span><span class="sgr90"> eltype: </span>Bool<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr38_5" style="color:#00afaf">  :largest_eigval       </span><span class="sgr90"> eltype: </span>Union{Missing, Float64}<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 6 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:33.083969+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;sampling_time&quot; =&gt; 3.15909
+  &quot;tuning_steps&quot; =&gt; 1000
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+<details>
+<summary>prior</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">[0]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :theta</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span>, <span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :tau  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span>
+<span class="sgr38_5" style="color:#00afaf">  :mu   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 4 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:29.212688+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+<details>
+<summary>prior_predictive</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#5fd7ff">↗ chain</span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">[0]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span>, <span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 4 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:29.215699+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+<details>
+<summary>observed_data</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 4 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:29.216855+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+<details>
+<summary>constant_data</summary>
+<pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
+<span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
+  <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
+<span class="sgr90">├────────────────────────────────────────────────────────────── layers ┤</span>
+<span class="sgr38_5" style="color:#00afaf">  :sigma</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
+<span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
+  Dict{String, Any} with 4 entries:
+  &quot;created_at&quot; =&gt; &quot;2025-01-19T14:32:29.217914+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;arviz_version&quot; =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot; =&gt; &quot;pymc&quot;
+</pre></details>
+</div><pre><code class="language-julia hljs">idata.posterior</code></pre><pre><code class="nohighlight hljs">┌ 500×4×8 Dataset ┐
+├─────────────────┴───────────────────────────────────────────── dims ┐
+  ↓ draw Sampled{Int64} [0, …, 499] ForwardOrdered Irregular Points,
+  → chain Sampled{Int64} [0, …, 3] ForwardOrdered Irregular Points,
+  ↗ school Categorical{String} [&quot;Choate&quot;, …, &quot;Mt. Hermon&quot;] Unordered
+├───────────────────────────────────────────────────────────── layers ┤
+  :mu    eltype: Float64 dims: draw, chain size: 500×4
+  :theta eltype: Float64 dims: school, draw, chain size: 8×500×4
+  :tau   eltype: Float64 dims: draw, chain size: 500×4
+├─────────────────────────────────────────────────────────── metadata ┤
+  Dict{String, Any} with 6 entries:
+  &quot;created_at&quot;                =&gt; &quot;2025-01-19T14:32:33.071271+00:00&quot;
+  &quot;inference_library_version&quot; =&gt; &quot;5.20.0&quot;
+  &quot;sampling_time&quot;             =&gt; 3.15909
+  &quot;tuning_steps&quot;              =&gt; 1000
+  &quot;arviz_version&quot;             =&gt; &quot;0.20.0&quot;
+  &quot;inference_library&quot;         =&gt; &quot;pymc&quot;</code></pre><p>The plotting functions we’ll be using interact with a tabular view of a <code>Dataset</code>. Let’s see what that view looks like for a <code>Dataset</code>:</p><pre><code class="language-julia hljs">df = DataFrame(idata.posterior)</code></pre><div><div style = "float: left;"><span>16000×6 DataFrame</span></div><div style = "float: right;"><span style = "font-style: italic;">15975 rows omitted</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;">
+
+[TABLE]
+
+</div><p>The tabular view includes dimensions and variables as columns.</p><p>When variables with different dimensions are flattened into a tabular form, there’s always some duplication of values. As a simple case, note that <code>chain</code>, <code>draw</code>, and <code>school</code> all have repeated values in the above table.</p><p>In this case, <code>theta</code> has the <code>school</code> dimension, but <code>tau</code> doesn’t, so the values of <code>tau</code> will be repeated in the table for each value of <code>school</code>.</p><pre><code class="language-julia hljs">df[df.school .== Ref(&quot;Choate&quot;), :].tau == df[df.school .== Ref(&quot;Deerfield&quot;), :].tau</code></pre><pre><code class="nohighlight hljs">true</code></pre><p>In our first example, this will be important.</p><p>Here, let’s construct a trace plot. Besides <code>idata</code>, all functions and types in the following cell are defined in AlgebraOfGraphics or Makie:</p><ul><li><code>data(...)</code> indicates that the wrapped object implements the Tables interface</li><li><code>mapping</code> indicates how the data should be used. The symbols are all column names in the table, which for us are our variable names and dimensions.</li><li><code>visual</code> specifies how the data should be converted to a plot.</li><li><code>Lines</code> is a plot type defined in Makie.</li><li><code>draw</code> takes this combination and plots it.</li></ul><pre><code class="language-julia hljs">draw(
+    data(idata.posterior.mu) *
+    mapping(:draw, :mu; color=:chain =&gt; nonnumeric) *
+    visual(Lines; alpha=0.8),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-8-output-1.png" alt/></p><p>Note the line <code>idata.posterior.mu</code>. If we had just used <code>idata.posterior</code>, the plot would have looked more-or-less the same, but there would be artifacts due to <code>mu</code> being copied many times. By selecting <code>mu</code> directly, all other dimensions are discarded, so each value of <code>mu</code> appears in the plot exactly once.</p><p>When examining an MCMC trace plot, we want to see a “fuzzy caterpillar”. Instead we see a few places where the Markov chains froze. We can do the same for <code>theta</code> as well, but it’s more useful here to separate these draws by <code>school</code>.</p><pre><code class="language-julia hljs">draw(
+    data(idata.posterior) *
+    mapping(:draw, :theta; layout=:school, color=:chain =&gt; nonnumeric) *
+    visual(Lines; alpha=0.8),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-9-output-1.png" alt/></p><p>Suppose we want to compare <code>tau</code> with <code>theta</code> for two different schools. To do so, we use <code>InferenceData</code>s indexing syntax to subset the data.</p><pre><code class="language-julia hljs">draw(
+    data(idata[:posterior, school=At([&quot;Choate&quot;, &quot;Deerfield&quot;])]) *
+    mapping(:theta, :tau; color=:school) *
+    density() *
+    visual(Contour; levels=10),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-10-output-1.png" alt/></p><p>We can also compare the density plots constructed from each chain for different schools.</p><pre><code class="language-julia hljs">draw(
+    data(idata.posterior) *
+    mapping(:theta; layout=:school, color=:chain =&gt; nonnumeric) *
+    density(),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-11-output-1.png" alt/></p><p>If we want to compare many schools in a single plot, an ECDF plot is more convenient.</p><pre><code class="language-julia hljs">draw(
+    data(idata.posterior) * mapping(:theta; color=:school =&gt; nonnumeric) * visual(ECDFPlot);
+    axis=(; ylabel=&quot;probability&quot;),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-12-output-1.png" alt/></p><p>So far we’ve just plotted data from one group, but we often want to combine data from multiple groups in one plot. The simplest way to do this is to create the plot out of multiple layers. Here we use this approach to plot the observations over the posterior predictive distribution.</p><pre><code class="language-julia hljs">draw(
+    (data(idata.posterior_predictive) * mapping(:obs; layout=:school) * density()) +
+    (data(idata.observed_data) * mapping(:obs, :obs =&gt; zero =&gt; &quot;&quot;; layout=:school)),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-13-output-1.png" alt/></p><p>Another option is to combine the groups into a single dataset.</p><p>Here we compare the prior and posterior. Since the prior has 1 chain and the posterior has 4 chains, if we were to combine them into a table, the structure would need to be ragged. This is not currently supported.</p><p>We can then either plot the two distributions separately as we did before, or we can compare a single chain from each group. This is what we’ll do here. To concatenate the two groups, we introduce a new named dimension using <code>DimensionalData.Dim</code>.</p><pre><code class="language-julia hljs">draw(
+    data(
+        cat(
+            idata.posterior[chain=[1]], idata.prior; dims=Dim{:group}([:posterior, :prior])
+        )[:mu],
+    ) *
+    mapping(:mu; color=:group) *
+    histogram(; bins=20) *
+    visual(; alpha=0.8);
+    axis=(; ylabel=&quot;probability&quot;),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-14-output-1.png" alt/></p><p>From the trace plots, we suspected the geometry of this posterior was bad. Let’s highlight divergent transitions. To do so, we merge <code>posterior</code> and <code>samplestats</code>, which can do with <code>merge</code> since they share no common variable names.</p><pre><code class="language-julia hljs">draw(
+    data(merge(idata.posterior, idata.sample_stats)) * mapping(
+        :theta,
+        :tau;
+        layout=:school,
+        color=:diverging,
+        markersize=:diverging =&gt; (d -&gt; d ? 5 : 2),
+    ),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-15-output-1.png" alt/></p><p>When we try building more complex plots, we may need to build new <code>Dataset</code>s from our existing ones.</p><p>One example of this is the corner plot. To build this plot, we need to make a copy of <code>theta</code> with a copy of the <code>school</code> dimension.</p><pre><code class="language-julia hljs">theta = idata.posterior.theta[school=1:4]
+theta2 = rebuild(set(theta; school=:school2); name=:theta2)
+plot_data = Dataset(theta, theta2, idata.sample_stats.diverging)
+draw(
+    data(plot_data) * mapping(
+        :theta,
+        :theta2 =&gt; &quot;theta&quot;;
+        col=:school,
+        row=:school2,
+        color=:diverging,
+        markersize=:diverging =&gt; (d -&gt; d ? 3 : 1),
+    );
+    figure=(; figsize=(5, 5)),
+    axis=(; aspect=1),
+)</code></pre><p><img src="../creating_custom_plots_files/figure-commonmark/cell-16-output-1.png" alt/></p><h2 id="Environment"><a class="docs-heading-anchor" href="#Environment">Environment</a><a id="Environment-1"></a><a class="docs-heading-anchor-permalink" href="#Environment" title="Permalink"></a></h2><pre><code class="language-julia hljs">using Pkg
+Pkg.status()</code></pre><pre><code class="nohighlight hljs">Status `~/work/ArviZ.jl/ArviZ.jl/docs/Project.toml`
+⌃ [cbdf2221] AlgebraOfGraphics v0.11.4
+  [131c737c] ArviZ v0.12.3 `~/work/ArviZ.jl/ArviZ.jl`
+  [2f96bb34] ArviZExampleData v0.2.0
+  [4a6e88f0] ArviZPythonPlots v0.1.9
+  [13f3f980] CairoMakie v0.15.6
+  [a93c6f00] DataFrames v1.7.0
+  [0703355e] DimensionalData v0.29.23
+  [31c24e10] Distributions v0.25.120
+  [e30172f5] Documenter v1.14.1
+  [f6006082] EvoTrees v0.17.4
+  [b5cf5a8d] InferenceObjects v0.4.12
+  [be115224] MCMCDiagnosticTools v0.3.15
+  [a7f614a8] MLJBase v1.8.2
+  [614be32b] MLJIteration v0.6.3
+  [ce719bf2] PSIS v0.9.8
+  [7f36be82] PosteriorStats v0.2.8
+  [c1514b29] StanSample v7.10.2
+  [a19d573c] StatisticalMeasures v0.2.1
+  [10745b16] Statistics v1.11.1
+  [2913bbd2] StatsBase v0.34.6
+  [fce5fe82] Turing v0.40.2
+  [f43a241f] Downloads v1.6.0
+  [37e2e46d] LinearAlgebra v1.11.0
+Info Packages marked with ⌃ have new versions available and may be upgradable.</code></pre><pre><code class="language-julia hljs">versioninfo()</code></pre><pre><code class="nohighlight hljs">Julia Version 1.11.6
+Commit 9615af0f269 (2025-07-09 12:58 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 7763 64-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-16.0.6 (ORCJIT, znver3)
+Threads: 2 default, 0 interactive, 1 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_PROJECT = @.
+  JULIA_NUM_THREADS = 2
+  JULIA_LOAD_PATH = @:@stdlib</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../working_with_inference_data/">« Working with <code>InferenceData</code></a><a class="docs-footer-nextpage" href="../api/">API Overview »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 19 August 2025 09:44">Tuesday 19 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

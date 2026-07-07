@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Stats · ArviZ.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="stable/api/stats/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../../quickstart/">Quickstart</a></li><li><a class="tocitem" href="../../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li><a class="tocitem" href="../../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">Example Gallery</span><ul><li><a class="tocitem" href="../../mpl_examples/">Matplotlib</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../plots/">Plots</a></li><li class="is-active"><a class="tocitem" href>Stats</a><ul class="internal"><li><a class="tocitem" href="#General-statistics"><span>General statistics</span></a></li><li><a class="tocitem" href="#Pareto-smoothed-importance-sampling"><span>Pareto-smoothed importance sampling</span></a></li><li><a class="tocitem" href="#Model-assessment-and-selection"><span>Model assessment and selection</span></a></li></ul></li><li><a class="tocitem" href="../diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-4-6" type="checkbox"/><label class="tocitem" for="menuitem-4-6"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../inference_data/">InferenceData</a></li><li><a class="tocitem" href="../dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">API</a></li><li class="is-active"><a href>Stats</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Stats</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/api/stats.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="stats-api"><a class="docs-heading-anchor" href="#stats-api">Stats</a><a id="stats-api-1"></a><a class="docs-heading-anchor-permalink" href="#stats-api" title="Permalink"></a></h1><ul><li><a href="#PSIS.PSISResult"><code>PSIS.PSISResult</code></a></li><li><a href="#ArviZ.compare"><code>ArviZ.compare</code></a></li><li><a href="#ArviZ.hdi"><code>ArviZ.hdi</code></a></li><li><a href="#ArviZ.loo"><code>ArviZ.loo</code></a></li><li><a href="#ArviZ.loo_pit"><code>ArviZ.loo_pit</code></a></li><li><a href="#ArviZ.r2_score"><code>ArviZ.r2_score</code></a></li><li><a href="#ArviZ.summary"><code>ArviZ.summary</code></a></li><li><a href="#ArviZ.waic"><code>ArviZ.waic</code></a></li><li><a href="#PSIS.psis"><code>PSIS.psis</code></a></li><li><a href="#PSIS.psis!"><code>PSIS.psis!</code></a></li><li><a href="#StatsBase.summarystats"><code>StatsBase.summarystats</code></a></li></ul><h2 id="General-statistics"><a class="docs-heading-anchor" href="#General-statistics">General statistics</a><a id="General-statistics-1"></a><a class="docs-heading-anchor-permalink" href="#General-statistics" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.hdi" href="#ArviZ.hdi"><code>ArviZ.hdi</code></a> — <span class="docstring-category">Function</span></header><section><div><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.hdi.html"><code>arviz.hdi</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">    Calculate highest density interval (HDI) of array for given probability.
+
+    The HDI is the minimum width Bayesian credible interval (BCI).
+
+    Parameters
+    ----------
+    ary: obj
+        object containing posterior samples.
+        Any object that can be converted to an :class:`arviz.InferenceData` object.
+        Refer to documentation of :func:`arviz.convert_to_dataset` for details.
+    hdi_prob: float, optional
+        Prob for which the highest density interval will be computed. Defaults to
+        ``stats.hdi_prob`` rcParam.
+    circular: bool, optional
+        Whether to compute the hdi taking into account `x` is a circular variable
+        (in the range [-np.pi, np.pi]) or not. Defaults to False (i.e non-circular variables).
+        Only works if multimodal is False.
+    multimodal: bool, optional
+        If true it may compute more than one hdi if the distribution is multimodal and the
+        modes are well separated.
+    skipna: bool, optional
+        If true ignores nan values when computing the hdi. Defaults to false.
+    group: str, optional
+        Specifies which InferenceData group should be used to calculate hdi.
+        Defaults to &#39;posterior&#39;
+    var_names: list, optional
+        Names of variables to include in the hdi report. Prefix the variables by ``~``
+        when you want to exclude them from the report: `[&quot;~beta&quot;]` instead of `[&quot;beta&quot;]`
+        (see :func:`arviz.summary` for more details).
+    filter_vars: {None, &quot;like&quot;, &quot;regex&quot;}, optional, default=None
+        If `None` (default), interpret var_names as the real variables names. If &quot;like&quot;,
+        interpret var_names as substrings of the real variables names. If &quot;regex&quot;,
+        interpret var_names as regular expressions on the real variables names. A la
+        ``pandas.filter``.
+    coords: mapping, optional
+        Specifies the subset over to calculate hdi.
+    max_modes: int, optional
+        Specifies the maximum number of modes for multimodal case.
+    dask_kwargs : dict, optional
+        Dask related kwargs passed to :func:`~arviz.wrap_xarray_ufunc`.
+    kwargs: dict, optional
+        Additional keywords passed to :func:`~arviz.wrap_xarray_ufunc`.
+
+    Returns
+    -------
+    np.ndarray or xarray.Dataset, depending upon input
+        lower(s) and upper(s) values of the interval(s).
+
+    See Also
+    --------
+    plot_hdi : Plot highest density intervals for regression data.
+    xarray.Dataset.quantile : Calculate quantiles of array for given probabilities.
+
+    Examples
+    --------
+    Calculate the HDI of a Normal random variable:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: import numpy as np
+           ...: data = np.random.normal(size=2000)
+           ...: az.hdi(data, hdi_prob=.68)
+
+    Calculate the HDI of a dataset:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&#39;centered_eight&#39;)
+           ...: az.hdi(data)
+
+    We can also calculate the HDI of some of the variables of dataset:
+
+    .. ipython::
+
+        In [1]: az.hdi(data, var_names=[&quot;mu&quot;, &quot;theta&quot;])
+
+    By default, ``hdi`` is calculated over the ``chain`` and ``draw`` dimensions. We can use the
+    ``input_core_dims`` argument of :func:`~arviz.wrap_xarray_ufunc` to change this. In this example
+    we calculate the HDI also over the ``school`` dimension:
+
+    .. ipython::
+
+        In [1]: az.hdi(data, var_names=&quot;theta&quot;, input_core_dims = [[&quot;chain&quot;,&quot;draw&quot;, &quot;school&quot;]])
+
+    We can also calculate the hdi over a particular selection:
+
+    .. ipython::
+
+        In [1]: az.hdi(data, coords={&quot;chain&quot;:[0, 1, 3]}, input_core_dims = [[&quot;draw&quot;]])
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L2-L104">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.summary" href="#ArviZ.summary"><code>ArviZ.summary</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">summary(
+    data; group = :posterior, coords dims, kwargs...,
+) -&gt; Union{Dataset,DataFrames.DataFrame}</code></pre><p>Compute summary statistics on any object that can be passed to <a href="../dataset/#ArviZ.InferenceObjects.convert_to_dataset"><code>convert_to_dataset</code></a>.</p><p><strong>Keywords</strong></p><ul><li><code>coords</code>: Map from named dimension to named indices.</li><li><code>dims</code>: Map from variable name to names of its dimensions.</li><li><code>kwargs</code>: Keyword arguments passed to <a href="#StatsBase.summarystats"><code>summarystats</code></a>.</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L154-L166">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="StatsBase.summarystats" href="#StatsBase.summarystats"><code>StatsBase.summarystats</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">summarystats(
+    data::InferenceData;
+    group = :posterior,
+    kwargs...,
+) -&gt; Union{Dataset,DataFrames.DataFrame}
+summarystats(data::Dataset; kwargs...) -&gt; Union{Dataset,DataFrames.DataFrame}</code></pre><p>Compute summary statistics on <code>data</code>.</p><p><strong>Arguments</strong></p><ul><li><code>data::Union{Dataset,InferenceData}</code>: The data on which to compute summary statistics. If   <code>data</code> is an <a href="../inference_data/#ArviZ.InferenceObjects.InferenceData"><code>InferenceData</code></a>, only the dataset corresponding to <code>group</code> is used.</li></ul><p><strong>Keywords</strong></p><ul><li><code>var_names</code>: Collection of names of variables as <code>Symbol</code>s to include in summary</li><li><code>include_circ::Bool=false</code>: Whether to include circular statistics</li><li><code>digits::Int</code>: Number of decimals used to round results. If not provided, numbers are not   rounded.</li><li><code>stat_funcs::Union{Dict{String,Function},Vector{Function}}=nothing</code>: A vector of functions   or a dict of functions with function names as keys used to calculate statistics. By   default, the mean, standard deviation, simulation standard error, and highest posterior   density intervals are included.   The functions will be given one argument, the samples for a variable as an array, The   functions should operate on an array, returning a single number. For example,   <code>Statistics.mean</code>, or <code>Statistics.var</code> would both work.</li><li><code>extend::Bool=true</code>: If <code>true</code>, use the statistics returned by <code>stat_funcs</code> in addition   to, rather than in place of, the default statistics. This is only meaningful when   <code>stat_funcs</code> is not <code>nothing</code>.</li><li><code>hdi_prob::Real=0.94</code>: HDI interval to compute. This is only meaningful when <code>stat_funcs</code>   is <code>nothing</code>.</li><li><code>skipna::Bool=false</code>: If <code>true</code>, ignores <code>NaN</code> values when computing the summary   statistics. It does not affect the behaviour of the functions passed to <code>stat_funcs</code>.</li></ul><p><strong>Returns</strong></p><ul><li><code>DataFrames.DataFrame</code>: Summary statistics for each variable. Default statistics are:<ul><li><code>mean</code></li><li><code>sd</code></li><li><code>hdi_3%</code></li><li><code>hdi_97%</code></li><li><code>mcse_mean</code></li><li><code>mcse_sd</code></li><li><code>ess_bulk</code></li><li><code>ess_tail</code></li><li><code>r_hat</code> (only computed for traces with 2 or more chains)</li></ul></li></ul><p><strong>Examples</strong></p><pre><code class="language- hljs">using ArviZ
+idata = load_arviz_data(&quot;centered_eight&quot;)
+summarystats(idata; var_names=(:mu, :tau))</code></pre><p>Other statistics can be calculated by passing a list of functions or a dictionary with key, function pairs:</p><pre><code class="language- hljs">using Statistics
+function median_sd(x)
+    med = median(x)
+    sd = sqrt(mean((x .- med).^2))
+    return sd
+end
+
+func_dict = Dict(
+    &quot;std&quot; =&gt; x -&gt; std(x; corrected = false),
+    &quot;median_std&quot; =&gt; median_sd,
+    &quot;5%&quot; =&gt; x -&gt; quantile(x, 0.05),
+    &quot;median&quot; =&gt; median,
+    &quot;95%&quot; =&gt; x -&gt; quantile(x, 0.95),
+)
+
+summarystats(idata; var_names = (:mu, :tau), stat_funcs = func_dict, extend = false)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L62">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.r2_score" href="#ArviZ.r2_score"><code>ArviZ.r2_score</code></a> — <span class="docstring-category">Function</span></header><section><div><p>R² for Bayesian regression models. Only valid for linear models.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.r2_score.html"><code>arviz.r2_score</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Parameters
+    ----------
+    y_true: array-like of shape = (n_outputs,)
+        Ground truth (correct) target values.
+    y_pred: array-like of shape = (n_posterior_samples, n_outputs)
+        Estimated target values.
+
+    Returns
+    -------
+    Pandas Series with the following indices:
+    r2: Bayesian R²
+    r2_std: standard deviation of the Bayesian R².
+
+    See Also
+    --------
+    plot_lm : Posterior predictive and mean plots for regression-like data.
+
+    Examples
+    --------
+    Calculate R² for Bayesian regression models :
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&#39;regression1d&#39;)
+           ...: y_true = data.observed_data[&quot;y&quot;].values
+           ...: y_pred = data.posterior_predictive.stack(sample=(&quot;chain&quot;, &quot;draw&quot;))[&quot;y&quot;].values.T
+           ...: az.r2_score(y_true, y_pred)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L5-L45">source</a></section></article><h2 id="Pareto-smoothed-importance-sampling"><a class="docs-heading-anchor" href="#Pareto-smoothed-importance-sampling">Pareto-smoothed importance sampling</a><a id="Pareto-smoothed-importance-sampling-1"></a><a class="docs-heading-anchor-permalink" href="#Pareto-smoothed-importance-sampling" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="PSIS.PSISResult" href="#PSIS.PSISResult"><code>PSIS.PSISResult</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">PSISResult</code></pre><p>Result of Pareto-smoothed importance sampling (PSIS) using <a href="#PSIS.psis"><code>psis</code></a>.</p><p><strong>Properties</strong></p><ul><li><code>log_weights</code>: un-normalized Pareto-smoothed log weights</li><li><code>weights</code>: normalized Pareto-smoothed weights (allocates a copy)</li><li><code>pareto_shape</code>: Pareto <span>$k=ξ$</span> shape parameter</li><li><code>nparams</code>: number of parameters in <code>log_weights</code></li><li><code>ndraws</code>: number of draws in <code>log_weights</code></li><li><code>nchains</code>: number of chains in <code>log_weights</code></li><li><code>reff</code>: the ratio of the effective sample size of the unsmoothed importance ratios and the actual sample size.</li><li><code>ess</code>: estimated effective sample size of estimate of mean using smoothed importance samples (see <a href="api/@ref"><code>ess_is</code></a>)</li><li><code>log_weights_norm</code>: the logarithm of the normalization constant of <code>log_weights</code></li><li><code>tail_length</code>: length of the upper tail of <code>log_weights</code> that was smoothed</li><li><code>tail_dist</code>: the generalized Pareto distribution that was fit to the tail of <code>log_weights</code>. Note that the tail weights are scaled to have a maximum of 1, so <code>tail_dist * exp(maximum(log_ratios))</code> is the corresponding fit directly to the tail of <code>log_ratios</code>.</li></ul><p><strong>Diagnostic</strong></p><p>The <code>pareto_shape</code> parameter <span>$k=ξ$</span> of the generalized Pareto distribution <code>tail_dist</code> can be used to diagnose reliability and convergence of estimates using the importance weights <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</p><ul><li>if <span>$k &lt; \frac{1}{3}$</span>, importance sampling is stable, and importance sampling (IS) and PSIS both are reliable.</li><li>if <span>$k ≤ \frac{1}{2}$</span>, then the importance ratio distributon has finite variance, and the central limit theorem holds. As <span>$k$</span> approaches the upper bound, IS becomes less reliable, while PSIS still works well but with a higher RMSE.</li><li>if <span>$\frac{1}{2} &lt; k ≤ 0.7$</span>, then the variance is infinite, and IS can behave quite poorly. However, PSIS works well in this regime.</li><li>if <span>$0.7 &lt; k ≤ 1$</span>, then it quickly becomes impractical to collect enough importance weights to reliably compute estimates, and importance sampling is not recommended.</li><li>if <span>$k &gt; 1$</span>, then neither the variance nor the mean of the raw importance ratios exists. The convergence rate is close to zero, and bias can be large with practical sample sizes.</li></ul><p>See <a href="api/@ref"><code>paretoshapeplot</code></a> for a diagnostic plot.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="PSIS.psis" href="#PSIS.psis"><code>PSIS.psis</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">psis(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult
+psis!(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult</code></pre><p>Compute Pareto smoothed importance sampling (PSIS) log weights <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</p><p>While <code>psis</code> computes smoothed log weights out-of-place, <code>psis!</code> smooths them in-place.</p><p><strong>Arguments</strong></p><ul><li><p><code>log_ratios</code>: an array of logarithms of importance ratios, with one of the following sizes:</p><ul><li><code>(ndraws,)</code>: a vector of draws for a single parameter from a single chain</li><li><code>(nparams, ndraws)</code>: a matrix of draws for a multiple parameter from a single chain</li><li><code>(nparams, ndraws, nchains)</code>: an array of draws for multiple parameters from multiple chains, e.g. as might be generated with Markov chain Monte Carlo.</li></ul></li><li><p><code>reff::Union{Real,AbstractVector}</code>: the ratio(s) of effective sample size of <code>log_ratios</code> and the actual sample size <code>reff = ess/(ndraws * nchains)</code>, used to account for autocorrelation, e.g. due to Markov chain Monte Carlo.</p></li></ul><p><strong>Keywords</strong></p><ul><li><code>improved=false</code>: If <code>true</code>, use the adaptive empirical prior of <sup class="footnote-reference"><a id="citeref-Zhang2010" href="#footnote-Zhang2010">[Zhang2010]</a></sup>. If <code>false</code>, use the simpler prior of <sup class="footnote-reference"><a id="citeref-ZhangStephens2009" href="#footnote-ZhangStephens2009">[ZhangStephens2009]</a></sup>, which is also used in <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</li><li><code>warn=true</code>: If <code>true</code>, warning messages are delivered</li></ul><p><strong>Returns</strong></p><ul><li><code>result</code>: a <a href="#PSIS.PSISResult"><code>PSISResult</code></a> object containing the results of the Pareto-smoothing.</li></ul><p>A warning is raised if the Pareto shape parameter <span>$k ≥ 0.7$</span>. See <a href="#PSIS.PSISResult"><code>PSISResult</code></a> for details and <a href="api/@ref"><code>paretoshapeplot</code></a> for a diagnostic plot.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="PSIS.psis!" href="#PSIS.psis!"><code>PSIS.psis!</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">psis(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult
+psis!(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult</code></pre><p>Compute Pareto smoothed importance sampling (PSIS) log weights <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</p><p>While <code>psis</code> computes smoothed log weights out-of-place, <code>psis!</code> smooths them in-place.</p><p><strong>Arguments</strong></p><ul><li><p><code>log_ratios</code>: an array of logarithms of importance ratios, with one of the following sizes:</p><ul><li><code>(ndraws,)</code>: a vector of draws for a single parameter from a single chain</li><li><code>(nparams, ndraws)</code>: a matrix of draws for a multiple parameter from a single chain</li><li><code>(nparams, ndraws, nchains)</code>: an array of draws for multiple parameters from multiple chains, e.g. as might be generated with Markov chain Monte Carlo.</li></ul></li><li><p><code>reff::Union{Real,AbstractVector}</code>: the ratio(s) of effective sample size of <code>log_ratios</code> and the actual sample size <code>reff = ess/(ndraws * nchains)</code>, used to account for autocorrelation, e.g. due to Markov chain Monte Carlo.</p></li></ul><p><strong>Keywords</strong></p><ul><li><code>improved=false</code>: If <code>true</code>, use the adaptive empirical prior of <sup class="footnote-reference"><a id="citeref-Zhang2010" href="#footnote-Zhang2010">[Zhang2010]</a></sup>. If <code>false</code>, use the simpler prior of <sup class="footnote-reference"><a id="citeref-ZhangStephens2009" href="#footnote-ZhangStephens2009">[ZhangStephens2009]</a></sup>, which is also used in <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</li><li><code>warn=true</code>: If <code>true</code>, warning messages are delivered</li></ul><p><strong>Returns</strong></p><ul><li><code>result</code>: a <a href="#PSIS.PSISResult"><code>PSISResult</code></a> object containing the results of the Pareto-smoothing.</li></ul><p>A warning is raised if the Pareto shape parameter <span>$k ≥ 0.7$</span>. See <a href="#PSIS.PSISResult"><code>PSISResult</code></a> for details and <a href="api/api/@ref"><code>paretoshapeplot</code></a> for a diagnostic plot.</p></div></section></article><h2 id="Model-assessment-and-selection"><a class="docs-heading-anchor" href="#Model-assessment-and-selection">Model assessment and selection</a><a id="Model-assessment-and-selection-1"></a><a class="docs-heading-anchor-permalink" href="#Model-assessment-and-selection" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.compare" href="#ArviZ.compare"><code>ArviZ.compare</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Compare models based on PSIS-LOO <code>loo</code> or WAIC <code>waic</code> cross-validation.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.compare.html"><code>arviz.compare</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    LOO is leave-one-out (PSIS-LOO `loo`) cross-validation and
+    WAIC is the widely applicable information criterion.
+    Read more theory here - in a paper by some of the leading authorities
+    on model selection dx.doi.org/10.1111/1467-9868.00353
+
+    Parameters
+    ----------
+    compare_dict: dict of {str: InferenceData or ELPDData}
+        A dictionary of model names and :class:`arviz.InferenceData` or ``ELPDData``.
+    ic: str, optional
+        Information Criterion (PSIS-LOO `loo` or WAIC `waic`) used to compare models. Defaults to
+        ``rcParams[&quot;stats.information_criterion&quot;]``.
+    method: str, optional
+        Method used to estimate the weights for each model. Available options are:
+
+        - &#39;stacking&#39; : stacking of predictive distributions.
+        - &#39;BB-pseudo-BMA&#39; : pseudo-Bayesian Model averaging using Akaike-type
+          weighting. The weights are stabilized using the Bayesian bootstrap.
+        - &#39;pseudo-BMA&#39;: pseudo-Bayesian Model averaging using Akaike-type
+          weighting, without Bootstrap stabilization (not recommended).
+
+        For more information read https://arxiv.org/abs/1704.02030
+    b_samples: int, optional default = 1000
+        Number of samples taken by the Bayesian bootstrap estimation.
+        Only useful when method = &#39;BB-pseudo-BMA&#39;.
+        Defaults to ``rcParams[&quot;stats.ic_compare_method&quot;]``.
+    alpha: float, optional
+        The shape parameter in the Dirichlet distribution used for the Bayesian bootstrap. Only
+        useful when method = &#39;BB-pseudo-BMA&#39;. When alpha=1 (default), the distribution is uniform
+        on the simplex. A smaller alpha will keeps the final weights more away from 0 and 1.
+    seed: int or np.random.RandomState instance, optional
+        If int or RandomState, use it for seeding Bayesian bootstrap. Only
+        useful when method = &#39;BB-pseudo-BMA&#39;. Default None the global
+        :mod:`numpy.random` state is used.
+    scale: str, optional
+        Output scale for IC. Available options are:
+
+        - `log` : (default) log-score (after Vehtari et al. (2017))
+        - `negative_log` : -1 * (log-score)
+        - `deviance` : -2 * (log-score)
+
+        A higher log-score (or a lower deviance) indicates a model with better predictive
+        accuracy.
+    var_name: str, optional
+        If there is more than a single observed variable in the ``InferenceData``, which
+        should be used as the basis for comparison.
+
+    Returns
+    -------
+    A DataFrame, ordered from best to worst model (measured by information criteria).
+    The index reflects the key with which the models are passed to this function. The columns are:
+    rank: The rank-order of the models. 0 is the best.
+    IC: Information Criteria (PSIS-LOO `loo` or WAIC `waic`).
+        Higher IC indicates higher out-of-sample predictive fit (&quot;better&quot; model). Default LOO.
+        If `scale` is `deviance` or `negative_log` smaller IC indicates
+        higher out-of-sample predictive fit (&quot;better&quot; model).
+    pIC: Estimated effective number of parameters.
+    dIC: Relative difference between each IC (PSIS-LOO `loo` or WAIC `waic`)
+          and the lowest IC (PSIS-LOO `loo` or WAIC `waic`).
+          The top-ranked model is always 0.
+    weight: Relative weight for each model.
+        This can be loosely interpreted as the probability of each model (among the compared model)
+        given the data. By default the uncertainty in the weights estimation is considered using
+        Bayesian bootstrap.
+    SE: Standard error of the IC estimate.
+        If method = BB-pseudo-BMA these values are estimated using Bayesian bootstrap.
+    dSE: Standard error of the difference in IC between each model and the top-ranked model.
+        It&#39;s always 0 for the top-ranked model.
+    warning: A value of 1 indicates that the computation of the IC may not be reliable.
+        This could be indication of WAIC/LOO starting to fail see
+        http://arxiv.org/abs/1507.04544 for details.
+    scale: Scale used for the IC.
+
+    Examples
+    --------
+    Compare the centered and non centered models of the eight school problem:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data1 = az.load_arviz_data(&quot;non_centered_eight&quot;)
+           ...: data2 = az.load_arviz_data(&quot;centered_eight&quot;)
+           ...: compare_dict = {&quot;non centered&quot;: data1, &quot;centered&quot;: data2}
+           ...: az.compare(compare_dict)
+
+    Compare the models using LOO-CV, returning the IC in log scale and calculating the
+    weights using the stacking method.
+
+    .. ipython::
+
+        In [1]: az.compare(compare_dict, ic=&quot;loo&quot;, method=&quot;stacking&quot;, scale=&quot;log&quot;)
+
+    See Also
+    --------
+    loo : Compute the Pareto Smoothed importance sampling Leave One Out cross-validation.
+    waic : Compute the widely applicable information criterion.
+    plot_compare : Summary plot for model comparison.
+
+    References
+    ----------
+    .. [1] Vehtari, A., Gelman, A. &amp; Gabry, J. Practical Bayesian model evaluation using
+        leave-one-out cross-validation and WAIC. Stat Comput 27, 1413–1432 (2017)
+        see https://doi.org/10.1007/s11222-016-9696-4
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L1-L116">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.loo" href="#ArviZ.loo"><code>ArviZ.loo</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Compute Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO-CV).</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.loo.html"><code>arviz.loo</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Estimates the expected log pointwise predictive density (elpd) using Pareto-smoothed
+    importance sampling leave-one-out cross-validation (PSIS-LOO-CV). Also calculates LOO&#39;s
+    standard error and the effective number of parameters. Read more theory here
+    https://arxiv.org/abs/1507.04544 and here https://arxiv.org/abs/1507.02646
+
+    Parameters
+    ----------
+    data: obj
+        Any object that can be converted to an :class:`arviz.InferenceData` object.
+        Refer to documentation of
+        :func:`arviz.convert_to_dataset` for details.
+    pointwise: bool, optional
+        If True the pointwise predictive accuracy will be returned. Defaults to
+        ``stats.ic_pointwise`` rcParam.
+    var_name : str, optional
+        The name of the variable in log_likelihood groups storing the pointwise log
+        likelihood data to use for loo computation.
+    reff: float, optional
+        Relative MCMC efficiency, ``ess / n`` i.e. number of effective samples divided by the number
+        of actual samples. Computed from trace by default.
+    scale: str
+        Output scale for loo. Available options are:
+
+        - ``log`` : (default) log-score
+        - ``negative_log`` : -1 * log-score
+        - ``deviance`` : -2 * log-score
+
+        A higher log-score (or a lower deviance or negative log_score) indicates a model with
+        better predictive accuracy.
+
+    Returns
+    -------
+    ELPDData object (inherits from :class:`pandas.Series`) with the following row/attributes:
+    loo: approximated expected log pointwise predictive density (elpd)
+    loo_se: standard error of loo
+    p_loo: effective number of parameters
+    shape_warn: bool
+        True if the estimated shape parameter of
+        Pareto distribution is greater than 0.7 for one or more samples
+    loo_i: array of pointwise predictive accuracy, only if pointwise True
+    pareto_k: array of Pareto shape values, only if pointwise True
+    loo_scale: scale of the loo results
+
+        The returned object has a custom print method that overrides pd.Series method.
+
+    See Also
+    --------
+    compare : Compare models based on PSIS-LOO loo or WAIC waic cross-validation.
+    waic : Compute the widely applicable information criterion.
+    plot_compare : Summary plot for model comparison.
+    plot_elpd : Plot pointwise elpd differences between two or more models.
+    plot_khat : Plot Pareto tail indices for diagnosing convergence.
+
+    Examples
+    --------
+    Calculate LOO of a model:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&quot;centered_eight&quot;)
+           ...: az.loo(data)
+
+    Calculate LOO of a model and return the pointwise values:
+
+    .. ipython::
+
+        In [2]: data_loo = az.loo(data, pointwise=True)
+           ...: data_loo.loo_i
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L3-L83">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.loo_pit" href="#ArviZ.loo_pit"><code>ArviZ.loo_pit</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Compute leave one out (PSIS-LOO) probability integral transform (PIT) values.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.loo_pit.html"><code>arviz.loo_pit</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Parameters
+    ----------
+    idata: InferenceData
+        :class:`arviz.InferenceData` object.
+    y: array, DataArray or str
+        Observed data. If str, ``idata`` must be present and contain the observed data group
+    y_hat: array, DataArray or str
+        Posterior predictive samples for ``y``. It must have the same shape as y plus an
+        extra dimension at the end of size n_samples (chains and draws stacked). If str or
+        None, ``idata`` must contain the posterior predictive group. If None, y_hat is taken
+        equal to y, thus, y must be str too.
+    log_weights: array or DataArray
+        Smoothed log_weights. It must have the same shape as ``y_hat``
+    dask_kwargs : dict, optional
+        Dask related kwargs passed to :func:`~arviz.wrap_xarray_ufunc`.
+
+    Returns
+    -------
+    loo_pit: array or DataArray
+        Value of the LOO-PIT at each observed data point.
+
+    See Also
+    --------
+    plot_loo_pit : Plot Leave-One-Out probability integral transformation (PIT) predictive checks.
+    loo : Compute Pareto-smoothed importance sampling leave-one-out
+          cross-validation (PSIS-LOO-CV).
+    plot_elpd : Plot pointwise elpd differences between two or more models.
+    plot_khat : Plot Pareto tail indices for diagnosing convergence.
+
+    Examples
+    --------
+    Calculate LOO-PIT values using as test quantity the observed values themselves.
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&quot;centered_eight&quot;)
+           ...: az.loo_pit(idata=data, y=&quot;obs&quot;)
+
+    Calculate LOO-PIT values using as test quantity the square of the difference between
+    each observation and `mu`. Both ``y`` and ``y_hat`` inputs will be array-like,
+    but ``idata`` will still be passed in order to calculate the ``log_weights`` from
+    there.
+
+    .. ipython::
+
+        In [1]: T = data.observed_data.obs - data.posterior.mu.median(dim=(&quot;chain&quot;, &quot;draw&quot;))
+           ...: T_hat = data.posterior_predictive.obs - data.posterior.mu
+           ...: T_hat = T_hat.stack(__sample__=(&quot;chain&quot;, &quot;draw&quot;))
+           ...: az.loo_pit(idata=data, y=T**2, y_hat=T_hat**2)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L4-L66">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.waic" href="#ArviZ.waic"><code>ArviZ.waic</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Compute the widely applicable information criterion.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.waic.html"><code>arviz.waic</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Estimates the expected log pointwise predictive density (elpd) using WAIC. Also calculates the
+    WAIC&#39;s standard error and the effective number of parameters.
+    Read more theory here https://arxiv.org/abs/1507.04544 and here https://arxiv.org/abs/1004.2316
+
+    Parameters
+    ----------
+    data: obj
+        Any object that can be converted to an :class:`arviz.InferenceData` object.
+        Refer to documentation of :func:`arviz.convert_to_inference_data` for details.
+    pointwise: bool
+        If True the pointwise predictive accuracy will be returned. Defaults to
+        ``stats.ic_pointwise`` rcParam.
+    var_name : str, optional
+        The name of the variable in log_likelihood groups storing the pointwise log
+        likelihood data to use for waic computation.
+    scale: str
+        Output scale for WAIC. Available options are:
+
+        - `log` : (default) log-score
+        - `negative_log` : -1 * log-score
+        - `deviance` : -2 * log-score
+
+        A higher log-score (or a lower deviance or negative log_score) indicates a model with
+        better predictive accuracy.
+    dask_kwargs : dict, optional
+        Dask related kwargs passed to :func:`~arviz.wrap_xarray_ufunc`.
+
+    Returns
+    -------
+    ELPDData object (inherits from :class:`pandas.Series`) with the following row/attributes:
+    waic: approximated expected log pointwise predictive density (elpd)
+    waic_se: standard error of waic
+    p_waic: effective number parameters
+    var_warn: bool
+        True if posterior variance of the log predictive densities exceeds 0.4
+    waic_i: :class:`~xarray.DataArray` with the pointwise predictive accuracy,
+            only if pointwise=True
+    waic_scale: scale of the reported waic results
+
+        The returned object has a custom print method that overrides pd.Series method.
+
+    See Also
+    --------
+    loo : Compute Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO-CV).
+    compare : Compare models based on PSIS-LOO-CV or WAIC.
+    plot_compare : Summary plot for model comparison.
+
+    Examples
+    --------
+    Calculate WAIC of a model:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&quot;centered_eight&quot;)
+           ...: az.waic(data)
+
+    Calculate WAIC of a model and return the pointwise values:
+
+    .. ipython::
+
+        In [2]: data_waic = az.waic(data, pointwise=True)
+           ...: data_waic.waic_i
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/stats.jl#L6-L80">source</a></section></article><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-VehtariSimpson2021"><a class="tag is-link" href="#citeref-VehtariSimpson2021">VehtariSimpson2021</a>Vehtari A, Simpson D, Gelman A, Yao Y, Gabry J. (2021). Pareto smoothed importance sampling. <a href="https://arxiv.org/abs/1507.02646v7">arXiv:1507.02646v7</a> [stat.CO]</li><li class="footnote" id="footnote-VehtariSimpson2021"><a class="tag is-link" href="#citeref-VehtariSimpson2021">VehtariSimpson2021</a>Vehtari A, Simpson D, Gelman A, Yao Y, Gabry J. (2021). Pareto smoothed importance sampling. <a href="https://arxiv.org/abs/1507.02646v7">arXiv:1507.02646v7</a> [stat.CO]</li><li class="footnote" id="footnote-ZhangStephens2009"><a class="tag is-link" href="#citeref-ZhangStephens2009">ZhangStephens2009</a>Jin Zhang &amp; Michael A. Stephens (2009) A New and Efficient Estimation Method for the Generalized Pareto Distribution, Technometrics, 51:3, 316-325, DOI: <a href="https://doi.org/10.1198/tech.2009.08017">10.1198/tech.2009.08017</a></li><li class="footnote" id="footnote-Zhang2010"><a class="tag is-link" href="#citeref-Zhang2010">Zhang2010</a>Jin Zhang (2010) Improving on Estimation for the Generalized Pareto Distribution, Technometrics, 52:3, 335-339, DOI: <a href="https://doi.org/10.1198/TECH.2010.09206">10.1198/TECH.2010.09206</a></li><li class="footnote" id="footnote-VehtariSimpson2021"><a class="tag is-link" href="#citeref-VehtariSimpson2021">VehtariSimpson2021</a>Vehtari A, Simpson D, Gelman A, Yao Y, Gabry J. (2021). Pareto smoothed importance sampling. <a href="https://arxiv.org/abs/1507.02646v7">arXiv:1507.02646v7</a> [stat.CO]</li><li class="footnote" id="footnote-ZhangStephens2009"><a class="tag is-link" href="#citeref-ZhangStephens2009">ZhangStephens2009</a>Jin Zhang &amp; Michael A. Stephens (2009) A New and Efficient Estimation Method for the Generalized Pareto Distribution, Technometrics, 51:3, 316-325, DOI: <a href="https://doi.org/10.1198/tech.2009.08017">10.1198/tech.2009.08017</a></li><li class="footnote" id="footnote-Zhang2010"><a class="tag is-link" href="#citeref-Zhang2010">Zhang2010</a>Jin Zhang (2010) Improving on Estimation for the Generalized Pareto Distribution, Technometrics, 52:3, 335-339, DOI: <a href="https://doi.org/10.1198/TECH.2010.09206">10.1198/TECH.2010.09206</a></li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../plots/">« Plots</a><a class="docs-footer-nextpage" href="../diagnostics/">Diagnostics »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.22 on <span class="colophon-date" title="Saturday 13 August 2022 15:45">Saturday 13 August 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
