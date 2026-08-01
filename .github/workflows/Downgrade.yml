@@ -21,7 +21,7 @@ jobs:
           version: ${{ matrix.julia-version }}
           arch: x64
       - uses: julia-actions/cache@v3
-      - uses: julia-actions/julia-downgrade-compat@v2
+      - uses: julia-actions/julia-downgrade-compat@v2.6.2
         with:
           mode: deps
       - uses: julia-actions/julia-buildpkg@latest
