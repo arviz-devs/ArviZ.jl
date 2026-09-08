@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Quickstart · ArviZ.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="index.html"><img class="docs-light-only" src="assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="search.html"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="index.html">Home</a></li><li class="is-active"><a class="tocitem" href="quickstart.html">Quickstart</a><ul class="internal"><li><a class="tocitem" href="#Get-started-with-plotting-1"><span>Get started with plotting</span></a></li><li><a class="tocitem" href="#Plotting-with-MCMCChains.jl&#39;s-Chains-objects-produced-by-Turing.jl-1"><span>Plotting with MCMCChains.jl&#39;s <code>Chains</code> objects produced by Turing.jl</span></a></li><li><a class="tocitem" href="#Plotting-with-CmdStan.jl-outputs-1"><span>Plotting with CmdStan.jl outputs</span></a></li></ul></li><li><a class="tocitem" href="api.html">API</a></li><li><a class="tocitem" href="reference.html">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href="quickstart.html">Quickstart</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="quickstart.html">Quickstart</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/master/docs/src/quickstart.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="quickstart-1">ArviZ.jl Quickstart<a class="docs-heading-anchor" href="#quickstart-1" title="Permalink"></a></h1><p><em>This quickstart is adapted from <a href="https://arviz-devs.github.io/arviz/notebooks/Introduction.html">ArviZ&#39;s Quickstart</a>.</em></p><pre><code class="language-julia">using ArviZ
+
+# ArviZ ships with style sheets!
+ArviZ.use_style(&quot;arviz-darkgrid&quot;)</code></pre><h2 id="Get-started-with-plotting-1">Get started with plotting<a class="docs-heading-anchor" href="#Get-started-with-plotting-1" title="Permalink"></a></h2><p>ArviZ.jl is designed to be used with libraries like <a href="https://github.com/StanJulia/CmdStan.jl">CmdStan</a> and <a href="https://turing.ml">Turing</a> but works fine with raw arrays.</p><pre><code class="language-julia">plot_posterior(randn(100_000));</code></pre><p><img src="quick_postarray.svg" alt/></p><p>Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of a different random variable. Each row of an array is treated as an independent series of draws from the variable, called a <em>chain</em>. Below, we have 10 chains of 50 draws each for four different distributions.</p><pre><code class="language-julia">using Distributions
+
+size = (10, 50)
+plot_forest(Dict(
+    &quot;normal&quot; =&gt; randn(size),
+    &quot;gumbel&quot; =&gt; rand(Gumbel(), size),
+    &quot;student t&quot; =&gt; rand(TDist(6), size),
+    &quot;exponential&quot; =&gt; rand(Exponential(), size)
+));</code></pre><p><img src="quick_forestdists.svg" alt/></p><h2 id="Plotting-with-MCMCChains.jl&#39;s-Chains-objects-produced-by-Turing.jl-1">Plotting with MCMCChains.jl&#39;s <code>Chains</code> objects produced by Turing.jl<a class="docs-heading-anchor" href="#Plotting-with-MCMCChains.jl&#39;s-Chains-objects-produced-by-Turing.jl-1" title="Permalink"></a></h2><p>ArviZ is designed to work well with high dimensional, labelled data. Consider the <a href="http://andrewgelman.com/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/">eight schools model</a>, which roughly tries to measure the effectiveness of SAT classes at eight different schools. To show off ArviZ&#39;s labelling, I give the schools the names of <a href="https://en.wikipedia.org/wiki/Eight_Schools_Association">a different eight schools</a>.</p><p>This model is small enough to write down, is hierarchical, and uses labelling. Additionally, a centered parameterization causes <a href="http://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html">divergences</a> (which are interesting for illustration).</p><p>First we create our data.</p><pre><code class="language-julia">J = 8
+y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
+sigma = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+schools = [
+    &quot;Choate&quot;,
+    &quot;Deerfield&quot;,
+    &quot;Phillips Andover&quot;,
+    &quot;Phillips Exeter&quot;,
+    &quot;Hotchkiss&quot;,
+    &quot;Lawrenceville&quot;,
+    &quot;St. Paul&#39;s&quot;,
+    &quot;Mt. Hermon&quot;
+];</code></pre><p>Now we write and run the model using Turing:</p><pre><code class="language-julia">using Turing
+
+@model centered_eight(J, y, sigma) = begin
+    mu ~ Normal(0, 5)
+    tau ~ Truncated(Cauchy(0, 5), 0, Inf)
+    theta = tzeros(J)
+    theta ~ [Normal(mu, tau)]
+    y ~ MvNormal(theta, sigma)
+end
+
+nchains = 4
+model = centered_eight(J, y, sigma)
+sampler = NUTS(1000, 0.8)
+turing_chns = mapreduce(chainscat, 1:nchains) do _
+    return sample(model, sampler, 2000; progress = false)
+end;</code></pre><p>Most ArviZ functions work fine with <code>Chains</code> objects from Turing:</p><pre><code class="language-julia">plot_autocorr(convert_to_inference_data(turing_chns); var_names=[&quot;mu&quot;, &quot;tau&quot;]);</code></pre><p><img src="quick_turingautocorr.svg" alt/></p><h3 id="Convert-to-InferenceData-1">Convert to <code>InferenceData</code><a class="docs-heading-anchor" href="#Convert-to-InferenceData-1" title="Permalink"></a></h3><p>For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert <code>Chains</code> objects to xarray datasets. Note we are also giving some information about labelling.</p><p>ArviZ is built to work with <a href="reference.html#ArviZ.InferenceData"><code>InferenceData</code></a> (a netcdf datastore that loads data into <code>xarray</code> datasets), and the more <em>groups</em> it has access to, the more powerful analyses it can perform. Here is a plot of the trace, which is common in Turing workflows. Note the intelligent labels.</p><pre><code class="language-julia">data = from_mcmcchains(
+    turing_chns,
+    library = &quot;Turing&quot;,
+    coords = Dict(&quot;school&quot; =&gt; schools),
+    dims = Dict(&quot;theta&quot; =&gt; [&quot;school&quot;], &quot;obs&quot; =&gt; [&quot;school&quot;])
+)</code></pre><pre><code class="language-none">InferenceData with groups:
+	&gt; posterior
+	&gt; sample_stats</code></pre><pre><code class="language-julia">plot_trace(data);</code></pre><p><img src="quick_turingtrace.png" alt/></p><p>We can also generate summary stats</p><pre><code class="language-julia">summarystats(data)</code></pre><pre><code class="language-none">           mean     sd  hpd_3%  hpd_97%  mcse_mean  mcse_sd  ess_mean  ess_sd  ess_bulk  ess_tail  r_hat
+theta[1]  6.494  5.542  -4.504   16.393      0.210    0.149     696.0   696.0     600.0    1199.0   1.01
+theta[2]  5.196  4.845  -4.909   13.947      0.226    0.160     461.0   461.0     434.0    1584.0   1.01
+theta[3]  4.267  5.375  -6.148   13.713      0.233    0.165     531.0   531.0     478.0    1344.0   1.01
+theta[4]  5.005  4.865  -4.547   13.660      0.195    0.138     621.0   621.0     574.0    1360.0   1.01
+theta[5]  3.910  4.879  -5.435   12.193      0.261    0.185     349.0   349.0     350.0    1612.0   1.01
+theta[6]  4.229  4.943  -5.430   12.940      0.228    0.161     469.0   469.0     439.0    1601.0   1.01
+theta[7]  6.658  5.062  -3.137   16.150      0.216    0.153     550.0   550.0     505.0    1200.0   1.02
+theta[8]  5.138  5.297  -4.584   15.239      0.195    0.138     740.0   740.0     690.0    1673.0   1.01
+tau       3.750  3.267   0.324    9.552      0.256    0.181     163.0   163.0      72.0      22.0   1.04
+mu        4.682  3.417  -2.392    9.958      0.210    0.149     265.0   265.0     283.0     892.0   1.01
+</code></pre><p>and examine the energy distribution of the Hamiltonian sampler</p><pre><code class="language-julia">plot_energy(data);</code></pre><p><img src="quick_turingenergy.svg" alt/></p><h2 id="Plotting-with-CmdStan.jl-outputs-1">Plotting with CmdStan.jl outputs<a class="docs-heading-anchor" href="#Plotting-with-CmdStan.jl-outputs-1" title="Permalink"></a></h2><p>CmdStan.jl and StanSample.jl also default to producing <code>Chains</code> outputs, and we can easily plot these chains.</p><p>Here is the same centered eight schools model:</p><pre><code class="language-julia">using CmdStan
+
+schools_code = &quot;&quot;&quot;
+data {
+  int&lt;lower=0&gt; J;
+  real y[J];
+  real&lt;lower=0&gt; sigma[J];
+}
+
+parameters {
+  real mu;
+  real&lt;lower=0&gt; tau;
+  real theta[J];
+}
+
+model {
+  mu ~ normal(0, 5);
+  tau ~ cauchy(0, 5);
+  theta ~ normal(mu, tau);
+  y ~ normal(theta, sigma);
+}
+
+generated quantities {
+    vector[J] log_lik;
+    vector[J] y_hat;
+    for (j in 1:J) {
+        log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+        y_hat[j] = normal_rng(theta[j], sigma[j]);
+    }
+}
+&quot;&quot;&quot;
+
+schools_dat = Dict(&quot;J&quot; =&gt; J, &quot;y&quot; =&gt; y, &quot;sigma&quot; =&gt; sigma)
+stan_model = Stanmodel(
+    model = schools_code,
+    nchains = 4,
+    num_warmup = 1000,
+    num_samples = 1000,
+)
+_, stan_chns, _ = stan(stan_model, schools_dat, summary = false);</code></pre><pre><code class="language-none">
+File /Users/saxen/projects/ArviZ.jl/docs/build/tmp/noname.stan will be updated.</code></pre><pre><code class="language-julia">plot_density(convert_to_inference_data(stan_chns); var_names=[&quot;mu&quot;, &quot;tau&quot;]);</code></pre><p><img src="quick_cmdstandensity.svg" alt/></p><p>Again, converting to <code>InferenceData</code>, we can get much richer labelling and mixing of data. Note that we&#39;re using the same <a href="reference.html#ArviZ.from_cmdstan-Tuple"><code>from_cmdstan</code></a> function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a <code>Chains</code> object, it instead uses ArviZ.jl&#39;s overloads, which forward to <a href="reference.html#ArviZ.from_mcmcchains"><code>from_mcmcchains</code></a>.</p><pre><code class="language-julia">data = from_cmdstan(
+    stan_chns;
+    posterior_predictive = &quot;y_hat&quot;,
+    log_likelihood = &quot;log_lik&quot;,
+    coords = Dict(&quot;school&quot; =&gt; schools),
+    dims = Dict(
+        &quot;theta&quot; =&gt; [&quot;school&quot;],
+        &quot;y&quot; =&gt; [&quot;school&quot;],
+        &quot;log_lik&quot; =&gt; [&quot;school&quot;],
+        &quot;y_hat&quot; =&gt; [&quot;school&quot;],
+        &quot;theta_tilde&quot; =&gt; [&quot;school&quot;]
+    )
+)</code></pre><pre><code class="language-none">InferenceData with groups:
+	&gt; posterior
+	&gt; posterior_predictive
+	&gt; sample_stats</code></pre><p>Here is a plot showing where the Hamiltonian sampler had divergences:</p><pre><code class="language-julia">plot_pair(data; coords = Dict(&quot;school&quot; =&gt; [&quot;Choate&quot;, &quot;Deerfield&quot;, &quot;Phillips Andover&quot;]), divergences = true);</code></pre><p><img src="quick_cmdstanpair.png" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="index.html">« Home</a><a class="docs-footer-nextpage" href="api.html">API »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 18 November 2019 01:14">Monday 18 November 2019</span>. Using Julia version 1.2.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

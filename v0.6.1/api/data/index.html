@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Data · ArviZ.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="stable/api/data/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../../quickstart/">Quickstart</a></li><li><a class="tocitem" href="../../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li><a class="tocitem" href="../../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">Example Gallery</span><ul><li><a class="tocitem" href="../../mpl_examples/">Matplotlib</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../plots/">Plots</a></li><li><a class="tocitem" href="../stats/">Stats</a></li><li><a class="tocitem" href="../diagnostics/">Diagnostics</a></li><li class="is-active"><a class="tocitem" href>Data</a><ul class="internal"><li><a class="tocitem" href="#Inference-library-converters"><span>Inference library converters</span></a></li><li><a class="tocitem" href="#IO-/-General-conversion"><span>IO / General conversion</span></a></li><li><a class="tocitem" href="#General-functions"><span>General functions</span></a></li><li><a class="tocitem" href="#Example-data"><span>Example data</span></a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-6" type="checkbox"/><label class="tocitem" for="menuitem-4-6"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../inference_data/">InferenceData</a></li><li><a class="tocitem" href="../dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">API</a></li><li class="is-active"><a href>Data</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Data</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/api/data.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="data-api"><a class="docs-heading-anchor" href="#data-api">Data</a><a id="data-api-1"></a><a class="docs-heading-anchor-permalink" href="#data-api" title="Permalink"></a></h1><ul><li><a href="#ArviZ.InferenceObjects.from_namedtuple"><code>ArviZ.InferenceObjects.from_namedtuple</code></a></li><li><a href="#ArviZ.concat"><code>ArviZ.concat</code></a></li><li><a href="#ArviZ.extract_dataset"><code>ArviZ.extract_dataset</code></a></li><li><a href="#ArviZ.from_cmdstan"><code>ArviZ.from_cmdstan</code></a></li><li><a href="#ArviZ.from_dict"><code>ArviZ.from_dict</code></a></li><li><a href="#ArviZ.from_json"><code>ArviZ.from_json</code></a></li><li><a href="#ArviZ.from_mcmcchains"><code>ArviZ.from_mcmcchains</code></a></li><li><a href="#ArviZ.from_netcdf"><code>ArviZ.from_netcdf</code></a></li><li><a href="#ArviZ.from_samplechains"><code>ArviZ.from_samplechains</code></a></li><li><a href="#ArviZ.load_arviz_data"><code>ArviZ.load_arviz_data</code></a></li><li><a href="#ArviZ.to_netcdf"><code>ArviZ.to_netcdf</code></a></li></ul><h2 id="Inference-library-converters"><a class="docs-heading-anchor" href="#Inference-library-converters">Inference library converters</a><a id="Inference-library-converters-1"></a><a class="docs-heading-anchor-permalink" href="#Inference-library-converters" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.from_cmdstan" href="#ArviZ.from_cmdstan"><code>ArviZ.from_cmdstan</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Convert CmdStan data into an InferenceData object.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.from_cmdstan.html"><code>arviz.from_cmdstan</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    For a usage example read the
+    :ref:`Creating InferenceData section on from_cmdstan &lt;creating_InferenceData&gt;`
+
+    Parameters
+    ----------
+    posterior : str or list of str, optional
+        List of paths to output.csv files.
+    posterior_predictive : str or list of str, optional
+        Posterior predictive samples for the fit. If endswith &quot;.csv&quot; assumes file.
+    predictions : str or list of str, optional
+        Out of sample predictions samples for the fit. If endswith &quot;.csv&quot; assumes file.
+    prior : str or list of str, optional
+        List of paths to output.csv files
+    prior_predictive : str or list of str, optional
+        Prior predictive samples for the fit. If endswith &quot;.csv&quot; assumes file.
+    observed_data : str, optional
+        Observed data used in the sampling. Path to data file in Rdump or JSON format.
+    observed_data_var : str or list of str, optional
+        Variable(s) used for slicing observed_data. If not defined, all
+        data variables are imported.
+    constant_data : str, optional
+        Constant data used in the sampling. Path to data file in Rdump or JSON format.
+    constant_data_var : str or list of str, optional
+        Variable(s) used for slicing constant_data. If not defined, all
+        data variables are imported.
+    predictions_constant_data : str, optional
+        Constant data for predictions used in the sampling.
+        Path to data file in Rdump or JSON format.
+    predictions_constant_data_var : str or list of str, optional
+        Variable(s) used for slicing predictions_constant_data.
+        If not defined, all data variables are imported.
+    log_likelihood : dict of {str: str}, list of str or str, optional
+        Pointwise log_likelihood for the data. log_likelihood is extracted from the
+        posterior. It is recommended to use this argument as a dictionary whose keys
+        are observed variable names and its values are the variables storing log
+        likelihood arrays in the Stan code. In other cases, a dictionary with keys
+        equal to its values is used. By default, if a variable ``log_lik`` is
+        present in the Stan model, it will be retrieved as pointwise log
+        likelihood values. Use ``False`` to avoid this behaviour.
+    index_origin : int, optional
+        Starting value of integer coordinate values. Defaults to the value in rcParam
+        ``data.index_origin``.
+    coords : dict of {str: array_like}, optional
+        A dictionary containing the values that are used as index. The key
+        is the name of the dimension, the values are the index values.
+    dims : dict of {str: list of str}, optional
+        A mapping from variables to a list of coordinate names for the variable.
+    disable_glob : bool
+        Don&#39;t use glob for string input. This means that all string input is
+        assumed to be variable names (samples) or a path (data).
+    save_warmup : bool
+        Save warmup iterations into InferenceData object, if found in the input files.
+        If not defined, use default defined by the rcParams.
+    dtypes : dict or str
+        A dictionary containing dtype information (int, float) for parameters.
+        If input is a string, it is assumed to be a model code or path to model code file.
+
+    Returns
+    -------
+    InferenceData object
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L14-L85">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.from_mcmcchains" href="#ArviZ.from_mcmcchains"><code>ArviZ.from_mcmcchains</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">from_mcmcchains(posterior::MCMCChains.Chains; kwargs...) -&gt; InferenceData
+from_mcmcchains(; kwargs...) -&gt; InferenceData
+from_mcmcchains(
+    posterior::MCMCChains.Chains,
+    posterior_predictive,
+    predictions,
+    log_likelihood;
+    kwargs...
+) -&gt; InferenceData</code></pre><p>Convert data in an <code>MCMCChains.Chains</code> format into an <a href="../inference_data/#ArviZ.InferenceObjects.InferenceData"><code>InferenceData</code></a>.</p><p>Any keyword argument below without an an explicitly annotated type above is allowed, so long as it can be passed to <a href="../inference_data/#ArviZ.InferenceObjects.convert_to_inference_data"><code>convert_to_inference_data</code></a>.</p><p><strong>Arguments</strong></p><ul><li><code>posterior::MCMCChains.Chains</code>: Draws from the posterior</li></ul><p><strong>Keywords</strong></p><ul><li><code>posterior_predictive::Any=nothing</code>: Draws from the posterior predictive distribution or   name(s) of predictive variables in <code>posterior</code></li><li><code>predictions</code>: Out-of-sample predictions for the posterior.</li><li><code>prior</code>: Draws from the prior</li><li><code>prior_predictive</code>: Draws from the prior predictive distribution or name(s) of predictive   variables in <code>prior</code></li><li><code>observed_data</code>: Observed data on which the <code>posterior</code> is conditional. It should only   contain data which is modeled as a random variable. Keys are parameter names and values.</li><li><code>constant_data</code>: Model constants, data included in the model that are not modeled as   random variables. Keys are parameter names.</li><li><code>predictions_constant_data</code>: Constants relevant to the model predictions (i.e. new <code>x</code>   values in a linear regression).</li><li><code>log_likelihood</code>: Pointwise log-likelihood for the data. It is recommended to use this   argument as a named tuple whose keys are observed variable names and whose values are log   likelihood arrays. Alternatively, provide the name of variable in <code>posterior</code> containing   log likelihoods.</li><li><code>library=MCMCChains</code>: Name of library that generated the chains</li><li><code>coords</code>: Map from named dimension to named indices</li><li><code>dims</code>: Map from variable name to names of its dimensions</li><li><code>eltypes</code>: Map from variable names to eltypes. This is primarily used to assign discrete   eltypes to discrete variables that were stored in <code>Chains</code> as floats.</li></ul><p><strong>Returns</strong></p><ul><li><code>InferenceData</code>: The data with groups corresponding to the provided data</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/mcmcchains.jl#L107">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.from_samplechains" href="#ArviZ.from_samplechains"><code>ArviZ.from_samplechains</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">from_samplechains(
+    posterior=nothing;
+    prior=nothing,
+    library=SampleChains,
+    kwargs...,
+) -&gt; InferenceData</code></pre><p>Convert SampleChains samples to an <code>InferenceData</code>.</p><p>Either <code>posterior</code> or <code>prior</code> may be a <code>SampleChains.AbstractChain</code> or <code>SampleChains.MultiChain</code> object.</p><p>For descriptions of remaining <code>kwargs</code>, see <a href="#ArviZ.InferenceObjects.from_namedtuple"><code>from_namedtuple</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/samplechains.jl#L61-L75">source</a></section></article><h2 id="IO-/-General-conversion"><a class="docs-heading-anchor" href="#IO-/-General-conversion">IO / General conversion</a><a id="IO-/-General-conversion-1"></a><a class="docs-heading-anchor-permalink" href="#IO-/-General-conversion" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.from_dict" href="#ArviZ.from_dict"><code>ArviZ.from_dict</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Convert Dictionary data into an InferenceData object.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.from_dict.html"><code>arviz.from_dict</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    For a usage example read the
+    :ref:`Creating InferenceData section on from_dict &lt;creating_InferenceData&gt;`
+
+    Parameters
+    ----------
+    posterior : dict
+    posterior_predictive : dict
+    predictions: dict
+    sample_stats : dict
+    log_likelihood : dict
+        For stats functions, log likelihood data should be stored here.
+    prior : dict
+    prior_predictive : dict
+    observed_data : dict
+    constant_data : dict
+    predictions_constant_data: dict
+    warmup_posterior : dict
+    warmup_posterior_predictive : dict
+    warmup_predictions : dict
+    warmup_log_likelihood : dict
+    warmup_sample_stats : dict
+    save_warmup : bool
+        Save warmup iterations InferenceData object. If not defined, use default
+        defined by the rcParams.
+    index_origin : int, optional
+    coords : dict[str, iterable]
+        A dictionary containing the values that are used as index. The key
+        is the name of the dimension, the values are the index values.
+    dims : dict[str, List(str)]
+        A mapping from variables to a list of coordinate names for the variable.
+    pred_dims : dict[str, List(str)]
+        A mapping from variables to a list of coordinate names for predictions.
+    pred_coords : dict[str, List(str)]
+        A mapping from variables to a list of coordinate values for predictions.
+    attrs : dict
+        A dictionary containing attributes for different groups.
+    kwargs : dict
+        A dictionary containing group attrs.
+        Accepted kwargs are:
+        - posterior_attrs, posterior_warmup_attrs : attrs for posterior group
+        - sample_stats_attrs, sample_stats_warmup_attrs : attrs for sample_stats group
+        - log_likelihood_attrs, log_likelihood_warmup_attrs : attrs for log_likelihood group
+        - posterior_predictive_attrs, posterior_predictive_warmup_attrs : attrs for
+                posterior_predictive group
+        - predictions_attrs, predictions_warmup_attrs : attrs for predictions group
+        - prior_attrs : attrs for prior group
+        - sample_stats_prior_attrs : attrs for sample_stats_prior group
+        - prior_predictive_attrs : attrs for prior_predictive group
+
+    Returns
+    -------
+    InferenceData object
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L13-L76">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.from_json" href="#ArviZ.from_json"><code>ArviZ.from_json</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Initialize object from a json file.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.from_json.html"><code>arviz.from_json</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Will use the faster `ujson` (https://github.com/ultrajson/ultrajson) if it is available.
+
+    Parameters
+    ----------
+    filename : str
+        location of json file
+
+    Returns
+    -------
+    InferenceData object
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L12-L33">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.InferenceObjects.from_namedtuple" href="#ArviZ.InferenceObjects.from_namedtuple"><code>ArviZ.InferenceObjects.from_namedtuple</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">from_namedtuple(posterior::NamedTuple; kwargs...) -&gt; InferenceData
+from_namedtuple(posterior::Vector{&lt;:NamedTuple}; kwargs...) -&gt; InferenceData
+from_namedtuple(posterior::Matrix{&lt;:NamedTuple}; kwargs...) -&gt; InferenceData
+from_namedtuple(posterior::Vector{Vector{&lt;:NamedTuple}}; kwargs...) -&gt; InferenceData
+from_namedtuple(
+    posterior::NamedTuple,
+    sample_stats::Any,
+    posterior_predictive::Any,
+    predictions::Any,
+    log_likelihood::Any;
+    kwargs...
+) -&gt; InferenceData</code></pre><p>Convert a <code>NamedTuple</code> or container of <code>NamedTuple</code>s to an <code>InferenceData</code>.</p><p>If containers are passed, they are flattened into a single <code>NamedTuple</code> with array elements whose first dimensions correspond to the dimensions of the containers.</p><p><strong>Arguments</strong></p><ul><li><code>posterior</code>: The data to be converted. It may be of the following types:<ul><li><code>::NamedTuple</code>: The keys are the variable names and the values are arrays with dimensions <code>(nchains, ndraws, sizes...)</code>.</li><li><code>::Matrix{&lt;:NamedTuple}</code>: Each element is a single draw from a single chain, with array/scalar values with dimensions <code>sizes</code>. The dimensions of the matrix container are <code>(nchains, ndraws)</code></li><li><code>::Vector{Vector{&lt;:NamedTuple}}</code>: The same as the above case.</li></ul></li></ul><p><strong>Keywords</strong></p><ul><li><code>posterior_predictive::Any=nothing</code>: Draws from the posterior predictive distribution</li><li><code>sample_stats::Any=nothing</code>: Statistics of the posterior sampling process</li><li><code>predictions::Any=nothing</code>: Out-of-sample predictions for the posterior.</li><li><code>prior::Any=nothing</code>: Draws from the prior</li><li><code>prior_predictive::Any=nothing</code>: Draws from the prior predictive distribution</li><li><code>sample_stats_prior::Any=nothing</code>: Statistics of the prior sampling process</li><li><code>observed_data::NamedTuple</code>: Observed data on which the <code>posterior</code> is conditional. It should only contain data which is modeled as a random variable. Keys are parameter names and values.</li><li><code>constant_data::NamedTuple</code>: Model constants, data included in the model which is not modeled as a random variable. Keys are parameter names and values.</li><li><code>predictions_constant_data::NamedTuple</code>: Constants relevant to the model predictions (i.e. new <code>x</code> values in a linear regression).</li><li><code>log_likelihood</code>: Pointwise log-likelihood for the data. It is recommended to use this argument as a <code>NamedTuple</code> whose keys are observed variable names and whose values are log likelihood arrays.</li><li><code>library</code>: Name of library that generated the draws</li><li><code>coords</code>: Map from named dimension to named indices</li><li><code>dims</code>: Map from variable name to names of its dimensions</li></ul><p><strong>Returns</strong></p><ul><li><code>InferenceData</code>: The data with groups corresponding to the provided data</li></ul><p><strong>Examples</strong></p><pre><code class="language- hljs">using ArviZ
+nchains, ndraws = 2, 10
+
+data1 = (
+    x=rand(nchains, ndraws), y=randn(nchains, ndraws, 2), z=randn(nchains, ndraws, 3, 2)
+)
+idata1 = from_namedtuple(data1)
+
+data2 = [(x=rand(ndraws), y=randn(ndraws, 2), z=randn(ndraws, 3, 2)) for _ in 1:nchains];
+idata2 = from_namedtuple(data2)
+
+data3 = [(x=rand(), y=randn(2), z=randn(3, 2)) for _ in 1:nchains, _ in 1:ndraws];
+idata3 = from_namedtuple(data3)
+
+data4 = [[(x=rand(), y=randn(2), z=randn(3, 2)) for _ in 1:ndraws] for _ in 1:nchains];
+idata4 = from_namedtuple(data4)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/InferenceObjects/from_namedtuple.jl#L1-L77">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.from_netcdf" href="#ArviZ.from_netcdf"><code>ArviZ.from_netcdf</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Load netcdf file back into an arviz.InferenceData.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.from_netcdf.html"><code>arviz.from_netcdf</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Parameters
+    ----------
+    filename : str
+        name or path of the file to load trace
+    group_kwargs : dict of {str: dict}
+        Keyword arguments to be passed into each call of :func:`xarray.open_dataset`.
+        The keys of the higher level should be group names or regex matching group
+        names, the inner dicts re passed to ``open_dataset``.
+        This feature is currently experimental
+    regex : str
+        Specifies where regex search should be used to extend the keyword arguments.
+
+    Returns
+    -------
+        InferenceData object
+
+    Notes
+    -----
+    By default, the datasets of the InferenceData object will be lazily loaded instead
+    of loaded into memory. This behaviour is regulated by the value of
+    ``az.rcParams[&quot;data.load&quot;]``.
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L11-L43">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.to_netcdf" href="#ArviZ.to_netcdf"><code>ArviZ.to_netcdf</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Save dataset as a netcdf file.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.to_netcdf.html"><code>arviz.to_netcdf</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    WARNING: Only idempotent in case `data` is InferenceData
+
+    Parameters
+    ----------
+    data : InferenceData, or any object accepted by `convert_to_inference_data`
+        Object to be saved
+    filename : str
+        name or path of the file to load trace
+    group : str (optional)
+        In case `data` is not InferenceData, this is the group it will be saved to
+    coords : dict (optional)
+        See `convert_to_inference_data`
+    dims : dict (optional)
+        See `convert_to_inference_data`
+
+    Returns
+    -------
+    str
+        filename saved to
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L10-L40">source</a></section></article><h2 id="General-functions"><a class="docs-heading-anchor" href="#General-functions">General functions</a><a id="General-functions-1"></a><a class="docs-heading-anchor-permalink" href="#General-functions" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.concat" href="#ArviZ.concat"><code>ArviZ.concat</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Concatenate InferenceData objects.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.concat.html"><code>arviz.concat</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Concatenates over `group`, `chain` or `draw`.
+    By default concatenates over unique groups.
+    To concatenate over `chain` or `draw` function
+    needs identical groups and variables.
+
+    The `variables` in the `data` -group are merged if `dim` are not found.
+
+
+    Parameters
+    ----------
+    *args : InferenceData
+        Variable length InferenceData list or
+        Sequence of InferenceData.
+    dim : str, optional
+        If defined, concatenated over the defined dimension.
+        Dimension which is concatenated. If None, concatenates over
+        unique groups.
+    copy : bool
+        If True, groups are copied to the new InferenceData object.
+        Used only if `dim` is None.
+    inplace : bool
+        If True, merge args to first object.
+    reset_dim : bool
+        Valid only if dim is not None.
+
+    Returns
+    -------
+    InferenceData
+        A new InferenceData object by default.
+        When `inplace==True` merge args to first arg and return `None`
+
+    See Also
+    --------
+    add_groups : Add new groups to InferenceData object.
+    extend : Extend InferenceData with groups from another InferenceData.
+
+    Examples
+    --------
+    Use ``concat`` method to concatenate InferenceData objects. This will concatenates over
+    unique groups by default. We first create an ``InferenceData`` object:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: import numpy as np
+           ...: data = {
+           ...:     &quot;a&quot;: np.random.normal(size=(4, 100, 3)),
+           ...:     &quot;b&quot;: np.random.normal(size=(4, 100)),
+           ...: }
+           ...: coords = {&quot;a_dim&quot;: [&quot;x&quot;, &quot;y&quot;, &quot;z&quot;]}
+           ...: dataA = az.from_dict(data, coords=coords, dims={&quot;a&quot;: [&quot;a_dim&quot;]})
+           ...: dataA
+
+    We have created an ``InferenceData`` object with default group &#39;posterior&#39;. Now, we will
+    create another ``InferenceData`` object:
+
+    .. ipython::
+
+        In [1]: dataB = az.from_dict(prior=data, coords=coords, dims={&quot;a&quot;: [&quot;a_dim&quot;]})
+           ...: dataB
+
+    We have created another ``InferenceData`` object with group &#39;prior&#39;. Now, we will concatenate
+    these two ``InferenceData`` objects:
+
+    .. ipython::
+
+        In [1]: az.concat(dataA, dataB)
+
+    Now, we will concatenate over chain (or draw). It requires identical groups and variables.
+    Here we are concatenating two identical ``InferenceData`` objects over dimension chain:
+
+    .. ipython::
+
+        In [1]: az.concat(dataA, dataA, dim=&quot;chain&quot;)
+
+    It will create an ``InferenceData`` with the original group &#39;posterior&#39;. In similar way,
+    we can also concatenate over draws.
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L22-L111">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.extract_dataset" href="#ArviZ.extract_dataset"><code>ArviZ.extract_dataset</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Extract an InferenceData group or subset of it as a :class:<code>xarray.Dataset</code>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.extract_dataset.html"><code>arviz.extract_dataset</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Parameters
+    ----------
+    idata : InferenceData or InferenceData_like
+        InferenceData from which to extract the data.
+    group : str, optional
+        Which InferenceData data group to extract data from.
+    combined : bool, optional
+        Combine ``chain`` and ``draw`` dimensions into ``sample``. Won&#39;t work if
+        a dimension named ``sample`` already exists.
+    var_names : str or list of str, optional
+        Variables to be plotted, two variables are required. Prefix the variables by `~`
+        when you want to exclude them from the plot.
+    filter_vars: {None, &quot;like&quot;, &quot;regex&quot;}, optional
+        If `None` (default), interpret var_names as the real variables names. If &quot;like&quot;,
+        interpret var_names as substrings of the real variables names. If &quot;regex&quot;,
+        interpret var_names as regular expressions on the real variables names. A la
+        `pandas.filter`.
+        Like with plotting, sometimes it&#39;s easier to subset saying what to exclude
+        instead of what to include
+    num_samples : int, optional
+        Extract only a subset of the samples. Only valid if ``combined=True``
+    rng : bool, int, numpy.Generator, optional
+        Shuffle the samples, only valid if ``combined=True``. By default,
+        samples are shuffled if ``num_samples`` is not ``None``, and are left
+        in the same order otherwise. This ensures that subsetting the samples doesn&#39;t return
+        only samples from a single chain and consecutive draws.
+
+    Returns
+    -------
+    xarray.Dataset
+
+    Examples
+    --------
+    The default behaviour is to return the posterior group after stacking the chain and
+    draw dimensions.
+
+    .. jupyter-execute::
+
+        import arviz as az
+        idata = az.load_arviz_data(&quot;centered_eight&quot;)
+        az.extract_dataset(idata)
+
+    You can also indicate a subset to be returned, but in variables and in samples:
+
+    .. jupyter-execute::
+
+        az.extract_dataset(idata, var_names=&quot;theta&quot;, num_samples=100)
+
+    To keep the chain and draw dimensions, use ``combined=False``.
+
+    .. jupyter-execute::
+
+        az.extract_dataset(idata, group=&quot;prior&quot;, combined=False)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L1-L66">source</a></section></article><h2 id="Example-data"><a class="docs-heading-anchor" href="#Example-data">Example data</a><a id="Example-data-1"></a><a class="docs-heading-anchor-permalink" href="#Example-data" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.load_arviz_data" href="#ArviZ.load_arviz_data"><code>ArviZ.load_arviz_data</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Load a local or remote pre-made dataset.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/v0.12.1/api/generated/arviz.load_arviz_data.html"><code>arviz.load_arviz_data</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Run with no parameters to get a list of all available models.
+
+    The directory to save to can also be set with the environment
+    variable `ARVIZ_HOME`. The checksum of the dataset is checked against a
+    hardcoded value to watch for data corruption.
+
+    Run `az.clear_data_home` to clear the data directory.
+
+    Parameters
+    ----------
+    dataset : str
+        Name of dataset to load.
+
+    data_home : str, optional
+        Where to save remote datasets
+
+    regex : bool, optional
+        Specifies regex support for chunking information in
+        :func:`arviz.from_netcdf`. This feature is currently experimental.
+
+    **kwargs : dict of {str: dict}, optional
+        Keyword arguments to be passed to :func:`arviz.from_netcdf`.
+        This feature is currently experimental.
+
+    Returns
+    -------
+    xarray.Dataset
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/f0e4020d7bf2184b8ee4ac48f39a9a2d4f988706/src/data.jl#L8-L47">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../diagnostics/">« Diagnostics</a><a class="docs-footer-nextpage" href="../inference_data/">InferenceData »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.22 on <span class="colophon-date" title="Saturday 13 August 2022 15:45">Saturday 13 August 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
