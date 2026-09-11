@@ -8,7 +8,7 @@
     # This information is used for caching.
     [PlutoStaticHTML.State]
     input_sha = "e14ec19de2f22d99e449a8e6b35ce88171a7f6541284839964e0ad03e6791a47"
-    julia_version = "1.12.7"
+    julia_version = "1.13.0"
 -->
 
 <div class="markdown"><h1 id="Creating-custom-plots">Creating custom plots</h1></div>
@@ -42,12 +42,12 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :tau  </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
 <span class="sgr90">├─────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 6 entries:
-  "created_at" =&gt; "2025-01-19T14:32:33.071271+00:00"
-  "inference_library_version" =&gt; "5.20.0"
-  "sampling_time" =&gt; 3.15909
   "tuning_steps" =&gt; 1000
+  "sampling_time" =&gt; 3.15909
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:33.071271+00:00"
 <span class="sgr90">└─────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>posterior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
@@ -57,10 +57,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span>, <span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 4 entries:
-  "created_at" =&gt; "2025-01-19T14:32:33.992006+00:00"
-  "inference_library_version" =&gt; "5.20.0"
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:33.992006+00:00"
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>log_likelihood</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
@@ -70,10 +70,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span>, <span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">4</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 4 entries:
-  "created_at" =&gt; "2025-01-19T14:32:33.869112+00:00"
-  "inference_library_version" =&gt; "5.20.0"
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:33.869112+00:00"
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>sample_stats</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├───────────────┴──────────────────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ draw</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">[0, …, 499]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Irregular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
@@ -98,12 +98,12 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :largest_eigval       </span><span class="sgr90"> eltype: </span>Union{Missing, Float64}<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">draw</span>, <span class="sgr38_5" style="color:#0087d7">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">500</span>×<span class="sgr38_5" style="color:#0087d7">4</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 6 entries:
-  "created_at" =&gt; "2025-01-19T14:32:33.083969+00:00"
-  "inference_library_version" =&gt; "5.20.0"
-  "sampling_time" =&gt; 3.15909
   "tuning_steps" =&gt; 1000
+  "sampling_time" =&gt; 3.15909
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:33.083969+00:00"
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>prior</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
@@ -115,10 +115,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :mu   </span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 4 entries:
-  "created_at" =&gt; "2025-01-19T14:32:29.212688+00:00"
-  "inference_library_version" =&gt; "5.20.0"
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:29.212688+00:00"
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>prior_predictive</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span> Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├─────────────────┴────────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
@@ -128,10 +128,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span>, <span class="sgr38_5" style="color:#0087d7">draw</span>, <span class="sgr38_5" style="color:#5fd7ff">chain</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>×<span class="sgr38_5" style="color:#0087d7">500</span>×<span class="sgr38_5" style="color:#5fd7ff">1</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 4 entries:
-  "created_at" =&gt; "2025-01-19T14:32:29.215699+00:00"
-  "inference_library_version" =&gt; "5.20.0"
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:29.215699+00:00"
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>observed_data</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
@@ -139,10 +139,10 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :obs</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 4 entries:
-  "created_at" =&gt; "2025-01-19T14:32:29.216855+00:00"
-  "inference_library_version" =&gt; "5.20.0"
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:29.216855+00:00"
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details><details><summary>constant_data</summary><pre><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">8-element </span>Dataset<span class="sgr90"> ┐</span>
 <span class="sgr90">├───────────────────┴──────────────────────────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ school</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">["Choate", …, "Mt. Hermon"]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>
@@ -150,14 +150,14 @@ end;</code></pre>
 <span class="sgr38_5" style="color:#00afaf">  :sigma</span><span class="sgr90"> eltype: </span>Float64<span class="sgr90"> dims: </span><span class="sgr38_5" style="color:#ff875f">school</span><span class="sgr90"> size: </span><span class="sgr38_5" style="color:#ff875f">8</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── metadata ┤</span>
   Dict{String, Any} with 4 entries:
-  "created_at" =&gt; "2025-01-19T14:32:29.217914+00:00"
-  "inference_library_version" =&gt; "5.20.0"
   "arviz_version" =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library" =&gt; "pymc"
+  "created_at" =&gt; "2025-01-19T14:32:29.217914+00:00"
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────┘</span></pre></details></div>
 
 <pre class='language-julia'><code class='language-julia'>idata.posterior</code></pre>
-<pre class="code-output documenter-example-output" id="var-hash634506">�[90m┌ �[39m�[38;5;209m500�[39m×�[38;5;32m4�[39m×�[38;5;81m8�[39m Dataset�[90m ┐�[39m
+<pre class="code-output documenter-example-output" id="var-hash772992">�[90m┌ �[39m�[38;5;209m500�[39m×�[38;5;32m4�[39m×�[38;5;81m8�[39m Dataset�[90m ┐�[39m
 �[90m├─────────────────┴───────────────────────────────────────────── dims ┐�[39m
   �[38;5;209m↓ �[39m�[38;5;209mdraw�[39m Sampled{Int64} �[38;5;209m[0, …, 499]�[39m �[38;5;244mForwardOrdered�[39m �[38;5;244mIrregular�[39m �[38;5;244mPoints�[39m,
   �[38;5;32m→ �[39m�[38;5;32mchain�[39m Sampled{Int64} �[38;5;32m[0, …, 3]�[39m �[38;5;244mForwardOrdered�[39m �[38;5;244mIrregular�[39m �[38;5;244mPoints�[39m,
@@ -168,12 +168,12 @@ end;</code></pre>
 �[38;5;37m  :tau  �[39m�[90m eltype: �[39mFloat64�[90m dims: �[39m�[38;5;209mdraw�[39m, �[38;5;32mchain�[39m�[90m size: �[39m�[38;5;209m500�[39m×�[38;5;32m4�[39m
 �[90m├─────────────────────────────────────────────────────────── metadata ┤�[39m
   Dict{String, Any} with 6 entries:
-  "created_at"                =&gt; "2025-01-19T14:32:33.071271+00:00"
-  "inference_library_version" =&gt; "5.20.0"
-  "sampling_time"             =&gt; 3.15909
   "tuning_steps"              =&gt; 1000
+  "sampling_time"             =&gt; 3.15909
   "arviz_version"             =&gt; "0.20.0"
+  "inference_library_version" =&gt; "5.20.0"
   "inference_library"         =&gt; "pymc"
+  "created_at"                =&gt; "2025-01-19T14:32:33.071271+00:00"
 �[90m└─────────────────────────────────────────────────────────────────────┘�[39m</pre>
 
 
@@ -186,7 +186,7 @@ end;</code></pre>
 <div class="markdown"><p>The tabular view includes dimensions and variables as columns.</p><p>When variables with different dimensions are flattened into a tabular form, there's always some duplication of values. As a simple case, note that <code>chain</code>, <code>draw</code>, and <code>school</code> all have repeated values in the above table.</p><p>In this case, <code>theta</code> has the <code>school</code> dimension, but <code>tau</code> doesn't, so the values of <code>tau</code> will be repeated in the table for each value of <code>school</code>.</p></div>
 
 <pre class='language-julia'><code class='language-julia'>df[df.school .== Ref("Choate"), :].tau == df[df.school .== Ref("Deerfield"), :].tau</code></pre>
-<pre class="code-output documenter-example-output" id="var-hash156415">true</pre>
+<pre class="code-output documenter-example-output" id="var-hash151542">true</pre>
 
 
 <div class="markdown"><p>In our first example, this will be important.</p><p>Here, let's construct a trace plot. Besides <code>idata</code>, all functions and types in the following cell are defined in AlgebraOfGraphics or Makie:</p><ul><li><p><code>data(...)</code> indicates that the wrapped object implements the Tables interface</p></li><li><p><code>mapping</code> indicates how the data should be used. The symbols are all column names in the table, which for us are our variable names and dimensions.</p></li><li><p><code>visual</code> specifies how the data should be converted to a plot.</p></li><li><p><code>Lines</code> is a plot type defined in Makie.</p></li><li><p><code>draw</code> takes this combination and plots it.</p></li></ul></div>
@@ -336,20 +336,20 @@ end</code></pre>
   [2913bbd2] StatsBase v0.34.13
 ⌅ [fce5fe82] Turing v0.41.4
   [f43a241f] Downloads v1.7.0
-  [37e2e46d] LinearAlgebra v1.12.0
+  [37e2e46d] LinearAlgebra v1.13.0
 Info Packages marked with ⌃ and ⌅ have new versions available. Those with ⌃ may be upgradable, but those with ⌅ are restricted by compatibility constraints from upgrading. To see why use `status --outdated`
 </pre>
 
 <pre class='language-julia'><code class='language-julia'>with_terminal(versioninfo)</code></pre>
-<pre id="plutouiterminal">Julia Version 1.12.7
-Commit 6d172b025e4 (2026-08-15 08:05 UTC)
+<pre id="plutouiterminal">Julia Version 1.13.0
+Commit d1c37793dd2 (2026-09-09 19:00 UTC)
 Build Info:
   Official https://julialang.org release
 Platform Info:
   OS: Linux (x86_64-linux-gnu)
   CPU: 4 × AMD EPYC 7763 64-Core Processor
   WORD_SIZE: 64
-  LLVM: libLLVM-18.1.7 (ORCJIT, znver3)
+  LLVM: libLLVM-20.1.8 (ORCJIT, znver3)
   GC: Built with stock GC
 Threads: 2 default, 1 interactive, 2 GC (on 4 virtual cores)
 Environment:
@@ -358,4 +358,4 @@ Environment:
   JULIA_REVISE_WORKER_ONLY = 1
 </pre>
 
-<!-- PlutoStaticHTML.End --></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../working_with_inference_data/">« Working with <code>InferenceData</code></a><a class="docs-footer-nextpage" href="../api/">API Overview »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Thursday 10 September 2026 03:16">Thursday 10 September 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<!-- PlutoStaticHTML.End --></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../working_with_inference_data/">« Working with <code>InferenceData</code></a><a class="docs-footer-nextpage" href="../api/">API Overview »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Friday 11 September 2026 03:21">Friday 11 September 2026</span>. Using Julia version 1.13.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
