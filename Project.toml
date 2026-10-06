@@ -3,6 +3,9 @@ uuid = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
 authors = ["Seth Axen <seth.axen@gmail.com>"]
 version = "0.14.2"
 
+[workspace]
+projects = ["docs", "test"]
+
 [deps]
 InferenceObjects = "b5cf5a8d-e756-4ee3-b014-01d49d192c00"
 MCMCDiagnosticTools = "be115224-59cd-429b-ad48-344e309966f0"
