@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Stats · ArviZ.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="stable/api/stats/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../../quickstart/">Quickstart</a></li><li><a class="tocitem" href="../../working_with_inference_data/">Working with <code>InferenceData</code></a></li><li><a class="tocitem" href="../../creating_custom_plots/">Creating custom plots</a></li></ul></li><li><span class="tocitem">Example Gallery</span><ul><li><a class="tocitem" href="../../mpl_examples/">Matplotlib</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../plots/">Plots</a></li><li class="is-active"><a class="tocitem" href>Stats</a><ul class="internal"><li><a class="tocitem" href="#General-statistics"><span>General statistics</span></a></li><li><a class="tocitem" href="#Pareto-smoothed-importance-sampling"><span>Pareto-smoothed importance sampling</span></a></li><li><a class="tocitem" href="#Model-assessment-and-selection"><span>Model assessment and selection</span></a></li></ul></li><li><a class="tocitem" href="../diagnostics/">Diagnostics</a></li><li><a class="tocitem" href="../data/">Data</a></li><li><input class="collapse-toggle" id="menuitem-4-6" type="checkbox"/><label class="tocitem" for="menuitem-4-6"><span class="docs-label">InferenceObjects</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../inference_data/">InferenceData</a></li><li><a class="tocitem" href="../dataset/">Dataset</a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">API</a></li><li class="is-active"><a href>Stats</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Stats</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/main/docs/src/api/stats.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="stats-api"><a class="docs-heading-anchor" href="#stats-api">Stats</a><a id="stats-api-1"></a><a class="docs-heading-anchor-permalink" href="#stats-api" title="Permalink"></a></h1><ul><li><a href="#ArviZ.ArviZStats.AbstractELPDResult"><code>ArviZ.ArviZStats.AbstractELPDResult</code></a></li><li><a href="#ArviZ.ArviZStats.PSISLOOResult"><code>ArviZ.ArviZStats.PSISLOOResult</code></a></li><li><a href="#ArviZ.ArviZStats.WAICResult"><code>ArviZ.ArviZStats.WAICResult</code></a></li><li><a href="#PSIS.PSISResult"><code>PSIS.PSISResult</code></a></li><li><a href="#ArviZ.ArviZStats.compare"><code>ArviZ.ArviZStats.compare</code></a></li><li><a href="#ArviZ.ArviZStats.elpd_estimates"><code>ArviZ.ArviZStats.elpd_estimates</code></a></li><li><a href="#ArviZ.ArviZStats.hdi"><code>ArviZ.ArviZStats.hdi</code></a></li><li><a href="#ArviZ.ArviZStats.information_criterion"><code>ArviZ.ArviZStats.information_criterion</code></a></li><li><a href="#ArviZ.ArviZStats.loo"><code>ArviZ.ArviZStats.loo</code></a></li><li><a href="#ArviZ.ArviZStats.loo_pit"><code>ArviZ.ArviZStats.loo_pit</code></a></li><li><a href="#ArviZ.ArviZStats.r2_score"><code>ArviZ.ArviZStats.r2_score</code></a></li><li><a href="#ArviZ.ArviZStats.smooth_data"><code>ArviZ.ArviZStats.smooth_data</code></a></li><li><a href="#ArviZ.ArviZStats.summary"><code>ArviZ.ArviZStats.summary</code></a></li><li><a href="#ArviZ.ArviZStats.waic"><code>ArviZ.ArviZStats.waic</code></a></li><li><a href="#PSIS.psis"><code>PSIS.psis</code></a></li><li><a href="#PSIS.psis!"><code>PSIS.psis!</code></a></li><li><a href="#StatsBase.summarystats"><code>StatsBase.summarystats</code></a></li></ul><h2 id="General-statistics"><a class="docs-heading-anchor" href="#General-statistics">General statistics</a><a id="General-statistics-1"></a><a class="docs-heading-anchor-permalink" href="#General-statistics" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.hdi" href="#ArviZ.ArviZStats.hdi"><code>ArviZ.ArviZStats.hdi</code></a> — <span class="docstring-category">Function</span></header><section><div><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/0.16.1/api/generated/arviz.hdi.html"><code>arviz.hdi</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">    Calculate highest density interval (HDI) of array for given probability.
+
+    The HDI is the minimum width Bayesian credible interval (BCI).
+
+    Parameters
+    ----------
+    ary: obj
+        object containing posterior samples.
+        Any object that can be converted to an :class:`arviz.InferenceData` object.
+        Refer to documentation of :func:`arviz.convert_to_dataset` for details.
+    hdi_prob: float, optional
+        Prob for which the highest density interval will be computed. Defaults to
+        ``stats.hdi_prob`` rcParam.
+    circular: bool, optional
+        Whether to compute the hdi taking into account `x` is a circular variable
+        (in the range [-np.pi, np.pi]) or not. Defaults to False (i.e non-circular variables).
+        Only works if multimodal is False.
+    multimodal: bool, optional
+        If true it may compute more than one hdi if the distribution is multimodal and the
+        modes are well separated.
+    skipna: bool, optional
+        If true ignores nan values when computing the hdi. Defaults to false.
+    group: str, optional
+        Specifies which InferenceData group should be used to calculate hdi.
+        Defaults to &#39;posterior&#39;
+    var_names: list, optional
+        Names of variables to include in the hdi report. Prefix the variables by ``~``
+        when you want to exclude them from the report: `[&quot;~beta&quot;]` instead of `[&quot;beta&quot;]`
+        (see :func:`arviz.summary` for more details).
+    filter_vars: {None, &quot;like&quot;, &quot;regex&quot;}, optional, default=None
+        If `None` (default), interpret var_names as the real variables names. If &quot;like&quot;,
+        interpret var_names as substrings of the real variables names. If &quot;regex&quot;,
+        interpret var_names as regular expressions on the real variables names. A la
+        ``pandas.filter``.
+    coords: mapping, optional
+        Specifies the subset over to calculate hdi.
+    max_modes: int, optional
+        Specifies the maximum number of modes for multimodal case.
+    dask_kwargs : dict, optional
+        Dask related kwargs passed to :func:`~arviz.wrap_xarray_ufunc`.
+    kwargs: dict, optional
+        Additional keywords passed to :func:`~arviz.wrap_xarray_ufunc`.
+
+    Returns
+    -------
+    np.ndarray or xarray.Dataset, depending upon input
+        lower(s) and upper(s) values of the interval(s).
+
+    See Also
+    --------
+    plot_hdi : Plot highest density intervals for regression data.
+    xarray.Dataset.quantile : Calculate quantiles of array for given probabilities.
+
+    Examples
+    --------
+    Calculate the HDI of a Normal random variable:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: import numpy as np
+           ...: data = np.random.normal(size=2000)
+           ...: az.hdi(data, hdi_prob=.68)
+
+    Calculate the HDI of a dataset:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&#39;centered_eight&#39;)
+           ...: az.hdi(data)
+
+    We can also calculate the HDI of some of the variables of dataset:
+
+    .. ipython::
+
+        In [1]: az.hdi(data, var_names=[&quot;mu&quot;, &quot;theta&quot;])
+
+    By default, ``hdi`` is calculated over the ``chain`` and ``draw`` dimensions. We can use the
+    ``input_core_dims`` argument of :func:`~arviz.wrap_xarray_ufunc` to change this. In this example
+    we calculate the HDI also over the ``school`` dimension:
+
+    .. ipython::
+
+        In [1]: az.hdi(data, var_names=&quot;theta&quot;, input_core_dims = [[&quot;chain&quot;,&quot;draw&quot;, &quot;school&quot;]])
+
+    We can also calculate the hdi over a particular selection:
+
+    .. ipython::
+
+        In [1]: az.hdi(data, coords={&quot;chain&quot;:[0, 1, 3]}, input_core_dims = [[&quot;draw&quot;]])
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/ArviZStats.jl#L34-L136">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.summary" href="#ArviZ.ArviZStats.summary"><code>ArviZ.ArviZStats.summary</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">summary(
+    data; group = :posterior, coords dims, kwargs...,
+) -&gt; Union{Dataset,DataFrames.DataFrame}</code></pre><p>Compute summary statistics on any object that can be passed to <a href="../dataset/#InferenceObjects.convert_to_dataset"><code>convert_to_dataset</code></a>.</p><p><strong>Keywords</strong></p><ul><li><code>coords</code>: Map from named dimension to named indices.</li><li><code>dims</code>: Map from variable name to names of its dimensions.</li><li><code>kwargs</code>: Keyword arguments passed to <a href="#StatsBase.summarystats"><code>summarystats</code></a>.</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/ArviZStats.jl#L154-L166">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="StatsBase.summarystats" href="#StatsBase.summarystats"><code>StatsBase.summarystats</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">summarystats(
+    data::InferenceData;
+    group = :posterior,
+    kwargs...,
+) -&gt; Union{Dataset,DataFrames.DataFrame}
+summarystats(data::Dataset; kwargs...) -&gt; Union{Dataset,DataFrames.DataFrame}</code></pre><p>Compute summary statistics on <code>data</code>.</p><p><strong>Arguments</strong></p><ul><li><code>data::Union{Dataset,InferenceData}</code>: The data on which to compute summary statistics. If   <code>data</code> is an <a href="../inference_data/#InferenceObjects.InferenceData"><code>InferenceData</code></a>, only the dataset corresponding to <code>group</code> is used.</li></ul><p><strong>Keywords</strong></p><ul><li><code>var_names</code>: Collection of names of variables as <code>Symbol</code>s to include in summary</li><li><code>include_circ::Bool=false</code>: Whether to include circular statistics</li><li><code>digits::Int</code>: Number of decimals used to round results. If not provided, numbers are not   rounded.</li><li><code>stat_funcs::Union{Dict{String,Function},Vector{Function}}=nothing</code>: A vector of functions   or a dict of functions with function names as keys used to calculate statistics. By   default, the mean, standard deviation, simulation standard error, and highest posterior   density intervals are included.   The functions will be given one argument, the samples for a variable as an array, The   functions should operate on an array, returning a single number. For example,   <code>Statistics.mean</code>, or <code>Statistics.var</code> would both work.</li><li><code>extend::Bool=true</code>: If <code>true</code>, use the statistics returned by <code>stat_funcs</code> in addition   to, rather than in place of, the default statistics. This is only meaningful when   <code>stat_funcs</code> is not <code>nothing</code>.</li><li><code>hdi_prob::Real=0.94</code>: HDI interval to compute. This is only meaningful when <code>stat_funcs</code>   is <code>nothing</code>.</li><li><code>skipna::Bool=false</code>: If <code>true</code>, ignores <code>NaN</code> values when computing the summary   statistics. It does not affect the behaviour of the functions passed to <code>stat_funcs</code>.</li></ul><p><strong>Returns</strong></p><ul><li><code>DataFrames.DataFrame</code>: Summary statistics for each variable. Default statistics are:<ul><li><code>mean</code></li><li><code>sd</code></li><li><code>hdi_3%</code></li><li><code>hdi_97%</code></li><li><code>mcse_mean</code></li><li><code>mcse_sd</code></li><li><code>ess_bulk</code></li><li><code>ess_tail</code></li><li><code>r_hat</code> (only computed for traces with 2 or more chains)</li></ul></li></ul><p><strong>Examples</strong></p><pre><code class="language- hljs">using ArviZ, ArviZExampleData
+idata = load_example_data(&quot;centered_eight&quot;)
+summarystats(idata; var_names=(:mu, :tau))</code></pre><p>Other statistics can be calculated by passing a list of functions or a dictionary with key, function pairs:</p><pre><code class="language- hljs">using Statistics
+function median_sd(x)
+    med = median(x)
+    sd = sqrt(mean((x .- med).^2))
+    return sd
+end
+
+func_dict = Dict(
+    &quot;std&quot; =&gt; x -&gt; std(x; corrected = false),
+    &quot;median_std&quot; =&gt; median_sd,
+    &quot;5%&quot; =&gt; x -&gt; quantile(x, 0.05),
+    &quot;median&quot; =&gt; median,
+    &quot;95%&quot; =&gt; x -&gt; quantile(x, 0.95),
+)
+
+summarystats(idata; var_names = (:mu, :tau), stat_funcs = func_dict, extend = false)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/ArviZStats.jl#L60">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.r2_score" href="#ArviZ.ArviZStats.r2_score"><code>ArviZ.ArviZStats.r2_score</code></a> — <span class="docstring-category">Function</span></header><section><div><p>R² for Bayesian regression models. Only valid for linear models.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/0.16.1/api/generated/arviz.r2_score.html"><code>arviz.r2_score</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    Parameters
+    ----------
+    y_true: array-like of shape = (n_outputs,)
+        Ground truth (correct) target values.
+    y_pred: array-like of shape = (n_posterior_samples, n_outputs)
+        Estimated target values.
+
+    Returns
+    -------
+    Pandas Series with the following indices:
+    r2: Bayesian R²
+    r2_std: standard deviation of the Bayesian R².
+
+    See Also
+    --------
+    plot_lm : Posterior predictive and mean plots for regression-like data.
+
+    Examples
+    --------
+    Calculate R² for Bayesian regression models :
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data = az.load_arviz_data(&#39;regression1d&#39;)
+           ...: y_true = data.observed_data[&quot;y&quot;].values
+           ...: y_pred = data.posterior_predictive.stack(sample=(&quot;chain&quot;, &quot;draw&quot;))[&quot;y&quot;].values.T
+           ...: az.r2_score(y_true, y_pred)
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/ArviZStats.jl#L36-L76">source</a></section></article><h2 id="Pareto-smoothed-importance-sampling"><a class="docs-heading-anchor" href="#Pareto-smoothed-importance-sampling">Pareto-smoothed importance sampling</a><a id="Pareto-smoothed-importance-sampling-1"></a><a class="docs-heading-anchor-permalink" href="#Pareto-smoothed-importance-sampling" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="PSIS.PSISResult" href="#PSIS.PSISResult"><code>PSIS.PSISResult</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">PSISResult</code></pre><p>Result of Pareto-smoothed importance sampling (PSIS) using <a href="#PSIS.psis"><code>psis</code></a>.</p><p><strong>Properties</strong></p><ul><li><code>log_weights</code>: un-normalized Pareto-smoothed log weights</li><li><code>weights</code>: normalized Pareto-smoothed weights (allocates a copy)</li><li><code>pareto_shape</code>: Pareto <span>$k=ξ$</span> shape parameter</li><li><code>nparams</code>: number of parameters in <code>log_weights</code></li><li><code>ndraws</code>: number of draws in <code>log_weights</code></li><li><code>nchains</code>: number of chains in <code>log_weights</code></li><li><code>reff</code>: the ratio of the effective sample size of the unsmoothed importance ratios and the actual sample size.</li><li><code>ess</code>: estimated effective sample size of estimate of mean using smoothed importance samples (see <a href="api/@ref"><code>ess_is</code></a>)</li><li><code>tail_length</code>: length of the upper tail of <code>log_weights</code> that was smoothed</li><li><code>tail_dist</code>: the generalized Pareto distribution that was fit to the tail of <code>log_weights</code>. Note that the tail weights are scaled to have a maximum of 1, so <code>tail_dist * exp(maximum(log_ratios))</code> is the corresponding fit directly to the tail of <code>log_ratios</code>.</li><li><code>normalized::Bool</code>:indicates whether <code>log_weights</code> are log-normalized along the sample dimensions.</li></ul><p><strong>Diagnostic</strong></p><p>The <code>pareto_shape</code> parameter <span>$k=ξ$</span> of the generalized Pareto distribution <code>tail_dist</code> can be used to diagnose reliability and convergence of estimates using the importance weights <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</p><ul><li>if <span>$k &lt; \frac{1}{3}$</span>, importance sampling is stable, and importance sampling (IS) and PSIS both are reliable.</li><li>if <span>$k ≤ \frac{1}{2}$</span>, then the importance ratio distributon has finite variance, and the central limit theorem holds. As <span>$k$</span> approaches the upper bound, IS becomes less reliable, while PSIS still works well but with a higher RMSE.</li><li>if <span>$\frac{1}{2} &lt; k ≤ 0.7$</span>, then the variance is infinite, and IS can behave quite poorly. However, PSIS works well in this regime.</li><li>if <span>$0.7 &lt; k ≤ 1$</span>, then it quickly becomes impractical to collect enough importance weights to reliably compute estimates, and importance sampling is not recommended.</li><li>if <span>$k &gt; 1$</span>, then neither the variance nor the mean of the raw importance ratios exists. The convergence rate is close to zero, and bias can be large with practical sample sizes.</li></ul><p>See <a href="api/@ref"><code>PSISPlots.paretoshapeplot</code></a> for a diagnostic plot.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="PSIS.psis" href="#PSIS.psis"><code>PSIS.psis</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">psis(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult
+psis!(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult</code></pre><p>Compute Pareto smoothed importance sampling (PSIS) log weights <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</p><p>While <code>psis</code> computes smoothed log weights out-of-place, <code>psis!</code> smooths them in-place.</p><p><strong>Arguments</strong></p><ul><li><code>log_ratios</code>: an array of logarithms of importance ratios, with size <code>(draws, [chains, [parameters...]])</code>, where <code>chains&gt;1</code> would be used when chains are generated using Markov chain Monte Carlo.</li><li><code>reff::Union{Real,AbstractArray}</code>: the ratio(s) of effective sample size of <code>log_ratios</code> and the actual sample size <code>reff = ess/(draws * chains)</code>, used to account for autocorrelation, e.g. due to Markov chain Monte Carlo. If an array, it must have the size <code>(parameters...,)</code> to match <code>log_ratios</code>.</li></ul><p><strong>Keywords</strong></p><ul><li><code>warn=true</code>: If <code>true</code>, warning messages are delivered</li><li><code>normalize=true</code>: If <code>true</code>, the log-weights will be log-normalized so that <code>exp.(log_weights)</code> sums to 1 along the sample dimensions.</li></ul><p><strong>Returns</strong></p><ul><li><code>result</code>: a <a href="#PSIS.PSISResult"><code>PSISResult</code></a> object containing the results of the Pareto-smoothing.</li></ul><p>A warning is raised if the Pareto shape parameter <span>$k ≥ 0.7$</span>. See <a href="#PSIS.PSISResult"><code>PSISResult</code></a> for details and <a href="api/@ref"><code>PSISPlots.paretoshapeplot</code></a> for a diagnostic plot.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="PSIS.psis!" href="#PSIS.psis!"><code>PSIS.psis!</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">psis(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult
+psis!(log_ratios, reff = 1.0; kwargs...) -&gt; PSISResult</code></pre><p>Compute Pareto smoothed importance sampling (PSIS) log weights <sup class="footnote-reference"><a id="citeref-VehtariSimpson2021" href="#footnote-VehtariSimpson2021">[VehtariSimpson2021]</a></sup>.</p><p>While <code>psis</code> computes smoothed log weights out-of-place, <code>psis!</code> smooths them in-place.</p><p><strong>Arguments</strong></p><ul><li><code>log_ratios</code>: an array of logarithms of importance ratios, with size <code>(draws, [chains, [parameters...]])</code>, where <code>chains&gt;1</code> would be used when chains are generated using Markov chain Monte Carlo.</li><li><code>reff::Union{Real,AbstractArray}</code>: the ratio(s) of effective sample size of <code>log_ratios</code> and the actual sample size <code>reff = ess/(draws * chains)</code>, used to account for autocorrelation, e.g. due to Markov chain Monte Carlo. If an array, it must have the size <code>(parameters...,)</code> to match <code>log_ratios</code>.</li></ul><p><strong>Keywords</strong></p><ul><li><code>warn=true</code>: If <code>true</code>, warning messages are delivered</li><li><code>normalize=true</code>: If <code>true</code>, the log-weights will be log-normalized so that <code>exp.(log_weights)</code> sums to 1 along the sample dimensions.</li></ul><p><strong>Returns</strong></p><ul><li><code>result</code>: a <a href="#PSIS.PSISResult"><code>PSISResult</code></a> object containing the results of the Pareto-smoothing.</li></ul><p>A warning is raised if the Pareto shape parameter <span>$k ≥ 0.7$</span>. See <a href="#PSIS.PSISResult"><code>PSISResult</code></a> for details and <a href="api/api/@ref"><code>PSISPlots.paretoshapeplot</code></a> for a diagnostic plot.</p></div></section></article><h2 id="Model-assessment-and-selection"><a class="docs-heading-anchor" href="#Model-assessment-and-selection">Model assessment and selection</a><a id="Model-assessment-and-selection-1"></a><a class="docs-heading-anchor-permalink" href="#Model-assessment-and-selection" title="Permalink"></a></h2><h3 id="LOO-and-WAIC"><a class="docs-heading-anchor" href="#LOO-and-WAIC">LOO and WAIC</a><a id="LOO-and-WAIC-1"></a><a class="docs-heading-anchor-permalink" href="#LOO-and-WAIC" title="Permalink"></a></h3><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.AbstractELPDResult" href="#ArviZ.ArviZStats.AbstractELPDResult"><code>ArviZ.ArviZStats.AbstractELPDResult</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">abstract type AbstractELPDResult</code></pre><p>An abstract type representing the result of an ELPD computation.</p><p>Every subtype stores estimates of both the expected log predictive density (<code>elpd</code>) and the effective number of parameters <code>p</code>, as well as standard errors and pointwise estimates of each, from which other relevant estimates can be computed.</p><p>Subtypes implement the following functions:</p><ul><li><a href="#ArviZ.ArviZStats.elpd_estimates"><code>elpd_estimates</code></a></li><li><a href="#ArviZ.ArviZStats.information_criterion"><code>information_criterion</code></a></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/elpdresult.jl#L1">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.PSISLOOResult" href="#ArviZ.ArviZStats.PSISLOOResult"><code>ArviZ.ArviZStats.PSISLOOResult</code></a> — <span class="docstring-category">Type</span></header><section><div><p>Results of Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO).</p><p>See also: <a href="#ArviZ.ArviZStats.loo"><code>loo</code></a>, <a href="#ArviZ.ArviZStats.AbstractELPDResult"><code>AbstractELPDResult</code></a></p><ul><li><p><code>estimates</code>: Estimates of the expected log pointwise predictive density (ELPD) and effective number of parameters (p)</p></li><li><p><code>pointwise</code>: Pointwise estimates</p></li><li><p><code>psis_result</code>: Pareto-smoothed importance sampling (PSIS) results</p></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/loo.jl#L1">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.WAICResult" href="#ArviZ.ArviZStats.WAICResult"><code>ArviZ.ArviZStats.WAICResult</code></a> — <span class="docstring-category">Type</span></header><section><div><p>Results of computing the widely applicable information criterion (WAIC).</p><p>See also: <a href="#ArviZ.ArviZStats.waic"><code>waic</code></a>, <a href="#ArviZ.ArviZStats.AbstractELPDResult"><code>AbstractELPDResult</code></a></p><ul><li><p><code>estimates</code>: Estimates of the expected log pointwise predictive density (ELPD) and effective number of parameters (p)</p></li><li><p><code>pointwise</code>: Pointwise estimates</p></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/waic.jl#L1">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.elpd_estimates" href="#ArviZ.ArviZStats.elpd_estimates"><code>ArviZ.ArviZStats.elpd_estimates</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">elpd_estimates(result::AbstractELPDResult; pointwise=false) -&gt; (; elpd, elpd_mcse, lpd)</code></pre><p>Return the (E)LPD estimates from the <code>result</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/elpdresult.jl#L40-L44">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.information_criterion" href="#ArviZ.ArviZStats.information_criterion"><code>ArviZ.ArviZStats.information_criterion</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">information_criterion(elpd, scale::Symbol)</code></pre><p>Compute the information criterion for the given <code>scale</code> from the <code>elpd</code> estimate.</p><p><code>scale</code> must be one of (:deviance, :log, :negative_log).</p><p>See also: <a href="api/@ref"><code>effective_number_of_parameters</code></a>, <a href="#ArviZ.ArviZStats.loo"><code>loo</code></a>, <a href="#ArviZ.ArviZStats.waic"><code>waic</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/elpdresult.jl#L47-L55">source</a></section><section><div><pre><code class="nohighlight hljs">information_criterion(result::AbstractELPDResult, scale::Symbol; pointwise=false)</code></pre><p>Compute information criterion for the given <code>scale</code> from the existing ELPD <code>result</code>.</p><p><code>scale</code> must be one of (:deviance, :log, :negative_log).</p><p>If <code>pointwise=true</code>, then pointwise estimates are returned.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/elpdresult.jl#L61-L69">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.loo" href="#ArviZ.ArviZStats.loo"><code>ArviZ.ArviZStats.loo</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">loo(log_likelihood; reff=nothing, kwargs...) -&gt; PSISLOOResult{&lt;:NamedTuple,&lt;:NamedTuple}</code></pre><p>Compute the Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO). <sup class="footnote-reference"><a id="citeref-Vehtari2017" href="#footnote-Vehtari2017">[Vehtari2017]</a></sup><sup class="footnote-reference"><a id="citeref-LOOFAQ" href="#footnote-LOOFAQ">[LOOFAQ]</a></sup></p><p><code>log_likelihood</code> must be an array of log-likelihood values with shape <code>(chains, draws[, params...])</code>.</p><p><strong>Keywords</strong></p><ul><li><code>reff::Union{Real,AbstractArray{&lt;:Real}}</code>: The relative effective sample size(s) of the <em>likelihood</em> values. If an array, it must have the same data dimensions as the corresponding log-likelihood variable. If not provided, then this is estimated using <a href="../diagnostics/#MCMCDiagnosticTools.ess"><code>ess</code></a>.</li><li><code>kwargs</code>: Remaining keywords are forwarded to <a href="#PSIS.psis"><code>psis</code></a>.</li></ul><p>See also: <a href="#ArviZ.ArviZStats.PSISLOOResult"><code>PSISLOOResult</code></a>, <a href="#ArviZ.ArviZStats.waic"><code>waic</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/loo.jl#L33-L58">source</a></section><section><div><pre><code class="nohighlight hljs">loo(data::Dataset; [var_name::Symbol,] kwargs...) -&gt; PSISLOOResult{&lt;:NamedTuple,&lt;:Dataset}
+loo(data::InferenceData; [var_name::Symbol,] kwargs...) -&gt; PSISLOOResult{&lt;:NamedTuple,&lt;:Dataset}</code></pre><p>Compute PSIS-LOO from log-likelihood values in <code>data</code>.</p><p>If more than one log-likelihood variable is present, then <code>var_name</code> must be provided.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/loo.jl#L61-L68">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.waic" href="#ArviZ.ArviZStats.waic"><code>ArviZ.ArviZStats.waic</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">waic(log_likelihood::AbstractArray) -&gt; WAICResult{&lt;:NamedTuple,&lt;:NamedTuple}</code></pre><p>Compute the widely applicable information criterion (WAIC).<sup class="footnote-reference"><a id="citeref-Watanabe2010" href="#footnote-Watanabe2010">[Watanabe2010]</a></sup><sup class="footnote-reference"><a id="citeref-Vehtari2017" href="#footnote-Vehtari2017">[Vehtari2017]</a></sup><sup class="footnote-reference"><a id="citeref-LOOFAQ" href="#footnote-LOOFAQ">[LOOFAQ]</a></sup></p><p><code>log_likelihood</code> must be an array of log-likelihood values with shape <code>(chains, draws[, params...])</code>.</p><p>See also: <a href="#ArviZ.ArviZStats.WAICResult"><code>WAICResult</code></a>, <a href="#ArviZ.ArviZStats.loo"><code>loo</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/waic.jl#L27-L44">source</a></section><section><div><pre><code class="nohighlight hljs">waic(data::Dataset; [var_name::Symbol]) -&gt; WAICResult{&lt;:NamedTuple,&lt;:Dataset}
+waic(data::InferenceData; [var_name::Symbol]) -&gt; WAICResult{&lt;:NamedTuple,&lt;:Dataset}</code></pre><p>Compute WAIC from log-likelihood values in <code>data</code>.</p><p>If more than one log-likelihood variable is present, then <code>var_name</code> must be provided.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/waic.jl#L47-L54">source</a></section></article><h3 id="Others"><a class="docs-heading-anchor" href="#Others">Others</a><a id="Others-1"></a><a class="docs-heading-anchor-permalink" href="#Others" title="Permalink"></a></h3><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.compare" href="#ArviZ.ArviZStats.compare"><code>ArviZ.ArviZStats.compare</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Compare models based on  their expected log pointwise predictive density (ELPD).</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This function is forwarded to Python&#39;s <a href="https://python.arviz.org/en/0.16.1/api/generated/arviz.compare.html"><code>arviz.compare</code></a>. The docstring of that function is included below.</p></div></div><pre><code class="nohighlight hljs">
+    The ELPD is estimated either by Pareto smoothed importance sampling leave-one-out
+    cross-validation (LOO) or using the widely applicable information criterion (WAIC).
+    We recommend loo. Read more theory here - in a paper by some of the
+    leading authorities on model comparison dx.doi.org/10.1111/1467-9868.00353
+
+    Parameters
+    ----------
+    compare_dict: dict of {str: InferenceData or ELPDData}
+        A dictionary of model names and :class:`arviz.InferenceData` or ``ELPDData``.
+    ic: str, optional
+        Method to estimate the ELPD, available options are &quot;loo&quot; or &quot;waic&quot;. Defaults to
+        ``rcParams[&quot;stats.information_criterion&quot;]``.
+    method: str, optional
+        Method used to estimate the weights for each model. Available options are:
+
+        - &#39;stacking&#39; : stacking of predictive distributions.
+        - &#39;BB-pseudo-BMA&#39; : pseudo-Bayesian Model averaging using Akaike-type
+          weighting. The weights are stabilized using the Bayesian bootstrap.
+        - &#39;pseudo-BMA&#39;: pseudo-Bayesian Model averaging using Akaike-type
+          weighting, without Bootstrap stabilization (not recommended).
+
+        For more information read https://arxiv.org/abs/1704.02030
+    b_samples: int, optional default = 1000
+        Number of samples taken by the Bayesian bootstrap estimation.
+        Only useful when method = &#39;BB-pseudo-BMA&#39;.
+        Defaults to ``rcParams[&quot;stats.ic_compare_method&quot;]``.
+    alpha: float, optional
+        The shape parameter in the Dirichlet distribution used for the Bayesian bootstrap. Only
+        useful when method = &#39;BB-pseudo-BMA&#39;. When alpha=1 (default), the distribution is uniform
+        on the simplex. A smaller alpha will keeps the final weights more away from 0 and 1.
+    seed: int or np.random.RandomState instance, optional
+        If int or RandomState, use it for seeding Bayesian bootstrap. Only
+        useful when method = &#39;BB-pseudo-BMA&#39;. Default None the global
+        :mod:`numpy.random` state is used.
+    scale: str, optional
+        Output scale for IC. Available options are:
+
+        - `log` : (default) log-score (after Vehtari et al. (2017))
+        - `negative_log` : -1 * (log-score)
+        - `deviance` : -2 * (log-score)
+
+        A higher log-score (or a lower deviance) indicates a model with better predictive
+        accuracy.
+    var_name: str, optional
+        If there is more than a single observed variable in the ``InferenceData``, which
+        should be used as the basis for comparison.
+
+    Returns
+    -------
+    A DataFrame, ordered from best to worst model (measured by the ELPD).
+    The index reflects the key with which the models are passed to this function. The columns are:
+    rank: The rank-order of the models. 0 is the best.
+    elpd: ELPD estimated either using (PSIS-LOO-CV `elpd_loo` or WAIC `elpd_waic`).
+        Higher ELPD indicates higher out-of-sample predictive fit (&quot;better&quot; model).
+        If `scale` is `deviance` or `negative_log` smaller values indicates
+        higher out-of-sample predictive fit (&quot;better&quot; model).
+    pIC: Estimated effective number of parameters.
+    elpd_diff: The difference in ELPD between two models.
+        If more than two models are compared, the difference is computed relative to the
+        top-ranked model, that always has a elpd_diff of 0.
+    weight: Relative weight for each model.
+        This can be loosely interpreted as the probability of each model (among the compared model)
+        given the data. By default the uncertainty in the weights estimation is considered using
+        Bayesian bootstrap.
+    SE: Standard error of the ELPD estimate.
+        If method = BB-pseudo-BMA these values are estimated using Bayesian bootstrap.
+    dSE: Standard error of the difference in ELPD between each model and the top-ranked model.
+        It&#39;s always 0 for the top-ranked model.
+    warning: A value of 1 indicates that the computation of the ELPD may not be reliable.
+        This could be indication of WAIC/LOO starting to fail see
+        http://arxiv.org/abs/1507.04544 for details.
+    scale: Scale used for the ELPD.
+
+    Examples
+    --------
+    Compare the centered and non centered models of the eight school problem:
+
+    .. ipython::
+
+        In [1]: import arviz as az
+           ...: data1 = az.load_arviz_data(&quot;non_centered_eight&quot;)
+           ...: data2 = az.load_arviz_data(&quot;centered_eight&quot;)
+           ...: compare_dict = {&quot;non centered&quot;: data1, &quot;centered&quot;: data2}
+           ...: az.compare(compare_dict)
+
+    Compare the models using PSIS-LOO-CV, returning the ELPD in log scale and calculating the
+    weights using the stacking method.
+
+    .. ipython::
+
+        In [1]: az.compare(compare_dict, ic=&quot;loo&quot;, method=&quot;stacking&quot;, scale=&quot;log&quot;)
+
+    See Also
+    --------
+    loo :
+        Compute the ELPD using the Pareto smoothed importance sampling Leave-one-out
+        cross-validation method.
+    waic : Compute the ELPD using the widely applicable information criterion.
+    plot_compare : Summary plot for model comparison.
+
+    References
+    ----------
+    .. [1] Vehtari, A., Gelman, A. &amp; Gabry, J. Practical Bayesian model evaluation using
+        leave-one-out cross-validation and WAIC. Stat Comput 27, 1413–1432 (2017)
+        see https://doi.org/10.1007/s11222-016-9696-4
+
+    </code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/ArviZStats.jl#L33-L150">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.loo_pit" href="#ArviZ.ArviZStats.loo_pit"><code>ArviZ.ArviZStats.loo_pit</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">loo_pit(y, y_pred, log_weights; kwargs...) -&gt; Union{Real,AbstractArray}</code></pre><p>Compute leave-one-out probability integral transform (LOO-PIT) checks.</p><p><strong>Arguments</strong></p><ul><li><code>y</code>: array of observations with shape <code>(params...,)</code></li><li><code>y_pred</code>: array of posterior predictive samples with shape <code>(draws, chains, params...)</code>.</li><li><code>log_weights</code>: array of normalized log LOO importance weights with shape <code>(draws, chains, params...)</code>.</li></ul><p><strong>Keywords</strong></p><ul><li><code>is_discrete</code>: If not provided, then it is set to <code>true</code> iff elements of <code>y</code> and <code>y_pred</code> are all integer-valued. If <code>true</code>, then data are smoothed using <a href="#ArviZ.ArviZStats.smooth_data"><code>smooth_data</code></a> to make them non-discrete before estimating LOO-PIT values.</li><li><code>kwargs</code>: Remaining keywords are forwarded to <code>smooth_data</code> if data is discrete.</li></ul><p><strong>Returns</strong></p><ul><li><code>pitvals</code>: LOO-PIT values with same size as <code>y</code>. If <code>y</code> is a scalar, then <code>pitvals</code> is a scalar.</li></ul><p>LOO-PIT is a marginal posterior predictive check. If <span>$y_{-i}$</span> is the array <span>$y$</span> of observations with the <span>$i$</span>th observation left out, and <span>$y_i^*$</span> is a posterior prediction of the <span>$i$</span>th observation, then the LOO-PIT value for the <span>$i$</span>th observation is defined as</p><p class="math-container">\[P(y_i^* \le y_i \mid y_{-i}) = \int_{-\infty}^{y_i} p(y_i^* \mid y_{-i}) \mathrm{d} y_i^*\]</p><p>The LOO posterior predictions and the corresponding observations should have similar distributions, so if conditional predictive distributions are well-calibrated, then all LOO-PIT values should be approximately uniformly distributed on <span>$[0, 1]$</span>.<sup class="footnote-reference"><a id="citeref-Gabry2019" href="#footnote-Gabry2019">[Gabry2019]</a></sup></p><p><strong>Examples</strong></p><p>Calculate LOO-PIT values using as test quantity the observed values themselves.</p><pre><code class="language-julia hljs">using ArviZ, ArviZExampleData
+idata = load_example_data(&quot;centered_eight&quot;)
+log_weights = loo(idata; var_name=:obs).psis_result.log_weights
+loo_pit(
+    idata.observed_data.obs,
+    permutedims(idata.posterior_predictive.obs, (:draw, :chain, :school)),
+    log_weights,
+)
+
+# output
+
+8-element DimArray{Float64,1} with dimensions:
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+ &quot;Choate&quot;            0.943511
+ &quot;Deerfield&quot;         0.63797
+ &quot;Phillips Andover&quot;  0.316697
+ &quot;Phillips Exeter&quot;   0.582252
+ &quot;Hotchkiss&quot;         0.295321
+ &quot;Lawrenceville&quot;     0.403318
+ &quot;St. Paul&#39;s&quot;        0.902508
+ &quot;Mt. Hermon&quot;        0.655275</code></pre><p>Calculate LOO-PIT values using as test quantity the square of the difference between each observation and <code>mu</code>.</p><pre><code class="language-julia hljs">using DimensionalData, Statistics
+T = idata.observed_data.obs .- only(median(idata.posterior.mu; dims=(:draw, :chain)))
+T_pred = permutedims(
+    broadcast_dims(-, idata.posterior_predictive.obs, idata.posterior.mu),
+    (:draw, :chain, :school),
+)
+loo_pit(T .^ 2, T_pred .^ 2, log_weights)
+
+# output
+
+8-element DimArray{Float64,1} with dimensions:
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+ &quot;Choate&quot;            0.873577
+ &quot;Deerfield&quot;         0.243686
+ &quot;Phillips Andover&quot;  0.357563
+ &quot;Phillips Exeter&quot;   0.149908
+ &quot;Hotchkiss&quot;         0.435094
+ &quot;Lawrenceville&quot;     0.220627
+ &quot;St. Paul&#39;s&quot;        0.775086
+ &quot;Mt. Hermon&quot;        0.296706</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/loo_pit.jl#L1-L95">source</a></section><section><div><pre><code class="nohighlight hljs">loo_pit(idata::InferenceData, log_weights; kwargs...) -&gt; DimArray</code></pre><p>Compute LOO-PIT values using existing normalized log LOO importance weights.</p><p><strong>Keywords</strong></p><ul><li><code>y_name</code>: Name of observed data variable in <code>idata.observed_data</code>. If not provided, then the only observed data variable is used.</li><li><code>y_pred_name</code>: Name of posterior predictive variable in <code>idata.posterior_predictive</code>. If not provided, then <code>y_name</code> is used.</li><li><code>kwargs</code>: Remaining keywords are forwarded to <a href="#ArviZ.ArviZStats.loo_pit"><code>loo_pit</code></a>.</li></ul><p><strong>Examples</strong></p><p>Calculate LOO-PIT values using already computed log weights.</p><pre><code class="language-julia hljs">using ArviZ, ArviZExampleData
+idata = load_example_data(&quot;centered_eight&quot;)
+loo_result = loo(idata; var_name=:obs)
+loo_pit(idata, loo_result.psis_result.log_weights; y_name=:obs)
+
+# output
+
+8-element DimArray{Float64,1} loo_pit_obs with dimensions:
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+ &quot;Choate&quot;            0.943511
+ &quot;Deerfield&quot;         0.63797
+ &quot;Phillips Andover&quot;  0.316697
+ &quot;Phillips Exeter&quot;   0.582252
+ &quot;Hotchkiss&quot;         0.295321
+ &quot;Lawrenceville&quot;     0.403318
+ &quot;St. Paul&#39;s&quot;        0.902508
+ &quot;Mt. Hermon&quot;        0.655275</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/loo_pit.jl#L124-L160">source</a></section><section><div><pre><code class="nohighlight hljs">loo_pit(idata::InferenceData; kwargs...) -&gt; DimArray</code></pre><p>Compute LOO-PIT from groups in <code>idata</code> using PSIS-LOO.</p><p>See also: <a href="#ArviZ.ArviZStats.loo"><code>loo</code></a>, <a href="#PSIS.psis"><code>psis</code></a></p><p><strong>Keywords</strong></p><ul><li><code>y_name</code>: Name of observed data variable in <code>idata.observed_data</code>. If not provided, then the only observed data variable is used.</li><li><code>y_pred_name</code>: Name of posterior predictive variable in <code>idata.posterior_predictive</code>. If not provided, then <code>y_name</code> is used.</li><li><code>log_likelihood_name</code>: Name of log-likelihood variable in <code>idata.log_likelihood</code>. If not provided, then <code>y_name</code> is used if <code>idata</code> has a <code>log_likelihood</code> group, otherwise the only variable is used.</li><li><code>reff::Union{Real,AbstractArray{&lt;:Real}}</code>: The relative effective sample size(s) of the <em>likelihood</em> values. If an array, it must have the same data dimensions as the corresponding log-likelihood variable. If not provided, then this is estimated using <a href="../diagnostics/#MCMCDiagnosticTools.ess"><code>ess</code></a>.</li><li><code>kwargs</code>: Remaining keywords are forwarded to <a href="#ArviZ.ArviZStats.loo_pit"><code>loo_pit</code></a>.</li></ul><p><strong>Examples</strong></p><p>Calculate LOO-PIT values using as test quantity the observed values themselves.</p><pre><code class="language-julia hljs">using ArviZ, ArviZExampleData
+idata = load_example_data(&quot;centered_eight&quot;)
+loo_pit(idata; y_name=:obs)
+
+# output
+
+8-element DimArray{Float64,1} loo_pit_obs with dimensions:
+  Dim{:school} Categorical{String} String[Choate, Deerfield, …, St. Paul&#39;s, Mt. Hermon] Unordered
+ &quot;Choate&quot;            0.943511
+ &quot;Deerfield&quot;         0.63797
+ &quot;Phillips Andover&quot;  0.316697
+ &quot;Phillips Exeter&quot;   0.582252
+ &quot;Hotchkiss&quot;         0.295321
+ &quot;Lawrenceville&quot;     0.403318
+ &quot;St. Paul&#39;s&quot;        0.902508
+ &quot;Mt. Hermon&quot;        0.655275</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/loo_pit.jl#L178-L222">source</a></section></article><h3 id="Utilities"><a class="docs-heading-anchor" href="#Utilities">Utilities</a><a id="Utilities-1"></a><a class="docs-heading-anchor-permalink" href="#Utilities" title="Permalink"></a></h3><article class="docstring"><header><a class="docstring-binding" id="ArviZ.ArviZStats.smooth_data" href="#ArviZ.ArviZStats.smooth_data"><code>ArviZ.ArviZStats.smooth_data</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">smooth_data(y; dims=:, interp_method=CubicSpline, offset_frac=0.01)</code></pre><p>Smooth <code>y</code> along <code>dims</code> using <code>interp_method</code>.</p><p><code>interp_method</code> is a 2-argument callabale that takes the arguments <code>y</code> and <code>x</code> and returns a DataInterpolations.jl interpolation method, defaulting to a cubic spline interpolator.</p><p><code>offset_frac</code> is the fraction of the length of <code>y</code> to use as an offset when interpolating.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/arviz-devs/ArviZ.jl/blob/0514c34a5cfab2e21a0b98a7162d966551ec72be/src/ArviZStats/utils.jl#L51-L60">source</a></section></article><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-VehtariSimpson2021"><a class="tag is-link" href="#citeref-VehtariSimpson2021">VehtariSimpson2021</a>Vehtari A, Simpson D, Gelman A, Yao Y, Gabry J. (2021). Pareto smoothed importance sampling. <a href="https://arxiv.org/abs/1507.02646v7">arXiv:1507.02646v7</a> [stat.CO]</li><li class="footnote" id="footnote-VehtariSimpson2021"><a class="tag is-link" href="#citeref-VehtariSimpson2021">VehtariSimpson2021</a>Vehtari A, Simpson D, Gelman A, Yao Y, Gabry J. (2021). Pareto smoothed importance sampling. <a href="https://arxiv.org/abs/1507.02646v7">arXiv:1507.02646v7</a> [stat.CO]</li><li class="footnote" id="footnote-VehtariSimpson2021"><a class="tag is-link" href="#citeref-VehtariSimpson2021">VehtariSimpson2021</a>Vehtari A, Simpson D, Gelman A, Yao Y, Gabry J. (2021). Pareto smoothed importance sampling. <a href="https://arxiv.org/abs/1507.02646v7">arXiv:1507.02646v7</a> [stat.CO]</li><li class="footnote" id="footnote-Vehtari2017"><a class="tag is-link" href="#citeref-Vehtari2017">Vehtari2017</a>Vehtari, A., Gelman, A. &amp; Gabry, J. Practical Bayesian model evaluation using leave-one-out cross-validation and WAIC. Stat Comput 27, 1413–1432 (2017). doi: <a href="https://doi.org/10.1007/s11222-016-9696-4">10.1007/s11222-016-9696-4</a> arXiv: <a href="https://arxiv.org/abs/1507.04544">1507.04544</a></li><li class="footnote" id="footnote-LOOFAQ"><a class="tag is-link" href="#citeref-LOOFAQ">LOOFAQ</a>Aki Vehtari. Cross-validation FAQ. https://mc-stan.org/loo/articles/online-only/faq.html</li><li class="footnote" id="footnote-Watanabe2010"><a class="tag is-link" href="#citeref-Watanabe2010">Watanabe2010</a>Watanabe, S. Asymptotic Equivalence of Bayes Cross Validation and Widely Applicable Information Criterion in Singular Learning Theory. 11(116):3571−3594, 2010. https://jmlr.csail.mit.edu/papers/v11/watanabe10a.html</li><li class="footnote" id="footnote-Vehtari2017"><a class="tag is-link" href="#citeref-Vehtari2017">Vehtari2017</a>Vehtari, A., Gelman, A. &amp; Gabry, J. Practical Bayesian model evaluation using leave-one-out cross-validation and WAIC. Stat Comput 27, 1413–1432 (2017). doi: <a href="https://doi.org/10.1007/s11222-016-9696-4">10.1007/s11222-016-9696-4</a> arXiv: <a href="https://arxiv.org/abs/1507.04544">1507.04544</a></li><li class="footnote" id="footnote-LOOFAQ"><a class="tag is-link" href="#citeref-LOOFAQ">LOOFAQ</a>Aki Vehtari. Cross-validation FAQ. https://mc-stan.org/loo/articles/online-only/faq.html</li><li class="footnote" id="footnote-Gabry2019"><a class="tag is-link" href="#citeref-Gabry2019">Gabry2019</a>Gabry, J., Simpson, D., Vehtari, A., Betancourt, M. &amp; Gelman, A. Visualization in Bayesian Workflow. J. R. Stat. Soc. Ser. A Stat. Soc. 182, 389–402 (2019). doi: <a href="https://doi.org/10.1111/rssa.12378">10.1111/rssa.12378</a> arXiv: <a href="https://arxiv.org/abs/1709.01449">1709.01449</a></li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../plots/">« Plots</a><a class="docs-footer-nextpage" href="../diagnostics/">Diagnostics »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Monday 24 July 2023 13:16">Monday 24 July 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
