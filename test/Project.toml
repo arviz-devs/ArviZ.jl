@@ -1,0 +1,10 @@
+[deps]
+ArviZ = "131c737c-5715-5e2e-ad31-c244f01c1dc7"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+ArviZ = {path = ".."}
+
+[compat]
+ArviZ = "0.14.2"
+Test = "1"
