@@ -16,6 +16,22 @@ jobs:
           - ArviZMCMCChainsExt
           - ArviZSampleChainsExt
           - ArviZSampleChainsDynamicHMCExt
+        # SampleChains requires StatsBase v0.33, which restricts DimensionalData to
+        # versions that fail to precompile on Julia v1.12+
+        exclude:
+          - extension: ArviZSampleChainsExt
+            julia-version: 1
+          - extension: ArviZSampleChainsExt
+            julia-version: pre
+          - extension: ArviZSampleChainsDynamicHMCExt
+            julia-version: 1
+          - extension: ArviZSampleChainsDynamicHMCExt
+            julia-version: pre
+        include:
+          - extension: ArviZSampleChainsExt
+            julia-version: '1.11'
+          - extension: ArviZSampleChainsDynamicHMCExt
+            julia-version: '1.11'
     steps:
       - uses: actions/checkout@v7
       - uses: julia-actions/setup-julia@v3
