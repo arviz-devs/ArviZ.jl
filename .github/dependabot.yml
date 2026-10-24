@@ -20,10 +20,3 @@ updates:
       all-julia-packages:
         patterns:
           - "*"
-    ignore:
-      # Stdlib compat entries never need updating
-      - dependency-name: "Downloads"
-      - dependency-name: "LinearAlgebra"
-      - dependency-name: "Random"
-      - dependency-name: "Statistics"
-      - dependency-name: "Test"
