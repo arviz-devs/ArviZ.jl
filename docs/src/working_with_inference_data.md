@@ -112,7 +112,7 @@ What are the names of the groups in our hierarchical model?
 You can access them from the coordinate name `school` in this case.
 
 ```@example wwid
-DimensionalData.index(idata.observed_data, :school)
+DimensionalData.lookup(idata.observed_data, :school)
 ```
 
 ## Get a subset of chains
@@ -131,7 +131,7 @@ Note that in this case, `prior` only has a chain of 0.
 If it also had the other chains, we could have passed `chain=At([0, 2])` to subset by chains 0 and 2.
 
 !!! warning
-	  If we used `idata[chain=[0, 2]]` without the `At` selector, this is equivalent to `idata[chain=DimensionalData.index(idata.posterior, :chain)[0, 2]]`, that is, `[0, 2]` indexes an array of dimension indices, which here would error.
+	  If we used `idata[chain=[0, 2]]` without the `At` selector, this is equivalent to `idata[chain=DimensionalData.lookup(idata.posterior, :chain)[0, 2]]`, that is, `[0, 2]` indexes an array of dimension indices, which here would error.
 	  But if we had requested `idata[chain=[1, 2]]` we would not hit an error, but we would index the wrong chains.
 	  So it's important to always use a selector to index by values of dimension indices.
 
@@ -182,7 +182,7 @@ dropdims(mean(post; dims=(:chain, :draw)); dims=(:chain, :draw))
 We can rename a dimension in a `Dataset` using DimensionalData's [`set`](@extref DimensionalData set) method:
 
 ```@example wwid
-theta_bis = set(post.theta; school=:school_bis)
+theta_bis = set(post.theta, :school => :school_bis)
 ```
 
 We can use this, for example, to broadcast functions across multiple arrays, automatically matching up shared dimensions, using `DimensionalData.broadcast_dims`.
