@@ -226,7 +226,7 @@ theta_school_diff[school=At(school_idx), school_bis=At(school_bis_idx)]
 Suppose after checking the `mcse` and realizing you need more samples, you rerun the model with two chains and obtain an `idata_rerun` object.
 
 ```@example wwid
-idata_rerun = InferenceData(; posterior=set(post[chain=At([0, 1])]; chain=[4, 5]))
+idata_rerun = InferenceData(; posterior=set(post[chain=At([0, 1])], :chain => [4, 5]))
 ```
 
 You can combine the two using [`cat`](@ref).
