@@ -221,7 +221,7 @@ To build this plot, we need to make a copy of `theta` with a copy of the `school
 # ╔═╡ b3c8eed9-4083-457e-89dd-71d678b724ef
 let
     theta = idata.posterior.theta[school=1:4]
-    theta2 = rebuild(set(theta; school=:school2); name=:theta2)
+    theta2 = rebuild(set(theta, :school => :school2); name=:theta2)
     plot_data = Dataset(theta, theta2, idata.sample_stats.diverging)
     draw(
         data(plot_data) * mapping(
