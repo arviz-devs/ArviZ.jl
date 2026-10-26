@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Quickstart · ArviZ.jl</title><link rel="canonical" href="stable/quickstart/index.html"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.png" alt="ArviZ.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.png" alt="ArviZ.jl logo"/></a><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>Quickstart</a><ul class="internal"><li><a class="tocitem" href="#Get-started-with-plotting-1"><span>Get started with plotting</span></a></li><li><a class="tocitem" href="#Plotting-with-MCMCChains.jl&#39;s-Chains-objects-produced-by-Turing.jl-1"><span>Plotting with MCMCChains.jl&#39;s <code>Chains</code> objects produced by Turing.jl</span></a></li><li><a class="tocitem" href="#Plotting-with-CmdStan.jl-outputs-1"><span>Plotting with CmdStan.jl outputs</span></a></li><li><a class="tocitem" href="#Plotting-with-Soss.jl-outputs-1"><span>Plotting with Soss.jl outputs</span></a></li></ul></li><li><a class="tocitem" href="../api/">API</a></li><li><a class="tocitem" href="../reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Quickstart</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Quickstart</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/arviz-devs/ArviZ.jl/blob/master/docs/src/quickstart.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="quickstart-1">ArviZ.jl Quickstart<a class="docs-heading-anchor" href="#quickstart-1" title="Permalink"></a></h1><p><em>This quickstart is adapted from <a href="https://arviz-devs.github.io/arviz/notebooks/Introduction.html">ArviZ&#39;s Quickstart</a>.</em></p><pre><code class="language-julia">using ArviZ
+
+# ArviZ ships with style sheets!
+ArviZ.use_style(&quot;arviz-darkgrid&quot;)</code></pre><h2 id="Get-started-with-plotting-1">Get started with plotting<a class="docs-heading-anchor" href="#Get-started-with-plotting-1" title="Permalink"></a></h2><p>ArviZ.jl is designed to be used with libraries like <a href="https://github.com/StanJulia/CmdStan.jl">CmdStan</a>, <a href="https://turing.ml">Turing.jl</a>, and <a href="https://github.com/cscherrer/Soss.jl">Soss.jl</a> but works fine with raw arrays.</p><pre><code class="language-julia">plot_posterior(randn(100_000));</code></pre><p><img src="../quick_postarray.svg" alt/></p><p>Plotting a dictionary of arrays, ArviZ.jl will interpret each key as the name of a different random variable. Each row of an array is treated as an independent series of draws from the variable, called a <em>chain</em>. Below, we have 10 chains of 50 draws each for four different distributions.</p><pre><code class="language-julia">using Distributions
+
+s = (10, 50)
+plot_forest(Dict(
+    &quot;normal&quot; =&gt; randn(s),
+    &quot;gumbel&quot; =&gt; rand(Gumbel(), s),
+    &quot;student t&quot; =&gt; rand(TDist(6), s),
+    &quot;exponential&quot; =&gt; rand(Exponential(), s)
+));</code></pre><p><img src="../quick_forestdists.svg" alt/></p><h2 id="Plotting-with-MCMCChains.jl&#39;s-Chains-objects-produced-by-Turing.jl-1">Plotting with MCMCChains.jl&#39;s <code>Chains</code> objects produced by Turing.jl<a class="docs-heading-anchor" href="#Plotting-with-MCMCChains.jl&#39;s-Chains-objects-produced-by-Turing.jl-1" title="Permalink"></a></h2><p>ArviZ is designed to work well with high dimensional, labelled data. Consider the <a href="https://statmodeling.stat.columbia.edu/2014/01/21/everything-need-know-bayesian-statistics-learned-eight-schools/">eight schools model</a>, which roughly tries to measure the effectiveness of SAT classes at eight different schools. To show off ArviZ&#39;s labelling, I give the schools the names of <a href="https://en.wikipedia.org/wiki/Eight_Schools_Association">a different eight schools</a>.</p><p>This model is small enough to write down, is hierarchical, and uses labelling. Additionally, a centered parameterization causes <a href="https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html">divergences</a> (which are interesting for illustration).</p><p>First we create our data and set some sampling parameters.</p><pre><code class="language-julia">J = 8
+y = [28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0]
+σ = [15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0]
+schools = [
+    &quot;Choate&quot;,
+    &quot;Deerfield&quot;,
+    &quot;Phillips Andover&quot;,
+    &quot;Phillips Exeter&quot;,
+    &quot;Hotchkiss&quot;,
+    &quot;Lawrenceville&quot;,
+    &quot;St. Paul&#39;s&quot;,
+    &quot;Mt. Hermon&quot;
+];
+
+nwarmup, nsamples, nchains = 1000, 1000, 4</code></pre><p>Now we write and run the model using Turing:</p><pre><code class="language-julia">using Turing
+
+Turing.@model turing_model(J, y, σ) = begin
+    μ ~ Normal(0, 5)
+    τ ~ Truncated(Cauchy(0, 5), 0, Inf)
+    θ = tzeros(J)
+    θ ~ [Normal(μ, τ)]
+    y ~ MvNormal(θ, σ)
+end
+
+param_mod = turing_model(J, y, σ)
+sampler = NUTS(nwarmup, 0.8)
+turing_chns = mapreduce(chainscat, 1:nchains) do _
+    return sample(param_mod, sampler, nwarmup + nsamples; progress = false)
+end;</code></pre><p>Most ArviZ functions work fine with <code>Chains</code> objects from Turing:</p><pre><code class="language-julia">plot_autocorr(convert_to_inference_data(turing_chns); var_names = [&quot;μ&quot;, &quot;τ&quot;]);</code></pre><p><img src="../quick_turingautocorr.svg" alt/></p><h3 id="Convert-to-InferenceData-1">Convert to <code>InferenceData</code><a class="docs-heading-anchor" href="#Convert-to-InferenceData-1" title="Permalink"></a></h3><p>For much more powerful querying, analysis and plotting, we can use built-in ArviZ utilities to convert <code>Chains</code> objects to xarray datasets. Note we are also giving some information about labelling.</p><p>ArviZ is built to work with <a href="../reference/#ArviZ.InferenceData"><code>InferenceData</code></a> (a netcdf datastore that loads data into <code>xarray</code> datasets), and the more <em>groups</em> it has access to, the more powerful analyses it can perform.</p><pre><code class="language-julia">idata = from_mcmcchains(
+    turing_chns,
+    coords = Dict(&quot;school&quot; =&gt; schools),
+    dims = Dict(
+        &quot;y&quot; =&gt; [&quot;school&quot;],
+        &quot;σ&quot; =&gt; [&quot;school&quot;],
+        &quot;θ&quot; =&gt; [&quot;school&quot;],
+    ),
+    library = &quot;Turing&quot;,
+)</code></pre><pre><code class="language-none">InferenceData with groups:
+	&gt; posterior
+	&gt; sample_stats</code></pre><p>Each group is an <a href="../reference/#ArviZ.Dataset"><code>ArviZ.Dataset</code></a> (a thinly wrapped <code>xarray.Dataset</code>). We can view a summary of the dataset.</p><pre><code class="language-julia">idata.posterior</code></pre><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<title>Show/Hide data repr</title>
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<title>Show/Hide attributes</title>
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
+ *
+ */
+
+:root {
+  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
+  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
+  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
+  --xr-border-color: var(--jp-border-color2, #e0e0e0);
+  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
+  --xr-background-color: var(--jp-layout-color0, white);
+  --xr-background-color-row-even: var(--jp-layout-color1, white);
+  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
+}
+
+.xr-wrap {
+  min-width: 300px;
+  max-width: 700px;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: solid 1px var(--xr-border-color);
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-array-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type {
+  color: var(--xr-font-color2);
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 20px 20px;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item input {
+  display: none;
+}
+
+.xr-section-item input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.5em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: '►';
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: '▼';
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  display: none;
+  grid-column: 1 / -1;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: '(';
+}
+
+.xr-dim-list:after {
+  content: ')';
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ',';
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  margin-bottom: 0;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data {
+  display: none;
+  background-color: var(--xr-background-color) !important;
+  padding-bottom: 5px !important;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt, dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2 {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+</style><div class='xr-wrap'><div class='xr-header'><div class='xr-obj-type'>Dataset (xarray.Dataset)</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-da56452a-0831-403a-bd2a-7f697b3e8290' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-da56452a-0831-403a-bd2a-7f697b3e8290' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>chain</span>: 4</li><li><span class='xr-has-index'>draw</span>: 1000</li><li><span class='xr-has-index'>school</span>: 8</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-e211cfc4-de39-4d9a-8a8e-babc9803fe71' class='xr-section-summary-in' type='checkbox'  checked><label for='section-e211cfc4-de39-4d9a-8a8e-babc9803fe71' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>chain</span></div><div class='xr-var-dims'>(chain)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3</div><input id='attrs-eac29063-bdcd-486f-8136-5cdd04e5d53d' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-eac29063-bdcd-486f-8136-5cdd04e5d53d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-35cfa7d7-962b-42a0-ab4a-93676d8094b4' class='xr-var-data-in' type='checkbox'><label for='data-35cfa7d7-962b-42a0-ab4a-93676d8094b4' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><pre class='xr-var-data'>array([0, 1, 2, 3])</pre></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>draw</span></div><div class='xr-var-dims'>(draw)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 ... 995 996 997 998 999</div><input id='attrs-07e61ac4-fa9f-481f-9e40-85cbc7ee6375' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-07e61ac4-fa9f-481f-9e40-85cbc7ee6375' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0e30a6ac-d2f5-4d60-8df2-2b8b3af0497e' class='xr-var-data-in' type='checkbox'><label for='data-0e30a6ac-d2f5-4d60-8df2-2b8b3af0497e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><pre class='xr-var-data'>array([  0,   1,   2, ..., 997, 998, 999])</pre></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>school</span></div><div class='xr-var-dims'>(school)</div><div class='xr-var-dtype'>&lt;U16</div><div class='xr-var-preview xr-preview'>&#x27;Choate&#x27; ... &#x27;Mt. Hermon&#x27;</div><input id='attrs-21b52fd0-19f9-426b-88c6-a4aca822229c' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-21b52fd0-19f9-426b-88c6-a4aca822229c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-27d2a003-f179-4fda-891d-048bbab99569' class='xr-var-data-in' type='checkbox'><label for='data-27d2a003-f179-4fda-891d-048bbab99569' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><pre class='xr-var-data'>array([&#x27;Choate&#x27;, &#x27;Deerfield&#x27;, &#x27;Phillips Andover&#x27;, &#x27;Phillips Exeter&#x27;,
+       &#x27;Hotchkiss&#x27;, &#x27;Lawrenceville&#x27;, &quot;St. Paul&#x27;s&quot;, &#x27;Mt. Hermon&#x27;], dtype=&#x27;&lt;U16&#x27;)</pre></li></ul></div></li><li class='xr-section-item'><input id='section-c9871006-3eb3-43ea-87d3-77503e0ff9d3' class='xr-section-summary-in' type='checkbox'  checked><label for='section-c9871006-3eb3-43ea-87d3-77503e0ff9d3' class='xr-section-summary' >Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>μ</span></div><div class='xr-var-dims'>(chain, draw)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>3.305 2.345 3.058 ... 2.119 5.054</div><input id='attrs-bfd98aae-14cd-4bd7-87a6-c36f0143b6f1' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-bfd98aae-14cd-4bd7-87a6-c36f0143b6f1' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3885f3a2-518e-4fc1-a717-9b973719c9ba' class='xr-var-data-in' type='checkbox'><label for='data-3885f3a2-518e-4fc1-a717-9b973719c9ba' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><pre class='xr-var-data'>array([[ 3.30525149,  2.34487813,  3.05829645, ...,  5.24526471,
+         4.42846717,  4.522011  ],
+       [ 4.51425554,  4.37381908,  5.19878346, ...,  4.24867028,
+         3.25986382,  5.51661768],
+       [ 1.94356216, -0.93760709,  0.90802825, ...,  4.74029606,
+         4.74029606,  4.53333644],
+       [ 9.59813474,  8.13472905, 11.97539015, ...,  1.13975013,
+         2.11882422,  5.05367953]])</pre></li><li class='xr-var-item'><div class='xr-var-name'><span>τ</span></div><div class='xr-var-dims'>(chain, draw)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.6879 0.6479 ... 3.398 7.237</div><input id='attrs-c48f91c1-ee86-4d00-a0a6-58540dca517a' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c48f91c1-ee86-4d00-a0a6-58540dca517a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ffd24d05-6c89-4566-b37e-3f9deaaf6352' class='xr-var-data-in' type='checkbox'><label for='data-ffd24d05-6c89-4566-b37e-3f9deaaf6352' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><pre class='xr-var-data'>array([[ 0.68793368,  0.64787394,  0.72335522, ...,  9.35253698,
+        10.22606796,  8.71508376],
+       [ 1.01039473,  0.81359069,  0.73373027, ...,  3.09998285,
+         2.9734463 ,  2.01517862],
+       [ 3.01210659,  4.26721503,  3.5705303 , ...,  0.4347157 ,
+         0.4347157 ,  0.48338183],
+       [ 4.15118198, 12.16098173,  4.51125597, ...,  6.01806191,
+         3.39849132,  7.23737065]])</pre></li><li class='xr-var-item'><div class='xr-var-name'><span>θ</span></div><div class='xr-var-dims'>(chain, draw, school)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>4.075 2.782 4.191 ... 7.114 9.62</div><input id='attrs-88f48e8a-6032-483c-9f90-39e071e8d569' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-88f48e8a-6032-483c-9f90-39e071e8d569' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-42447ba9-7bd7-40f9-81e2-1881dd98ffc9' class='xr-var-data-in' type='checkbox'><label for='data-42447ba9-7bd7-40f9-81e2-1881dd98ffc9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><pre class='xr-var-data'>array([[[  4.07463326,   2.78212647,   4.19106254, ...,   2.48705916,
+           3.50300245,   3.11765717],
+        [  2.20080012,   2.09233286,   2.28588542, ...,   3.2186879 ,
+           2.97864441,   3.00008265],
+        [  2.42375564,   3.57028963,   2.18843992, ...,   2.71747734,
+           2.93360042,   3.07718092],
+        ...,
+        [  5.26508338,  10.22488119,  13.96794951, ...,  26.80846881,
+          19.08296223,  -5.12777522],
+        [ 17.13463737,  -0.92313157,  -5.56431681, ..., -11.01457899,
+           7.41924734,   8.16748985],
+        [ 18.96067414,  -2.46395226,   2.35768771, ...,   0.11910993,
+           7.5086826 ,   8.64058053]],
+
+       [[  5.49134171,   3.72590692,   4.92247391, ...,   5.61803397,
+           4.99013968,   3.85659634],
+        [  4.14224481,   5.2942392 ,   3.98098086, ...,   4.19016882,
+           4.96988281,   4.65551063],
+        [  6.4982077 ,   4.884429  ,   5.34114376, ...,   5.10882867,
+           6.23394816,   4.42100915],
+        ...,
+        [  4.19775567,   7.39836638,  -0.57714207, ...,   9.5670128 ,
+           5.28591259,   5.37721607],
+        [  3.24334636,   4.3412533 ,   3.0828176 , ...,   4.90265185,
+           6.68125798,   1.10489579],
+        [  6.85403406,   9.62354755,   4.19610664, ...,   7.81227583,
+           4.98228147,   4.55425287]],
+
+       [[ -3.85394652,   7.10460484,  -0.11453667, ...,   4.89023084,
+           2.69445254,   1.12789899],
+        [  4.82397435,  -1.86379929,   2.92592401, ...,  -4.82744926,
+           4.26803375,  -4.94104109],
+        [  0.96721258,   2.51018273,  -4.82227942, ...,  -4.90713838,
+          -0.77836404,   6.17446352],
+        ...,
+        [  3.94477722,   4.68672094,   5.15122283, ...,   5.25054938,
+           4.67435372,   3.90418726],
+        [  3.94477722,   4.68672094,   5.15122283, ...,   5.25054938,
+           4.67435372,   3.90418726],
+        [  4.79629317,   4.23483253,   4.56261521, ...,   4.52719682,
+           4.63335229,   4.13306957]],
+
+       [[  9.83148843,  18.34128265,  -0.93115828, ...,   3.99997258,
+          11.58747961,   3.56340506],
+        [ 13.26363403,   8.45128714,  16.40603378, ...,  10.4817822 ,
+          30.55686372,  12.19498037],
+        [ 17.50248014,   4.67788023,   6.80013073, ...,   5.63071409,
+           9.56286534,  15.04280675],
+        ...,
+        [ 10.4192724 ,   8.7529961 ,   6.16215804, ...,  -3.56199399,
+           0.86367106,  -0.95984589],
+        [ -0.57859673,  -0.69818652,   1.52007345, ...,   5.46174366,
+           6.19511594,   2.29468612],
+        [ 16.72362679,  13.23662592,   8.83607735, ...,   4.84823178,
+           7.11365238,   9.61956278]]])</pre></li></ul></div></li><li class='xr-section-item'><input id='section-a2cb38aa-19ce-4d92-a64f-36b37c0dd73a' class='xr-section-summary-in' type='checkbox'  checked><label for='section-a2cb38aa-19ce-4d92-a64f-36b37c0dd73a' class='xr-section-summary' >Attributes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>created_at :</span></dt><dd>2019-11-28T07:21:41.731059</dd><dt><span>inference_library :</span></dt><dd>Turing</dd></dl></div></li></ul></div></div><p>Here is a plot of the trace. Note the intelligent labels.</p><pre><code class="language-julia">plot_trace(idata);</code></pre><p><img src="../quick_turingtrace.png" alt/></p><p>We can also generate summary stats</p><pre><code class="language-julia">summarystats(idata)</code></pre><pre><code class="language-none">       mean     sd  hpd_3%  hpd_97%  ...  ess_sd  ess_bulk  ess_tail  r_hat
+μ     4.377  3.083  -1.667   10.020  ...   538.0     538.0    1076.0   1.01
+τ     3.955  3.338   0.415    9.964  ...   149.0      92.0      78.0   1.03
+θ[1]  6.425  6.031  -3.742   18.191  ...   754.0     694.0    1390.0   1.01
+θ[2]  4.970  4.820  -3.771   14.783  ...   748.0    1096.0    1657.0   1.00
+θ[3]  3.871  5.398  -6.413   14.506  ...  1078.0    1129.0    1537.0   1.01
+θ[4]  4.819  4.756  -3.743   14.583  ...  1042.0     982.0    2188.0   1.01
+θ[5]  3.517  4.615  -4.736   12.860  ...   941.0     977.0    1473.0   1.01
+θ[6]  3.949  4.653  -5.486   12.415  ...  1102.0    1153.0    1838.0   1.00
+θ[7]  6.514  4.874  -1.881   16.258  ...   390.0     413.0    1074.0   1.01
+θ[8]  4.954  5.314  -4.265   15.910  ...   806.0    1075.0    1557.0   1.01
+
+[10 rows x 11 columns]
+</code></pre><p>and examine the energy distribution of the Hamiltonian sampler</p><pre><code class="language-julia">plot_energy(idata);</code></pre><p><img src="../quick_turingenergy.svg" alt/></p><h2 id="Plotting-with-CmdStan.jl-outputs-1">Plotting with CmdStan.jl outputs<a class="docs-heading-anchor" href="#Plotting-with-CmdStan.jl-outputs-1" title="Permalink"></a></h2><p>CmdStan.jl and StanSample.jl also default to producing <code>Chains</code> outputs, and we can easily plot these chains.</p><p>Here is the same centered eight schools model:</p><pre><code class="language-julia">using CmdStan
+
+schools_code = &quot;&quot;&quot;
+data {
+  int&lt;lower=0&gt; J;
+  real y[J];
+  real&lt;lower=0&gt; sigma[J];
+}
+
+parameters {
+  real mu;
+  real&lt;lower=0&gt; tau;
+  real theta[J];
+}
+
+model {
+  mu ~ normal(0, 5);
+  tau ~ cauchy(0, 5);
+  theta ~ normal(mu, tau);
+  y ~ normal(theta, sigma);
+}
+
+generated quantities {
+    vector[J] log_lik;
+    vector[J] y_hat;
+    for (j in 1:J) {
+        log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+        y_hat[j] = normal_rng(theta[j], sigma[j]);
+    }
+}
+&quot;&quot;&quot;
+
+schools_dat = Dict(&quot;J&quot; =&gt; J, &quot;y&quot; =&gt; y, &quot;sigma&quot; =&gt; σ)
+stan_model = Stanmodel(
+    model = schools_code,
+    nchains = nchains,
+    num_warmup = nwarmup,
+    num_samples = nsamples,
+)
+_, stan_chns, _ = stan(stan_model, schools_dat, summary = false);</code></pre><pre><code class="language-none">
+File /home/travis/build/arviz-devs/ArviZ.jl/docs/build/tmp/noname.stan will be updated.</code></pre><pre><code class="language-julia">plot_density(convert_to_inference_data(stan_chns); var_names=[&quot;mu&quot;, &quot;tau&quot;]);</code></pre><p><img src="../quick_cmdstandensity.svg" alt/></p><p>Again, converting to <code>InferenceData</code>, we can get much richer labelling and mixing of data. Note that we&#39;re using the same <a href="../reference/#ArviZ.from_cmdstan-Tuple"><code>from_cmdstan</code></a> function used by ArviZ to process cmdstan output files, but through the power of dispatch in Julia, if we pass a <code>Chains</code> object, it instead uses ArviZ.jl&#39;s overloads, which forward to <a href="../reference/#ArviZ.from_mcmcchains-Tuple{Any,Any,Any}"><code>from_mcmcchains</code></a>.</p><pre><code class="language-julia">idata = from_cmdstan(
+    stan_chns;
+    posterior_predictive = &quot;y_hat&quot;,
+    observed_data = Dict(&quot;y&quot; =&gt; schools_dat[&quot;y&quot;]),
+    log_likelihood = &quot;log_lik&quot;,
+    coords = Dict(&quot;school&quot; =&gt; schools),
+    dims = Dict(
+        &quot;y&quot; =&gt; [&quot;school&quot;],
+        &quot;sigma&quot; =&gt; [&quot;school&quot;],
+        &quot;theta&quot; =&gt; [&quot;school&quot;],
+        &quot;log_lik&quot; =&gt; [&quot;school&quot;],
+        &quot;y_hat&quot; =&gt; [&quot;school&quot;],
+    ),
+)</code></pre><pre><code class="language-none">InferenceData with groups:
+	&gt; posterior
+	&gt; posterior_predictive
+	&gt; sample_stats
+	&gt; observed_data</code></pre><p>Here is a plot showing where the Hamiltonian sampler had divergences:</p><pre><code class="language-julia">plot_pair(
+    idata;
+    coords = Dict(&quot;school&quot; =&gt; [&quot;Choate&quot;, &quot;Deerfield&quot;, &quot;Phillips Andover&quot;]),
+    divergences = true,
+);</code></pre><p><img src="../quick_cmdstanpair.png" alt/></p><h2 id="Plotting-with-Soss.jl-outputs-1">Plotting with Soss.jl outputs<a class="docs-heading-anchor" href="#Plotting-with-Soss.jl-outputs-1" title="Permalink"></a></h2><p>With Soss, we can define our model for the posterior and easily use it to draw samples from the prior, prior predictive, posterior, and posterior predictive distributions.</p><p>First we define our model:</p><pre><code class="language-julia">using Soss, NamedTupleTools
+
+mod = Soss.@model (J, σ) begin
+    μ ~ Normal(0, 5)
+    τ ~ HalfCauchy(5)
+    θ ~ Normal(μ, τ) |&gt; iid(J)
+    y ~ For(J) do j
+        Normal(θ[j], σ[j])
+    end
+end
+
+constant_data = (J = J, σ = σ)
+param_mod = mod(; constant_data...)</code></pre><pre><code class="language-none">Joint Distribution
+    Bound arguments: [J, σ]
+    Variables: [τ, μ, θ, y]
+
+@model (J, σ) begin
+        τ ~ HalfCauchy(5)
+        μ ~ Normal(0, 5)
+        θ ~ Normal(μ, τ) |&gt; iid(J)
+        y ~ For(J) do j
+                Normal(θ[j], σ[j])
+            end
+    end
+</code></pre><p>Then we draw from the prior and prior predictive distributions.</p><pre><code class="language-julia">prior_prior_pred = map(1:nchains*nsamples) do _
+    draw = rand(param_mod)
+    return delete(draw, keys(constant_data))
+end
+
+prior = map(draw -&gt; delete(draw, :y), prior_prior_pred)
+prior_pred = map(draw -&gt; delete(draw, (:μ, :τ, :θ)), prior_prior_pred);</code></pre><p>Next, we draw from the posterior using <a href="https://github.com/tpapp/DynamicHMC.jl">DynamicHMC.jl</a>.</p><pre><code class="language-julia">post = map(1:nchains) do _
+    dynamicHMC(param_mod, (y = y,), logpdf, nsamples)
+end;</code></pre><p>Finally, we use the posterior samples to draw from the posterior predictive distribution.</p><pre><code class="language-julia">pred = predictive(mod, :μ, :τ, :θ)
+post_pred = map(post) do post_draws
+    map(post_draws) do post_draw
+        pred_draw = rand(pred(post_draw)(constant_data))
+        return delete(pred_draw, keys(constant_data))
+    end
+end;</code></pre><p>Each Soss draw is a <code>NamedTuple</code>. Now we combine all of the samples to an <code>InferenceData</code>:</p><pre><code class="language-julia">idata = from_namedtuple(
+    post;
+    posterior_predictive = post_pred,
+    prior = [prior],
+    prior_predictive = [prior_pred],
+    observed_data = Dict(&quot;y&quot; =&gt; y),
+    constant_data = constant_data,
+    coords = Dict(&quot;school&quot; =&gt; schools),
+    dims = Dict(
+        &quot;y&quot; =&gt; [&quot;school&quot;],
+        &quot;σ&quot; =&gt; [&quot;school&quot;],
+        &quot;θ&quot; =&gt; [&quot;school&quot;],
+    ),
+    library = Soss,
+)</code></pre><pre><code class="language-none">InferenceData with groups:
+	&gt; posterior
+	&gt; posterior_predictive
+	&gt; prior
+	&gt; prior_predictive
+	&gt; observed_data
+	&gt; constant_data</code></pre><p>We can compare the prior and posterior predictive distributions:</p><pre><code class="language-julia">plot_density(
+    [idata.posterior_predictive, idata.prior_predictive];
+    data_labels = [&quot;Post-pred&quot;, &quot;Prior-pred&quot;],
+    var_names = [&quot;y&quot;],
+)</code></pre><p><img src="../quick_sosspred.png" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../api/">API »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 28 November 2019 07:25">Thursday 28 November 2019</span>. Using Julia version 1.3.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
