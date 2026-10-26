@@ -20,7 +20,8 @@ let
 end;
 
 # ╔═╡ 467c2d13-6bfe-4feb-9626-fb14796168aa
-using ArviZ, ArviZPythonPlots, Distributions, LinearAlgebra, Random, StanSample, Turing
+using ArviZ,
+    ArviZPythonPlots, Distributions, LinearAlgebra, MCMCChains, Random, StanSample, Turing
 
 # ╔═╡ 56a39a90-0594-48f4-ba04-f7b612019cd1
 using PlutoUI
@@ -136,7 +137,13 @@ begin
     sampler = NUTS(ndraws_warmup, 0.8)
 
     turing_chns = Turing.sample(
-        rng2, model_turing(y, σ), sampler, MCMCThreads(), ndraws, nchains
+        rng2,
+        model_turing(y, σ),
+        sampler,
+        MCMCThreads(),
+        ndraws,
+        nchains;
+        chain_type=MCMCChains.Chains,
     )
 end;
 
@@ -214,7 +221,7 @@ To sample from the prior, one simply calls `sample` but with the `Prior` sampler
 """
 
 # ╔═╡ 79374a8b-98c1-443c-acdd-0ee00bd42b38
-prior = Turing.sample(rng2, param_mod_turing, Prior(), ndraws);
+prior = Turing.sample(rng2, param_mod_turing, Prior(), ndraws; chain_type=MCMCChains.Chains);
 
 # ╔═╡ c23562ba-3b0b-49d9-bb41-2fedaa9e9500
 md"""
