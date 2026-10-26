@@ -124,7 +124,7 @@ To do so, we use `InferenceData`s indexing syntax to subset the data.
 
 # ╔═╡ 746785a2-c472-467f-973a-d2390ec3e0bb
 draw(
-    data(idata[:posterior, school=At(["Choate", "Deerfield"])]) *
+    data(idata[:posterior, school = At(["Choate", "Deerfield"])]) *
     mapping(:theta, :tau; color=:school) *
     density() *
     visual(Contour; levels=10),
@@ -183,7 +183,9 @@ To concatenate the two groups, we introduce a new named dimension using `Dimensi
 draw(
     data(
         cat(
-            idata.posterior[chain=[1]], idata.prior; dims=Dim{:group}([:posterior, :prior])
+            idata.posterior[chain = [1]],
+            idata.prior;
+            dims=Dim{:group}([:posterior, :prior]),
         )[:mu],
     ) *
     mapping(:mu; color=:group) *
@@ -220,8 +222,8 @@ To build this plot, we need to make a copy of `theta` with a copy of the `school
 
 # ╔═╡ b3c8eed9-4083-457e-89dd-71d678b724ef
 let
-    theta = idata.posterior.theta[school=1:4]
-    theta2 = rebuild(set(theta; school=:school2); name=:theta2)
+    theta = idata.posterior.theta[school = 1:4]
+    theta2 = rebuild(set(theta, :school => :school2); name=:theta2)
     plot_data = Dataset(theta, theta2, idata.sample_stats.diverging)
     draw(
         data(plot_data) * mapping(

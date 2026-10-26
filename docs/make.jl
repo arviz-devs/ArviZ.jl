@@ -93,7 +93,7 @@ warnonly = [
 ]
 
 withenv("COLUMNS" => 100) do
-    makedocs(;
+    return makedocs(;
         modules,
         sitename="ArviZ.jl",
         pages=[
